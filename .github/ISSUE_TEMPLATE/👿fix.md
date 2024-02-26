@@ -2,7 +2,7 @@
 name: "\U0001F47FFIX"
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: 버그픽스
 assignees: ''
 
 ---

@@ -2,7 +2,7 @@
 name: "\U0001F6E0FEATURE"
 about: 구현중인 작업 내역을 입력해주세요.
 title: ''
-labels: ''
+labels: 기능구현
 assignees: ''
 
 ---
