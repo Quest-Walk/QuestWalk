@@ -15,11 +15,76 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_marginTop="24dp"
-            android:background="#E4E3E3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageButton
+                android:id="@+id/ib_wheather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_weather"
+                app:layout_constraintBottom_toBottomOf="@+id/ib_my_page"
+                app:layout_constraintEnd_toStartOf="@+id/ib_my_page"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ib_my_page" />
+
+            <TextView
+                android:id="@+id/tv_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="날씨확인"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_wheather"
+                app:layout_constraintStart_toStartOf="@+id/ib_wheather"
+                app:layout_constraintTop_toBottomOf="@+id/ib_wheather" />
+
+            <ImageButton
+                android:id="@+id/ib_my_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_my_page"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ib_history"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ib_wheather"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_my_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="마이페이지"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_my_page"
+                app:layout_constraintStart_toStartOf="@+id/ib_my_page"
+                app:layout_constraintTop_toBottomOf="@+id/ib_my_page" />
+
+            <ImageButton
+                android:id="@+id/ib_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_history"
+                app:layout_constraintBottom_toBottomOf="@+id/ib_my_page"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ib_my_page"
+                app:layout_constraintTop_toTopOf="@+id/ib_my_page" />
+
+            <TextView
+                android:id="@+id/tv_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="기록보기"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_history"
+                app:layout_constraintStart_toStartOf="@+id/ib_history"
+                app:layout_constraintTop_toBottomOf="@+id/ib_history" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,6 +151,7 @@
             android:id="@+id/iv_chr_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:src="@drawable/img_dummy_charcter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
