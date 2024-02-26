@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Quest Walk</string>
+    <string name="adventure_time_label">모험한 시간</string>
+    <string name="adventure_distance_label">모험한 거리</string>
+    <string name="total_steps_label">총 걸음수</string>
 </resources>
