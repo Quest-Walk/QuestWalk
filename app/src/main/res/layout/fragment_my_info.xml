@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp"
+    tools:context=".MyInfoFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/head"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="내 정보"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_player_character"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/dummy_character"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <TextView
+            android:id="@+id/tv_player_name"
+            style="@style/body_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="모험가 158427"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_player_character" />
+
+        <TextView
+            android:id="@+id/tv_title_time"
+            style="@style/body_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="모험한 시간"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_player_name" />
+
+        <TextView
+            android:id="@+id/tv_time_value"
+            style="@style/body_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="551시간 55분"
+            app:layout_constraintStart_toStartOf="@id/tv_title_time"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_time" />
+
+        <TextView
+            android:id="@+id/tv_title_distance"
+            style="@style/body_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="모험한 거리"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_time_value" />
+
+        <TextView
+            android:id="@+id/tv_distance_value"
+            style="@style/body_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="205km"
+            app:layout_constraintStart_toStartOf="@id/tv_title_distance"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_distance" />
+
+        <TextView
+            android:id="@+id/tv_title_step"
+            style="@style/body_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="총 걸음수"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_distance_value" />
+
+        <TextView
+            android:id="@+id/tv_step_value"
+            style="@style/body_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="183만 2574걸음"
+            app:layout_constraintStart_toStartOf="@id/tv_title_step"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_step" />
+
+        <TextView
+            android:id="@+id/tv_calorie"
+            style="@style/small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="113,232kcal"
+            app:layout_constraintBottom_toBottomOf="@id/tv_step_value"
+            app:layout_constraintStart_toEndOf="@id/tv_step_value" />
+
+        <LinearLayout
+            android:id="@+id/ll_quest_content_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/ll_quest_content_2"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_step_value">
+
+            <TextView
+                android:id="@+id/tv_title_all_quest"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="도전한 퀘스트" />
+
+            <TextView
+                android:id="@+id/tv_all_quest_value"
+                style="@style/body_big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="524개" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_quest_content_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/ll_quest_content_3"
+            app:layout_constraintStart_toEndOf="@id/ll_quest_content_1"
+            app:layout_constraintTop_toTopOf="@id/ll_quest_content_1">
+
+            <TextView
+                android:id="@+id/tv_title_solve_quest"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="해결한 퀘스트" />
+
+            <TextView
+                android:id="@+id/tv_solve_quest_value"
+                style="@style/body_big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="112개" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_quest_content_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ll_quest_content_2"
+            app:layout_constraintTop_toTopOf="@id/ll_quest_content_1">
+
+            <TextView
+                android:id="@+id/tv_title_solve_percent"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="성공률" />
+
+            <TextView
+                android:id="@+id/tv_solve_percent_value"
+                style="@style/body_big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="21%" />
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/body_default"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/background_box_radius_5dp"
+            android:backgroundTint="#ff0000"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:text="탈퇴하기"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/ll_quest_content_1" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

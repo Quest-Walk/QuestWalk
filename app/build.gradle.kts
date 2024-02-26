@@ -5,12 +5,11 @@ plugins {
 
 android {
     namespace = "com.hapataka.questwalk"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
         minSdk = 26
-        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -32,6 +31,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding = true
     }
 }
 
