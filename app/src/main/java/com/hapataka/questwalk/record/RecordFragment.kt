@@ -1,4 +1,4 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.record
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
