@@ -1,11 +1,13 @@
 plugins {
+    kotlin("kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
     namespace = "com.hapataka.questwalk"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
@@ -33,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -44,4 +49,13 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson Converter
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OKHttp for 통신 로그
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    //Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 }
