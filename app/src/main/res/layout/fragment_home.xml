@@ -91,6 +91,7 @@
             android:id="@+id/cl_playing_upper_widgets"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:padding="10dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -135,8 +136,8 @@
                     android:text="@string/homefragment_quest_playing"
                     android:textColor="@color/gray" />
 
-                <TextView
-                    android:id="@+id/tv_quest_time"
+                <Chronometer
+                    android:id="@+id/cm_quest_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -162,7 +163,7 @@
             android:id="@+id/cl_waiting_bottom_widgets"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -204,6 +205,7 @@
                 android:id="@+id/iv_capture_camera"
                 android:layout_width="124dp"
                 android:layout_height="67dp"
+                android:background="@drawable/rounded_icon"
                 android:scaleType="centerInside"
                 android:src="@drawable/img_camera"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -216,6 +218,7 @@
             android:id="@+id/btn_quest_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/green"
             android:text="모험 시작하기"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

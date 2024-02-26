@@ -1,15 +1,14 @@
 package com.hapataka.questwalk.homefragment
 
 import android.content.res.ColorStateList
-import android.opengl.Visibility
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.Log
+import android.os.SystemClock
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Chronometer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.hapataka.questwalk.R
@@ -25,12 +24,14 @@ class HomeFragment : Fragment() {
     private var isPlay = false
 
     //타이머
-
+    private lateinit var timer : Chronometer
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        timer = binding.cmQuestTime
         return binding.root
     }
 
@@ -49,8 +50,14 @@ class HomeFragment : Fragment() {
                     clPlayingUpperWidgets.visibility = View.VISIBLE
                     clWaitingBottomWidgets.visibility = View.GONE
                     isPlay = true
+
+                    //버튼색 이름 및 색깔 변경
                     btnQuestStatus.text = "포기하기"
                     setBackgroundWidget(btnQuestStatus,R.color.red)
+
+                    //타이머
+                    timer.base = SystemClock.elapsedRealtime()
+                    timer.start()
                 } else { // 모험이 끝날때!
                     clPlayingBottomWidgets.visibility = View.GONE
                     clPlayingUpperWidgets.visibility = View.GONE
@@ -58,9 +65,12 @@ class HomeFragment : Fragment() {
                     isPlay = false
 
 
-                    // 버튼색,이름 바꾸기
+                    //버튼색 이름 및 색깔 변경
                     btnQuestStatus.text = "모험 시작하기"
                     setBackgroundWidget(btnQuestStatus,R.color.green)
+
+                    //타이머 중지
+                    timer.stop()
                 }
             }
         }
