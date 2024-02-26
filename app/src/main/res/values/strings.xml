@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Quest Walk</string>
+    <string-array name="level">
+        <item>★</item>
+        <item>★★</item>
+        <item>★★★</item>
+        <item>★★★★</item>
+        <item>★★★★★</item>
+    </string-array>
+
 </resources>

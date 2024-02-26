@@ -21,37 +21,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="난이도"
-        app:layout_constraintBottom_toBottomOf="@id/tv_spinner"
+        app:layout_constraintBottom_toBottomOf="@id/spinner_level"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_spinner" />
-
-    <TextView
-        android:id="@+id/tv_spinner"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_spinner"
-        android:paddingHorizontal="8dp"
-        android:layout_marginStart="4dp"
-        android:paddingVertical="4dp"
-        android:text="★★★"
-        android:textAlignment="center"
-        android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@id/tv_level"
-        app:layout_constraintTop_toBottomOf="@id/iv_arrow_back" />
-
+        app:layout_constraintTop_toTopOf="@id/spinner_level" />
 
     <com.skydoves.powerspinner.PowerSpinnerView
         android:id="@+id/spinner_level"
-        android:layout_width="115dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_spinner"
+        android:gravity="center"
+        android:paddingHorizontal="6dp"
         android:paddingVertical="4dp"
-        app:layout_constraintBottom_toBottomOf="@id/tv_spinner"
-        app:layout_constraintStart_toStartOf="@id/tv_spinner"
-        app:layout_constraintTop_toTopOf="@id/tv_spinner"
+        app:layout_constraintStart_toEndOf="@id/tv_level"
+        app:layout_constraintTop_toBottomOf="@id/iv_arrow_back"
         app:spinner_arrow_drawable="@drawable/ic_spinner_arrow"
-        app:spinner_arrow_tint="@color/black" />
+        app:spinner_arrow_tint="@color/black"
+        app:spinner_divider_color="@color/black"
+        app:spinner_divider_show="true"
+        app:spinner_divider_size="1dp"
+        app:spinner_item_array="@array/level"
+        app:spinner_popup_animation="dropdown"
+        app:spinner_popup_background="@drawable/bg_spinner" />
 
     <TextView
         android:id="@+id/tv_complete"
@@ -59,9 +52,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:text="완료한 퀘스트 숨기기"
-        app:layout_constraintBottom_toBottomOf="@id/tv_spinner"
+        app:layout_constraintBottom_toBottomOf="@id/spinner_level"
         app:layout_constraintEnd_toStartOf="@id/iv_complete"
-        app:layout_constraintTop_toTopOf="@id/tv_spinner" />
+        app:layout_constraintTop_toTopOf="@id/spinner_level" />
 
     <ImageView
         android:id="@+id/iv_complete"
@@ -82,7 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_spinner"
+        app:layout_constraintTop_toBottomOf="@id/spinner_level"
         tools:listitem="@layout/item_quest" />
 
 
