@@ -11,7 +11,8 @@ import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
 
 class QuestFragment : Fragment() {
     private val binding: FragmentQuestBinding by lazy { FragmentQuestBinding.inflate(layoutInflater) }
-    private val questAdapter: QuestAdapter by lazy { QuestAdapter() }
+//    private val questAdapter: QuestAdapter by lazy { QuestAdapter() }
+    private lateinit var questAdapter: QuestAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -29,6 +30,13 @@ class QuestFragment : Fragment() {
     }
 
     private fun initQuestRecyclerView() {
+        questAdapter = QuestAdapter {item ->
+            val questDetailFragment = QuestDetailFragment.newInstance(item)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frame, questDetailFragment)
+                .addToBackStack(null)
+                .commit()
+        }
         binding.revQuest.adapter = questAdapter
         questAdapter.submitList(dummySet())
     }

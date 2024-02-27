@@ -75,6 +75,7 @@
         app:layout_constraintWidth_percent="0.23" />
 
     <TextView
+        android:id="@+id/tv_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
