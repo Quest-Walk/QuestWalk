@@ -4,29 +4,31 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
-import android.hardware.camera2.params.OutputConfiguration
-import android.hardware.camera2.params.SessionConfiguration
+import android.hardware.camera2.CaptureRequest
+import android.media.ImageReader
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class CameraFragment : Fragment() {
 
@@ -34,7 +36,7 @@ class CameraFragment : Fragment() {
     private lateinit var viewModel: CameraViewModel
     private lateinit var binding: FragmentCameraBinding
 
-    // permission 등록 콜백함수
+    // permission 등록 콜백 함수
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -54,9 +56,12 @@ class CameraFragment : Fragment() {
     private lateinit var cameraDevice: CameraDevice
     private var cameraId: String = ""
 
-    private lateinit var executor: ExecutorService
+    private lateinit var handler: Handler
+    private lateinit var handlerThread: HandlerThread
 
+    private lateinit var captureRequestBuilder: CaptureRequest.Builder
     private lateinit var cameraCaptureSession: CameraCaptureSession
+    private lateinit var imageReader: ImageReader
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,12 +78,10 @@ class CameraFragment : Fragment() {
         // TODO: Use the ViewModel
         checkPermissions()
         binding.ibCapture.setOnClickListener {
-            val captureRequest = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
-                addTarget(surface)
-            }.build()
-            cameraCaptureSession.captureSingleRequest(captureRequest,executor,object : CameraCaptureSession.CaptureCallback(){})
-            //이후 캡쳐된 이미지를 가져올려면 콜백함수를 정의해야함 ㅇㅇ
+
         }
+
+
     }
 
     private fun checkPermissions() {
@@ -95,7 +98,9 @@ class CameraFragment : Fragment() {
     }
 
     private fun setCamera() {
-        executor = Executors.newSingleThreadExecutor()
+        handlerThread = HandlerThread("previewThread")
+        handlerThread.start()
+        handler = Handler(handlerThread.looper)
         ttvPreview = binding.ttvPreview
         ttvPreview.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(
@@ -104,6 +109,13 @@ class CameraFragment : Fragment() {
                 height: Int,
             ) {
                 openCamera()
+                imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1)
+                imageReader.setOnImageAvailableListener(object:ImageReader.OnImageAvailableListener{
+                    override fun onImageAvailable(reader: ImageReader?) {
+                        Toast.makeText(requireContext(),"image captured",Toast.LENGTH_SHORT).show()
+                    }
+
+                },handler)
             }
 
             override fun onSurfaceTextureSizeChanged(
@@ -129,32 +141,30 @@ class CameraFragment : Fragment() {
 
     @SuppressLint("MissingPermission", "NewApi")
     private fun openCamera() {
-        cameraManager.openCamera(cameraId, executor, object : CameraDevice.StateCallback() {
+        cameraManager.openCamera(cameraId, object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
                 cameraDevice = camera
                 //카메라가 열리면 CqptureSession 생성
                 surface = Surface(ttvPreview.surfaceTexture)
-                val outputConfig = OutputConfiguration(surface)
-                val sessionConfig = SessionConfiguration(
-                    SessionConfiguration.SESSION_REGULAR,
-                    listOf(outputConfig),
-                    executor,
-                    object : CameraCaptureSession.StateCallback(){
+                captureRequestBuilder =
+                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+                        addTarget(surface)
+                    }
+                cameraDevice.createCaptureSession(
+                    listOf(surface,imageReader.surface),
+                    object : CameraCaptureSession.StateCallback() {
                         override fun onConfigured(session: CameraCaptureSession) {
-                            //세션이 구성되면 프리뷰 시작
-                            val previewRequest = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply{
-                                addTarget(surface)
-                            }.build()
+                            cameraCaptureSession = session.apply {
+                                setRepeatingRequest(captureRequestBuilder.build(),null,null)
+                            }
 
-                            cameraCaptureSession = session
-                            session.setSingleRepeatingRequest(previewRequest,executor,object : CameraCaptureSession.CaptureCallback(){})
                         }
 
                         override fun onConfigureFailed(session: CameraCaptureSession) {
                         }
-
-                    })
-                camera.createCaptureSession(sessionConfig)
+                    },
+                    handler
+                )
             }
 
             override fun onDisconnected(camera: CameraDevice) {
@@ -164,6 +174,6 @@ class CameraFragment : Fragment() {
             override fun onError(camera: CameraDevice, error: Int) {
                 camera.close()
             }
-        })
+        }, handler)
     }
 }

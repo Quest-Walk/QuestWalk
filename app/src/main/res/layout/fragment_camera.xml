@@ -12,9 +12,9 @@
 
         <TextureView
             android:id="@+id/ttv_preview"
-            android:layout_width="412dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="24dp"
             app:layout_constraintBottom_toTopOf="@+id/ib_capture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
