@@ -6,12 +6,12 @@ sealed class RecordItem {
     ) : RecordItem()
 
     data class Result(
-        val thumbnail: String,
+        val thumbnail: Int,
         val isSuccess: Boolean
     ) : RecordItem()
 
     data class Achievement(
-        val icon: String,
-        val title: String,
+        val icon: Int,
+        val name: String,
     ) : RecordItem()
 }

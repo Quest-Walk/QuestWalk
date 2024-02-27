@@ -14,7 +14,7 @@
     <fragment
         android:id="@+id/frag_record"
         android:name="com.hapataka.questwalk.record.RecordFragment"
-        android:label="frag_record" />
-
+        android:label="frag_record"
+        tools:layout="@layout/fragment_record"/>
 
 </navigation>

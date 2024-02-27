@@ -14,19 +14,30 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vp_record_contents"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/tl_record_menu"
-        app:layout_constraintTop_toBottomOf="@id/app_bar" />
-
-    <TableLayout
-        android:id="@+id/tl_record_menu"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
+    <Button
+        android:id="@+id/btn_nono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="왜 안돼냐"
+        android:textSize="32sp"
+        android:elevation="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vp_record_contents" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <androidx.viewpager2.widget.ViewPager2-->
+<!--        android:id="@+id/vp_record_contents"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/tl_record_menu"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/app_bar" />-->
+
+<!--    <com.google.android.material.tabs.TabLayout-->
+<!--        android:id="@+id/tl_record_menu"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="56dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/vp_record_contents" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
