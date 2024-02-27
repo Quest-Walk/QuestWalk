@@ -1,15 +1,15 @@
 package com.hapataka.questwalk.record
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.hapataka.questwalk.databinding.FragmentRecordBinding
-import com.hapataka.questwalk.record.adapter.RecordItemAdapter
+import androidx.fragment.app.Fragment
+import com.hapataka.questwalk.R
+import com.hapataka.questwalk.databinding.FragmentRecordItemBinding
 
-class RecordFragment : Fragment() {
-    private val binding by lazy { FragmentRecordBinding.inflate(layoutInflater) }
+class RecordItemFragment : Fragment() {
+    private val binding by lazy { FragmentRecordItemBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,8 +20,5 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding.vpRecordContents) {
-            adapter = RecordItemAdapter(requireActivity())
-        }
     }
 }

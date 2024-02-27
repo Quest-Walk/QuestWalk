@@ -3,13 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_my_info">
+    app:startDestination="@id/frag_record">
 
     <fragment
         android:id="@+id/frag_my_info"
         android:name="com.hapataka.questwalk.MyInfoFragment"
         android:label="frag_my_info"
         tools:layout="@layout/fragment_my_info" />
+
+    <fragment
+        android:id="@+id/frag_record"
+        android:name="com.hapataka.questwalk.record.RecordFragment"
+        android:label="frag_record" />
 
 
 </navigation>
