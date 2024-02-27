@@ -43,6 +43,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() {
+        setQuestButtonEvent()
+
+    }
+
+
+    private fun setQuestButtonEvent(){
         with(binding) {
             btnQuestStatus.setOnClickListener {
                 if (!isPlay) { // 모험 시작!
