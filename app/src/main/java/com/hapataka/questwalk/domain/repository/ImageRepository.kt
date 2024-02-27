@@ -3,6 +3,5 @@ package com.hapataka.questwalk.domain.repository
 import android.net.Uri
 
 interface ImageRepository {
-    fun uploadImage(uri: Uri)
-    fun loadImage()
+    suspend fun setImage(uri: Uri, uid: String): Uri
 }
