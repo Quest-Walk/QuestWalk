@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
+import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
 
 class QuestFragment : Fragment() {
     private val binding: FragmentQuestBinding by lazy { FragmentQuestBinding.inflate(layoutInflater) }

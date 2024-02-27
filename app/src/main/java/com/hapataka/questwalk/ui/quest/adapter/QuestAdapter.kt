@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.ui.quest
+package com.hapataka.questwalk.ui.quest.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestBinding
-import java.net.URL
+import com.hapataka.questwalk.ui.quest.QuestStatsEntity
 
 class QuestAdapter: ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(diffUtil) {
 
