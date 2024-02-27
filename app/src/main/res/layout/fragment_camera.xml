@@ -12,16 +12,17 @@
 
         <TextureView
             android:id="@+id/ttv_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="412dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/ib_capture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/ib_capture"
-            android:layout_width="wrap_content"
+            android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:background="@android:color/transparent"
@@ -33,20 +34,20 @@
 
         <ImageButton
             android:id="@+id/ib_frame"
-            android:layout_width="wrap_content"
+            android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:src="@drawable/ico_camera_frame"
             app:layout_constraintBottom_toBottomOf="@+id/ib_capture"
             app:layout_constraintEnd_toStartOf="@+id/ib_capture"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ib_capture" />
 
         <ImageButton
             android:id="@+id/ib_switch"
-            android:layout_width="wrap_content"
+            android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:src="@drawable/ico_camera_switch"
