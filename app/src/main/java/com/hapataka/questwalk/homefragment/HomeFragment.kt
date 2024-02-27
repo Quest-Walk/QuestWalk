@@ -43,10 +43,35 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() {
+        replaceFragmentByImageButton()
         setQuestButtonEvent()
 
     }
 
+    /**
+     *  프래그먼트 간의 이동
+     */
+    private fun replaceFragmentByImageButton(){
+        with(binding){
+            ibHistory.setOnClickListener {
+                // TODO : historyFragment 이동
+                // replaceFragment(HistoryFragment())
+            }
+            ibMyPage.setOnClickListener {
+                // TODO : myPageFragment 이동
+            }
+            ibWheather.setOnClickListener {
+                // TODO : wheatherFragment 이동
+            }
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment){
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView,fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
     private fun setQuestButtonEvent(){
         with(binding) {
