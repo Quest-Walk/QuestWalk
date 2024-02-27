@@ -17,10 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpMap"
+
+            <fragment
+                android:id="@+id/fragMap"
                 android:layout_width="match_parent"
-                android:layout_height="300dp" />
+                android:layout_height="300dp"
+                class="com.google.android.gms.maps.SupportMapFragment"/>
             <LinearLayout
                 android:id="@+id/llResultDeatils"
                 android:layout_width="match_parent"
