@@ -10,13 +10,9 @@ import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestStatsEntity
 
-class QuestAdapter: ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(diffUtil) {
-
-    interface OnImageViewClickListener {
-        fun clickImageView(email: String, url: Int)
-    }
-
-    var listener: OnImageViewClickListener? = null
+class QuestAdapter(
+    val onClick: (item: QuestStatsEntity) -> Unit
+) : ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -27,8 +23,14 @@ class QuestAdapter: ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(
         holder.bind(getItem(position))
     }
 
-    inner class QuestViewHolder(private val binding: ItemQuestBinding): RecyclerView.ViewHolder(binding.root) {
-        private val imageList = listOf<ImageView>(binding.ivImage1, binding.ivImage2, binding.ivImage3, binding.ivImage4)
+    inner class QuestViewHolder(private val binding: ItemQuestBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        private val imageList = listOf<ImageView>(
+            binding.ivImage1,
+            binding.ivImage2,
+            binding.ivImage3,
+            binding.ivImage4
+        )
         private val successItemsList = mutableListOf<Map.Entry<String, Int>>()
         fun bind(item: QuestStatsEntity) {
             binding.tvKeyword.text = item.keyWord
@@ -36,10 +38,8 @@ class QuestAdapter: ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(
                 successItemsList.add(entry)
                 imageList[index].load(entry.value)
             }
-            imageList.forEachIndexed { index, imageView ->
-                imageView.setOnClickListener {
-                    listener?.clickImageView(successItemsList[index].key, successItemsList[index].value)
-                }
+            binding.tvMore.setOnClickListener {
+                onClick(item)
             }
         }
     }
@@ -47,11 +47,17 @@ class QuestAdapter: ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<QuestStatsEntity>() {
-            override fun areItemsTheSame(oldItem: QuestStatsEntity, newItem: QuestStatsEntity): Boolean {
+            override fun areItemsTheSame(
+                oldItem: QuestStatsEntity,
+                newItem: QuestStatsEntity
+            ): Boolean {
                 return oldItem.keyWord == newItem.keyWord
             }
 
-            override fun areContentsTheSame(oldItem: QuestStatsEntity, newItem: QuestStatsEntity): Boolean {
+            override fun areContentsTheSame(
+                oldItem: QuestStatsEntity,
+                newItem: QuestStatsEntity
+            ): Boolean {
                 return oldItem == newItem
             }
         }
