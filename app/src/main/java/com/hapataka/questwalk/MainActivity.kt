@@ -11,8 +11,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.btnWhy.setOnClickListener {
-            Log.i(TAG, "안되냐외")
-        }
     }
 }
