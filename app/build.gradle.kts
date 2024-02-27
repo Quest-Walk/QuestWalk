@@ -50,4 +50,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     //spinner
     implementation("com.github.skydoves:powerspinner:1.2.6")
+    //coil
+    implementation("io.coil-kt:coil:2.6.0")
 }
