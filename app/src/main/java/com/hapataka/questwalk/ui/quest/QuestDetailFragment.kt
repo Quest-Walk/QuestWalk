@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
+import com.hapataka.questwalk.ui.quest.adapter.QuestAdapterDecoration
 import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
 
 class QuestDetailFragment : Fragment() {
@@ -45,6 +46,7 @@ class QuestDetailFragment : Fragment() {
         questDetailAdapter = QuestDetailAdapter {
             // detail page 이동
         }
+        binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
         binding.revQuestDetail.adapter = questDetailAdapter
         val urlList = item?.successItems?.map { it.value }
         questDetailAdapter.submitList(urlList?.toMutableList())
