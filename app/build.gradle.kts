@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.hapataka.questwalk"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
