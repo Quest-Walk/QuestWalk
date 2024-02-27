@@ -12,6 +12,7 @@ import android.widget.Chronometer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.camerafragment.CameraFragment
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -62,6 +63,9 @@ class HomeFragment : Fragment() {
             }
             ibWheather.setOnClickListener {
                 // TODO : wheatherFragment 이동
+            }
+            ibCamera.setOnClickListener {
+                replaceFragment(CameraFragment())
             }
         }
     }
