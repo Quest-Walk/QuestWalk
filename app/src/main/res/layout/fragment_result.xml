@@ -18,11 +18,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <fragment
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragMap"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                class="com.google.android.gms.maps.SupportMapFragment"/>
+                android:name="com.google.android.gms.maps.SupportMapFragment"/>
             <LinearLayout
                 android:id="@+id/llResultDeatils"
                 android:layout_width="match_parent"
