@@ -53,7 +53,7 @@ class CameraFragment : Fragment() {
     private lateinit var surface: Surface
 
     private lateinit var cameraManager: CameraManager
-    private lateinit var cameraDevice: CameraDevice
+    private var cameraDevice: CameraDevice? = null
     private var cameraId: String = ""
 
     private lateinit var handler: Handler
@@ -78,7 +78,10 @@ class CameraFragment : Fragment() {
         // TODO: Use the ViewModel
         checkPermissions()
         binding.ibCapture.setOnClickListener {
-
+            captureRequestBuilder =
+                cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+            captureRequestBuilder.addTarget(imageReader.surface)
+            cameraCaptureSession.capture(captureRequestBuilder.build(), null, null)
         }
 
 
@@ -109,13 +112,6 @@ class CameraFragment : Fragment() {
                 height: Int,
             ) {
                 openCamera()
-                imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1)
-                imageReader.setOnImageAvailableListener(object:ImageReader.OnImageAvailableListener{
-                    override fun onImageAvailable(reader: ImageReader?) {
-                        Toast.makeText(requireContext(),"image captured",Toast.LENGTH_SHORT).show()
-                    }
-
-                },handler)
             }
 
             override fun onSurfaceTextureSizeChanged(
@@ -137,6 +133,17 @@ class CameraFragment : Fragment() {
         cameraManager = requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraId = cameraManager.cameraIdList[0]
 
+        imageReader = ImageReader.newInstance(960, 1280, ImageFormat.JPEG, 1)
+        imageReader.setOnImageAvailableListener({ reader ->
+            var image = reader?.acquireNextImage()
+
+            val capturedImageDialog = CapturedImageDialog()
+            capturedImageDialog.show(childFragmentManager,"capturedImage")
+            image?.close()
+            Toast.makeText(requireContext(), "image captured", Toast.LENGTH_SHORT)
+                .show()
+        }, handler)
+
     }
 
     @SuppressLint("MissingPermission", "NewApi")
@@ -147,15 +154,15 @@ class CameraFragment : Fragment() {
                 //카메라가 열리면 CqptureSession 생성
                 surface = Surface(ttvPreview.surfaceTexture)
                 captureRequestBuilder =
-                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+                    cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
                         addTarget(surface)
                     }
-                cameraDevice.createCaptureSession(
-                    listOf(surface,imageReader.surface),
+                cameraDevice!!.createCaptureSession(
+                    listOf(surface, imageReader.surface),
                     object : CameraCaptureSession.StateCallback() {
                         override fun onConfigured(session: CameraCaptureSession) {
                             cameraCaptureSession = session.apply {
-                                setRepeatingRequest(captureRequestBuilder.build(),null,null)
+                                setRepeatingRequest(captureRequestBuilder.build(), null, null)
                             }
 
                         }
@@ -169,10 +176,14 @@ class CameraFragment : Fragment() {
 
             override fun onDisconnected(camera: CameraDevice) {
                 camera.close()
+                cameraDevice = null
+                handlerThread.quitSafely()
             }
 
             override fun onError(camera: CameraDevice, error: Int) {
                 camera.close()
+                cameraDevice = null
+                handlerThread.quitSafely()
             }
         }, handler)
     }
