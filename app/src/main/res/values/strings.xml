@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Quest Walk</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="homefragment_quest_distance_default">0.0km</string>
     <string name="homefragment_quest_playing">진행중</string>
     <string name="homefragment_quest_time_default">00:00</string>
