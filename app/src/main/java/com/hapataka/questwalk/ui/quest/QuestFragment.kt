@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
@@ -30,12 +32,16 @@ class QuestFragment : Fragment() {
     }
 
     private fun initQuestRecyclerView() {
+        val navHost = (parentFragment as NavHostFragment).findNavController()
+        val bundle = Bundle()
+
+
         questAdapter = QuestAdapter {item ->
-            val questDetailFragment = QuestDetailFragment.newInstance(item)
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.frame, questDetailFragment)
-                .addToBackStack(null)
-                .commit()
+
+            bundle.apply {
+                putParcelable("item", item)
+            }
+            navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
         }
         binding.revQuest.adapter = questAdapter
         questAdapter.submitList(dummySet())

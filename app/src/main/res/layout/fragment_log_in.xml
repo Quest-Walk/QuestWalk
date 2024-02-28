@@ -17,7 +17,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="140dp"
-        android:hint="아이디(이메일)"
+        android:hint="아이디 (이메일)"
+        style="@style/body_default"
         android:inputType="textEmailAddress"
         android:paddingHorizontal="15dp"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -28,6 +29,7 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="@id/et_logInId"
         app:layout_constraintTop_toBottomOf="@id/et_logInId"
+        style="@style/body_default"
         android:inputType="textPassword"
         android:layout_marginTop="20dp"
         android:paddingHorizontal="15dp"
@@ -41,12 +43,15 @@
         app:layout_constraintStart_toStartOf="@+id/et_logInPassWord"
         app:layout_constraintTop_toBottomOf="@id/et_logInPassWord"
         android:text="로그인"
+        style="@style/body_default"
         android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="또는"
+        android:layout_marginTop="24dp"
+        style="@style/small"
         app:layout_constraintTop_toBottomOf="@id/btn_logIn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

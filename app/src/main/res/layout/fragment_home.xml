@@ -33,6 +33,7 @@
 
             <TextView
                 android:id="@+id/tv_weather"
+                style="@style/body_default"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="날씨확인"
@@ -55,6 +56,7 @@
 
             <TextView
                 android:id="@+id/tv_my_page"
+                style="@style/body_default"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="마이페이지"
@@ -77,6 +79,7 @@
 
             <TextView
                 android:id="@+id/tv_history"
+                style="@style/body_default"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -171,6 +174,7 @@
 
             <TextView
                 android:id="@+id/tv_quest_title_wait"
+                style="@style/head"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/homefragment_quest_title_default"
@@ -183,6 +187,7 @@
 
             <Button
                 android:id="@+id/btn_quest_change"
+                style="@style/body_default"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -216,6 +221,7 @@
 
         <Button
             android:id="@+id/btn_quest_status"
+            style="@style/body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/green"
