@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="한의원"
+        style="@style/head"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="해결 인원 58%"
+        style="@style/small"
         app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -80,6 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:text="모두보기"
+        style="@style/body_default"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_image_4" />
 
