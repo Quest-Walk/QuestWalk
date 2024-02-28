@@ -16,7 +16,7 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="140dp"
         android:hint="아이디(이메일)"
         android:inputType="textEmailAddress"
         android:paddingHorizontal="15dp"

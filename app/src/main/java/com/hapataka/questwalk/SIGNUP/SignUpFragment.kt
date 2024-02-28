@@ -15,7 +15,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import com.hapataka.questwalk.OnBoardingFragment
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 
 
@@ -24,7 +26,7 @@ class SignUpFragment : Fragment() {
     private var _binding : FragmentSignUpBinding? = null
 
     private val binding get() = _binding!!
-    //private val viewModel : SignUpViewModel by ViewModel()
+    private val viewModel : SignUpViewModel by viewModels ()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +65,7 @@ class SignUpFragment : Fragment() {
             val password = binding.etSignUpPassWord.text.toString()
             val passwordCheck = binding.etSignUpPassWordCheck.text.toString()
             if (password == passwordCheck) {
-              //  viewModel.registerUser(email, password)
+                viewModel.registerUser(email, password)
             } else {
                 Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -72,13 +74,13 @@ class SignUpFragment : Fragment() {
 
 
 
-//    private fun obeserver() {
-//        viewModel.signUpResult.observe(viewLifecycleOwner) { success ->
-//            if (success) {
-//                switchFragment(requireFragmentManager(),KaKaoMapCheck(),false)
-//            }
-//        }
-//    }
+    private fun obeserver() {
+        viewModel.signUpResult.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                switchFragment(requireFragmentManager(),OnBoardingFragment(),false)
+            }
+        }
+    }
 
     fun switchFragment(fragmentManager: FragmentManager, fragment: Fragment, addToBackStack: Boolean) {
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()

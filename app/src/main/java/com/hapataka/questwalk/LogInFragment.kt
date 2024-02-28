@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
 import com.hapataka.questwalk.SIGNUP.SignUpFragment
@@ -61,20 +62,39 @@ class LogInFragment : Fragment() {
 
             if (id.isNotEmpty() && passWord.isNotEmpty()) {
                 loginUser(id,passWord)
-            } else Snackbar.make(requireView(),"이메일과 비밀번호가 비어있습니다", Snackbar.LENGTH_SHORT).show()
+            } else Snackbar.make(requireView(),"이메일 또는 비밀번호가 비어있습니다", Snackbar.LENGTH_SHORT).show()
 
         }
     }
 
-    private fun loginUser(email : String , password : String) {
-        auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(requireActivity()) { task ->
-            if (task.isSuccessful) {
-                Snackbar.make(requireView(), "로그인 되었습니다.", Snackbar.LENGTH_SHORT).show()
-                switchFragment(requireFragmentManager(),OnBoardingFragment(),false)
-            } else {
-                Snackbar.make(requireView(), "로그인 실패", Snackbar.LENGTH_SHORT).show()
+    private fun loginUser(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(requireActivity()){ task ->
+                if (!task.isSuccessful) {
+                    val exception = task.exception
+                    if (exception is FirebaseAuthException){
+                        val errorCode = exception.errorCode
+                        val errorMessage = when (errorCode){
+                            "ERROR_INVALID_EMAIL" -> "이메일 주소가 유효하지 않습니다."
+                            "ERROR_USER_NOT_FOUND" -> "계정을 찾을 수 없습니다. 가입되지 않은 이메일입니다."
+                            "ERROR_WRONG_PASSWORD" -> "비밀번호가 틀렸습니다. 다시 확인해주세요."
+                            "ERROR_USER_DISABLED" -> "이 계정은 비활성화되었습니다. 관리자에게 문의해주세요."
+                            "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL" -> "이미 다른 인증 방법으로 등록된 이메일입니다."
+                            "ERROR_EMAIL_ALREADY_IN_USE" -> "이 이메일은 이미 사용 중입니다. 다른 이메일을 사용해주세요."
+                            "ERROR_CREDENTIAL_ALREADY_IN_USE" -> "이 인증 정보는 이미 다른 계정에서 사용 중입니다."
+                            "ERROR_OPERATION_NOT_ALLOWED" -> "이메일 및 비밀번호 로그인이 활성화되지 않았습니다."
+                            "ERROR_TOO_MANY_REQUESTS" -> "요청이 너무 많습니다. 나중에 다시 시도해주세요."
+                            else -> "로그인 실패: 알 수 없는 오류가 발생했습니다. 다시 시도해주세요."
+                        }
+                        Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_SHORT).show()
+                    } else {
+                        Snackbar.make(requireView(), "로그인 정보를 다시 확인해 주세요.", Snackbar.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Snackbar.make(requireView(), "로그인 되었습니다.", Snackbar.LENGTH_SHORT).show()
+                    switchFragment(requireFragmentManager(), OnBoardingFragment(), false)
+                }
             }
-        }
     }
 
 //    private fun initGoogleSignInClient() {
@@ -95,14 +115,16 @@ class LogInFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && data != null) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                Snackbar.make(requireView(),"Google로그인 실패", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Google 로그인 실패", Snackbar.LENGTH_SHORT).show()
             }
+        } else {
+            Snackbar.make(requireView(), "로그인 응답 없음", Snackbar.LENGTH_SHORT).show()
         }
     }
 
