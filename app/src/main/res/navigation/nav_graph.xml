@@ -21,7 +21,7 @@
         android:id="@+id/frag_home"
         android:name="com.hapataka.questwalk.homefragment.HomeFragment"
         android:label="frag_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_frag_home_to_frag_my_info"
             app:destination="@id/frag_my_info" />
@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_frag_home_to_frag_camera"
             app:destination="@id/frag_camera" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_quest"
+            app:destination="@id/frag_quest" />
     </fragment>
 
     <fragment
@@ -38,5 +41,56 @@
         android:name="com.hapataka.questwalk.camerafragment.CameraFragment"
         android:label="frag_camera"
         tools:layout="@layout/fragment_camera" />
+
+    <fragment
+        android:id="@+id/frag_login"
+        android:name="com.hapataka.questwalk.LogInFragment"
+        android:label="frag_login"
+        tools:layout="@layout/fragment_log_in">
+        <action
+            android:id="@+id/action_frag_login_to_frag_sign_up"
+            app:destination="@id/frag_sign_up" />
+        <action
+            android:id="@+id/action_frag_login_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_sign_up"
+        android:name="com.hapataka.questwalk.signup.SignUpFragment"
+        android:label="frag_sign_up"
+        tools:layout="@layout/fragment_sign_up" />
+
+    <fragment
+        android:id="@+id/frag_on_boarding"
+        android:name="com.hapataka.questwalk.OnBoardingFragment"
+        android:label="frag_on_boarding"
+        tools:layout="@layout/fragment_on_boarding" />
+
+    <fragment
+        android:id="@+id/frag_result"
+        android:name="com.hapataka.questwalk.ResultFragment"
+        android:label="frag_result"
+        tools:layout="@layout/fragment_result" />
+
+    <fragment
+        android:id="@+id/frag_success"
+        tools:layout="@layout/fragment_success" />
+
+    <fragment
+        android:id="@+id/frag_quest"
+        android:name="com.hapataka.questwalk.ui.quest.QuestFragment"
+        android:label="frag_quest"
+        tools:layout="@layout/fragment_quest" >
+        <action
+            android:id="@+id/action_frag_quest_to_frag_quest_detail"
+            app:destination="@id/frag_quest_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_quest_detail"
+        android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
+        android:label="frag_quest_detail"
+        tools:layout="@layout/fragment_quest_detail" />
 
 </navigation>

@@ -9,16 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
-import com.hapataka.questwalk.SIGNUP.SignUpFragment
+import com.hapataka.questwalk.signup.SignUpFragment
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 
 
@@ -140,10 +140,11 @@ class LogInFragment : Fragment() {
         }
     }
 
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private fun goToSignUp() {
         binding.tvGoJoin.setOnClickListener {
-            switchFragment(requireFragmentManager(), SignUpFragment(),false)
+            navController.navigate(R.id.action_frag_login_to_frag_sign_up)
         }
     }
 

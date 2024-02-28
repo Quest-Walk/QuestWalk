@@ -71,6 +71,9 @@ class HomeFragment : Fragment() {
 //                navController.navigate(R.id.action_frag_home_to_frag_camera)
                 replaceFragment(CameraFragment())
             }
+            btnQuestChange.setOnClickListener {
+                navController.navigate(R.id.action_frag_home_to_frag_quest)
+            }
         }
     }
 

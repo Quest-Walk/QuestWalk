@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.SIGNUP
+package com.hapataka.questwalk.signup
 
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
@@ -16,7 +16,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import com.hapataka.questwalk.OnBoardingFragment
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 
