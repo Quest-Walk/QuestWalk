@@ -72,7 +72,7 @@ class HomeFragment : Fragment() {
 
     private fun replaceFragment(fragment: Fragment){
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerView,fragment)
+            .replace(R.id.nav_graph,fragment)
             .addToBackStack(null)
             .commit()
     }
