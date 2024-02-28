@@ -12,4 +12,7 @@
     <string name="homefragment_quest_time_default">00:00</string>
     <string name="homefragment_quest_title_default">Quest_Title</string>
     <string name="homefragment_quest_change">퀘스트 변경</string>
+    <string name="play_time">모험한 시간</string>
+    <string name="play_distance">모험한 거리</string>
+    <string name="all_step">총 걸음수</string>
 </resources>

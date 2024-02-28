@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.Chronometer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.camerafragment.CameraFragment
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
@@ -52,19 +54,21 @@ class HomeFragment : Fragment() {
     /**
      *  프래그먼트 간의 이동
      */
+
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private fun replaceFragmentByImageButton(){
         with(binding){
             ibHistory.setOnClickListener {
-                // TODO : historyFragment 이동
-                // replaceFragment(HistoryFragment())
+                navController.navigate(R.id.action_frag_home_to_frag_record)
             }
             ibMyPage.setOnClickListener {
-                // TODO : myPageFragment 이동
+                navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
             ibWheather.setOnClickListener {
                 // TODO : wheatherFragment 이동
             }
             ibCamera.setOnClickListener {
+//                navController.navigate(R.id.action_frag_home_to_frag_camera)
                 replaceFragment(CameraFragment())
             }
         }

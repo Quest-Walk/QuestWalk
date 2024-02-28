@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_record">
+    app:startDestination="@id/frag_home">
 
     <fragment
         android:id="@+id/frag_my_info"
@@ -15,6 +15,28 @@
         android:id="@+id/frag_record"
         android:name="com.hapataka.questwalk.record.RecordFragment"
         android:label="frag_record"
-        tools:layout="@layout/fragment_record"/>
+        tools:layout="@layout/fragment_record" />
+
+    <fragment
+        android:id="@+id/frag_home"
+        android:name="com.hapataka.questwalk.homefragment.HomeFragment"
+        android:label="frag_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_frag_home_to_frag_my_info"
+            app:destination="@id/frag_my_info" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_record"
+            app:destination="@id/frag_record" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_camera"
+            app:destination="@id/frag_camera" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_camera"
+        android:name="com.hapataka.questwalk.camerafragment.CameraFragment"
+        android:label="frag_camera"
+        tools:layout="@layout/fragment_camera" />
 
 </navigation>
