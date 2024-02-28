@@ -4,13 +4,17 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.params.StreamConfigurationMap
 import android.media.ImageReader
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +31,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.annotation.Size
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
@@ -63,7 +68,11 @@ class CameraFragment : Fragment() {
 
     private lateinit var captureRequestBuilder: CaptureRequest.Builder
     private lateinit var cameraCaptureSession: CameraCaptureSession
+
+
     private lateinit var imageReader: ImageReader
+    private var rotation: Float = 0F
+    private lateinit var maxSize : android.util.Size
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,7 +85,7 @@ class CameraFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cameraViewModel.bitmap.observe(viewLifecycleOwner){
+        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
 
             val capturedImageDialog = CapturedImageDialog()
             capturedImageDialog.show(childFragmentManager, "capturedImage")
@@ -139,7 +148,17 @@ class CameraFragment : Fragment() {
         cameraManager = requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraId = cameraManager.cameraIdList[0]
 
-        imageReader = ImageReader.newInstance(960, 1280, ImageFormat.JPEG, 1)
+        //camera getData
+        getCharacterCamera()
+        val matrix = Matrix()
+        matrix.postRotate(rotation)
+
+        imageReader = ImageReader.newInstance(
+            maxSize.width,
+            maxSize.height,
+            ImageFormat.JPEG,
+            1
+        )
         imageReader.setOnImageAvailableListener({ reader ->
             val image = reader.acquireNextImage()
 
@@ -149,7 +168,8 @@ class CameraFragment : Fragment() {
             buffer.get(bytes)
 
             //decodeByteArray Bitmap
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
             cameraViewModel.setBitmap(bitmap)
 
             image?.close()
@@ -157,6 +177,19 @@ class CameraFragment : Fragment() {
                 .show()
         }, handler)
 
+    }
+
+    private fun getCharacterCamera() {
+        //rotation ,sizes -> ViewModel 에 전달하고 처리하자
+        val map: StreamConfigurationMap?
+        cameraManager.apply {
+            rotation =
+                getCameraCharacteristics(cameraId).get(CameraCharacteristics.SENSOR_ORIENTATION)!!
+                    .toFloat()
+            map =
+                getCameraCharacteristics(cameraId).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        }
+        maxSize = map?.getOutputSizes(ImageFormat.JPEG)!!.last()
     }
 
     @SuppressLint("MissingPermission", "NewApi")
