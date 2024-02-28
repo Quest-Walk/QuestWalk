@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
@@ -27,13 +28,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 
 class CameraFragment : Fragment() {
 
 
-    private lateinit var viewModel: CameraViewModel
+    private val cameraViewModel: CameraViewModel by activityViewModels()
     private lateinit var binding: FragmentCameraBinding
 
     // permission 등록 콜백 함수
@@ -74,8 +76,12 @@ class CameraFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[CameraViewModel::class.java]
-        // TODO: Use the ViewModel
+        cameraViewModel.bitmap.observe(viewLifecycleOwner){
+
+            val capturedImageDialog = CapturedImageDialog()
+            capturedImageDialog.show(childFragmentManager, "capturedImage")
+        }
+
         checkPermissions()
         binding.ibCapture.setOnClickListener {
             captureRequestBuilder =
@@ -135,10 +141,17 @@ class CameraFragment : Fragment() {
 
         imageReader = ImageReader.newInstance(960, 1280, ImageFormat.JPEG, 1)
         imageReader.setOnImageAvailableListener({ reader ->
-            var image = reader?.acquireNextImage()
+            val image = reader.acquireNextImage()
 
-            val capturedImageDialog = CapturedImageDialog()
-            capturedImageDialog.show(childFragmentManager,"capturedImage")
+            //image to byteArray()
+            val buffer = image.planes[0].buffer
+            val bytes = ByteArray(buffer.remaining())
+            buffer.get(bytes)
+
+            //decodeByteArray Bitmap
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            cameraViewModel.setBitmap(bitmap)
+
             image?.close()
             Toast.makeText(requireContext(), "image captured", Toast.LENGTH_SHORT)
                 .show()
