@@ -1,34 +1,30 @@
 package com.hapataka.questwalk.data.firebase.repository
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.History
 import com.hapataka.questwalk.domain.repository.UserRepository
 
 class UserRepositoryImpl: UserRepository {
-    override fun signUp(email: String, password: String) {
+    private val remoteDb by lazy { FirebaseFirestore.getInstance() }
+    private val userCollection by lazy { remoteDb.collection("user") }
+    override fun setUserInfo(userId: String, result: History) {
         TODO("Not yet implemented")
     }
 
-    override fun signIn(email: String, password: String) {
+    override fun getUserInfo(userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun updateUserHistory(userId: String, history: History) {
+    override fun getAchieveHistory(userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun loadAllHistory() {
+    override fun getResultHistory(userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun loadUserAllAchievements() {
+    override fun getUserHistory(userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun loadUserAchievement(achievementId: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun loadUserResult(keyword: String) {
-        TODO("Not yet implemented")
-    }
 }
