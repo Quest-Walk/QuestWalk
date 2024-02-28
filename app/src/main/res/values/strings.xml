@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Quest Walk</string>
+    <string name="adventure_time_label">모험한 시간</string>
+    <string name="adventure_distance_label">모험한 거리</string>
+    <string name="total_steps_label">총 걸음수</string>
+    <string name="congrats">잘했어요!</string>
+    <string name="back_to_menu">메인으로</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="homefragment_quest_distance_default">0.0km</string>
