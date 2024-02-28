@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.domain.entity
 
-data class AchievementStatsEntity (
+data class AchieveStackEntity (
     val achievementId: Int,
-    val count: Int
+    var count: Int
 )
