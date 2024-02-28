@@ -71,8 +71,7 @@ class CameraFragment : Fragment() {
 
 
     private lateinit var imageReader: ImageReader
-    private var rotation: Float = 0F
-    private lateinit var maxSize : android.util.Size
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +85,6 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-
             val capturedImageDialog = CapturedImageDialog()
             capturedImageDialog.show(childFragmentManager, "capturedImage")
         }
@@ -150,9 +148,7 @@ class CameraFragment : Fragment() {
 
         //camera getData
         getCharacterCamera()
-        val matrix = Matrix()
-        matrix.postRotate(rotation)
-
+        val maxSize = cameraViewModel.getCameraMaxSize()
         imageReader = ImageReader.newInstance(
             maxSize.width,
             maxSize.height,
@@ -168,8 +164,7 @@ class CameraFragment : Fragment() {
             buffer.get(bytes)
 
             //decodeByteArray Bitmap
-            var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             cameraViewModel.setBitmap(bitmap)
 
             image?.close()
@@ -182,6 +177,7 @@ class CameraFragment : Fragment() {
     private fun getCharacterCamera() {
         //rotation ,sizes -> ViewModel 에 전달하고 처리하자
         val map: StreamConfigurationMap?
+        val rotation: Float
         cameraManager.apply {
             rotation =
                 getCameraCharacteristics(cameraId).get(CameraCharacteristics.SENSOR_ORIENTATION)!!
@@ -189,7 +185,8 @@ class CameraFragment : Fragment() {
             map =
                 getCameraCharacteristics(cameraId).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         }
-        maxSize = map?.getOutputSizes(ImageFormat.JPEG)!!.last()
+
+        cameraViewModel.setCameraCharacteristics(rotation, map?.getOutputSizes(ImageFormat.JPEG)!!)
     }
 
     @SuppressLint("MissingPermission", "NewApi")
