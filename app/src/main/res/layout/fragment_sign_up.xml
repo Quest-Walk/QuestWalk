@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SIGNUP.SignUpFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:text="아이디"/>
+
+        <TextView
+            android:id="@+id/tv_explain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_id"
+            app:layout_constraintStart_toStartOf="@+id/tv_id"
+            android:text="아이디는 이메일 형식으로 입력해 주세요"
+            android:textSize="16sp"
+            android:textColor="#c8c8c8"/>
+
+
+
+        <EditText
+            android:id="@+id/et_signUpId"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_explain"
+            app:layout_constraintStart_toStartOf="@id/tv_id"
+            android:layout_marginTop="40dp"
+            android:hint="아이디(이메일)"
+            android:inputType="textEmailAddress"
+            android:visibility="visible"
+
+
+            android:paddingHorizontal="10dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_goToPassWord"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/et_signUpId"
+            app:layout_constraintStart_toStartOf="@id/et_signUpId"
+            android:layout_marginTop="15dp"
+            android:text="다음으로"
+            android:visibility="visible"/>
+
+
+
+
+        <EditText
+            android:id="@+id/et_signUpPassWord"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_explain"
+            app:layout_constraintStart_toStartOf="@id/tv_id"
+            android:layout_marginTop="40dp"
+            android:hint="비밀번호"
+            android:inputType="textPassword"
+            android:visibility="gone"
+
+            android:paddingHorizontal="10dp"/>
+
+        <ImageView
+            android:id="@+id/iv_showPassWord"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_visibility"
+            app:layout_constraintStart_toEndOf="@id/et_signUpPassWord"
+            app:layout_constraintTop_toTopOf="@id/et_signUpPassWord"
+            android:visibility="gone"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/et_signUpPassWord"/>
+
+
+
+        <EditText
+            android:id="@+id/et_signUpPassWordCheck"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/et_signUpPassWord"
+            app:layout_constraintStart_toStartOf="@id/et_signUpPassWord"
+            android:layout_marginTop="20dp"
+            android:hint="비밀번호 확인"
+            android:inputType="textPassword"
+            android:visibility="gone"
+
+
+            android:paddingHorizontal="10dp"/>
+
+        <ImageView
+            android:id="@+id/iv_showPassWordCheck"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_visibility"
+            app:layout_constraintStart_toEndOf="@id/et_signUpPassWordCheck"
+            app:layout_constraintTop_toTopOf="@id/et_signUpPassWordCheck"
+            android:visibility="gone"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/et_signUpPassWordCheck"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_goToJoin"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/et_signUpPassWordCheck"
+            app:layout_constraintStart_toStartOf="@id/et_signUpPassWordCheck"
+            android:layout_marginTop="15dp"
+            android:text="가입하기"
+            android:visibility="gone"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</FrameLayout>
