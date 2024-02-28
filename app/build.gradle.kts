@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
   //  id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -84,4 +85,8 @@ dependencies {
 
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    //spinner
+    implementation("com.github.skydoves:powerspinner:1.2.6")
+    //coil
+    implementation("io.coil-kt:coil:2.6.0")
 }
