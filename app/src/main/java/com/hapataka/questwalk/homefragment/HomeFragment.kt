@@ -68,8 +68,7 @@ class HomeFragment : Fragment() {
                 // TODO : wheatherFragment 이동
             }
             ibCamera.setOnClickListener {
-//                navController.navigate(R.id.action_frag_home_to_frag_camera)
-                replaceFragment(CameraFragment())
+                navController.navigate(R.id.action_frag_home_to_frag_camera)
             }
         }
     }
