@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_home">
+    app:startDestination="@id/frag_login">
 
     <fragment
         android:id="@+id/frag_my_info"
-        android:name="com.hapataka.questwalk.MyInfoFragment"
+        android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
         tools:layout="@layout/fragment_my_info" />
 
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/frag_home"
-        android:name="com.hapataka.questwalk.homefragment.HomeFragment"
+        android:name="com.hapataka.questwalk.ui.home.HomeFragment"
         android:label="frag_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -53,6 +53,9 @@
         <action
             android:id="@+id/action_frag_login_to_frag_on_boarding"
             app:destination="@id/frag_on_boarding" />
+        <action
+            android:id="@+id/action_frag_login_to_frag_home"
+            app:destination="@id/frag_home" />
     </fragment>
 
     <fragment

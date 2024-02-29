@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.homefragment
+package com.hapataka.questwalk.ui.home
 
 import android.content.res.ColorStateList
 import androidx.lifecycle.ViewModelProvider
