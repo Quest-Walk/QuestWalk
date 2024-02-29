@@ -1,87 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp">
+    android:background="@color/white"
+    android:paddingTop="8dp">
 
     <TextView
-        android:id="@+id/tv_quest_title"
+        android:id="@+id/tv_keyword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/iv_thumbnail_1"
+        android:text="한의원"
+        style="@style/head"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="eakei" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/lv"
+        android:id="@+id/tv_solve_percent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="Lv:"
-        app:layout_constraintBottom_toBottomOf="@id/tv_quest_title"
-        app:layout_constraintStart_toEndOf="@id/tv_quest_title"
-        app:layout_constraintTop_toTopOf="@id/tv_quest_title" />
-
-    <TextView
-        android:id="@+id/tv_quest_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@id/lv"
-        app:layout_constraintStart_toEndOf="@id/lv"
-        app:layout_constraintTop_toTopOf="@id/lv"
-        tools:text="2" />
+        android:text="해결 인원 58%"
+        style="@style/small"
+        app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
-        android:id="@+id/iv_thumbnail_1"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:id="@+id/iv_image_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="4dp"
+        android:background="@drawable/bg_quest_image"
+        android:clipToOutline="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/no_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/iv_thumbnail_2"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="@id/tv_quest_title"
-        app:layout_constraintTop_toBottomOf="@id/tv_quest_title" />
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword"
+        app:layout_constraintWidth_percent="0.23" />
 
     <ImageView
-        android:id="@+id/iv_thumbnail_2"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="8dp"
+        android:id="@+id/iv_image_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_quest_image"
+        android:clipToOutline="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/no_image"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail_1"
-        app:layout_constraintEnd_toStartOf="@id/iv_thumbnail_3"
-        app:layout_constraintStart_toEndOf="@id/iv_thumbnail_1"
-        app:layout_constraintTop_toTopOf="@id/iv_thumbnail_1" />
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/iv_image_3"
+        app:layout_constraintStart_toEndOf="@id/iv_image_1"
+        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+        app:layout_constraintWidth_percent="0.23" />
 
     <ImageView
-        android:id="@+id/iv_thumbnail_3"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="8dp"
+        android:id="@+id/iv_image_3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_quest_image"
+        android:clipToOutline="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/no_image"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail_1"
-        app:layout_constraintEnd_toStartOf="@id/iv_thumbnail_4"
-        app:layout_constraintStart_toEndOf="@id/iv_thumbnail_2"
-        app:layout_constraintTop_toTopOf="@id/iv_thumbnail_1" />
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/iv_image_4"
+        app:layout_constraintStart_toEndOf="@id/iv_image_2"
+        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+        app:layout_constraintWidth_percent="0.23" />
 
     <ImageView
-        android:id="@+id/iv_thumbnail_4"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="8dp"
+        android:id="@+id/iv_image_4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_quest_image"
+        android:clipToOutline="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/no_image"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail_1"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_thumbnail_3"
-        app:layout_constraintTop_toTopOf="@id/iv_thumbnail_1" />
+        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+        app:layout_constraintWidth_percent="0.23" />
+
+    <TextView
+        android:id="@+id/tv_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="모두보기"
+        style="@style/body_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_image_4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

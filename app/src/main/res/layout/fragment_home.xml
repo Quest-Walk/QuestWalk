@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".homefragment.HomeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_fragment_list"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/ib_wheather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_weather"
+                app:layout_constraintBottom_toBottomOf="@+id/ib_my_page"
+                app:layout_constraintEnd_toStartOf="@+id/ib_my_page"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ib_my_page" />
+
+            <TextView
+                android:id="@+id/tv_weather"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="날씨확인"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_wheather"
+                app:layout_constraintStart_toStartOf="@+id/ib_wheather"
+                app:layout_constraintTop_toBottomOf="@+id/ib_wheather" />
+
+            <ImageButton
+                android:id="@+id/ib_my_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_my_page"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ib_history"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ib_wheather"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_my_page"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="마이페이지"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_my_page"
+                app:layout_constraintStart_toStartOf="@+id/ib_my_page"
+                app:layout_constraintTop_toBottomOf="@+id/ib_my_page" />
+
+            <ImageButton
+                android:id="@+id/ib_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_icon"
+                android:src="@drawable/ico_history"
+                app:layout_constraintBottom_toBottomOf="@+id/ib_my_page"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ib_my_page"
+                app:layout_constraintTop_toTopOf="@+id/ib_my_page" />
+
+            <TextView
+                android:id="@+id/tv_history"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="기록보기"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ib_history"
+                app:layout_constraintStart_toStartOf="@+id/ib_history"
+                app:layout_constraintTop_toBottomOf="@+id/ib_history" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_playing_upper_widgets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:padding="10dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_fragment_list">
+
+            <TextView
+                android:id="@+id/tv_quest_title_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/homefragment_quest_title_default"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/tv_quest_title_play"
+                app:layout_constraintStart_toStartOf="@+id/tv_quest_title_play"
+                app:layout_constraintTop_toBottomOf="@+id/tv_quest_title_play">
+
+                <TextView
+                    android:id="@+id/tv_quest_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:text="@string/homefragment_quest_distance_default"
+                    android:textColor="@color/gray" />
+
+                <TextView
+                    android:id="@+id/tv_quest_playing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:text="@string/homefragment_quest_playing"
+                    android:textColor="@color/gray" />
+
+                <Chronometer
+                    android:id="@+id/cm_quest_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:text="@string/homefragment_quest_time_default"
+                    android:textColor="@color/gray" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/iv_chr_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/img_dummy_charcter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_playing_upper_widgets" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_waiting_bottom_widgets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_chr_image">
+
+            <TextView
+                android:id="@+id/tv_quest_title_wait"
+                style="@style/head"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/homefragment_quest_title_default"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_quest_change"
+                style="@style/body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/homefragment_quest_change"
+                app:layout_constraintEnd_toEndOf="@+id/tv_quest_title_wait"
+                app:layout_constraintStart_toStartOf="@+id/tv_quest_title_wait"
+                app:layout_constraintTop_toBottomOf="@+id/tv_quest_title_wait" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_playing_bottom_widgets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_waiting_bottom_widgets">
+
+            <ImageButton
+                android:id="@+id/ib_camera"
+                android:layout_width="124dp"
+                android:layout_height="67dp"
+                android:background="@drawable/rounded_icon"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_camera"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btn_quest_status"
+            style="@style/body_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/green"
+            android:text="모험 시작하기"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_playing_bottom_widgets" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
