@@ -4,15 +4,361 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
+
+    <EditText
+        android:id="@+id/et_id"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:hint="아이디"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/et_pw"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="비밀번호"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="@id/et_id"
+        app:layout_constraintTop_toBottomOf="@id/et_id" />
 
     <TextView
+        android:id="@+id/btn_sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginStart="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="회원가입"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/btn_login"
+        app:layout_constraintStart_toEndOf="@id/et_id"
+        app:layout_constraintTop_toTopOf="@id/et_id" />
+
+    <TextView
+        android:id="@+id/btn_login"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="로그인"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/et_pw"
+        app:layout_constraintEnd_toEndOf="@id/btn_sign_up"
+        app:layout_constraintStart_toStartOf="@id/btn_sign_up"
+        app:layout_constraintTop_toBottomOf="@id/btn_sign_up" />
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/et_id"
+        app:layout_constraintTop_toBottomOf="@id/et_pw"
+        tools:text="여기에 로그인여부 표시" />
+
+    <TextView
+        android:id="@+id/tv_uid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="#B4B4B4"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="@id/tv_result"
+        app:layout_constraintTop_toBottomOf="@id/tv_result"
+        tools:text="밤을 또 새고 이러고있음" />
+
+    <ImageView
+        android:id="@+id/iv_pic"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/btn_sign_up"
+        app:layout_constraintStart_toStartOf="@id/et_pw"
+        app:layout_constraintTop_toBottomOf="@id/tv_uid" />
+
+    <TextView
+        android:id="@+id/btn_change_pic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="사진 바꿔"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/btn_upload_pic"
+        app:layout_constraintStart_toStartOf="@id/iv_pic"
+        app:layout_constraintTop_toBottomOf="@id/iv_pic" />
+
+
+    <TextView
+        android:id="@+id/btn_upload_pic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="사진 올려"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/iv_pic"
+        app:layout_constraintStart_toEndOf="@id/btn_change_pic"
+        app:layout_constraintTop_toBottomOf="@id/iv_pic" />
+
+    <TextView
+        android:id="@+id/tv_image_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#B4B4B4"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@id/btn_upload_pic"
+        app:layout_constraintStart_toStartOf="@id/btn_change_pic"
+        app:layout_constraintTop_toBottomOf="@id/btn_upload_pic"
+        tools:text="잠은 2일에 한번만 - 김정현" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_achieve"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_login"
+        app:layout_constraintTop_toTopOf="@id/et_id" />
+
+    <TextView
+        android:id="@+id/tv_current_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_check_achieve"
+        app:layout_constraintEnd_toStartOf="@id/btn_check_achieve"
+        app:layout_constraintStart_toStartOf="@id/rv_achieve"
+        app:layout_constraintTop_toTopOf="@id/btn_check_achieve" />
+
+    <TextView
+        android:id="@+id/btn_check_achieve"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="업적스택 체크"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/rv_achieve"
+        app:layout_constraintStart_toEndOf="@id/tv_current_id"
+        app:layout_constraintTop_toBottomOf="@id/rv_achieve"
+        app:layout_goneMarginStart="8dp" />
+
+
+    <TextView
+        android:id="@+id/tv_achieve_result"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="@id/rv_achieve"
+        app:layout_constraintStart_toStartOf="@id/rv_achieve"
+        app:layout_constraintTop_toBottomOf="@id/btn_check_achieve" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_quest"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@id/tv_image_url"
+        app:layout_constraintTop_toBottomOf="@id/tv_image_url"
+        tools:listitem="@layout/item_quest" />
+
+    <TextView
+        android:id="@+id/btn_check_quest"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="퀘스트 체크"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/rv_quest"
+        app:layout_constraintStart_toStartOf="@id/rv_quest"
+        app:layout_constraintTop_toBottomOf="@id/rv_quest"
+        app:layout_goneMarginStart="8dp" />
+
+    <TextView
+        android:id="@+id/tv_quest_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/btn_check_quest"
+        app:layout_constraintTop_toBottomOf="@id/btn_check_quest"
+        tools:text="가나다라마바사" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/rv_quest"
+        app:layout_constraintEnd_toEndOf="@id/btn_check_achieve"
+        app:layout_constraintStart_toStartOf="@id/btn_check_achieve"
+        app:layout_constraintTop_toTopOf="@id/rv_quest">
+
+        <TextView
+            android:id="@+id/tv_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="10sp" />
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/btn_check_user_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="유저정보 체크"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/scroll_view"
+        app:layout_constraintStart_toStartOf="@id/scroll_view"
+        app:layout_constraintTop_toBottomOf="@id/scroll_view"
+        app:layout_goneMarginStart="8dp" />
+
+    <TextView
+        android:id="@+id/tv_user_info_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/btn_check_user_info"
+        app:layout_constraintTop_toBottomOf="@id/btn_check_user_info"
+        tools:text="rkskekfk" />
+
+    <TextView
+        android:id="@+id/btn_check_history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="히스토리"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/btn_set_user"
+        app:layout_constraintEnd_toStartOf="@id/btn_check_result"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_user_info_result"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/btn_check_result"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="리절트"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_check_history"
+        app:layout_constraintEnd_toStartOf="@id/btn_check_history_achieve"
+        app:layout_constraintStart_toEndOf="@id/btn_check_history"
+        app:layout_constraintTop_toTopOf="@id/btn_check_history" />
+
+    <TextView
+        android:id="@+id/btn_check_history_achieve"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="32dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="어치브"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_check_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_check_result"
+        app:layout_constraintTop_toTopOf="@id/btn_check_history"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+
+    <TextView
+        android:id="@+id/btn_set_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/button"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="유저정보 저장"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/btn_logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_check_history" />
+
+    <TextView
+        android:id="@+id/btn_logout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/red"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="로그아웃"
+        android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btn_set_user"
+        app:layout_goneMarginTop="12dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

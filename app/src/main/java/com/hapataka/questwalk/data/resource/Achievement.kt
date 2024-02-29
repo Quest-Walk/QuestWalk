@@ -1,4 +1,4 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.data.resource
 
 data class Achievement (
     val achieveId: Int,

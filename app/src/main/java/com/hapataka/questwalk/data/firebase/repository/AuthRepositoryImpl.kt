@@ -28,6 +28,10 @@ class AuthRepositoryImpl : AuthRepository {
             .addOnCompleteListener { task -> callback(task) }
     }
 
+    override suspend fun logout() {
+        auth.signOut()
+    }
+
     override suspend fun deleteCurrentUser(
         currentUser: FirebaseUser,
         callback: (Task<Void>) -> Unit
@@ -36,6 +40,5 @@ class AuthRepositoryImpl : AuthRepository {
             .addOnCompleteListener { task -> callback(task) }
     }
 
-    override suspend fun getCurrentUserUid() {
-    }
+    override suspend fun getCurrentUserUid(): String = auth.currentUser?.uid ?: ""
 }

@@ -1,9 +1,12 @@
 package com.hapataka.questwalk.data.firebase.repository
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity.*
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.ui.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -26,18 +29,8 @@ class QuestStackRepositoryImpl : QuestStackRepository {
         withContext(Dispatchers.IO) {
             val document = questCollection.document(keyword)
             val keywordDocument = document.get().await()
-            var level = 1
-            val successItems = mutableListOf<SuccessItem>()
 
-            if (keywordDocument.exists()) {
-                val currentItems = keywordDocument.data?.get("successItems") as Map<String, String>
-
-                currentItems.forEach {
-                    successItems += SuccessItem(it.key, it.value)
-                }
-                level = keywordDocument.data?.get("level").toString().toInt()
-            }
-            return@withContext QuestStackEntity(keyword, level, successItems)
+            return@withContext keywordDocument.toObject(QuestStackEntity::class.java)!!
         }
 
     override suspend fun getAllItems(): List<QuestStackEntity> =
@@ -46,15 +39,7 @@ class QuestStackRepositoryImpl : QuestStackRepository {
             val allItems = questCollection.get().await().documents
 
             allItems.forEach { document ->
-                val successItems = mutableListOf<SuccessItem>()
-                val keyword = document["keyWord"].toString()
-                val level = document["level"].toString().toInt()
-                val currentItems = document["successItems"] as Map<String, String>
-
-                currentItems.forEach {
-                    successItems += SuccessItem(it.key, it.value)
-                }
-                results += QuestStackEntity(keyword, level, successItems)
+                results += document.toObject(QuestStackEntity::class.java)!!
             }
             return@withContext results
         }

@@ -9,5 +9,6 @@ interface AuthRepository {
     suspend fun loginByEmailAndPw(email: String, pw: String, callback: (Task<AuthResult>) -> Unit)
     suspend fun deleteCurrentUser(currentUser: FirebaseUser, callback: (Task<Void>) -> Unit)
 
-    suspend fun getCurrentUserUid()
+    suspend fun logout()
+    suspend fun getCurrentUserUid(): String
 }

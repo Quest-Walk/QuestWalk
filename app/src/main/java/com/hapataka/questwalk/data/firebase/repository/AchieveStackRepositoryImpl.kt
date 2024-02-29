@@ -1,8 +1,11 @@
 package com.hapataka.questwalk.data.firebase.repository
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.hapataka.questwalk.domain.entity.AchieveStackEntity
 import com.hapataka.questwalk.domain.repository.AchieveStackRepository
+import com.hapataka.questwalk.ui.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -23,11 +26,7 @@ class AchieveStackRepositoryImpl : AchieveStackRepository {
         withContext(Dispatchers.IO) {
             val document = achieveCollection.document("$id")
             val achieveDocument = document.get().await()
-            var count = 0
 
-            if (achieveDocument.exists()) {
-                count = achieveDocument.data?.get("count").toString().toInt()
-            }
-            return@withContext AchieveStackEntity(id, count)
+            return@withContext achieveDocument.toObject(AchieveStackEntity::class.java)!!
         }
 }
