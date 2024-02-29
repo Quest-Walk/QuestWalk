@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_home">
+    app:startDestination="@id/frag_login">
 
     <fragment
         android:id="@+id/frag_my_info"
@@ -41,7 +41,7 @@
 
     <fragment
         android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.LogInFragment"
+        android:name="com.hapataka.questwalk.login.LogInFragment"
         android:label="frag_login"
         tools:layout="@layout/fragment_log_in">
         <action

@@ -1,4 +1,4 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -18,7 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
-import com.hapataka.questwalk.signup.SignUpFragment
+import com.hapataka.questwalk.OnBoardingFragment
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 
 
@@ -45,7 +46,7 @@ class LogInFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
 
-  //      initGoogleSignInClient()
+   //     initGoogleSignInClient()
         logIn()
         goToSignUp()
    //     logInWithGoogle()
@@ -172,25 +173,25 @@ class LogInFragment : Fragment() {
 //            }
 //        }
 //    }
-
-    private fun firebaseAuthWithKakao(accessToken: String) {
-        val credential = OAuthProvider.newCredentialBuilder("oidc.kakao")
-            .setAccessToken(accessToken)
-            .build()
-
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // 로그인 성공
-                    val user = task.result?.user
-                    Snackbar.make(requireView(), "Firebase 로그인 성공: ${user?.uid}", Snackbar.LENGTH_SHORT).show()
-                } else {
-                    // 로그인 실패
-                    Snackbar.make(requireView(), "Firebase 로그인 실패???  ", Snackbar.LENGTH_SHORT).show()
-                    Log.e("로그디","Authentication failed",task.exception)
-                }
-            }
-    }
+//
+//    private fun firebaseAuthWithKakao(accessToken: String) {
+//        val credential = OAuthProvider.newCredentialBuilder("oidc.kakao")
+//            .setAccessToken(accessToken)
+//            .build()
+//
+//        FirebaseAuth.getInstance().signInWithCredential(credential)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    // 로그인 성공
+//                    val user = task.result?.user
+//                    Snackbar.make(requireView(), "Firebase 로그인 성공: ${user?.uid}", Snackbar.LENGTH_SHORT).show()
+//                } else {
+//                    // 로그인 실패
+//                    Snackbar.make(requireView(), "Firebase 로그인 실패???  ", Snackbar.LENGTH_SHORT).show()
+//                    Log.e("로그디","Authentication failed",task.exception)
+//                }
+//            }
+//    }
 
 
 

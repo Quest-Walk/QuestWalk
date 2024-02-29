@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".LogInFragment">
+    android:background="@color/white"
+    tools:context=".login.LogInFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -46,6 +47,17 @@
         style="@style/body_default"
         android:layout_marginTop="30dp"/>
 
+        <TextView
+            android:id="@+id/tv_findPassWord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/et_logInPassWord"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="3dp"
+            android:text="비밀번호찾기"/>
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,7 +75,7 @@
         app:layout_constraintStart_toStartOf="@id/btn_logIn"
         app:layout_constraintTop_toBottomOf="@id/btn_logIn"
         app:cardCornerRadius="90dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="50dp">
 
         <ImageView
             android:id="@+id/iv_google"

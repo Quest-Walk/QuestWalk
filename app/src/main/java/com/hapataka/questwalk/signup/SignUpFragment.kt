@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import com.hapataka.questwalk.OnBoardingFragment
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
+import com.hapataka.questwalk.login.LogInFragment
 
 
 class SignUpFragment : Fragment() {
@@ -26,6 +27,7 @@ class SignUpFragment : Fragment() {
 
     private val binding get() = _binding!!
     private val viewModel : SignUpViewModel by viewModels ()
+    private var isUiPassWord = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +47,7 @@ class SignUpFragment : Fragment() {
 
     private fun init(){
         goNext()
+        goBack()
         showPasswordVisibility(binding.ivShowPassWord, binding.etSignUpPassWord)
         showPasswordVisibility(binding.ivShowPassWordCheck, binding.etSignUpPassWordCheck)
     }
@@ -59,6 +62,8 @@ class SignUpFragment : Fragment() {
             }
         }
 
+
+
         binding.btnGoToJoin.setOnClickListener {
             val email = binding.etSignUpId.text.toString()
             val password = binding.etSignUpPassWord.text.toString()
@@ -67,6 +72,16 @@ class SignUpFragment : Fragment() {
                 viewModel.registerUser(email, password)
             } else {
                 Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun goBack() {
+        binding.btnBack.setOnClickListener {
+            if (isUiPassWord) {
+                changeIdUi()
+            } else {
+                switchFragment(requireFragmentManager(), LogInFragment(),false)
             }
         }
     }
@@ -108,6 +123,7 @@ class SignUpFragment : Fragment() {
             btnGoToJoin.isVisible = true
             binding.ivShowPassWord.isVisible = true
             binding.ivShowPassWordCheck.isVisible = true
+            isUiPassWord = true
         }
     }
 
@@ -144,6 +160,7 @@ class SignUpFragment : Fragment() {
             btnGoToJoin.isVisible = false
             binding.ivShowPassWord.isVisible = false
             binding.ivShowPassWordCheck.isVisible = false
+            isUiPassWord = false
         }
 
     }
