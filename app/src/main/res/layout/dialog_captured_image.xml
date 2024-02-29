@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_captured_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -19,8 +19,17 @@
         android:id="@+id/tv_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        tools:layout_editor_absoluteY="181dp" />
+        android:text="Captured Image"
+        app:layout_constraintEnd_toEndOf="@+id/iv_captured_image"
+        app:layout_constraintStart_toStartOf="@+id/iv_captured_image"
+        app:layout_constraintTop_toBottomOf="@+id/iv_captured_image" />
+
+    <Button
+        android:id="@+id/btn_post_ocr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ocr 서버 보내기"
+        app:layout_constraintEnd_toEndOf="@+id/iv_captured_image"
+        app:layout_constraintStart_toStartOf="@+id/iv_captured_image"
+        app:layout_constraintTop_toBottomOf="@id/tv_status" />
 </androidx.constraintlayout.widget.ConstraintLayout>
