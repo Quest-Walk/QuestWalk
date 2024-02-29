@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".signup.SignUpFragment">
+    tools:context=".ui.signup.SignUpFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -46,8 +46,6 @@
             android:paddingHorizontal="10dp"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="@id/tv_id"
-
-
             app:layout_constraintTop_toBottomOf="@id/tv_explain" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -61,6 +59,17 @@
             app:layout_constraintStart_toStartOf="@id/et_signUpId"
             app:layout_constraintTop_toBottomOf="@id/et_signUpId" />
 
+        <TextView
+            android:id="@+id/tv_error_msg"
+            style="@style/small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/red"
+            app:layout_constraintEnd_toEndOf="@id/btn_goToPassWord"
+            app:layout_constraintStart_toStartOf="@id/btn_goToPassWord"
+            app:layout_constraintTop_toBottomOf="@id/btn_goToPassWord"
+            tools:text="rkskekfkakqkek" />
 
         <EditText
             android:id="@+id/et_signUpPassWord"
@@ -72,7 +81,6 @@
             android:paddingHorizontal="10dp"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/tv_id"
-
             app:layout_constraintTop_toBottomOf="@id/tv_explain" />
 
         <ImageView

@@ -9,7 +9,13 @@
         android:id="@+id/frag_my_info"
         android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
-        tools:layout="@layout/fragment_my_info" />
+        tools:layout="@layout/fragment_my_info" >
+        <action
+            android:id="@+id/action_frag_my_info_to_frag_login"
+            app:destination="@id/frag_login"
+            app:popUpTo="@id/frag_login"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_record"
@@ -60,9 +66,14 @@
 
     <fragment
         android:id="@+id/frag_sign_up"
-        android:name="com.hapataka.questwalk.signup.SignUpFragment"
+        android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
         android:label="frag_sign_up"
-        tools:layout="@layout/fragment_sign_up" />
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_home"
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_on_boarding"

@@ -1,122 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".LogInFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/et_logInId"
-        android:layout_width="240dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="140dp"
-        android:hint="아이디 (이메일)"
-        style="@style/body_default"
-        android:inputType="textEmailAddress"
-        android:paddingHorizontal="15dp"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <EditText
+            android:id="@+id/et_login_id"
+            style="@style/body_default"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="140dp"
+            android:hint="아이디 (이메일)"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/et_logInPassWord"
-        android:layout_width="240dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="@id/et_logInId"
-        app:layout_constraintTop_toBottomOf="@id/et_logInId"
-        style="@style/body_default"
-        android:inputType="textPassword"
-        android:layout_marginTop="20dp"
-        android:paddingHorizontal="15dp"
+        <EditText
+            android:id="@+id/et_login_password"
+            style="@style/body_default"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:hint="비밀번호"
+            android:inputType="textPassword"
+            android:paddingHorizontal="15dp"
+            app:layout_constraintStart_toStartOf="@id/et_login_id"
+            app:layout_constraintTop_toBottomOf="@id/et_login_id" />
 
-        android:hint="비밀번호"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_logIn"
+            style="@style/body_default"
+            android:layout_width="240dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="30dp"
+            android:text="로그인"
+            app:layout_constraintStart_toStartOf="@+id/et_login_password"
+            app:layout_constraintTop_toBottomOf="@id/et_login_password" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_logIn"
-        android:layout_width="240dp"
-        android:layout_height="45dp"
-        app:layout_constraintStart_toStartOf="@+id/et_logInPassWord"
-        app:layout_constraintTop_toBottomOf="@id/et_logInPassWord"
-        android:text="로그인"
-        style="@style/body_default"
-        android:layout_marginTop="30dp"/>
+        <TextView
+            style="@style/small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="또는"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_logIn" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="또는"
-        android:layout_marginTop="24dp"
-        style="@style/small"
-        app:layout_constraintTop_toBottomOf="@id/btn_logIn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <androidx.cardview.widget.CardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="90dp"
+            app:layout_constraintStart_toStartOf="@id/btn_logIn"
+            app:layout_constraintTop_toBottomOf="@id/btn_logIn">
 
+            <ImageView
+                android:id="@+id/iv_google"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/googolelogo" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        app:layout_constraintStart_toStartOf="@id/btn_logIn"
-        app:layout_constraintTop_toBottomOf="@id/btn_logIn"
-        app:cardCornerRadius="90dp"
-        android:layout_marginTop="20dp">
+        </androidx.cardview.widget.CardView>
 
-        <ImageView
-            android:id="@+id/iv_google"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/googolelogo"/>
+            android:layout_height="1dp"
+            android:background="#c8c8c8"
+            app:layout_constraintBottom_toTopOf="@id/btn_sign_up" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btn_sign_up"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-    </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/tv_join"
+                style="@style/small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="아직 회원이 아니신가요?"
+                android:textColor="#c8c8c8"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_goJoin"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_goJoin"
+                style="@style/small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="회원가입"
+                android:textColor="#c8c8c8"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_join" />
 
-
-
-
-
-
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4px"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="45dp"
-        android:background="#c8c8c8"/>
-
-    <TextView
-        android:id="@+id/tv_join"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="25dp"
-        android:textColor="#c8c8c8"
-        android:text="아직 회원이 아니신가요?"/>
-
-
-    <TextView
-        android:id="@+id/tv_goJoin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/tv_join"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="15dp"
-        android:layout_marginStart="15dp"
-        android:textStyle="bold"
-        android:textColor="#c8c8c8"
-        android:text="화원가입"/>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </FrameLayout>

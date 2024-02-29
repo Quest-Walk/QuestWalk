@@ -2,11 +2,9 @@ package com.hapataka.questwalk.data.firebase.repository
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity.*
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
-import com.hapataka.questwalk.ui.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext

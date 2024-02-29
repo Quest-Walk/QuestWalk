@@ -3,7 +3,6 @@ package com.hapataka.questwalk.data.firebase.repository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.hapataka.questwalk.domain.repository.AuthRepository
 
@@ -33,11 +32,10 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
     override suspend fun deleteCurrentUser(
-        currentUser: FirebaseUser,
         callback: (Task<Void>) -> Unit
     ) {
-        currentUser.delete()
-            .addOnCompleteListener { task -> callback(task) }
+        auth.currentUser?.delete()
+            ?.addOnCompleteListener { task -> callback(task) }
     }
 
     override suspend fun getCurrentUserUid(): String = auth.currentUser?.uid ?: ""
