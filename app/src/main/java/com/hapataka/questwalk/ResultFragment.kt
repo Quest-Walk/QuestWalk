@@ -2,22 +2,31 @@ package com.hapataka.questwalk
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationRequest.Builder.IMPLICIT_MIN_UPDATE_INTERVAL
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -33,9 +42,14 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.databinding.FragmentResultBinding
+import java.util.Timer
+import java.util.TimerTask
 
 
-class ResultFragment : Fragment(), OnMapReadyCallback {
+class ResultFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
+    private var totalSteps: Float = 0.0f
+    private var tCount: Long = 0
+    private lateinit var advTimer: Timer
     private var _binding : FragmentResultBinding? = null
     private val binding get() = _binding!!
 
@@ -44,6 +58,12 @@ class ResultFragment : Fragment(), OnMapReadyCallback {
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var locationCallback: LocationCallback
     private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
+
+    private val sensorManager by lazy {
+        this.context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    }
+    private val sensor: Sensor? by lazy {
+        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +90,14 @@ class ResultFragment : Fragment(), OnMapReadyCallback {
                 ACCESS_FINE_LOCATION
             )
         )
+
+        if (sensor == null) {
+            // This will give a toast message to the user if there is no sensor in the device
+            Toast.makeText(this.requireContext(), "No sensor detected on this device", Toast.LENGTH_SHORT).show()
+        } else {
+            // Rate suitable for the user interface
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
+        }
     }
 
     override fun onCreateView(
@@ -84,17 +112,41 @@ class ResultFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initView(savedInstanceState)
+        setTime()
+    }
+
+    private fun setTime() {
+        advTimer = Timer()
+        advTimer.schedule(object :TimerTask(){
+            override fun run() {
+                val mHandler = Handler(Looper.getMainLooper())
+                mHandler.postDelayed({
+                    // 반복실행할 구문
+                    Log.d("TAG","$tCount")
+                    binding.tvAdvTime.text="%d시간 %d분".format(tCount /60, tCount %60)
+                    tCount++
+                }, 0)
+            }
+        },0,60000)
+    }
+
+    private fun initView(savedInstanceState: Bundle?) {
+        setMap(savedInstanceState)
+        initText()
+    }
+
+    private fun initText() {
+        binding.tvAdvTime.text= getString(R.string.default_time)
+        binding.tvAdvDistance.text= getString(R.string.default_distance)
+        binding.tvTotalSteps.text= getString(R.string.default_total_steps)
+        binding.tvCalories.text= getString(R.string.default_calories)
+    }
+
+    private fun setMap(savedInstanceState: Bundle?) {
         mapView=binding.fragMap
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
-    }
-
-    private fun initView() {
-        setMap()
-    }
-
-    private fun setMap() {
-
     }
 
     override fun onResume() {
@@ -188,4 +240,14 @@ class ResultFragment : Fragment(), OnMapReadyCallback {
 //        p0.addMarker(makerOptions)
         p0.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        totalSteps = event!!.values[0]
+        binding.tvTotalSteps.text = "%d걸음".format(totalSteps.toInt())
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
+
+
 }
