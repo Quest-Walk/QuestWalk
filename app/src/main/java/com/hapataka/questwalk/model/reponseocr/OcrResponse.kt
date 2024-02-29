@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.model.reponseocr
 
-data class ResponseOcr(
+data class OcrResponse(
     val ErrorDetails: Any,
     val ErrorMessage: Any,
     val IsErroredOnProcessing: Boolean,

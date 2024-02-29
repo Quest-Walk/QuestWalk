@@ -10,6 +10,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.hapataka.questwalk.databinding.DialogCapturedImageBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CapturedImageDialog : DialogFragment() {
@@ -25,6 +28,15 @@ class CapturedImageDialog : DialogFragment() {
         binding = DialogCapturedImageBinding.inflate(inflater, container, false)
         initCapturedImage()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.btnPostOcr.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch{
+            cameraViewModel.postCapturedImage()
+            }
+        }
     }
 
     private fun initCapturedImage() {

@@ -2,19 +2,17 @@ package com.hapataka.questwalk.camerafragment
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.util.Log
 import android.util.Size
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hapataka.questwalk.model.reponseocr.ResponseOcr
+import com.hapataka.questwalk.model.reponseocr.OcrResponse
 import com.hapataka.questwalk.network.RetrofitInstance
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,23 +41,20 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun getCameraMaxSize() = sizeList.last()
 
-    private suspend fun postCapturedImage() {
+    suspend fun postCapturedImage() {
         //TODO : Bitmap -> 내부 저장소에 file 형식 으로 저장 해야함
-        val file = repository.saveBitmap(bitmap.value!!,"postImage.jpg")
+        val file = repository.saveBitmap(bitmap.value!!, "postImage.jpg")
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("image", file.name, requestFile)
-        RetrofitInstance.ocrSpaceApi.getImageOcrResponse(image = imagePart).enqueue(object :
-            Callback<ResponseOcr> {
-            override fun onResponse(call: Call<ResponseOcr>, response: Response<ResponseOcr>) {
-                //응답 받으면 처리
-                println()
-            }
+        val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-            override fun onFailure(call: Call<ResponseOcr>, t: Throwable) {
-                //응답 실패시
-                println()
-            }
-        })
+        val responseOcr = RetrofitInstance.ocrSpaceApi.getImageOcrResponse(file = imagePart)
+        if(responseOcr.isSuccessful){
+            Log.d("isSuccess",responseOcr.message())
+            val response : OcrResponse = responseOcr.body()!!
+            response.ParsedResults[0].TextOverlay.Lines
+        }
     }
+
+
 
 }

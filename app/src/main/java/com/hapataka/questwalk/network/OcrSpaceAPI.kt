@@ -1,10 +1,10 @@
 package com.hapataka.questwalk.network
 
-import com.hapataka.questwalk.model.reponseocr.ResponseOcr
+import com.hapataka.questwalk.model.reponseocr.OcrResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -19,7 +19,7 @@ interface OcrSpaceAPI {
     @Multipart
     @POST("image")
     suspend fun getImageOcrResponse(
-        @Part("file") image: MultipartBody.Part,
+        @Part file: MultipartBody.Part,
         @Part("apikey") apikey: RequestBody = OCR_SPACE_API_KEY.toRequestBody(),
         @Part("language") language: RequestBody = "kor".toRequestBody(),
         @Part("isOverlayRequired") isOverlayRequired: RequestBody = "true".toRequestBody(),
@@ -27,7 +27,7 @@ interface OcrSpaceAPI {
         @Part("detectOrientation") orientation: RequestBody = "true".toRequestBody(),
         @Part("scale") scale: RequestBody = "true".toRequestBody(),
         @Part("OCREngine") engine: RequestBody = "3".toRequestBody(),
-    ): Call<ResponseOcr>
+    ): Response<OcrResponse>
 
 
 }

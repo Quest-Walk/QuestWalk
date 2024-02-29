@@ -18,4 +18,9 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 
         return file
     }
+    fun deleteBitmap(){
+        // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
+    }
+
+
 }
