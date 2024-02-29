@@ -8,9 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.hapataka.questwalk.databinding.DialogCapturedImageBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CapturedImageDialog : DialogFragment() {
     private lateinit var binding: DialogCapturedImageBinding
     private val cameraViewModel: CameraViewModel by activityViewModels()
@@ -28,7 +29,7 @@ class CapturedImageDialog : DialogFragment() {
 
     private fun initCapturedImage() {
         bitmap = cameraViewModel.bitmap.value
-        binding.imageView.setImageBitmap(bitmap)
+        binding.ivCapturedImage.setImageBitmap(bitmap)
     }
 
 }

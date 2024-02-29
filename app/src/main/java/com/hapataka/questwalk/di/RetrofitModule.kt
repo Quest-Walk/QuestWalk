@@ -1,9 +1,11 @@
 package com.hapataka.questwalk.di
 
-import com.google.gson.Gson
+import android.content.Context
+import com.hapataka.questwalk.camerafragment.CameraRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,7 +31,7 @@ object RetrofitModule {
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient
+        okHttpClient: OkHttpClient,
     ): Retrofit {
         val BASE_URL = ""
         return Retrofit.Builder()
@@ -37,6 +39,11 @@ object RetrofitModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    fun provideCameraRepository(@ApplicationContext context: Context): CameraRepository {
+        return CameraRepository(context)
     }
 
 //    @Provides
