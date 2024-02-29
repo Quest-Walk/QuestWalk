@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_frag_home_to_frag_camera"
             app:destination="@id/frag_camera" />
+        <action
+            android:id="@+id/action_frag_home_to_weatherFragment"
+            app:destination="@id/frag_weather" />
     </fragment>
 
     <fragment
@@ -89,5 +92,11 @@
         android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail" />
+
+    <fragment
+        android:id="@+id/frag_weather"
+        android:name="com.hapataka.questwalk.ui.weather.WeatherFragment"
+        android:label="fragment_weather"
+        tools:layout="@layout/fragment_weather" />
 
 </navigation>

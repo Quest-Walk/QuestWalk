@@ -42,7 +42,7 @@ class QuestDetailFragment : Fragment() {
     }
 
     private fun initViews() {
-        binding.tvKeyword.text = item?.keyWord
+        binding.tvKeyword.text = item.keyWord
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
         }
@@ -55,7 +55,7 @@ class QuestDetailFragment : Fragment() {
         }
         binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
         binding.revQuestDetail.adapter = questDetailAdapter
-        val urlList = item?.successItems?.map { it.value }
-        questDetailAdapter.submitList(urlList?.toMutableList())
+        val urlList = item.successItems.map { it.value }
+        questDetailAdapter.submitList(urlList.toMutableList())
     }
 }
