@@ -43,9 +43,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
                 android:background="@drawable/bg_quest_image"
+                android:lineSpacingExtra="8dp"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="24dp"
-                android:lineSpacingExtra="8dp"
                 android:text="오늘 온도는 180도, 비가 내리는군\n미세먼지는 깨끗하군\n\n오늘은 집에 있는게 나을수도 있겠어!"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -91,8 +91,8 @@
                 style="@style/body_default"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="미세먼지"
                 android:layout_marginTop="8dp"
+                android:text="미세먼지"
                 android:textColor="#c8c8c8"
                 app:layout_constraintStart_toStartOf="@id/iv_arrow_back"
                 app:layout_constraintTop_toBottomOf="@id/tv_weather_detail"
@@ -149,10 +149,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather_time" />
+                app:layout_constraintTop_toBottomOf="@id/tv_weather_time"
+                tools:listitem="@layout/item_weather" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
