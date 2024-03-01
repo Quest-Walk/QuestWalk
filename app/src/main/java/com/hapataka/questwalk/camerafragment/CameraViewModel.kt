@@ -17,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
-    private var _bitmap: MutableLiveData<Bitmap> = MutableLiveData()
-    val bitmap: LiveData<Bitmap> get() = _bitmap
+    private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
+    val bitmap: LiveData<Bitmap?> get() = _bitmap
 
 
     // 카메라 Hardware 정보
@@ -32,6 +32,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val postBitmap =
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
         _bitmap.postValue(postBitmap)
+    }
+
+    fun initBitmap() {
+        _bitmap.value = null
     }
 
     fun setCameraCharacteristics(rotate: Float, sizes: Array<Size>) {
@@ -48,13 +52,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
         val responseOcr = RetrofitInstance.ocrSpaceApi.getImageOcrResponse(file = imagePart)
-        if(responseOcr.isSuccessful){
-            Log.d("isSuccess",responseOcr.message())
-            val response : OcrResponse = responseOcr.body()!!
+        if (responseOcr.isSuccessful) {
+            Log.d("isSuccess", responseOcr.message())
+            val response: OcrResponse = responseOcr.body()!!
             response.ParsedResults[0].TextOverlay.Lines
         }
     }
-
 
 
 }

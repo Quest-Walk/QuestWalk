@@ -33,7 +33,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,6 +44,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
 
+
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private lateinit var binding: FragmentCameraBinding
@@ -62,7 +67,7 @@ class CameraFragment : Fragment() {
     private lateinit var surface: Surface
 
     private lateinit var cameraManager: CameraManager
-    private var cameraDevice: CameraDevice? = null
+    private lateinit var cameraDevice: CameraDevice
     private var cameraId: String = ""
 
     private lateinit var handler: Handler
@@ -86,20 +91,35 @@ class CameraFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-            val capturedImageDialog = CapturedImageDialog()
-            capturedImageDialog.show(childFragmentManager, "capturedImage")
+            if (it == null) return@observe
+
+            //캡쳐 성공시 CaptureFragment 이동
+            navController.navigate(R.id.action_frag_camera_to_frag_capture)
         }
 
         checkPermissions()
-        binding.ibCapture.setOnClickListener {
-            captureRequestBuilder =
-                cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-            captureRequestBuilder.addTarget(imageReader.surface)
-            cameraCaptureSession.capture(captureRequestBuilder.build(), null, null)
+        bindingImageButton()
+
+
+    }
+
+    private fun bindingImageButton() {
+        with(binding) {
+            ibCapture.setOnClickListener {
+                captureRequestBuilder =
+                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+                captureRequestBuilder.addTarget(imageReader.surface)
+                cameraCaptureSession.capture(captureRequestBuilder.build(), null, null)
+            }
+            ibFlash.setOnClickListener {
+                // TODO : 플래시 ON/OFF
+            }
+            ibBackBtn.setOnClickListener {
+                navController.popBackStack()
+            }
         }
-
-
     }
 
     private fun checkPermissions() {
@@ -119,6 +139,12 @@ class CameraFragment : Fragment() {
         handlerThread = HandlerThread("previewThread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
+
+        cameraManager = requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        cameraId = cameraManager.cameraIdList[0]
+        //camera getData
+        getCharacterCamera()
+
         ttvPreview = binding.ttvPreview
         ttvPreview.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(
@@ -145,11 +171,7 @@ class CameraFragment : Fragment() {
 
         }
 
-        cameraManager = requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        cameraId = cameraManager.cameraIdList[0]
 
-        //camera getData
-        getCharacterCamera()
         val maxSize = cameraViewModel.getCameraMaxSize()
         imageReader = ImageReader.newInstance(
             maxSize.width,
@@ -199,10 +221,10 @@ class CameraFragment : Fragment() {
                 //카메라가 열리면 CqptureSession 생성
                 surface = Surface(ttvPreview.surfaceTexture)
                 captureRequestBuilder =
-                    cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
                         addTarget(surface)
                     }
-                cameraDevice!!.createCaptureSession(
+                cameraDevice.createCaptureSession(
                     listOf(surface, imageReader.surface),
                     object : CameraCaptureSession.StateCallback() {
                         override fun onConfigured(session: CameraCaptureSession) {
@@ -220,16 +242,18 @@ class CameraFragment : Fragment() {
             }
 
             override fun onDisconnected(camera: CameraDevice) {
-                camera.close()
-                cameraDevice = null
-                handlerThread.quitSafely()
             }
 
             override fun onError(camera: CameraDevice, error: Int) {
-                camera.close()
-                cameraDevice = null
-                handlerThread.quitSafely()
             }
         }, handler)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraCaptureSession.close()
+        cameraDevice.close()
+        handlerThread.quitSafely()
+
     }
 }

@@ -44,4 +44,6 @@ class CapturedImageDialog : DialogFragment() {
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
 
+
+
 }
