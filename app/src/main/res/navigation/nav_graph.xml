@@ -63,6 +63,9 @@
             android:id="@+id/action_frag_login_to_frag_home"
             app:destination="@id/frag_home"
             app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_login_to_findPassWordFragment"
+            app:destination="@id/findPassWordFragment" />
     </fragment>
 
     <fragment
@@ -77,13 +80,20 @@
         <action
             android:id="@+id/action_frag_sign_up_to_frag_login"
             app:destination="@id/frag_login" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
     </fragment>
 
     <fragment
         android:id="@+id/frag_on_boarding"
         android:name="com.hapataka.questwalk.OnBoardingFragment"
         android:label="frag_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" />
+        tools:layout="@layout/fragment_on_boarding" >
+        <action
+            android:id="@+id/action_frag_on_boarding_to_frag_home"
+            app:destination="@id/frag_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_result"
@@ -110,5 +120,9 @@
         android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail" />
+    <fragment
+        android:id="@+id/findPassWordFragment"
+        android:name="com.example.firebasetestapp.FindPassWordFragment"
+        android:label="FindPassWordFragment" />
 
 </navigation>
