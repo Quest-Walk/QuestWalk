@@ -29,6 +29,8 @@ class LogInFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
 //    private lateinit var googleSignInClient : GoogleSignInClient
     private val RC_SIGN_IN = 100
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+
 
 
 
@@ -141,7 +143,6 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private fun goToSignUp() {
         binding.tvGoJoin.setOnClickListener {
