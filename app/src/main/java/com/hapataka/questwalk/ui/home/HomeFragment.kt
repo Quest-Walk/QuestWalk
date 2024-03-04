@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
             btnWheather.setOnClickListener {
-                // TODO : wheatherFragment 이동
+                navController.navigate(R.id.action_frag_home_to_weatherFragment)
             }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
