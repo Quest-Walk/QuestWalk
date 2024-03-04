@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestBinding
-import com.hapataka.questwalk.ui.quest.QuestStatsEntity
+import com.hapataka.questwalk.ui.quest.QuestData
 
 class QuestAdapter(
-    val onClick: (item: QuestStatsEntity) -> Unit
-) : ListAdapter<QuestStatsEntity, QuestAdapter.QuestViewHolder>(diffUtil) {
+    val onClick: (item: QuestData) -> Unit
+) : ListAdapter<QuestData, QuestAdapter.QuestViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -31,13 +31,12 @@ class QuestAdapter(
             binding.ivImage3,
             binding.ivImage4
         )
-        private val successItemsList = mutableListOf<Map.Entry<String, Int>>()
-        fun bind(item: QuestStatsEntity) {
+        fun bind(item: QuestData) {
             binding.tvKeyword.text = item.keyWord
-            item.successItems.entries.take(4).forEachIndexed { index, entry ->
-                successItemsList.add(entry)
-                imageList[index].load(entry.value)
+            item.successItems.take(4).forEachIndexed { index, successItem ->
+                imageList[index].load(successItem.imageUrl)
             }
+
             binding.tvMore.setOnClickListener {
                 onClick(item)
             }
@@ -46,17 +45,17 @@ class QuestAdapter(
 
 
     companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<QuestStatsEntity>() {
+        val diffUtil = object : DiffUtil.ItemCallback<QuestData>() {
             override fun areItemsTheSame(
-                oldItem: QuestStatsEntity,
-                newItem: QuestStatsEntity
+                oldItem: QuestData,
+                newItem: QuestData
             ): Boolean {
                 return oldItem.keyWord == newItem.keyWord
             }
 
             override fun areContentsTheSame(
-                oldItem: QuestStatsEntity,
-                newItem: QuestStatsEntity
+                oldItem: QuestData,
+                newItem: QuestData
             ): Boolean {
                 return oldItem == newItem
             }
