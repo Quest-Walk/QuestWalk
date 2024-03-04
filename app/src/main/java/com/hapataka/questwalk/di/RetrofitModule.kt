@@ -34,7 +34,7 @@ object RetrofitModule {
     fun provideWeatherRetrofit(
         okHttpClient: OkHttpClient,
     ): Retrofit {
-        val BASE_URL = ""
+        val BASE_URL = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)

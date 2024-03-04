@@ -18,7 +18,11 @@ class WeatherViewModel @Inject constructor(
     private val _weatherInfo = MutableLiveData<MutableList<WeatherData>>()
     val weatherInfo: LiveData<MutableList<WeatherData>> =  _weatherInfo
 
-    fun getWeatherInfo() {
+    init {
+        getWeatherInfo()
+    }
+
+    private fun getWeatherInfo() {
         viewModelScope.launch{
             _weatherInfo.value = getWeatherUseCase().map {
                 convertWeatherData(it)
