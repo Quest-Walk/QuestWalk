@@ -43,8 +43,11 @@ class CaptureFragment : Fragment() {
             binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
             if (isSucceed) {
                 // TODO: HomeFragment 에 결과값 전달 하기함
+                navController.popBackStack(R.id.frag_home,false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvas()
+                binding.clCheckOcr.visibility = View.GONE
+                binding.clResultOcr.visibility = View.VISIBLE
             }
         }
         initCapturedImage()
@@ -65,6 +68,9 @@ class CaptureFragment : Fragment() {
                 }
             }
             ibBackBtn.setOnClickListener {
+                navController.popBackStack()
+            }
+            btnResult.setOnClickListener {
                 navController.popBackStack()
             }
         }

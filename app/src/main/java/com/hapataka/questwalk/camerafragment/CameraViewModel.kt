@@ -69,7 +69,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun validationResponse(keyword: String): Boolean {
         //Line 내에 Words 의 WordText 를 비교해야함
-//        var lines = resultList.filter{it.Words[0].WordText =="브라운치즈"}
         resultList.forEach { line: Line ->
             if (line.Words[0].WordText.contains(keyword)) return true
         }
