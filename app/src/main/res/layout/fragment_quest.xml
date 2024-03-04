@@ -68,6 +68,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_complete" />
 
+    <ImageView
+        android:id="@+id/iv_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_check"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/iv_complete"
+        app:layout_constraintEnd_toEndOf="@id/iv_complete"
+        app:layout_constraintStart_toStartOf="@id/iv_complete"
+        app:layout_constraintTop_toTopOf="@id/iv_complete" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rev_quest"
         android:layout_width="0dp"

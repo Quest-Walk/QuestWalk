@@ -3,7 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#00FF00</color>
-    <color name="red">#FF0000</color>
+    <color name="red">#FF0064</color>
     <color name="button">#1A6FFF</color>
     <color name="gray">#FF808080</color>
+    <color name="yellow">#FFFF00</color>
 </resources>

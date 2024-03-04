@@ -10,56 +10,52 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageButton
+            android:id="@+id/ib_back_btn"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@android:color/transparent"
+            android:rotation="180"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
         <TextureView
             android:id="@+id/ttv_preview"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintDimensionRatio="960:1280"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/ib_back_btn" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_icon"
+        <ImageButton
+            android:id="@+id/ib_capture"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ico_camera_capture"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ttv_preview">
+            app:layout_constraintTop_toBottomOf="@+id/ttv_preview" />
 
-            <ImageButton
-                android:id="@+id/ib_capture"
-                android:layout_width="136dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ico_camera_capture"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/ib_switch"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/ib_frame"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/ib_frame"
-                android:layout_width="135dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ico_camera_frame"
-                app:layout_constraintEnd_toStartOf="@+id/ib_capture"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageButton
-                android:id="@+id/ib_switch"
-                android:layout_width="136dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ico_camera_switch"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/ib_capture" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:id="@+id/ib_flash"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/ico_camera_flash"
+            app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
+            app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
+            app:layout_constraintTop_toTopOf="@+id/ib_back_btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

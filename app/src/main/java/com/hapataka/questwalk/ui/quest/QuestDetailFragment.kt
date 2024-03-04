@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.quest
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,21 +18,13 @@ import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
     private lateinit var questDetailAdapter: QuestDetailAdapter
-    private val item by lazy { arguments?.getParcelable("item") ?: QuestStatsEntity("", 0, mapOf()) }
-    val navHost = (parentFragment as NavHostFragment).findNavController()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-    }
+    private val item by lazy { arguments?.getParcelable("item") as? QuestData}
+    private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("QuestDetailFragment:", "item: $item")
         return binding.root
     }
 
@@ -42,7 +35,7 @@ class QuestDetailFragment : Fragment() {
     }
 
     private fun initViews() {
-        binding.tvKeyword.text = item.keyWord
+        binding.tvKeyword.text = item?.keyWord
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
         }
@@ -55,7 +48,7 @@ class QuestDetailFragment : Fragment() {
         }
         binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
         binding.revQuestDetail.adapter = questDetailAdapter
-        val urlList = item.successItems.map { it.value }
-        questDetailAdapter.submitList(urlList.toMutableList())
+        val urlList = item?.successItems?.map { it.imageUrl }?.reversed()
+        questDetailAdapter.submitList(urlList?.toMutableList())
     }
 }

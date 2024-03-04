@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Quest Walk</string>
     <string-array name="level">
+        <item>전체보기</item>
         <item>★</item>
         <item>★★</item>
         <item>★★★</item>
-        <item>★★★★</item>
-        <item>★★★★★</item>
     </string-array>
 
     <string name="adventure_time_label">모험한 시간</string>
@@ -23,4 +22,8 @@
     <string name="play_time">모험한 시간</string>
     <string name="play_distance">모험한 거리</string>
     <string name="all_step">총 걸음수</string>
+    <string name="default_time">0분</string>
+    <string name="default_distance">0km</string>
+    <string name="default_total_steps">0걸음</string>
+    <string name="default_calories">0kcal</string>
 </resources>

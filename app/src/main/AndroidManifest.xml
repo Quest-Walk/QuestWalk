@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -24,7 +26,7 @@
         android:theme="@style/Theme.QuestWalk"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +42,5 @@
             android:foregroundServiceType="location" >
         </service>
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
