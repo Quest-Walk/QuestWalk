@@ -42,6 +42,25 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <EditText
+            android:id="@+id/et_keyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Keyword 를 입력"
+            android:inputType="text"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_attach"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_attach" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_width="352dp"
+            android:layout_height="64dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
