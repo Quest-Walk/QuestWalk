@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.quest.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestData
+import kotlin.math.min
 
 class QuestAdapter(
     val onClick: (item: QuestData) -> Unit
@@ -32,6 +34,7 @@ class QuestAdapter(
             binding.ivImage4
         )
         fun bind(item: QuestData) {
+            setImageView(item.successItems.size, imageList)
             binding.tvKeyword.text = item.keyWord
             item.successItems.take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl)
@@ -59,6 +62,12 @@ class QuestAdapter(
             ): Boolean {
                 return oldItem == newItem
             }
+        }
+    }
+
+    private fun setImageView(questCnt: Int, imageList: List<ImageView>) {
+        for (i in 0 until min(questCnt, imageList.size)) {
+            imageList[i].visibility = View.VISIBLE
         }
     }
 
