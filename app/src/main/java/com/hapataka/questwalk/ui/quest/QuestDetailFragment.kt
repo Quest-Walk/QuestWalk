@@ -48,7 +48,7 @@ class QuestDetailFragment : Fragment() {
         }
         binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
         binding.revQuestDetail.adapter = questDetailAdapter
-        val urlList = item?.successItems?.map { it.imageUrl }
+        val urlList = item?.successItems?.map { it.imageUrl }?.reversed()
         questDetailAdapter.submitList(urlList?.toMutableList())
     }
 }

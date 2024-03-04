@@ -36,7 +36,7 @@ class QuestAdapter(
         fun bind(item: QuestData) {
             setImageView(item.successItems.size, imageList)
             binding.tvKeyword.text = item.keyWord
-            item.successItems.take(4).forEachIndexed { index, successItem ->
+            item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl)
             }
 
