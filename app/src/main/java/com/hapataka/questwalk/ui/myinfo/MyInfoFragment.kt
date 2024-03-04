@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.showSnackbar
+import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.util.ViewModelFactory
 
 class MyInfoFragment : Fragment() {

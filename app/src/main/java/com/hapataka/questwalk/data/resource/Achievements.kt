@@ -1,8 +1,8 @@
 package com.hapataka.questwalk.data.resource
 
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.record.model.RecordItem.Achievement
-import com.hapataka.questwalk.record.model.RecordItem.Header
+import com.hapataka.questwalk.ui.record.model.RecordItem.Achievement
+import com.hapataka.questwalk.ui.record.model.RecordItem.Header
 
 object Achievements {
     val list = listOf(

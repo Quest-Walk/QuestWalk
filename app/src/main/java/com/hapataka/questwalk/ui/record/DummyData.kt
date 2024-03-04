@@ -1,7 +1,7 @@
-package com.hapataka.questwalk.record
+package com.hapataka.questwalk.ui.record
 
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem
 
 object DummyData {
     val historyList = listOf<RecordItem>(

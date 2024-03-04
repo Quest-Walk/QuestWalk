@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.signup.SignUpFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,6 +34,17 @@
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/tv_id"
             app:layout_constraintTop_toBottomOf="@id/tv_id" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_back"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            style="@style/body_default"
+            android:text="뒤로가기"/>
 
 
         <EditText
@@ -130,7 +142,6 @@
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/et_signUpPassWordCheck"
             app:layout_constraintTop_toBottomOf="@id/et_signUpPassWordCheck" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

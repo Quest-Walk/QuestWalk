@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/frag_record"
-        android:name="com.hapataka.questwalk.record.RecordFragment"
+        android:name="com.hapataka.questwalk.ui.record.RecordFragment"
         android:label="frag_record"
         tools:layout="@layout/fragment_record" />
 
@@ -50,7 +50,7 @@
 
     <fragment
         android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.LogInFragment"
+        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
         android:label="frag_login"
         tools:layout="@layout/fragment_log_in">
         <action
@@ -74,6 +74,9 @@
             android:id="@+id/action_frag_sign_up_to_frag_home"
             app:destination="@id/frag_home"
             app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_login"
+            app:destination="@id/frag_login" />
     </fragment>
 
     <fragment

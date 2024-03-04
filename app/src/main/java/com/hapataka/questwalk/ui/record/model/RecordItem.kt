@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record.model
+package com.hapataka.questwalk.ui.record.model
 
 sealed class RecordItem {
     data class Header(

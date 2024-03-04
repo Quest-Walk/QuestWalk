@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record
+package com.hapataka.questwalk.ui.record
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
-import com.hapataka.questwalk.record.adapter.RecordItemAdapter
+import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
 
 class RecordFragment : Fragment() {
     private val binding by lazy { FragmentRecordBinding.inflate(layoutInflater) }

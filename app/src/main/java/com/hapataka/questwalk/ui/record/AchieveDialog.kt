@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record
+package com.hapataka.questwalk.ui.record
 
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogAchievementBinding
-import com.hapataka.questwalk.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem
 
 class AchieveDialog(val item: RecordItem) : DialogFragment() {
     private val binding by lazy { DialogAchievementBinding.inflate(layoutInflater) }

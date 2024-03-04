@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record
+package com.hapataka.questwalk.ui.record
 
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.hapataka.questwalk.databinding.FragmentRecordItemBinding
-import com.hapataka.questwalk.record.adapter.HEADER_TYPE
-import com.hapataka.questwalk.record.adapter.RecordDetailAdapter
-import com.hapataka.questwalk.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.adapter.HEADER_TYPE
+import com.hapataka.questwalk.ui.record.adapter.RecordDetailAdapter
+import com.hapataka.questwalk.ui.record.model.RecordItem
 
 const val TAG = "item_test"
 

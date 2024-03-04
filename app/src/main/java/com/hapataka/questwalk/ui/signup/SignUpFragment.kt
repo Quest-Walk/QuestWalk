@@ -16,26 +16,32 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.hapataka.questwalk.OnBoardingFragment
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
-import com.hapataka.questwalk.record.TAG
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
-
-
 class SignUpFragment : Fragment() {
-
     private var _binding: FragmentSignUpBinding? = null
-
     private val binding get() = _binding!!
-    private val viewModel: SignUpViewModel by viewModels()
     private val authRepo by lazy { AuthRepositoryImpl() }
+    private val viewModel: SignUpViewModel by viewModels()
+    private var isUiPassWord = false
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var emailId = ""
+    private val passwordViews by lazy {
+        listOf(
+            binding.etSignUpPassWord,
+            binding.etSignUpPassWordCheck,
+            binding.btnGoToJoin,
+            binding.ivShowPassWord,
+            binding.ivShowPassWordCheck
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,14 +53,13 @@ class SignUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         initView()
-
     }
 
     private fun initView() {
-        goNext()
+        initGoToPasswordButton()
+        initJoinButton()
+        initPrevButton()
         showPasswordVisibility(binding.ivShowPassWord, binding.etSignUpPassWord)
         showPasswordVisibility(binding.ivShowPassWordCheck, binding.etSignUpPassWordCheck)
     }
@@ -66,35 +71,51 @@ class SignUpFragment : Fragment() {
         startAnimation(animShake)
     }
 
+    private fun initGoToPasswordButton() {
+        with(binding) {
+            btnGoToPassWord.setOnClickListener {
+                emailId = etSignUpId.text.toString()
 
-    private fun goNext() {
-        binding.btnGoToPassWord.setOnClickListener {
-            val emailId = binding.etSignUpId.text.toString()
-
-            if (!Patterns.EMAIL_ADDRESS.matcher(emailId).matches()) {
-                Toast.makeText(context, "이메일 형식이 올바르지 않습니다", Toast.LENGTH_SHORT).show()
-            } else {
+                if (checkEmailValidity(emailId)) {
+                    return@setOnClickListener
+                }
                 changePassWordUi()
             }
         }
+    }
 
-        binding.btnGoToJoin.setOnClickListener {
-            val email = binding.etSignUpId.text.toString()
-            val password = binding.etSignUpPassWord.text.toString()
-            val passwordCheck = binding.etSignUpPassWordCheck.text.toString()
+    private fun checkEmailValidity(id: String): Boolean {
+        if (emailId.isEmpty()) {
+            Toast.makeText(context, "이메일 주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            return true
+        }
 
-            if (password == passwordCheck) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailId).matches()) {
+            Toast.makeText(context, "이메일 형식이 올바르지 않습니다", Toast.LENGTH_SHORT).show()
+            return true
+        }
+        return false
+    }
+
+    private fun initJoinButton() {
+        with(binding) {
+            btnGoToJoin.setOnClickListener {
+                val password = etSignUpPassWord.text.toString()
+                val passwordCheck = etSignUpPassWordCheck.text.toString()
+
+                if (password != passwordCheck) {
+                    Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 lifecycleScope.launch {
-                    authRepo.registerByEmailAndPw(email, password) { task ->
+                    authRepo.registerByEmailAndPw(emailId, password) { task ->
                         if (task.isSuccessful) {
-                            moveHomeWithLogin(email, password)
+                            moveHomeWithLogin(emailId, password)
                             return@registerByEmailAndPw
                         }
                         binding.tvErrorMsg.showError("가입불가능하네요")
                     }
                 }
-            } else {
-                Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -103,40 +124,29 @@ class SignUpFragment : Fragment() {
         lifecycleScope.launch {
             authRepo.loginByEmailAndPw(id, pw) { task ->
                 if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_frag_sign_up_to_frag_home)
+                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+                    navController.navigate(R.id.action_frag_sign_up_to_frag_home)
+                    navGraph.setStartDestination(R.id.frag_home)
+                    navController.graph = navGraph
+                    return@loginByEmailAndPw
                 }
                 Log.e(TAG, "에러남")
             }
         }
     }
 
-    private fun obeserver() {
-        viewModel.signUpResult.observe(viewLifecycleOwner) { success ->
-            if (success) {
-                switchFragment(requireFragmentManager(), OnBoardingFragment(), false)
+    private fun initPrevButton() {
+        binding.btnBack.setOnClickListener {
+            if (isUiPassWord) {
+                changeIdUi()
+                return@setOnClickListener
             }
+            navController.popBackStack()
         }
     }
 
-    fun switchFragment(
-        fragmentManager: FragmentManager,
-        fragment: Fragment,
-        addToBackStack: Boolean
-    ) {
-        val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.replace(com.google.android.material.R.id.container, fragment)
 
-        if (addToBackStack) {
-            transaction.addToBackStack(null)
-        }
-        transaction.commit()
-    }
-
-
-    fun isEmailValid(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-        return email.matches(emailRegex.toRegex())
-    }
 
     private fun changePassWordUi() {
         binding.apply {
@@ -144,31 +154,10 @@ class SignUpFragment : Fragment() {
             tvExplain.text = "비밀번호는 특수문자를 포함해 주세요"
             etSignUpId.isVisible = false
             btnGoToPassWord.visibility = View.INVISIBLE
-            etSignUpPassWord.isVisible = true
-            etSignUpPassWordCheck.isVisible = true
-            btnGoToJoin.isVisible = true
-            binding.ivShowPassWord.isVisible = true
-            binding.ivShowPassWordCheck.isVisible = true
         }
+        passwordViews.forEach { it.isVisible = true }
+        isUiPassWord = true
     }
-
-    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
-        icon.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                    editText.setSelection(editText.text.length)
-                }
-
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    editText.transformationMethod = PasswordTransformationMethod.getInstance()
-                    editText.setSelection(editText.text.length)
-                }
-            }
-            true
-        }
-    }
-
 
     private fun changeIdUi() {
         binding.apply {
@@ -176,19 +165,33 @@ class SignUpFragment : Fragment() {
             tvExplain.text = "아이디는 이메일 형식으로 입력해 주세요"
             etSignUpId.isVisible = true
             btnGoToPassWord.isVisible = true
-            etSignUpPassWord.isVisible = false
-            etSignUpPassWordCheck.isVisible = false
-            btnGoToJoin.isVisible = false
-            binding.ivShowPassWord.isVisible = false
-            binding.ivShowPassWordCheck.isVisible = false
         }
+        passwordViews.forEach { it.isVisible = false }
+        isUiPassWord = false
+    }
 
+    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
+        icon.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    editText.transformationMethod =
+                        HideReturnsTransformationMethod.getInstance()
+                    editText.setSelection(editText.text.length)
+                }
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    editText.transformationMethod =
+                        PasswordTransformationMethod.getInstance()
+                    editText.setSelection(editText.text.length)
+                }
+            }
+            true
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
-
-
 }
+

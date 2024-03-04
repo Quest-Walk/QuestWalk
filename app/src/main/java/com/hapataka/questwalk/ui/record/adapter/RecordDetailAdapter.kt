@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record.adapter
+package com.hapataka.questwalk.ui.record.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,16 +11,18 @@ import com.hapataka.questwalk.databinding.ItemRecordAchievementBinding
 import com.hapataka.questwalk.databinding.ItemRecordHeaderBinding
 import com.hapataka.questwalk.databinding.ItemRecordResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.record.model.RecordItem
-import com.hapataka.questwalk.record.model.RecordItem.Achievement
-import com.hapataka.questwalk.record.model.RecordItem.Header
-import com.hapataka.questwalk.record.model.RecordItem.Result
+import com.hapataka.questwalk.ui.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.Achievement
+import com.hapataka.questwalk.ui.record.model.RecordItem.Header
+import com.hapataka.questwalk.ui.record.model.RecordItem.Result
 
 const val HEADER_TYPE = 0
 const val RESULT_TYPE = 1
 const val ACHIEVEMENT_TYPE = 2
 
-class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.AchievementEntity> = listOf()) : ListAdapter<RecordItem, ViewHolder>(diffUtil) {
+class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.AchievementEntity> = listOf()) : ListAdapter<RecordItem, ViewHolder>(
+    diffUtil
+) {
     var itemClick: ItemClick? = null
     interface ItemClick{
         fun onClick(item: RecordItem)

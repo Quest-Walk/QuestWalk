@@ -1,25 +1,20 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.ui.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.OAuthProvider
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
-import com.hapataka.questwalk.record.TAG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -27,12 +22,11 @@ import kotlinx.coroutines.launch
 class LogInFragment : Fragment() {
     private var _binding: FragmentLogInBinding? = null
     private val binding get() = _binding!!
-
-    //    private lateinit var googleSignInClient : GoogleSignInClient
     private val RC_SIGN_IN = 100
     private val authRepo by lazy { AuthRepositoryImpl() }
     private val userRepo by lazy { UserRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var backPressedOnce = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,13 +38,91 @@ class LogInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
+        setup()
+    }
 
+    private fun initView() {
         initLoginButton()
         initSignUpButton()
+    }
+
+    private fun setup() {
         initBackPressedCallback()
     }
 
-    //    private fun loginUser(email: String, password: String) {
+    private fun initLoginButton() {
+        with(binding) {
+            btnLogIn.setOnClickListener {
+                val id = etLoginId.text.toString()
+                val pw = etLoginPassword.text.toString()
+
+                loginByEmailPassword(id, pw)
+            }
+        }
+    }
+
+    private fun initSignUpButton() {
+        binding.btnSignUp.setOnClickListener {
+            navController.navigate(R.id.action_frag_login_to_frag_sign_up)
+        }
+    }
+
+    private fun loginByEmailPassword(id: String, pw: String) {
+        if (id.isEmpty() || pw.isEmpty()) {
+            "이메일 또는 비밀번호가 비어있습니다".showSnackbar(requireView())
+            return
+        }
+
+        lifecycleScope.launch {
+            authRepo.loginByEmailAndPw(id, pw) { task ->
+                if (task.isSuccessful) {
+                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+                    navController.navigate(R.id.action_frag_login_to_frag_home)
+                    navGraph.setStartDestination(R.id.frag_home)
+                    navController.graph = navGraph
+                    return@loginByEmailAndPw
+                }
+                // TODO: 실패시 코드 참고해서 실패안내 메시지 넣기
+            }
+        }
+    }
+
+    private fun initBackPressedCallback() {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finish()
+                    return
+                }
+                backPressedOnce = true
+                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT)
+                    .show()
+                lifecycleScope.launch {
+                    delay(2000)
+                    backPressedOnce = false
+                }
+            }
+        }.also {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+}
+
+fun String.showSnackbar(view: View) {
+    Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
+}
+
+
+
+// 실패코드 참고용입니당
+//    private fun loginUser(email: String, password: String) {
 //        auth.signInWithEmailAndPassword(email, password)
 //            .addOnCompleteListener(requireActivity()) { task ->
 //                if (!task.isSuccessful) {
@@ -79,6 +151,10 @@ class LogInFragment : Fragment() {
 //                    switchFragment(requireFragmentManager(), OnBoardingFragment(), false)
 //                }
 //            }
+//    }
+
+
+// 구글 로그인용 코드
 //    private fun initGoogleSignInClient() {
 //        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 //            .requestIdToken(getString(R.string.default_web_client_id))
@@ -91,6 +167,7 @@ class LogInFragment : Fragment() {
 //            val signInIntent = googleSignInClient.signInIntent
 //            startActivityForResult(signInIntent,RC_SIGN_IN)
 //        }
+
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
 //        if (requestCode == RC_SIGN_IN && data != null) {
@@ -114,44 +191,9 @@ class LogInFragment : Fragment() {
 //                Snackbar.make(requireView(), "Firebase 인증 실패", Snackbar.LENGTH_SHORT).show()
 //            }
 //        }
-    private fun initSignUpButton() {
-        binding.btnSignUp.setOnClickListener {
-            navController.navigate(R.id.action_frag_login_to_frag_sign_up)
-        }
-    }
 
 
-    private fun initLoginButton() {
-        with(binding) {
-            btnLogIn.setOnClickListener {
-                val id = etLoginId.text.toString()
-                val pw = etLoginPassword.text.toString()
 
-                loginByEmailPassword(id, pw)
-            }
-        }
-    }
-
-    private fun loginByEmailPassword(id: String, pw: String) {
-        if (id.isEmpty() || pw.isEmpty()) {
-            "이메일 또는 비밀번호가 비어있습니다".showSnackbar(requireView())
-            return
-        }
-
-        lifecycleScope.launch {
-            authRepo.loginByEmailAndPw(id, pw) { task ->
-                if (task.isSuccessful) {
-                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-
-                    navController.navigate(R.id.action_frag_login_to_frag_home)
-                    navGraph.setStartDestination(R.id.frag_home)
-                    navController.graph = navGraph
-                    return@loginByEmailAndPw
-                }
-                Log.e(TAG, "로그인 실패")
-            }
-        }
-    }
 
 //    private fun signUpWithKakao() {
 //        binding.ivKakao.setOnClickListener {
@@ -178,75 +220,23 @@ class LogInFragment : Fragment() {
 //        }
 //    }
 
-    private fun firebaseAuthWithKakao(accessToken: String) {
-        val credential = OAuthProvider.newCredentialBuilder("oidc.kakao")
-            .setAccessToken(accessToken)
-            .build()
-
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // 로그인 성공
-                    val user = task.result?.user
-                    Snackbar.make(
-                        requireView(),
-                        "Firebase 로그인 성공: ${user?.uid}",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // 로그인 실패
-                    Snackbar.make(requireView(), "Firebase 로그인 실패???  ", Snackbar.LENGTH_SHORT)
-                        .show()
-                    Log.e("로그디", "Authentication failed", task.exception)
-                }
-            }
-    }
-
-
-    //Fragment 전환
-    fun switchFragment(
-        fragmentManager: FragmentManager,
-        fragment: Fragment,
-        addToBackStack: Boolean
-    ) {
-        val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.replace(R.id.btn_logIn, fragment)
-
-        if (addToBackStack) {
-            transaction.addToBackStack(null)
-        }
-        transaction.commit()
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
-    private var backPressedOnce = false
-    private fun initBackPressedCallback() {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (backPressedOnce) {
-                    requireActivity().finish()
-                    return
-                }
-                backPressedOnce = true
-                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-                lifecycleScope.launch {
-                    delay(2000)
-                    backPressedOnce = false
-                }
-
-            }
-        }.also {
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
-        }
-    }
-}
-
-fun String.showSnackbar(view: View) {
-    Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
-}
-
+//
+//    private fun firebaseAuthWithKakao(accessToken: String) {
+//        val credential = OAuthProvider.newCredentialBuilder("oidc.kakao")
+//            .setAccessToken(accessToken)
+//            .build()
+//
+//        FirebaseAuth.getInstance().signInWithCredential(credential)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    // 로그인 성공
+//                    val user = task.result?.user
+//                    Snackbar.make(requireView(), "Firebase 로그인 성공: ${user?.uid}", Snackbar.LENGTH_SHORT).show()
+//                } else {
+//                    // 로그인 실패
+//                    Snackbar.make(requireView(), "Firebase 로그인 실패???  ", Snackbar.LENGTH_SHORT).show()
+//                    Log.e("로그디","Authentication failed",task.exception)
+//                }
+//            }
+//    }
 
