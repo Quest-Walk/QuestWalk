@@ -1,9 +1,7 @@
 package com.hapataka.questwalk.ui.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class HomeViewModel : ViewModel() {
