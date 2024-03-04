@@ -49,25 +49,20 @@ class QuestAdapter(
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<QuestData>() {
-            override fun areItemsTheSame(
-                oldItem: QuestData,
-                newItem: QuestData
-            ): Boolean {
+            override fun areItemsTheSame(oldItem: QuestData, newItem: QuestData): Boolean {
                 return oldItem.keyWord == newItem.keyWord
             }
 
-            override fun areContentsTheSame(
-                oldItem: QuestData,
-                newItem: QuestData
-            ): Boolean {
+            override fun areContentsTheSame(oldItem: QuestData, newItem: QuestData): Boolean {
                 return oldItem == newItem
             }
         }
     }
 
     private fun setImageView(questCnt: Int, imageList: List<ImageView>) {
-        for (i in 0 until min(questCnt, imageList.size)) {
-            imageList[i].visibility = View.VISIBLE
+        for (i in imageList.indices) {
+            if (i < questCnt) imageList[i].visibility = View.VISIBLE
+            else imageList[i].visibility = View.INVISIBLE
         }
     }
 

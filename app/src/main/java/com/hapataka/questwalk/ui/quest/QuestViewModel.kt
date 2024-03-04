@@ -26,14 +26,18 @@ class QuestViewModel : ViewModel() {
     private fun getQuestItems() {
         viewModelScope.launch {
             _questItems.value = questStackRepositoryImpl.getAllItems().map {
-                allQuestItems?.plusAssign(convertToQuestData(it))
                 convertToQuestData(it)
             }.toMutableList()
+            allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
         }
     }
 
     fun filterLevel(level: Int) {
         currentLevel = level
+        if (currentLevel == 0) {
+            _questItems.value = allQuestItems ?: mutableListOf()
+            return
+        }
         val filterList = allQuestItems?.filter { it.level == level }
         _questItems.value = filterList?.toMutableList()
     }

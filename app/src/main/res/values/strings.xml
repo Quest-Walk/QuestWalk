@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Quest Walk</string>
     <string-array name="level">
+        <item>전체보기</item>
         <item>★</item>
         <item>★★</item>
         <item>★★★</item>

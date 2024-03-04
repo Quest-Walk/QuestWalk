@@ -31,12 +31,24 @@ class QuestFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dataObserve()
-        initQuestRecyclerView()
+        initViews()
     }
 
     private fun dataObserve() {
         questViewModel.questItems.observe(viewLifecycleOwner) {
             questAdapter.submitList(it)
+        }
+    }
+
+    private fun initViews() {
+        initSpinner()
+        initQuestRecyclerView()
+    }
+
+    private fun initSpinner() {
+        binding.spinnerLevel.selectItemByIndex(0)
+        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
+            questViewModel.filterLevel(Index)
         }
     }
 
