@@ -8,7 +8,6 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.*
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepository
-import com.hapataka.questwalk.ui.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -83,6 +82,7 @@ class UserRepositoryImpl : UserRepository {
 
             return@withContext currentUserInfo.histories.filterIsInstance<ResultEntity>() as MutableList<ResultEntity>
         }
+
 
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
         var resultList = mutableListOf<HistoryEntity>()

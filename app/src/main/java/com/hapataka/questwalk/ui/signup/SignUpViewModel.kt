@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.signup
+package com.hapataka.questwalk.ui.signup
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

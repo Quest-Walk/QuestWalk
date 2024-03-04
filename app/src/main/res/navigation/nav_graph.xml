@@ -3,23 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_home">
+    app:startDestination="@id/frag_login">
 
     <fragment
         android:id="@+id/frag_my_info"
-        android:name="com.hapataka.questwalk.MyInfoFragment"
+        android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
-        tools:layout="@layout/fragment_my_info" />
+        tools:layout="@layout/fragment_my_info" >
+        <action
+            android:id="@+id/action_frag_my_info_to_frag_login"
+            app:destination="@id/frag_login"
+            app:popUpTo="@id/frag_login"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_record"
-        android:name="com.hapataka.questwalk.record.RecordFragment"
+        android:name="com.hapataka.questwalk.ui.record.RecordFragment"
         android:label="frag_record"
         tools:layout="@layout/fragment_record" />
 
     <fragment
         android:id="@+id/frag_home"
-        android:name="com.hapataka.questwalk.homefragment.HomeFragment"
+        android:name="com.hapataka.questwalk.ui.home.HomeFragment"
         android:label="frag_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -31,6 +37,9 @@
         <action
             android:id="@+id/action_frag_home_to_frag_camera"
             app:destination="@id/frag_camera" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_quest"
+            app:destination="@id/frag_quest" />
     </fragment>
 
     <fragment
@@ -51,7 +60,7 @@
 
     <fragment
         android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.LogInFragment"
+        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
         android:label="frag_login"
         tools:layout="@layout/fragment_log_in">
         <action
@@ -60,19 +69,41 @@
         <action
             android:id="@+id/action_frag_login_to_frag_on_boarding"
             app:destination="@id/frag_on_boarding" />
+        <action
+            android:id="@+id/action_frag_login_to_frag_home"
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_login_to_findPassWordFragment"
+            app:destination="@id/findPassWordFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/frag_sign_up"
-        android:name="com.hapataka.questwalk.signup.SignUpFragment"
+        android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
         android:label="frag_sign_up"
-        tools:layout="@layout/fragment_sign_up" />
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_home"
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_login"
+            app:destination="@id/frag_login" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_on_boarding"
         android:name="com.hapataka.questwalk.OnBoardingFragment"
         android:label="frag_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" />
+        tools:layout="@layout/fragment_on_boarding" >
+        <action
+            android:id="@+id/action_frag_on_boarding_to_frag_home"
+            app:destination="@id/frag_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_result"
@@ -99,5 +130,9 @@
         android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail" />
+    <fragment
+        android:id="@+id/findPassWordFragment"
+        android:name="com.example.firebasetestapp.FindPassWordFragment"
+        android:label="FindPassWordFragment" />
 
 </navigation>

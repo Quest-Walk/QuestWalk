@@ -35,9 +35,10 @@ class QuestFragment : Fragment() {
         val navHost = (parentFragment as NavHostFragment).findNavController()
         val bundle = Bundle()
 
-
+        binding.ivArrowBack.setOnClickListener {
+            navHost.popBackStack()
+        }
         questAdapter = QuestAdapter {item ->
-
             bundle.apply {
                 putParcelable("item", item)
             }

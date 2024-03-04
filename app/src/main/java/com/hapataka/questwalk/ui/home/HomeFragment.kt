@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.homefragment
+package com.hapataka.questwalk.ui.home
 
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -6,14 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Chronometer
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -21,6 +29,7 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
+    private var backPressedOnce = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +59,7 @@ class HomeFragment : Fragment() {
         setQuestState()
         replaceFragmentByImageButton()
         setQuestButtonEvent()
-
+        initBackPressedCallback()
     }
 
     /**
@@ -71,6 +80,9 @@ class HomeFragment : Fragment() {
             }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
+            }
+            btnQuestChange.setOnClickListener {
+                navController.navigate(R.id.action_frag_home_to_frag_quest)
             }
         }
     }
@@ -116,5 +128,25 @@ class HomeFragment : Fragment() {
             )
         )
         ViewCompat.setBackgroundTintList(view, colorStateList)
+    }
+
+    private fun initBackPressedCallback() {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finish()
+                    return
+                }
+                backPressedOnce = true
+                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    delay(2000)
+                    backPressedOnce = false
+                }
+
+            }
+        }.also {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
     }
 }
