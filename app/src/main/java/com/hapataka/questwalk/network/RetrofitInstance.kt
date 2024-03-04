@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     private const val OCR_ENDPOINT = "https://api.ocr.space/parse/"
@@ -15,9 +16,12 @@ object RetrofitInstance {
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUri)
             .client(
-                OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().apply {
+                OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
-                }).build()
+                })
+                    .readTimeout(60,TimeUnit.SECONDS)
+                    .build()
             )
             .addConverterFactory(GsonConverterFactory.create())
             .build()

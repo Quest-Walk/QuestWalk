@@ -1,14 +1,18 @@
 package com.hapataka.questwalk.camerafragment
 
+import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Message
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable.ProgressDrawableSize
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
@@ -25,6 +29,9 @@ class CaptureFragment : Fragment() {
 
     private var bitmap: Bitmap? = null
     private var keyword: String = ""
+
+    private lateinit var progressDialog :ProgressDialog
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -35,12 +42,14 @@ class CaptureFragment : Fragment() {
             if (isSucceed == null) return@observe
             binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
             if (isSucceed) {
-                // TODO: HomeFragment 에 결과값 전달 하기
+                // TODO: HomeFragment 에 결과값 전달 하기함
             } else {
-                // TODO: 캡쳐 이미지에 실패한 부분 그려주기값
+                cameraViewModel.failedImageDrawWithCanvas()
             }
         }
         initCapturedImage()
+        progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("분석중....")
         return binding.root
     }
 
@@ -50,7 +59,9 @@ class CaptureFragment : Fragment() {
             btnAttach.setOnClickListener {
                 keyword = etKeyword.text.toString()
                 CoroutineScope(Dispatchers.Main).launch {
+                    progressDialog.show()
                     cameraViewModel.postCapturedImage(keyword)
+                    progressDialog.dismiss()
                 }
             }
             ibBackBtn.setOnClickListener {

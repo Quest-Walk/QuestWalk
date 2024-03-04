@@ -1,7 +1,10 @@
 package com.hapataka.questwalk.camerafragment
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.Paint
 import android.util.Log
 import android.util.Size
 import androidx.lifecycle.LiveData
@@ -74,4 +77,23 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         return false
     }
 
+    fun failedImageDrawWithCanvas() {
+        val tempBitmap = _bitmap.value ?: return
+        val canvas = Canvas(tempBitmap)
+        val paint = Paint().apply {
+            color = Color.RED
+            style = Paint.Style.STROKE
+            strokeWidth = 4f
+        }
+        //Left":155.0,"Top":516.0,"Height":153.0,"Width":464.0
+        resultList.forEach { line ->
+            canvas.drawRect(
+                line.Words[0].Left.toFloat(),
+                line.Words[0].Top.toFloat(),
+                line.Words[0].Left + line.Words[0].Width.toFloat(),
+                line.Words[0].Top + line.Words[0].Height.toFloat(), paint
+            )
+        }
+        _bitmap.value = tempBitmap
+    }
 }
