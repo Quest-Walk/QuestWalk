@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.quest
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class QuestViewModel : ViewModel() {
@@ -20,15 +22,16 @@ class QuestViewModel : ViewModel() {
     val questItems: LiveData<MutableList<QuestData>> = _questItems
 
     init {
-        getQuestItems()
+        getQuestItems(false)
     }
 
-    private fun getQuestItems() {
+    private fun getQuestItems(completeFilter: Boolean) {
         viewModelScope.launch {
             _questItems.value = questStackRepositoryImpl.getAllItems().map {
                 convertToQuestData(it)
             }.toMutableList()
             allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
+            if (completeFilter) filterLevel(currentLevel)
         }
     }
 
@@ -44,20 +47,19 @@ class QuestViewModel : ViewModel() {
 
     fun filterComplete(isChecked: Boolean) {
         if (isChecked) {
-            // filterComplet
-            // 받아온 complete로 filter된 리스트를 allQuestItems에 저장하고 저장된 level로 필터
             viewModelScope.launch {
-                val uid = authRepositoryImpl.getCurrentUserUid()
-                val completeKeywords = userRepositoryImpl.getResultHistory(uid).map { it.quest }
+//                val uid = authRepositoryImpl.getCurrentUserUid()
+                val testUid = "8fEEPVnXYjPMyXIeoWTxelYc9qo1"
+                val completeKeywords = userRepositoryImpl.getResultHistory(testUid).map { it.quest }
 
                 val filterList = allQuestItems?.filter { !completeKeywords.contains(it.keyWord) }
                 allQuestItems = filterList?.toMutableList()
+                filterLevel(currentLevel)
                 
             }
         } else {
-            // getQuestItems()를 호출해서 allQuestItems를 전체 아이템으로 다시 세팅하고 저장된 level로 필터
-            getQuestItems()
-            filterLevel(currentLevel)
+            getQuestItems(true)
+//            filterLevel(currentLevel)
         }
     }
 
