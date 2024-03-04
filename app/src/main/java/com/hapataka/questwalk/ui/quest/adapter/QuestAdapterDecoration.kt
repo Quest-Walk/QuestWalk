@@ -15,7 +15,7 @@ class QuestAdapterDecoration : RecyclerView.ItemDecoration() {
         super.getItemOffsets(outRect, view, parent, state)
 
         val topMargin = pxToDp(16, view)
-        val horizontalMargin = pxToDp(6, view)
+        val horizontalMargin = pxToDp(8, view)
 
         outRect.set(horizontalMargin, topMargin, horizontalMargin, 0)
 

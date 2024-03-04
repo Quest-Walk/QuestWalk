@@ -19,9 +19,8 @@ class QuestFragment : Fragment() {
     private val binding: FragmentQuestBinding by lazy { FragmentQuestBinding.inflate(layoutInflater) }
     private lateinit var questAdapter: QuestAdapter
     private val questViewModel: QuestViewModel by viewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var totalUser = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,16 +39,25 @@ class QuestFragment : Fragment() {
         questViewModel.questItems.observe(viewLifecycleOwner) {
             questAdapter.submitList(it)
         }
+        questViewModel.allUserSize.observe(viewLifecycleOwner) {
+            questAdapter.setAllUser(it)
+        }
     }
 
     private fun initViews() {
+        initArrowBack()
         initSpinner()
         initCompleteButton()
         initQuestRecyclerView()
     }
 
+    private fun initArrowBack() {
+        binding.ivArrowBack.setOnClickListener {
+            navHost.popBackStack()
+        }
+    }
+
     private fun initSpinner() {
-        Log.d("QuestFragment:","QuestFragment: initSpinner")
         binding.spinnerLevel.selectItemByIndex(0)
         binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
             questViewModel.filterLevel(Index)
@@ -69,15 +77,10 @@ class QuestFragment : Fragment() {
     }
 
     private fun initQuestRecyclerView() {
-        val navHost = (parentFragment as NavHostFragment).findNavController()
-        val bundle = Bundle()
-
-        binding.ivArrowBack.setOnClickListener {
-            navHost.popBackStack()
-        }
-        questAdapter = QuestAdapter {item ->
-            bundle.apply {
+        questAdapter = QuestAdapter {item, allUser ->
+            val bundle = Bundle().apply {
                 putParcelable("item", item)
+                putLong("allUser", allUser)
             }
             navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
         }

@@ -11,11 +11,13 @@ import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 import kotlin.math.min
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 class QuestAdapter(
-    val onClick: (QuestData) -> Unit
+    val onClick: (QuestData, Long) -> Unit
 ) : ListAdapter<QuestData, QuestAdapter.QuestViewHolder>(diffUtil) {
-
+    private var allUser = 0L
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return QuestViewHolder(ItemQuestBinding.inflate(layoutInflater, parent, false))
@@ -27,21 +29,26 @@ class QuestAdapter(
 
     inner class QuestViewHolder(private val binding: ItemQuestBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val imageList = listOf<ImageView>(
+        private val imageList = listOf(
             binding.ivImage1,
             binding.ivImage2,
             binding.ivImage3,
             binding.ivImage4
         )
         fun bind(item: QuestData) {
+            val completeRate = round((item.successItems.size.toDouble() / allUser) * 100)
+
             setImageView(item.successItems.size, imageList)
             binding.tvKeyword.text = item.keyWord
+            binding.tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
+
+
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl)
             }
 
             binding.tvMore.setOnClickListener {
-                onClick(item)
+                onClick(item, allUser)
             }
         }
     }
@@ -57,6 +64,10 @@ class QuestAdapter(
                 return oldItem == newItem
             }
         }
+    }
+
+    fun setAllUser(allUser: Long) {
+        this.allUser = allUser
     }
 
     private fun setImageView(questCnt: Int, imageList: List<ImageView>) {
