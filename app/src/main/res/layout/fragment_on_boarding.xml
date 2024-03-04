@@ -38,7 +38,7 @@
                 android:id="@+id/iv_profile_image"
                 android:layout_width="126dp"
                 android:layout_height="126dp"
-                android:src="@drawable/googolelogo" />
+                android:src="@drawable/img_dummy_charcter" />
 
         </androidx.cardview.widget.CardView>
 
@@ -47,7 +47,7 @@
             android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="닉네임을 설정해 주세요"
+            android:hint="닉네임을 입력해 주세요"
             style="@style/body_default"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="@id/cv_profile_image"

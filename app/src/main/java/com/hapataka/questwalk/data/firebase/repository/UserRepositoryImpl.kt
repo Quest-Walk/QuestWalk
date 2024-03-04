@@ -83,6 +83,7 @@ class UserRepositoryImpl : UserRepository {
             return@withContext currentUserInfo.histories.filterIsInstance<ResultEntity>() as MutableList<ResultEntity>
         }
 
+
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
         var resultList = mutableListOf<HistoryEntity>()
 
