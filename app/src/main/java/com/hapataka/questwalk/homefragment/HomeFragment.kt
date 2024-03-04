@@ -40,13 +40,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        updateDataView()
 
+    }
+
+    private fun updateDataView() {
         lifecycleScope.launch {
             if (homeViewModel.getKeyword() == null) homeViewModel.getQuestWithRepository()
             binding.tvQuestTitlePlay.text = homeViewModel.getKeyword()
             binding.tvQuestTitleWait.text = homeViewModel.getKeyword()
         }
-
     }
 
     private fun initView() {
