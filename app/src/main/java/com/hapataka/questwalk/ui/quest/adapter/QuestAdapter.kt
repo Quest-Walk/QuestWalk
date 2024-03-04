@@ -13,7 +13,7 @@ import com.hapataka.questwalk.ui.quest.QuestData
 import kotlin.math.min
 
 class QuestAdapter(
-    val onClick: (item: QuestData) -> Unit
+    val onClick: (QuestData) -> Unit
 ) : ListAdapter<QuestData, QuestAdapter.QuestViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
