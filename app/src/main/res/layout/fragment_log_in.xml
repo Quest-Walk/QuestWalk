@@ -46,15 +46,30 @@
             app:layout_constraintStart_toStartOf="@+id/et_login_password"
             app:layout_constraintTop_toBottomOf="@id/et_login_password" />
 
+
         <TextView
-            style="@style/small"
+            android:id="@+id/tv_findPassWord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="또는"
+            app:layout_constraintTop_toBottomOf="@id/tv_or"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="50dp"
+            android:layout_marginTop="50dp"
+            android:textColor="#C8c8c8"
+            style="@style/small"
+            android:text="비밀번호를 잊어버리셨나요?"/>
+
+
+        <TextView
+            android:id="@+id/tv_or"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="또는"
+            android:layout_marginTop="24dp"
+            style="@style/small"
+            app:layout_constraintTop_toBottomOf="@id/btn_logIn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_logIn" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="36dp"
@@ -63,28 +78,6 @@
             app:cardCornerRadius="90dp"
             app:layout_constraintStart_toStartOf="@id/btn_logIn"
             app:layout_constraintTop_toBottomOf="@id/btn_logIn">
-
-        <TextView
-            android:id="@+id/tv_findPassWord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_or"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="3dp"
-            android:text="비밀번호찾기"/>
-
-
-    <TextView
-        android:id="@+id/tv_or"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="또는"
-        android:layout_marginTop="24dp"
-        style="@style/small"
-        app:layout_constraintTop_toBottomOf="@id/btn_logIn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
             <ImageView
                 android:id="@+id/iv_google"

@@ -24,17 +24,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cv_profileImage"
+            android:id="@+id/cv_profile_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="145dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="140dp"
             app:cardCornerRadius="90dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/iv_profileImage"
+                android:id="@+id/iv_profile_image"
                 android:layout_width="126dp"
                 android:layout_height="126dp"
                 android:src="@drawable/googolelogo" />
@@ -42,15 +43,16 @@
         </androidx.cardview.widget.CardView>
 
         <EditText
-            android:id="@+id/et_nickName"
-            android:layout_width="wrap_content"
+            android:id="@+id/et_nickname"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="모험가 54321"
+            android:layout_marginTop="20dp"
+            android:hint="닉네임을 설정해 주세요"
             style="@style/body_default"
-            app:layout_constraintEnd_toEndOf="@id/cv_profileImage"
-            app:layout_constraintStart_toStartOf="@id/cv_profileImage"
-            app:layout_constraintTop_toBottomOf="@id/cv_profileImage" />
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@id/cv_profile_image"
+            app:layout_constraintStart_toStartOf="@id/cv_profile_image"
+            app:layout_constraintTop_toBottomOf="@id/cv_profile_image" />
 
 
         <androidx.appcompat.widget.AppCompatButton
@@ -60,9 +62,9 @@
             android:layout_marginTop="30dp"
             android:text="가입완료"
             style="@style/body_default"
-            app:layout_constraintEnd_toEndOf="@id/et_nickName"
-            app:layout_constraintStart_toStartOf="@id/et_nickName"
-            app:layout_constraintTop_toBottomOf="@id/et_nickName" />
+            app:layout_constraintEnd_toEndOf="@id/et_nickname"
+            app:layout_constraintStart_toStartOf="@id/et_nickname"
+            app:layout_constraintTop_toBottomOf="@id/et_nickname" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

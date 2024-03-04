@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.signup
 
+import android.content.Context
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -9,11 +10,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
+import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 class SignUpFragment : Fragment() {
@@ -64,17 +64,18 @@ class SignUpFragment : Fragment() {
         showPasswordVisibility(binding.ivShowPassWordCheck, binding.etSignUpPassWordCheck)
     }
 
-    fun TextView.showError(msg: String) {
-        val animShake = AnimationUtils.loadAnimation(requireContext(), R.anim.shake_error)
-
-        text = msg
-        startAnimation(animShake)
-    }
+//    fun TextView.showError(msg: String) {
+//        val animShake = AnimationUtils.loadAnimation(requireContext(), R.anim.shake_error)
+//
+//        text = msg
+//        startAnimation(animShake)
+//    }
 
     private fun initGoToPasswordButton() {
         with(binding) {
             btnGoToPassWord.setOnClickListener {
                 emailId = etSignUpId.text.toString()
+                hideKeyBoard()
 
                 if (checkEmailValidity(emailId)) {
                     return@setOnClickListener
@@ -86,12 +87,12 @@ class SignUpFragment : Fragment() {
 
     private fun checkEmailValidity(id: String): Boolean {
         if (emailId.isEmpty()) {
-            Toast.makeText(context, "이메일 주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            ("이메일 주소를 입력해주세요.").showSnackbar(requireView())
             return true
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(emailId).matches()) {
-            Toast.makeText(context, "이메일 형식이 올바르지 않습니다", Toast.LENGTH_SHORT).show()
+            ("이메일 형식이 올바르지 않습니다.").showSnackbar(requireView())
             return true
         }
         return false
@@ -102,18 +103,25 @@ class SignUpFragment : Fragment() {
             btnGoToJoin.setOnClickListener {
                 val password = etSignUpPassWord.text.toString()
                 val passwordCheck = etSignUpPassWordCheck.text.toString()
+                hideKeyBoard()
 
                 if (password != passwordCheck) {
-                    Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                    ("비밀번호가 일치하지 않습니다.").showSnackbar(requireView())
                     return@setOnClickListener
                 }
+                if (password.length < 6) {
+                    ("비밀번호는 6자리 이상으로 설정해 주세요.").showSnackbar(requireView())
+                    return@setOnClickListener
+                }
+
+
                 lifecycleScope.launch {
                     authRepo.registerByEmailAndPw(emailId, password) { task ->
                         if (task.isSuccessful) {
                             moveHomeWithLogin(emailId, password)
                             return@registerByEmailAndPw
                         }
-                        binding.tvErrorMsg.showError("가입불가능하네요")
+                        ("이미 가입된 아이디입니다.").showSnackbar(requireView())
                     }
                 }
             }
@@ -124,17 +132,33 @@ class SignUpFragment : Fragment() {
         lifecycleScope.launch {
             authRepo.loginByEmailAndPw(id, pw) { task ->
                 if (task.isSuccessful) {
-                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
-                    navController.navigate(R.id.action_frag_sign_up_to_frag_home)
-                    navGraph.setStartDestination(R.id.frag_home)
-                    navController.graph = navGraph
+                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
+//                    navGraph.setStartDestination(R.id.frag_on_boarding)
+//                    navController.graph = navGraph
                     return@loginByEmailAndPw
                 }
                 Log.e(TAG, "에러남")
             }
         }
     }
+
+//    private fun moveHomeWithLogin(id: String, pw: String) {
+//        lifecycleScope.launch {
+//            authRepo.loginByEmailAndPw(id, pw) { task ->
+//                if (task.isSuccessful) {
+//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+//
+//                    navController.navigate(R.id.action_frag_sign_up_to_frag_home)
+//                    navGraph.setStartDestination(R.id.frag_home)
+//                    navController.graph = navGraph
+//                    return@loginByEmailAndPw
+//                }
+//                Log.e(TAG, "에러남")
+//            }
+//        }
+//    }
 
     private fun initPrevButton() {
         binding.btnBack.setOnClickListener {
@@ -151,7 +175,7 @@ class SignUpFragment : Fragment() {
     private fun changePassWordUi() {
         binding.apply {
             tvId.text = "비밀번호"
-            tvExplain.text = "비밀번호는 특수문자를 포함해 주세요"
+            tvExplain.text = "비밀번호는 6글자 이상 입력해 주세요"
             etSignUpId.isVisible = false
             btnGoToPassWord.visibility = View.INVISIBLE
         }
@@ -187,6 +211,11 @@ class SignUpFragment : Fragment() {
             }
             true
         }
+    }
+
+    private fun hideKeyBoard() {
+        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
 
     override fun onDestroyView() {
