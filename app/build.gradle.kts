@@ -1,5 +1,5 @@
 plugins {
-    kotlin("kapt")
+    id("kotlin-kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
