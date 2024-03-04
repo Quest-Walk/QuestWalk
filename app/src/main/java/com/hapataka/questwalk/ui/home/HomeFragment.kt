@@ -1,27 +1,33 @@
 package com.hapataka.questwalk.ui.home
 
 import android.content.res.ColorStateList
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.SystemClock
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Chronometer
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.camerafragment.CameraFragment
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
 
     private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
+    private var backPressedOnce = false
 
     //모험 대기(wait),모험 시작(play)
     private var isPlay = false
@@ -48,7 +54,7 @@ class HomeFragment : Fragment() {
     private fun initView() {
         replaceFragmentByImageButton()
         setQuestButtonEvent()
-
+        initBackPressedCallback()
     }
 
     /**
@@ -128,5 +134,25 @@ class HomeFragment : Fragment() {
             )
         )
         ViewCompat.setBackgroundTintList(view, colorStateList)
+    }
+
+    private fun initBackPressedCallback() {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finish()
+                    return
+                }
+                backPressedOnce = true
+                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    delay(2000)
+                    backPressedOnce = false
+                }
+
+            }
+        }.also {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
     }
 }

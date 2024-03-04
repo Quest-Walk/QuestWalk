@@ -13,5 +13,6 @@ sealed class RecordItem {
     data class Achievement(
         val icon: Int,
         val name: String,
+        val description: String
     ) : RecordItem()
 }

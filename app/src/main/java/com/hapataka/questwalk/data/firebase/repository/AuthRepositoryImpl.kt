@@ -16,6 +16,7 @@ class AuthRepositoryImpl : AuthRepository {
     ) {
         auth.createUserWithEmailAndPassword(email, pw)
             .addOnCompleteListener { task -> callback(task) }
+
     }
 
     override suspend fun loginByEmailAndPw(

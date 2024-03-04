@@ -20,6 +20,25 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
+                android:id="@+id/btn_back"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="centerCrop"
+                    android:tint="@color/button"
+                    android:src="@drawable/btn_back" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btn_logout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -33,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
                     android:text="로그아웃"
-                    android:textColor="#0066FF" />
+                    android:textColor="@color/button" />
 
             </LinearLayout>
 
@@ -45,6 +64,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
+                android:layout_marginTop="12dp"
                 android:layout_height="match_parent"
                 android:paddingHorizontal="24dp">
 
@@ -75,10 +95,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="모험가 158427"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_player_character" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_player_character"
+                    tools:text="모험가 158427" />
 
                 <TextView
                     android:id="@+id/tv_title_time"
@@ -98,7 +118,7 @@
                     android:layout_marginTop="8dp"
                     app:layout_constraintStart_toStartOf="@id/tv_title_time"
                     app:layout_constraintTop_toBottomOf="@id/tv_title_time"
-                    tools:text="551시간 55분" />
+                    tools:text="0시간 0분" />
 
                 <TextView
                     android:id="@+id/tv_title_distance"
@@ -116,9 +136,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="205km"
                     app:layout_constraintStart_toStartOf="@id/tv_title_distance"
-                    app:layout_constraintTop_toBottomOf="@id/tv_title_distance" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_distance"
+                    tools:text="0km" />
 
                 <TextView
                     android:id="@+id/tv_title_step"
@@ -136,9 +156,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="183만 2574걸음"
                     app:layout_constraintStart_toStartOf="@id/tv_title_step"
-                    app:layout_constraintTop_toBottomOf="@id/tv_title_step" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_step"
+                    tools:text="183만 2574걸음" />
 
                 <TextView
                     android:id="@+id/tv_calorie"
@@ -146,9 +166,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="113,232kcal"
                     app:layout_constraintBottom_toBottomOf="@id/tv_step_value"
-                    app:layout_constraintStart_toEndOf="@id/tv_step_value" />
+                    app:layout_constraintStart_toEndOf="@id/tv_step_value"
+                    tools:text="113,232kcal" />
 
                 <LinearLayout
                     android:id="@+id/ll_quest_content_1"
@@ -174,7 +194,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="112개" />
+                        tools:text="112개" />
 
                 </LinearLayout>
 
@@ -200,7 +220,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="55개" />
+                        tools:text="55개" />
 
                 </LinearLayout>
 

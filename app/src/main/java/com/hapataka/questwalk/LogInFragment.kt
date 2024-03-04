@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -15,8 +17,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.record.TAG
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -27,6 +31,7 @@ class LogInFragment : Fragment() {
     //    private lateinit var googleSignInClient : GoogleSignInClient
     private val RC_SIGN_IN = 100
     private val authRepo by lazy { AuthRepositoryImpl() }
+    private val userRepo by lazy { UserRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     override fun onCreateView(
@@ -42,6 +47,7 @@ class LogInFragment : Fragment() {
 
         initLoginButton()
         initSignUpButton()
+        initBackPressedCallback()
     }
 
     //    private fun loginUser(email: String, password: String) {
@@ -135,24 +141,17 @@ class LogInFragment : Fragment() {
         lifecycleScope.launch {
             authRepo.loginByEmailAndPw(id, pw) { task ->
                 if (task.isSuccessful) {
-                    Log.i(TAG, "로그인 완료")
+                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
                     navController.navigate(R.id.action_frag_login_to_frag_home)
+                    navGraph.setStartDestination(R.id.frag_home)
+                    navController.graph = navGraph
+                    return@loginByEmailAndPw
                 }
                 Log.e(TAG, "로그인 실패")
             }
         }
     }
-
-//    }
-
-//    }
-
-//    }
-
-//    }
-
-
-//    }
 
 //    private fun signUpWithKakao() {
 //        binding.ivKakao.setOnClickListener {
@@ -223,8 +222,31 @@ class LogInFragment : Fragment() {
         _binding = null
         super.onDestroyView()
     }
+
+    private var backPressedOnce = false
+    private fun initBackPressedCallback() {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finish()
+                    return
+                }
+                backPressedOnce = true
+                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    delay(2000)
+                    backPressedOnce = false
+                }
+
+            }
+        }.also {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
+    }
 }
 
 fun String.showSnackbar(view: View) {
     Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
 }
+
+

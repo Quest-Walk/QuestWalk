@@ -1,7 +1,6 @@
 package com.hapataka.questwalk
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -20,22 +19,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initStartDestination() {
-        lifecycleScope.launch {
-            val navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
-            val navController = navHost.navController
-            val navGraph = navController.graph
-            val currentUser = authRepo.getCurrentUserUid()
+        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+        val navController = navHost.navController
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
+        lifecycleScope.launch {
+            val currentUser = authRepo.getCurrentUserUid()
 
             if (currentUser.isNotEmpty()) {
                 navGraph.setStartDestination(R.id.frag_home)
                 navController.graph = navGraph
-                Toast.makeText(this@MainActivity, "로그인된 유저", Toast.LENGTH_SHORT).show()
                 return@launch
             }
             navGraph.setStartDestination(R.id.frag_login)
             navController.graph = navGraph
-            Toast.makeText(this@MainActivity, "로그인 안함", Toast.LENGTH_SHORT).show()
         }
     }
 

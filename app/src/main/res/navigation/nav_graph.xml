@@ -61,7 +61,8 @@
             app:destination="@id/frag_on_boarding" />
         <action
             android:id="@+id/action_frag_login_to_frag_home"
-            app:destination="@id/frag_home" />
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
     </fragment>
 
     <fragment
