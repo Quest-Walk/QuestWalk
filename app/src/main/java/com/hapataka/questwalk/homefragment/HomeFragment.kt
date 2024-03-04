@@ -1,14 +1,11 @@
 package com.hapataka.questwalk.homefragment
 
 import android.content.res.ColorStateList
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.SystemClock
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Chronometer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -16,11 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.camerafragment.CameraFragment
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -40,13 +33,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        updateDataView()
 
+    }
+
+    private fun updateDataView() {
         lifecycleScope.launch {
             if (homeViewModel.getKeyword() == null) homeViewModel.getQuestWithRepository()
             binding.tvQuestTitlePlay.text = homeViewModel.getKeyword()
             binding.tvQuestTitleWait.text = homeViewModel.getKeyword()
         }
-
     }
 
     private fun initView() {
