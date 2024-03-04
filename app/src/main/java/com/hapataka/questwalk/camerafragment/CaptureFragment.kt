@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable.ProgressDrawa
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
+import com.hapataka.questwalk.homefragment.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ class CaptureFragment : Fragment() {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private val cameraViewModel: CameraViewModel by activityViewModels()
+    private val homeViewModel : HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentCaptureBinding
 
     private var bitmap: Bitmap? = null
@@ -42,7 +44,7 @@ class CaptureFragment : Fragment() {
             if (isSucceed == null) return@observe
             binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
             if (isSucceed) {
-                // TODO: HomeFragment 에 결과값 전달 하기함
+                homeViewModel.setImagePath(cameraViewModel.file.path)
                 navController.popBackStack(R.id.frag_home,false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvas()

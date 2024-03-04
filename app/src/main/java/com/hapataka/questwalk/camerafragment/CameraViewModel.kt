@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +33,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     // 카메라 Hardware 정보
     private var rotation: Float = 0F
     private lateinit var sizeList: Array<Size>
+
+    lateinit var file : File
     fun setBitmap(bitmap: Bitmap) {
         //전처리 과정을 마치고 포스트??
 
@@ -54,7 +57,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     fun getCameraMaxSize() = sizeList.last()
 
     suspend fun postCapturedImage(keyword: String) {
-        val file = repository.saveBitmap(bitmap.value!!, "postImage.jpg")
+        file = repository.saveBitmap(bitmap.value!!, "postImage.jpg")
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
