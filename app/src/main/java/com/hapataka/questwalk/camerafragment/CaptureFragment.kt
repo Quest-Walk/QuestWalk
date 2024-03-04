@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable.ProgressDrawableSize
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
@@ -26,13 +27,13 @@ class CaptureFragment : Fragment() {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private val cameraViewModel: CameraViewModel by activityViewModels()
-    private val homeViewModel : HomeViewModel by activityViewModels()
+    private val homeViewModel: HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentCaptureBinding
 
     private var bitmap: Bitmap? = null
     private var keyword: String = ""
 
-    private lateinit var progressDialog :ProgressDialog
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +46,7 @@ class CaptureFragment : Fragment() {
             binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
             if (isSucceed) {
                 homeViewModel.setImagePath(cameraViewModel.file.path)
-                navController.popBackStack(R.id.frag_home,false)
+                navController.popBackStack(R.id.frag_home, false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvas()
                 binding.clCheckOcr.visibility = View.GONE
@@ -65,7 +66,13 @@ class CaptureFragment : Fragment() {
                 keyword = etKeyword.text.toString()
                 CoroutineScope(Dispatchers.Main).launch {
                     progressDialog.show()
-                    cameraViewModel.postCapturedImage(keyword)
+                    try {
+                        cameraViewModel.postCapturedImage(keyword)
+                    } catch (_: Exception) {
+                        Snackbar.make(requireView(),"문자가 너무 어려워요 ㅠㅠ 다시 찍어 주세요!",Snackbar.LENGTH_SHORT).show()
+                        binding.clCheckOcr.visibility = View.GONE
+                        binding.clResultOcr.visibility = View.VISIBLE
+                    }
                     progressDialog.dismiss()
                 }
             }
