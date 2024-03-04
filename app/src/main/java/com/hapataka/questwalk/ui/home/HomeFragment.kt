@@ -1,11 +1,17 @@
 package com.hapataka.questwalk.ui.home
 
 import android.content.res.ColorStateList
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
+import android.widget.Chronometer
+import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -14,14 +20,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.load
+import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.record.TAG
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment() {
-
-
     private val homeViewModel: HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     private var backPressedOnce = false
@@ -45,7 +56,6 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             if (homeViewModel.getKeyword() == null) homeViewModel.getQuestWithRepository()
             binding.tvQuestTitlePlay.text = homeViewModel.getKeyword()
-            binding.tvQuestTitleWait.text = homeViewModel.getKeyword()
         }
     }
 
@@ -57,20 +67,16 @@ class HomeFragment : Fragment() {
         initBackPressedCallback()
     }
 
-    /**
-     *  프래그먼트 간의 이동
-     */
-
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private fun replaceFragmentByImageButton() {
         with(binding) {
-            ibHistory.setOnClickListener {
+            btnRecord.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_record)
             }
-            ibMyPage.setOnClickListener {
+            btnMyPage.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
-            ibWheather.setOnClickListener {
+            btnWheather.setOnClickListener {
                 // TODO : wheatherFragment 이동
             }
             ibCamera.setOnClickListener {
@@ -81,7 +87,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
 
     private fun setQuestButtonEvent() {
         binding.btnQuestStatus.setOnClickListener {
@@ -94,24 +99,59 @@ class HomeFragment : Fragment() {
         with(binding) {
             if (homeViewModel.isPlay) { // 모험 시작!
                 clPlayingBottomWidgets.visibility = View.VISIBLE
-                clPlayingUpperWidgets.visibility = View.VISIBLE
-                clWaitingBottomWidgets.visibility = View.GONE
+                llPlayingContents.visibility = View.VISIBLE
+                btnQuestChange.visibility = View.GONE
 
                 //버튼색 이름 및 색깔 변경
                 btnQuestStatus.text = "포기하기"
                 setBackgroundWidget(btnQuestStatus, R.color.red)
+                initQuestStart()
 
             } else { // 모험이 끝날때!
                 clPlayingBottomWidgets.visibility = View.GONE
-                clPlayingUpperWidgets.visibility = View.GONE
-                clWaitingBottomWidgets.visibility = View.VISIBLE
+                llPlayingContents.visibility = View.GONE
+                btnQuestChange.visibility = View.VISIBLE
 
 
                 //버튼색 이름 및 색깔 변경
                 btnQuestStatus.text = "모험 시작하기"
                 setBackgroundWidget(btnQuestStatus, R.color.green)
+                initQuestEnd()
             }
         }
+    }
+
+    private fun initQuestStart() {
+        val imageLoader = ImageLoader.Builder(requireContext())
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+        val request = ImageRequest.Builder(requireContext())
+            .data(R.drawable.character_move_01)
+            .target(binding.ivChrImage)
+            .build()
+
+        imageLoader.enqueue(request)
+
+        val animation = TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 1f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            )
+
+        animation.duration = 3000
+        animation.repeatCount = Animation.INFINITE
+        binding.background.startAnimation(animation)
+    }
+
+    private fun initQuestEnd() {
+        binding.ivChrImage.load(R.drawable.character_01)
     }
 
     // backgroundTint 값 변경

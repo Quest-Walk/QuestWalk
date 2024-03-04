@@ -20,8 +20,6 @@ class MyInfoFragment : Fragment() {
     private val myInfoViewModel by viewModels<MyInfoViewModel> { ViewModelFactory() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,9 +80,6 @@ class MyInfoFragment : Fragment() {
                 navController.graph = navGraph
             }
         }
-
-
-
     }
 
     private fun initBackButton() {

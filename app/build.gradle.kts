@@ -78,6 +78,22 @@ dependencies {
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
+<<<<<<< HEAD
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
+    // coil
+    implementation("io.coil-kt:coil:2.6.0")
+    implementation("io.coil-kt:coil-gif:2.6.0")
+
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+=======
+>>>>>>> d81344212ede573aedf2599e7e94c60ffa3ca850
 
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")
