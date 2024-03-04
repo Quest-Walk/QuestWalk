@@ -1,10 +1,11 @@
-package com.hapataka.questwalk.record.adapter
+package com.hapataka.questwalk.ui.record.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.hapataka.questwalk.record.DummyData
-import com.hapataka.questwalk.record.RecordItemFragment
+import com.hapataka.questwalk.data.resource.Achievements
+import com.hapataka.questwalk.ui.record.DummyData
+import com.hapataka.questwalk.ui.record.RecordItemFragment
 
 class RecordItemAdapter(fragmentActivity: FragmentActivity): FragmentStateAdapter(fragmentActivity) {
     private val page = 2
@@ -14,7 +15,7 @@ class RecordItemAdapter(fragmentActivity: FragmentActivity): FragmentStateAdapte
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> RecordItemFragment(DummyData.historyList)
-            1 -> RecordItemFragment(DummyData.achieveList)
+            1 -> RecordItemFragment(Achievements.list)
             else -> throw IllegalArgumentException("잘못된 페이지")
         }
     }

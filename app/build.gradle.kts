@@ -44,14 +44,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -85,6 +78,11 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation("io.coil-kt:coil:2.6.0")
+
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
 
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")

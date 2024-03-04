@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.record.adapter
+package com.hapataka.questwalk.ui.record.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,14 +10,24 @@ import coil.load
 import com.hapataka.questwalk.databinding.ItemRecordAchievementBinding
 import com.hapataka.questwalk.databinding.ItemRecordHeaderBinding
 import com.hapataka.questwalk.databinding.ItemRecordResultBinding
-import com.hapataka.questwalk.record.model.RecordItem
-import com.hapataka.questwalk.record.model.RecordItem.*
+import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.ui.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.Achievement
+import com.hapataka.questwalk.ui.record.model.RecordItem.Header
+import com.hapataka.questwalk.ui.record.model.RecordItem.Result
 
 const val HEADER_TYPE = 0
 const val RESULT_TYPE = 1
 const val ACHIEVEMENT_TYPE = 2
 
-class RecordDetailAdapter(val context: Context) : ListAdapter<RecordItem, ViewHolder>(diffUtil) {
+class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.AchievementEntity> = listOf()) : ListAdapter<RecordItem, ViewHolder>(
+    diffUtil
+) {
+    var itemClick: ItemClick? = null
+    interface ItemClick{
+        fun onClick(item: RecordItem)
+    }
+
     inner class HeaderViewHolder(binding: ItemRecordHeaderBinding) : ViewHolder(binding.root) {
         private val title = binding.tvTitle
 
@@ -77,7 +87,10 @@ class RecordDetailAdapter(val context: Context) : ListAdapter<RecordItem, ViewHo
         when(holder) {
             is HeaderViewHolder -> holder.bind(item as Header)
             is ResultViewHolder -> holder.bind(item as Result)
-            is AchievementViewHolder -> holder.bind(item as Achievement)
+            is AchievementViewHolder -> {
+                holder.bind(item as Achievement)
+                holder.itemView.setOnClickListener { itemClick?.onClick(item) }
+            }
         }
     }
 
