@@ -5,7 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.hapataka.questwalk.domain.entity.AchieveStackEntity
 import com.hapataka.questwalk.domain.repository.AchieveStackRepository
-import com.hapataka.questwalk.ui.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext

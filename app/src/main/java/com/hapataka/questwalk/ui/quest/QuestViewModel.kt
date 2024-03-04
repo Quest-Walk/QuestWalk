@@ -48,9 +48,9 @@ class QuestViewModel : ViewModel() {
     fun filterComplete(isChecked: Boolean) {
         if (isChecked) {
             viewModelScope.launch {
-//                val uid = authRepositoryImpl.getCurrentUserUid()
-                val testUid = "8fEEPVnXYjPMyXIeoWTxelYc9qo1"
-                val completeKeywords = userRepositoryImpl.getResultHistory(testUid).map { it.quest }
+                val uid = authRepositoryImpl.getCurrentUserUid()
+//                val testUid = "8fEEPVnXYjPMyXIeoWTxelYc9qo1"
+                val completeKeywords = userRepositoryImpl.getResultHistory(uid).map { it.quest }
 
                 val filterList = allQuestItems?.filter { !completeKeywords.contains(it.keyWord) }
                 allQuestItems = filterList?.toMutableList()

@@ -44,16 +44,16 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
-
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
@@ -63,29 +63,28 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.navigation:navigation-fragment:2.7.7")
-    testImplementation("junit:junit:4.13.2")
+
+    testImplementation("junit:junit:413.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // Gson Converter
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     // OKHttp for 통신 로그
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
-    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
-    implementation("io.coil-kt:coil:2.6.0")
 
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+
     //spinner
     implementation("com.github.skydoves:powerspinner:1.2.6")
+
     //coil
     implementation("io.coil-kt:coil:2.6.0")
 }
