@@ -6,21 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:scrollX="@null"
-        android:layout_height="match_parent">
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent
+">
 
         <ImageView
             android:id="@+id/background"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:src="@drawable/background_day"
             app:layout_constraintStart_toStartOf="parent" />
 
-    </HorizontalScrollView>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 
     <ImageView

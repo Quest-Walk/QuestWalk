@@ -11,12 +11,12 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.Chronometer
+import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -26,51 +26,46 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.camerafragment.CameraFragment
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment() {
-    private lateinit var viewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     private var backPressedOnce = false
 
-    //모험 대기(wait),모험 시작(play)
-    private var isPlay = false
-
-    //타이머
-    private lateinit var timer: Chronometer
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-
-        timer = binding.cmQuestTime
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        // TODO: Use the ViewModel
         initView()
+        updateDataView()
+
+    }
+
+    private fun updateDataView() {
+        lifecycleScope.launch {
+            if (homeViewModel.getKeyword() == null) homeViewModel.getQuestWithRepository()
+            binding.tvQuestTitlePlay.text = homeViewModel.getKeyword()
+        }
     }
 
     private fun initView() {
+
+        setQuestState()
         replaceFragmentByImageButton()
         setQuestButtonEvent()
         initBackPressedCallback()
-
-        Log.i(TAG, "dis: ${getResources().getDisplayMetrics().density}")
-
     }
-
-    /**
-     *  프래그먼트 간의 이동
-     */
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private fun replaceFragmentByImageButton() {
@@ -85,8 +80,7 @@ class HomeFragment : Fragment() {
                 // TODO : wheatherFragment 이동
             }
             ibCamera.setOnClickListener {
-//                navController.navigate(R.id.action_frag_home_to_frag_camera)
-                replaceFragment(CameraFragment())
+                navController.navigate(R.id.action_frag_home_to_frag_camera)
             }
             btnQuestChange.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_quest)
@@ -94,44 +88,35 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_graph, fragment)
-            .addToBackStack(null)
-            .commit()
+    private fun setQuestButtonEvent() {
+        binding.btnQuestStatus.setOnClickListener {
+            homeViewModel.isPlay = !homeViewModel.isPlay
+            setQuestState()
+        }
     }
 
-    private fun setQuestButtonEvent() {
+    private fun setQuestState() {
         with(binding) {
-            btnQuestStatus.setOnClickListener {
-                if (!isPlay) { // 모험 시작!
-                    clPlayingBottomWidgets.visibility = View.VISIBLE
-                    llPlayingContents.visibility = View.VISIBLE
-                    btnQuestChange.visibility = View.GONE
-                    isPlay = true
+            if (homeViewModel.isPlay) { // 모험 시작!
+                clPlayingBottomWidgets.visibility = View.VISIBLE
+                llPlayingContents.visibility = View.VISIBLE
+                btnQuestChange.visibility = View.GONE
 
-                    //버튼색 이름 및 색깔 변경
-                    btnQuestStatus.text = "포기하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.red)
+                //버튼색 이름 및 색깔 변경
+                btnQuestStatus.text = "포기하기"
+                setBackgroundWidget(btnQuestStatus, R.color.red)
+                initQuestStart()
 
-                    //타이머
-                    timer.base = SystemClock.elapsedRealtime()
-                    timer.start()
-                    initQuestStart()
-                } else { // 모험이 끝날때!
-                    clPlayingBottomWidgets.visibility = View.GONE
-                    llPlayingContents.visibility = View.GONE
-                    btnQuestChange.visibility = View.VISIBLE
-                    isPlay = false
+            } else { // 모험이 끝날때!
+                clPlayingBottomWidgets.visibility = View.GONE
+                llPlayingContents.visibility = View.GONE
+                btnQuestChange.visibility = View.VISIBLE
 
-                    //버튼색 이름 및 색깔 변경
-                    btnQuestStatus.text = "모험 시작하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.green)
 
-                    //타이머 중지
-                    timer.stop()
-                    initQuestEnd()
-                }
+                //버튼색 이름 및 색깔 변경
+                btnQuestStatus.text = "모험 시작하기"
+                setBackgroundWidget(btnQuestStatus, R.color.green)
+                initQuestEnd()
             }
         }
     }
