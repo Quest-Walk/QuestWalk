@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
@@ -19,7 +18,7 @@ import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
     private lateinit var questDetailAdapter: QuestDetailAdapter
-    private val item by lazy { arguments?.getParcelable("item") as? QuestStatsEntity}
+    private val item by lazy { arguments?.getParcelable("item") as? QuestData}
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     override fun onCreateView(
@@ -49,7 +48,7 @@ class QuestDetailFragment : Fragment() {
         }
         binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
         binding.revQuestDetail.adapter = questDetailAdapter
-        val urlList = item?.successItems?.map { it.value }
+        val urlList = item?.successItems?.map { it.imageUrl }?.reversed()
         questDetailAdapter.submitList(urlList?.toMutableList())
     }
 }
