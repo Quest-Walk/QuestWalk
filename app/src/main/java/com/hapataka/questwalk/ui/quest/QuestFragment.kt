@@ -1,12 +1,11 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
+import com.hapataka.questwalk.ui.record.AchieveDialog
 
 class QuestFragment : Fragment() {
     private val binding: FragmentQuestBinding by lazy { FragmentQuestBinding.inflate(layoutInflater) }
@@ -77,13 +77,20 @@ class QuestFragment : Fragment() {
     }
 
     private fun initQuestRecyclerView() {
-        questAdapter = QuestAdapter {item, allUser ->
-            val bundle = Bundle().apply {
-                putParcelable("item", item)
-                putLong("allUser", allUser)
+        questAdapter = QuestAdapter(
+            onClickMoreText = {questData, allUser ->
+                val bundle = Bundle().apply {
+                    putParcelable("item", questData)
+                    putLong("allUser", allUser)
+                }
+                navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
+            },
+
+            onClickView =  {keyWord ->
+                val dialog = QuestDialog(keyWord)
+                dialog.show(parentFragmentManager, "QuestDialog")
             }
-            navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
-        }
+        )
         binding.revQuest.adapter = questAdapter
     }
 }

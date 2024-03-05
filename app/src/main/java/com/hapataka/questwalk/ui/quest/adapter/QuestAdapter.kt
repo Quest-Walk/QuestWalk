@@ -15,7 +15,8 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 class QuestAdapter(
-    val onClick: (QuestData, Long) -> Unit
+    val onClickMoreText: (QuestData, Long) -> Unit,
+    val onClickView: (String) -> Unit
 ) : ListAdapter<QuestData, QuestAdapter.QuestViewHolder>(diffUtil) {
     private var allUser = 0L
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
@@ -48,7 +49,11 @@ class QuestAdapter(
             }
 
             binding.tvMore.setOnClickListener {
-                onClick(item, allUser)
+                onClickMoreText(item, allUser)
+            }
+
+            binding.constraintQuest.setOnClickListener {
+                onClickView(item.keyWord)
             }
         }
     }
