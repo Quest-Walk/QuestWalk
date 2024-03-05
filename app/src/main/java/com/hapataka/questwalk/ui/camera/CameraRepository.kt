@@ -2,6 +2,11 @@ package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileOutputStream
@@ -32,6 +37,25 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
             width = (height * bitmapRatio).toInt()
         }
         return Bitmap.createScaledBitmap(image,width,height,true)
+    }
+
+    fun toGrayScaleBitmap(bitmap: Bitmap): Bitmap {
+        val width: Int = bitmap.width
+        val height: Int = bitmap.height
+
+        val grayscaleBitmap = Bitmap.createBitmap(
+            width, height, Bitmap.Config.ARGB_8888
+        )
+
+        val canvas = Canvas(grayscaleBitmap)
+        val paint = Paint()
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(0f)
+        val filter = ColorMatrixColorFilter(colorMatrix)
+        paint.colorFilter = filter
+        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+
+        return grayscaleBitmap
     }
 
     fun deleteBitmap() {

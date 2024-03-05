@@ -62,7 +62,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         file = repository.saveBitmap(bitmap.value!!, "resultImage.jpg")
 
 
-        val postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
+        var postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
+        postBitmap = repository.toGrayScaleBitmap(postBitmap)
         val postFile = repository.saveBitmap(postBitmap,"postImage.jpg")
 
         val requestFile = postFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
