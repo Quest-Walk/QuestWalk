@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/frag_camera"
-        android:name="com.hapataka.questwalk.camerafragment.CameraFragment"
+        android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
         android:label="frag_camera"
         tools:layout="@layout/fragment_camera">
         <action
@@ -58,7 +58,7 @@
 
     <fragment
         android:id="@+id/frag_capture"
-        android:name="com.hapataka.questwalk.camerafragment.CaptureFragment"
+        android:name="com.hapataka.questwalk.ui.camera.CaptureFragment"
         android:label="frag_capture"
         tools:layout="@layout/fragment_capture" />
 

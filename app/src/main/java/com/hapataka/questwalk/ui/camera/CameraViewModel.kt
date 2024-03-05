@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.camerafragment
+package com.hapataka.questwalk.ui.camera
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -19,6 +19,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import javax.inject.Inject
+import info.debatty.java.stringsimilarity.*
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
@@ -34,7 +35,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var rotation: Float = 0F
     private lateinit var sizeList: Array<Size>
 
-    lateinit var file : File
+    lateinit var file: File
+
     fun setBitmap(bitmap: Bitmap) {
         //전처리 과정을 마치고 포스트??
 
@@ -72,8 +74,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun validationResponse(keyword: String): Boolean {
         //Line 내에 Words 의 WordText 를 비교해야함
+        val similarityObj = RatcliffObershelp()
         resultList.forEach { line: Line ->
-            if (line.Words[0].WordText.contains(keyword)) return true
+            val word = line.Words[0].WordText
+            Log.d("result", (similarityObj.similarity(word, keyword)).toString())
+            if (word.contains(keyword)) return true
+            else if (similarityObj.similarity(word, keyword) >= 0.6) return true
         }
 
         return false
@@ -97,5 +103,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             )
         }
         _bitmap.value = tempBitmap
+        initIsSucceed()
+    }
+
+    fun initIsSucceed() {
+        _isSucceed.value = null
     }
 }

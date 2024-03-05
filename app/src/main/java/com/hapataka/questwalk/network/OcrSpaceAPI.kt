@@ -25,7 +25,7 @@ interface OcrSpaceAPI {
         @Part("isOverlayRequired") isOverlayRequired: RequestBody = "true".toRequestBody(),
         @Part("filetype") fileType: RequestBody = FILE_TYPE.toRequestBody(),
         @Part("detectOrientation") orientation: RequestBody = "true".toRequestBody(),
-        @Part("scale") scale: RequestBody = "true".toRequestBody(),
+//        @Part("scale") scale: RequestBody = "true".toRequestBody(),
         @Part("OCREngine") engine: RequestBody = "3".toRequestBody(),
     ): Response<OcrResponse>
 
