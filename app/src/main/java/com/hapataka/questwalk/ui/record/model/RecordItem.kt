@@ -15,6 +15,7 @@ sealed class RecordItem {
         val achieveIcon: Int,
         val achieveTitle: String,
         val achieveDescription: String,
-        val isHidden: Boolean = false
+        var isSuccess: Boolean = false,
+        var isHidden: Boolean = false
     ) : RecordItem()
 }

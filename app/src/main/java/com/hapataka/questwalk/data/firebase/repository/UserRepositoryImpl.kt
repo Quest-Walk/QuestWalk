@@ -16,7 +16,14 @@ class UserRepositoryImpl : UserRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val userCollection by lazy { remoteDb.collection("user") }
 
-    override suspend fun setInfo(userId: String, result: HistoryEntity) {
+    override suspend fun setUserInfo(userId: String, profileId: Int, name: String) {
+        val document = userCollection.document(userId)
+        val user = UserEntity(userId, name, profileId)
+
+        document.set(user)
+    }
+
+    override suspend fun updateUserInfo(userId: String, result: HistoryEntity) {
         withContext(Dispatchers.IO) {
             val currentDocument = userCollection.document(userId)
             var currentInfo = getInfo(userId)

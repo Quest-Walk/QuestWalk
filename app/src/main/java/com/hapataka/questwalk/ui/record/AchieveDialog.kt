@@ -11,7 +11,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogAchievementBinding
 import com.hapataka.questwalk.ui.record.model.RecordItem
 
-class AchieveDialog(val item: RecordItem, val successAchieve: List<Int>) : DialogFragment() {
+class AchieveDialog(val item: RecordItem) : DialogFragment() {
     private val binding by lazy { DialogAchievementBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -47,7 +47,7 @@ class AchieveDialog(val item: RecordItem, val successAchieve: List<Int>) : Dialo
             with(binding) {
                 tvDiscription.text = item.achieveDescription
 
-                if (successAchieve.contains(item.achieveId)) {
+                if (item.isSuccess) {
                     ivIcon.load(item.achieveIcon)
                     tvTitle.text = item.achieveTitle
                     return
