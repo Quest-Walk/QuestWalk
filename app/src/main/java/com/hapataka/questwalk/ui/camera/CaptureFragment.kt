@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.camerafragment
+package com.hapataka.questwalk.ui.camera
 
 import android.app.ProgressDialog
 import android.graphics.Bitmap

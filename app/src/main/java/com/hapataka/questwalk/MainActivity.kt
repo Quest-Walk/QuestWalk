@@ -5,7 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import com.hapataka.questwalk.camerafragment.CameraViewModel
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint

@@ -3,7 +3,7 @@ package com.hapataka.questwalk.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.hapataka.questwalk.camerafragment.CameraViewModel
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 

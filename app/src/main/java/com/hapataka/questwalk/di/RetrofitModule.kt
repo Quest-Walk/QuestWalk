@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.di
 
 import android.content.Context
-import com.hapataka.questwalk.camerafragment.CameraRepository
+import com.hapataka.questwalk.ui.camera.CameraRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
