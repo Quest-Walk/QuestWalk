@@ -24,7 +24,6 @@ class HomeViewModel : ViewModel() {
 
     fun getKeyword() = questKeyword
 
-
     fun setImagePath(uri: String) {
         imgPath = uri.toUri()
     }
