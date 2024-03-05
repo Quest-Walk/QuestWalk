@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class AchieveStackRepositoryImpl : AchieveStackRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
-    private val achieveCollection by lazy { remoteDb.collection("Achievement") }
+    private val achieveCollection by lazy { remoteDb.collection("AchieveItem") }
 
     override suspend fun countUpAchieveStack(id: Int) {
         val currentItem = getAchieveStateById(id)

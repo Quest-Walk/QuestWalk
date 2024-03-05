@@ -1,10 +1,10 @@
 package com.hapataka.questwalk.data.firebase.repository
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.ACHIEVE_TYPE
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.HistoryEntity.*
+import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepository
@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 class UserRepositoryImpl : UserRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val userCollection by lazy { remoteDb.collection("user") }
+
     override suspend fun setInfo(userId: String, result: HistoryEntity) {
         withContext(Dispatchers.IO) {
             val currentDocument = userCollection.document(userId)
@@ -31,6 +32,12 @@ class UserRepositoryImpl : UserRepository {
             currentInfo.histories.add(result)
             currentDocument.set(currentInfo)
         }
+    }
+
+    override suspend fun getAllUserSize(): Long = withContext(Dispatchers.IO) {
+        val documents = userCollection.get().await()
+
+        return@withContext documents.size().toLong()
     }
 
     override suspend fun getInfo(userId: String): UserEntity = withContext(Dispatchers.IO) {
@@ -86,8 +93,6 @@ class UserRepositoryImpl : UserRepository {
 
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
         var resultList = mutableListOf<HistoryEntity>()
-
-
 
         items.forEach { item ->
             when (item["type"]) {

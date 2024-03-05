@@ -6,30 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent
-">
-
-        <ImageView
-            android:id="@+id/background"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/background_day"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.drawerlayout.widget.DrawerLayout>
-
-
     <ImageView
-        android:id="@+id/move_compo"
-        android:layout_width="match_parent"
+        android:id="@+id/iv_bg_layer_3"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        tools:src="@drawable/background_day_compo" />
+        app:layout_constraintDimensionRatio="4:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/background_day_layer3" />
+
+    <ImageView
+        android:id="@+id/iv_bg_layer_2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/background_day_layer2" />
+
+    <ImageView
+        android:id="@+id/iv_bg_layer_1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="4:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/background_day_layer1" />
 
     <LinearLayout
         android:id="@+id/btn_my_page"

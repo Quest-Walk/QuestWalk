@@ -11,7 +11,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogAchievementBinding
 import com.hapataka.questwalk.ui.record.model.RecordItem
 
-class AchieveDialog(val item: RecordItem) : DialogFragment() {
+class AchieveDialog(val item: RecordItem, val successAchieve: List<Int>) : DialogFragment() {
     private val binding by lazy { DialogAchievementBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -24,18 +24,9 @@ class AchieveDialog(val item: RecordItem) : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initCloseButton()
         setDialogSize()
-        if (item is RecordItem.Achievement) {
-            binding.tvDiscription.text = item.description
-            binding.ivIcon.load(item.icon)
-        }
-    }
-
-    private fun initCloseButton() {
-        binding.btnClose.setOnClickListener {
-            dismiss()
-        }
+        initViews()
+        initCloseButton()
     }
 
     private fun setDialogSize() {
@@ -49,5 +40,27 @@ class AchieveDialog(val item: RecordItem) : DialogFragment() {
 
         dialog?.window?.setLayout(dialogWidth, dialogHeight)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
+    }
+
+    private fun initViews() {
+        if (item is RecordItem.AchieveItem) {
+            with(binding) {
+                tvDiscription.text = item.achieveDescription
+
+                if (successAchieve.contains(item.achieveId)) {
+                    ivIcon.load(item.achieveIcon)
+                    tvTitle.text = item.achieveTitle
+                    return
+                }
+                ivIcon.load(R.drawable.ic_lock)
+                tvTitle.text = "???"
+            }
+        }
+    }
+
+    private fun initCloseButton() {
+        binding.btnClose.setOnClickListener {
+            dismiss()
+        }
     }
 }
