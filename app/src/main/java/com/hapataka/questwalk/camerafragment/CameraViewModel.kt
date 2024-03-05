@@ -97,5 +97,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             )
         }
         _bitmap.value = tempBitmap
+        _isSucceed.value = null
     }
 }

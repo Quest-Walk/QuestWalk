@@ -85,6 +85,7 @@ class CameraFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentCameraBinding.inflate(inflater, container, false)
+        ttvPreview = binding.ttvPreview
         return binding.root
     }
 
@@ -100,6 +101,7 @@ class CameraFragment : Fragment() {
         }
 
         checkPermissions()
+
         bindingImageButton()
 
 
@@ -136,6 +138,7 @@ class CameraFragment : Fragment() {
     }
 
     private fun setCamera() {
+
         handlerThread = HandlerThread("previewThread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
@@ -144,34 +147,15 @@ class CameraFragment : Fragment() {
         cameraId = cameraManager.cameraIdList[0]
         //camera getData
         getCharacterCamera()
-
-        ttvPreview = binding.ttvPreview
-        ttvPreview.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(
-                surface: SurfaceTexture,
-                width: Int,
-                height: Int,
-            ) {
-                openCamera()
-            }
-
-            override fun onSurfaceTextureSizeChanged(
-                surface: SurfaceTexture,
-                width: Int,
-                height: Int,
-            ) {
-            }
-
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-                return false
-            }
-
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-            }
-
+        setImageReader()
+        ttvPreview.post{
+            openCamera()
         }
 
 
+    }
+
+    private fun setImageReader() {
         val maxSize = cameraViewModel.getCameraMaxSize()
         imageReader = ImageReader.newInstance(
             maxSize.width,
@@ -195,7 +179,6 @@ class CameraFragment : Fragment() {
             Toast.makeText(requireContext(), "image captured", Toast.LENGTH_SHORT)
                 .show()
         }, handler)
-
     }
 
     private fun getCharacterCamera() {
@@ -249,11 +232,15 @@ class CameraFragment : Fragment() {
         }, handler)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraCaptureSession.close()
-        cameraDevice.close()
-        handlerThread.quitSafely()
+    override fun onPause() {
+        super.onPause()
+        try {
+            cameraCaptureSession.close()
+            cameraDevice.close()
+            handlerThread.quitSafely()
+        } catch (_: Exception) {
+
+        }
 
     }
 }

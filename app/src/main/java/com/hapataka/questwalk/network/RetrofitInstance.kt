@@ -20,7 +20,7 @@ object RetrofitInstance {
                     .addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 })
-                    .readTimeout(120,TimeUnit.SECONDS)
+                    .readTimeout(60,TimeUnit.SECONDS)
                     .build()
             )
             .addConverterFactory(GsonConverterFactory.create())
