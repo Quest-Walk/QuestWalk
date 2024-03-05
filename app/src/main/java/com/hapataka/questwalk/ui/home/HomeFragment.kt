@@ -167,9 +167,9 @@ class HomeFragment : Fragment() {
 
         imageLoader.enqueue(requestCharacter)
 
-//        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
-//        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
-//        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
+        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
+        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
     }
 
     private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
