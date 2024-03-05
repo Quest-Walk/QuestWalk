@@ -10,17 +10,16 @@ import javax.inject.Inject
 class CameraRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     fun saveBitmap(bitmap: Bitmap, filename: String): File {
-        val resizedBitmap = resizedBitmap(bitmap,1000)
         val file = File(context.filesDir, filename)
         val fos = FileOutputStream(file)
 
-        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
         fos.close()
 
         return file
     }
 
-    private fun resizedBitmap(image: Bitmap, maxSize: Int): Bitmap {
+    fun resizedBitmap(image: Bitmap, maxSize: Int): Bitmap {
         var width = image.width
         var height = image.height
 

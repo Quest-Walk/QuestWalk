@@ -59,9 +59,14 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     fun getCameraMaxSize() = sizeList.last()
 
     suspend fun postCapturedImage(keyword: String) {
-        file = repository.saveBitmap(bitmap.value!!, "postImage.jpg")
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        file = repository.saveBitmap(bitmap.value!!, "resultImage.jpg")
+
+
+        val postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
+        val postFile = repository.saveBitmap(postBitmap,"postImage.jpg")
+
+        val requestFile = postFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("file", postFile.name, requestFile)
 
         val responseOcr = RetrofitInstance.ocrSpaceApi.getImageOcrResponse(file = imagePart)
         if (responseOcr.isSuccessful) {
