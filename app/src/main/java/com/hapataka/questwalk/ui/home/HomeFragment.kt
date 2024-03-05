@@ -25,7 +25,7 @@ import coil.load
 import coil.request.ImageRequest
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.camerafragment.CameraViewModel
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -109,6 +109,9 @@ class HomeFragment : Fragment() {
 
     private fun setQuestButtonEvent() {
         binding.btnQuestStatus.setOnClickListener {
+            if(homeViewModel.isQuestSuccess){
+                //TODO : 퀘스트 성공 후 값 전달 하기
+            }
             homeViewModel.isPlay = !homeViewModel.isPlay
             setQuestState()
         }
@@ -164,9 +167,9 @@ class HomeFragment : Fragment() {
 
         imageLoader.enqueue(requestCharacter)
 
-        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
-        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
-        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+//        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
+//        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
+//        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
     }
 
     private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
