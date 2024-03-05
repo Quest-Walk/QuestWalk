@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.onboarding
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,7 +23,6 @@ class OnBoardingFragment : Fragment() {
     private var _binding : FragmentOnBoardingBinding? = null
 
     private val binding get() = _binding!!
-    private lateinit var sharedPref: SharedPreferences
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val userRepo by lazy { UserRepositoryImpl() }
     private val authRepo by lazy { AuthRepositoryImpl() }
@@ -66,31 +66,26 @@ class OnBoardingFragment : Fragment() {
 
     private fun goMain() {
         binding.btnComplete.setOnClickListener {
-//            val nickName = binding.etNickname.text.toString()
-//
-//            if (nickName.isNotEmpty()) {
-//                lifecycleScope.launch {
-//                    val userId = authRepo.getCurrentUserUid()
-//                    userRepo.setInfo(userId,nickName,characterNum)
-//                }
-//
-//                sharedPref = requireActivity().getSharedPreferences("isSeeOnBoarding", Context.MODE_PRIVATE)
-//                sharedPref.edit().apply{
-//                    putBoolean("isSeeOnBoarding",true)
-//                    apply()
-//                }
+            val nickName = binding.etNickname.text.toString()
 
-                val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+            if (nickName.isEmpty()) {
+                ("닉네임을 입력해 주세요").showSnackbar(requireView())
+                return@setOnClickListener
+            }
 
-                navController.navigate(R.id.action_frag_on_boarding_to_frag_home)
-                navGraph.setStartDestination(R.id.frag_home)
-                navController.graph = navGraph
-//            } else {
-//                ("닉네임을 입력해 주세요").showSnackbar(requireView())
-//                return@setOnClickListener
-//            }
+            lifecycleScope.launch {
+                val userId = authRepo.getCurrentUserUid()
+                userRepo.setUserInfo(userId,characterNum,nickName)
+            }
         }
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+        navController.navigate(R.id.action_frag_on_boarding_to_frag_home)
+        navGraph.setStartDestination(R.id.frag_home)
+        navController.graph = navGraph
     }
+
+
 
 
 

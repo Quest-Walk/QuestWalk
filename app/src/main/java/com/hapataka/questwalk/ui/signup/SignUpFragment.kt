@@ -132,11 +132,12 @@ class SignUpFragment : Fragment() {
         lifecycleScope.launch {
             authRepo.loginByEmailAndPw(id, pw) { task ->
                 if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
                     navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
+                    navGraph.setStartDestination(R.id.frag_home)
 //                    navGraph.setStartDestination(R.id.frag_on_boarding)
-//                    navController.graph = navGraph
+                    navController.graph = navGraph
                     return@loginByEmailAndPw
                 }
                 Log.e(TAG, "에러남")
@@ -144,21 +145,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-//    private fun moveHomeWithLogin(id: String, pw: String) {
-//        lifecycleScope.launch {
-//            authRepo.loginByEmailAndPw(id, pw) { task ->
-//                if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-//
-//                    navController.navigate(R.id.action_frag_sign_up_to_frag_home)
-//                    navGraph.setStartDestination(R.id.frag_home)
-//                    navController.graph = navGraph
-//                    return@loginByEmailAndPw
-//                }
-//                Log.e(TAG, "에러남")
-//            }
-//        }
-//    }
+
 
     private fun initPrevButton() {
         binding.btnBack.setOnClickListener {
