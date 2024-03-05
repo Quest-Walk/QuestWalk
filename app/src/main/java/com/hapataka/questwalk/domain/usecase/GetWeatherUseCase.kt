@@ -19,7 +19,7 @@ class GetWeatherUseCase @Inject constructor(
             "dataType" to "JSON",
             "base_date" to requestDateTime.first,
             "base_time" to requestDateTime.second,
-            "numOfRows" to "240",
+            "numOfRows" to "120",
             "nx" to convertXy.x.toInt().toString(),
             "ny" to convertXy.y.toInt().toString(),
         )
@@ -74,9 +74,7 @@ class GetWeatherUseCase @Inject constructor(
         val yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE)
         val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"))
         val result = when {
-            requestTime < "0220" || requestTime > "2319" -> {
-                Pair(yesterday, "2300")
-            }
+            requestTime < "0220"  -> Pair(yesterday, "2300")
             requestTime < "0520" -> Pair(today, "0200")
             requestTime < "0820" -> Pair(today, "0500")
             requestTime < "1120" -> Pair(today, "0800")
@@ -84,6 +82,7 @@ class GetWeatherUseCase @Inject constructor(
             requestTime < "1720" -> Pair(today, "1400")
             requestTime < "2020" -> Pair(today, "1700")
             requestTime < "2320" -> Pair(today, "2000")
+            requestTime <= "2359" -> Pair(today, "2300")
             else -> Pair(yesterday, "2300")
         }
         return result

@@ -17,7 +17,7 @@ class WeatherAdapterDecoration: RecyclerView.ItemDecoration() {
         val position = parent.getChildAdapterPosition(view)
 
         if (position < (parent.adapter?.itemCount ?: 0) - 1) {
-            outRect.right = pxToDp(16, view)
+            outRect.right = pxToDp(24, view)
         }
     }
 
