@@ -1,20 +1,18 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.ui.onboarding
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
-import com.hapataka.questwalk.ui.login.showSnackbar
-import kotlinx.coroutines.launch
 
 
 class OnBoardingFragment : Fragment() {
@@ -47,7 +45,8 @@ class OnBoardingFragment : Fragment() {
 
     private fun changeProfile(){
         binding.ivProfileImage.setOnClickListener {
-
+            val dialogFragment = ChooseCharacterDialog()
+            dialogFragment.show(requireFragmentManager(),"ChooseCharacterDialog")
         }
     }
 
@@ -62,7 +61,7 @@ class OnBoardingFragment : Fragment() {
 //                    val userId = authRepo.getCurrentUserUid()
 //                    userRepo.setNickName(userId,nickName)
 //                }
-
+//
 //                sharedPref = requireActivity().getSharedPreferences("isSeeOnBoarding", Context.MODE_PRIVATE)
 //                sharedPref.edit().apply{
 //                    putBoolean("isSeeOnBoarding",true)

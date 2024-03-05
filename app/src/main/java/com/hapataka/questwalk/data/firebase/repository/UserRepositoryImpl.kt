@@ -121,6 +121,12 @@ class UserRepositoryImpl : UserRepository {
             )
         }
     }
+    suspend fun setNickName(userid : String , nickName : String) {
+        withContext(Dispatchers.IO) {
+            val userDocument = userCollection.document(userid)
+            userDocument.update("nickName",nickName).await()
+        }
+    }
 
     private fun convertToAchieve(item: Map<String, Any>): AchievementEntity {
         with(item) {
