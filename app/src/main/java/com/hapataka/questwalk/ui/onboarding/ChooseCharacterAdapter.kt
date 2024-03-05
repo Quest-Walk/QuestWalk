@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemChooseCharacterBinding
 
-class ChooseCharacterAdapter(val character : List<CharacterData> ) : RecyclerView.Adapter<ChooseCharacterAdapter.Holder>() {
+class ChooseCharacterAdapter(val character : List<CharacterData>,
+    private val onItemClick :(CharacterData) -> Unit
+) : RecyclerView.Adapter<ChooseCharacterAdapter.Holder>() {
 
 
 
@@ -20,12 +22,20 @@ class ChooseCharacterAdapter(val character : List<CharacterData> ) : RecyclerVie
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        TODO("Not yet implemented")
+        val character = character[position]
+        holder.bind(character)
     }
 
     inner class Holder(private val binding : ItemChooseCharacterBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(items : CharacterData) {
-            val img = binding.ivBear
+            with(binding) {
+                ivCharacterImg.setImageResource(items.img)
+                tvCharacterName.text = items.name
+            }
+
+            itemView.setOnClickListener {
+                onItemClick(items)
+            }
 
         }
     }

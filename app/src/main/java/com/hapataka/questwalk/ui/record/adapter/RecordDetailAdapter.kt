@@ -7,24 +7,26 @@ import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemRecordAchievementBinding
 import com.hapataka.questwalk.databinding.ItemRecordHeaderBinding
 import com.hapataka.questwalk.databinding.ItemRecordResultBinding
-import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.record.model.RecordItem
-import com.hapataka.questwalk.ui.record.model.RecordItem.Achievement
+import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.Header
-import com.hapataka.questwalk.ui.record.model.RecordItem.Result
+import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
 
 const val HEADER_TYPE = 0
 const val RESULT_TYPE = 1
 const val ACHIEVEMENT_TYPE = 2
 
-class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.AchievementEntity> = listOf()) : ListAdapter<RecordItem, ViewHolder>(
-    diffUtil
-) {
+class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = listOf()) :
+    ListAdapter<RecordItem, ViewHolder>(
+        diffUtil
+    ) {
     var itemClick: ItemClick? = null
-    interface ItemClick{
+
+    interface ItemClick {
         fun onClick(item: RecordItem)
     }
 
@@ -40,7 +42,7 @@ class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.
         val thumbnail = binding.ivThumbnail
         val isSuccess = binding.ivSuccess
 
-        fun bind(item: Result) {
+        fun bind(item: ResultItem) {
             thumbnail.load(item.thumbnail)
         }
     }
@@ -50,9 +52,15 @@ class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.
         val icon = binding.ivIconImage
         val name = binding.tvName
 
-        fun bind(item: Achievement) {
-            icon.load(item.icon)
-            name.text = item.name
+        fun bind(item: AchieveItem) {
+            if (successAchieve.contains(item.achieveId)) {
+                icon.load(item.achieveIcon)
+                name.text = item.achieveTitle
+                return
+            }
+            icon.load(R.drawable.ic_lock)
+            name.text = "???"
+            name.text = item.achieveTitle
         }
     }
 
@@ -61,8 +69,8 @@ class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.
 
         return when (item) {
             is Header -> HEADER_TYPE
-            is Result -> RESULT_TYPE
-            is Achievement -> ACHIEVEMENT_TYPE
+            is ResultItem -> RESULT_TYPE
+            is AchieveItem -> ACHIEVEMENT_TYPE
             else -> throw IllegalArgumentException("Unknown view type")
         }
     }
@@ -73,7 +81,7 @@ class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.
         val resultBind = ItemRecordResultBinding.inflate(inflater, parent, false)
         val achievementBind = ItemRecordAchievementBinding.inflate(inflater, parent, false)
 
-        return when(viewType) {
+        return when (viewType) {
             HEADER_TYPE -> HeaderViewHolder(headerBind)
             RESULT_TYPE -> ResultViewHolder(resultBind)
             ACHIEVEMENT_TYPE -> AchievementViewHolder(achievementBind)
@@ -84,11 +92,11 @@ class RecordDetailAdapter(val context: Context, val achieve: List<HistoryEntity.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
 
-        when(holder) {
+        when (holder) {
             is HeaderViewHolder -> holder.bind(item as Header)
-            is ResultViewHolder -> holder.bind(item as Result)
+            is ResultViewHolder -> holder.bind(item as ResultItem)
             is AchievementViewHolder -> {
-                holder.bind(item as Achievement)
+                holder.bind(item as AchieveItem)
                 holder.itemView.setOnClickListener { itemClick?.onClick(item) }
             }
         }

@@ -7,21 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
+import com.hapataka.questwalk.ui.login.showSnackbar
+import kotlinx.coroutines.launch
 
 
 class OnBoardingFragment : Fragment() {
     private var _binding : FragmentOnBoardingBinding? = null
+
     private val binding get() = _binding!!
     private lateinit var sharedPref: SharedPreferences
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val userRepo by lazy { UserRepositoryImpl() }
     private val authRepo by lazy { AuthRepositoryImpl() }
+    private var characterNum = 0
 
 
     override fun onCreateView(
@@ -45,8 +50,15 @@ class OnBoardingFragment : Fragment() {
 
     private fun changeProfile(){
         binding.ivProfileImage.setOnClickListener {
-            val dialogFragment = ChooseCharacterDialog()
-            dialogFragment.show(requireFragmentManager(),"ChooseCharacterDialog")
+            val dialogFragment = ChooseCharacterDialog().apply {
+                listener = object : OnCharacterSelectedListener {
+                    override fun onCharacterSelected(characterData: CharacterData) {
+                        binding.ivProfileImage.setImageResource(characterData.img)
+                        characterNum = characterData.num
+                    }
+                }
+            }
+            dialogFragment.show(requireFragmentManager(), "ChooseCharacterDialog")
         }
     }
 
@@ -54,12 +66,12 @@ class OnBoardingFragment : Fragment() {
 
     private fun goMain() {
         binding.btnComplete.setOnClickListener {
-            val nickName = binding.etNickname.text.toString()
-
+//            val nickName = binding.etNickname.text.toString()
+//
 //            if (nickName.isNotEmpty()) {
 //                lifecycleScope.launch {
 //                    val userId = authRepo.getCurrentUserUid()
-//                    userRepo.setNickName(userId,nickName)
+//                    userRepo.setInfo(userId,nickName,characterNum)
 //                }
 //
 //                sharedPref = requireActivity().getSharedPreferences("isSeeOnBoarding", Context.MODE_PRIVATE)

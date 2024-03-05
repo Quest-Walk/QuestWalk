@@ -5,14 +5,16 @@ sealed class RecordItem {
         val title: String
     ) : RecordItem()
 
-    data class Result(
-        val thumbnail: Int,
+    data class ResultItem(
+        val thumbnail: String?,
         val isSuccess: Boolean
     ) : RecordItem()
 
-    data class Achievement(
-        val icon: Int,
-        val name: String,
-        val description: String
+    data class AchieveItem(
+        val achieveId: Int,
+        val achieveIcon: Int,
+        val achieveTitle: String,
+        val achieveDescription: String,
+        val isHidden: Boolean = false
     ) : RecordItem()
 }

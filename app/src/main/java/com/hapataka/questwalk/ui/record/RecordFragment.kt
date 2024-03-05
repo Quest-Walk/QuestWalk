@@ -5,15 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
 import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class RecordFragment : Fragment() {
     private val binding by lazy { FragmentRecordBinding.inflate(layoutInflater) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private val viewModel by viewModels<RecordViewModel> { ViewModelFactory() }
+    private val recordItemAdapter by lazy { RecordItemAdapter(requireActivity()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,6 +29,8 @@ class RecordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        setObserver()
+        getItems()
     }
 
     private fun initView() {
@@ -32,15 +38,21 @@ class RecordFragment : Fragment() {
         initBackButton()
     }
 
+    private fun setObserver() {
+        viewModel.recordItems.observe(viewLifecycleOwner) {
+            recordItemAdapter.items = it
+        }
+    }
+
+    private fun getItems() {
+        viewModel.getRecordItems()
+    }
+
     private fun initViewPager() {
         val tabTitle = listOf("히스토리", "업적")
 
-        with(binding.vpRecordContents) {
-            adapter = RecordItemAdapter(requireActivity())
-        }
-
         with(binding) {
-            vpRecordContents.adapter = RecordItemAdapter(requireActivity())
+            vpRecordContents.adapter = recordItemAdapter
             TabLayoutMediator(tlRecordMenu, vpRecordContents) {tab, position ->
                 tab.text = tabTitle[position]
             }.attach()
@@ -52,6 +64,4 @@ class RecordFragment : Fragment() {
             navController.popBackStack()
         }
     }
-
-
 }

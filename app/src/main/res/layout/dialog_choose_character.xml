@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/background_achieve_dialog">
+    android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/btn_close"
@@ -15,11 +15,15 @@
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/btn_close" />
+
+
         </LinearLayout>
 
 
@@ -34,12 +38,29 @@
         android:layout_marginTop="80dp"
         style="@style/body_big"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_change_character"
+        style="@style/small"
+        android:text="변경할 캐릭터를 골라주세요"
+        app:layout_constraintStart_toStartOf="@id/tv_change_character"
+        android:layout_marginTop="5dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_choose_character"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="340dp"
         app:layout_constraintTop_toBottomOf="@id/tv_change_character"
         android:layout_marginTop="60dp" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toBottomOf="@id/rv_choose_character"
+        android:background="@color/white"
+        android:layout_marginTop="40dp"/>
 
 
 
