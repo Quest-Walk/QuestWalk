@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
+import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
 import com.hapataka.questwalk.ui.quest.adapter.QuestAdapterDecoration
 import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
@@ -57,15 +59,17 @@ class QuestDetailFragment : Fragment() {
     }
 
     private fun initQuestDetailRecyclerView() {
-        val urlList = item?.successItems?.map { it.imageUrl }?.reversed()
 
         binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
 
         questDetailAdapter = QuestDetailAdapter {
-            // detail page 이동
+            val bundle = Bundle().apply {
+                putParcelable("SuccessItem",item)
+            }
+            navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
         }
 
         binding.revQuestDetail.adapter = questDetailAdapter
-        questDetailAdapter.submitList(urlList?.toMutableList())
+        questDetailAdapter.submitList(item?.successItems?.reversed())
     }
 }

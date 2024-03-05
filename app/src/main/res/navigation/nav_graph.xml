@@ -129,7 +129,11 @@
         android:id="@+id/frag_quest_detail"
         android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
         android:label="frag_quest_detail"
-        tools:layout="@layout/fragment_quest_detail" />
+        tools:layout="@layout/fragment_quest_detail">
+        <action
+            android:id="@+id/action_frag_quest_detail_to_frag_result"
+            app:destination="@id/frag_result" />
+    </fragment>
     <fragment
         android:id="@+id/findPassWordFragment"
         android:name="com.example.firebasetestapp.FindPassWordFragment"

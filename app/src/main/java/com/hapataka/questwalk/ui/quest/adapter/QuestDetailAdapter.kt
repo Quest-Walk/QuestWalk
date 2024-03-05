@@ -7,10 +7,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestDetailBinding
+import com.hapataka.questwalk.ui.quest.QuestData
 
 class QuestDetailAdapter(
-    private val onClick: (url: String) -> Unit
-): ListAdapter<String, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
+    private val onClick: (QuestData.SuccessItem) -> Unit
+): ListAdapter<QuestData.SuccessItem, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestDetailViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -22,19 +23,23 @@ class QuestDetailAdapter(
     }
 
     inner class QuestDetailViewHolder(private val binding: ItemQuestDetailBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: String) {
-            binding.ivQuest.load(item)
+        fun bind(item: QuestData.SuccessItem) {
+            with(binding.ivQuest) {
+                load(item.imageUrl)
+                setOnClickListener { onClick(item) }
+            }
+
         }
     }
 
 
     companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<String>() {
-            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-                return oldItem == newItem
+        val diffUtil = object : DiffUtil.ItemCallback<QuestData.SuccessItem>() {
+            override fun areItemsTheSame(oldItem: QuestData.SuccessItem, newItem: QuestData.SuccessItem): Boolean {
+                return oldItem.userId == newItem.userId
             }
 
-            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+            override fun areContentsTheSame(oldItem: QuestData.SuccessItem, newItem: QuestData.SuccessItem): Boolean {
                 return oldItem == newItem
             }
         }
