@@ -34,7 +34,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var rotation: Float = 0F
     private lateinit var sizeList: Array<Size>
 
-    lateinit var file : File
+    lateinit var file: File
+
     fun setBitmap(bitmap: Bitmap) {
         //전처리 과정을 마치고 포스트??
 
@@ -97,6 +98,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             )
         }
         _bitmap.value = tempBitmap
+        initIsSucceed()
+    }
+
+    fun initIsSucceed() {
         _isSucceed.value = null
     }
 }

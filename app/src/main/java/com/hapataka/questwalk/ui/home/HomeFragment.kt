@@ -23,7 +23,9 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.camerafragment.CameraViewModel
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by activityViewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
@@ -46,6 +49,19 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         updateDataView()
+        setObserver()
+    }
+
+    private fun setObserver(){
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            if (isSucceed == null) return@observe
+            if (isSucceed) {
+                Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
+                cameraViewModel.initIsSucceed()
+                homeViewModel.isQuestSuccess = true
+                setQuestState()
+            }
+        }
     }
 
     private fun updateDataView() {
@@ -105,9 +121,14 @@ class HomeFragment : Fragment() {
                 llPlayingContents.visibility = View.VISIBLE
                 btnQuestChange.visibility = View.GONE
 
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "포기하기"
-                setBackgroundWidget(btnQuestStatus, R.color.red)
+                if (homeViewModel.isQuestSuccess) {
+                    btnQuestStatus.text = "완료하기"
+                    setBackgroundWidget(btnQuestStatus, R.color.green)
+                } else {
+                    //버튼색 이름 및 색깔 변경
+                    btnQuestStatus.text = "포기하기"
+                    setBackgroundWidget(btnQuestStatus, R.color.red)
+                }
                 initQuestStart()
 
             } else { // 모험이 끝날때!
@@ -123,7 +144,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
 
 
     private fun initQuestStart() {

@@ -10,6 +10,7 @@ class HomeViewModel : ViewModel() {
     private var imgPath: String? = null
 
     var isPlay: Boolean = false
+    var isQuestSuccess : Boolean = false
 
     suspend fun getQuestWithRepository() {
         val items =
