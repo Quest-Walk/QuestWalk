@@ -78,6 +78,8 @@ dependencies {
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
+
+
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
@@ -87,4 +89,7 @@ dependencies {
     //coil
     implementation("io.coil-kt:coil:2.6.0")
     implementation("io.coil-kt:coil-gif:2.6.0")
+
+    //java-string-similarity
+    implementation("info.debatty:java-string-similarity:2.0.0")
 }

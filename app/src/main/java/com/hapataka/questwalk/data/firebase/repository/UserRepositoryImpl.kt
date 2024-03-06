@@ -1,10 +1,10 @@
 package com.hapataka.questwalk.data.firebase.repository
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.ACHIEVE_TYPE
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.HistoryEntity.*
+import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepository
@@ -15,7 +15,15 @@ import kotlinx.coroutines.withContext
 class UserRepositoryImpl : UserRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val userCollection by lazy { remoteDb.collection("user") }
-    override suspend fun setInfo(userId: String, result: HistoryEntity) {
+
+    override suspend fun setUserInfo(userId: String, profileId: Int, name: String) {
+        val document = userCollection.document(userId)
+        val user = UserEntity(userId, name, profileId)
+
+        document.set(user)
+    }
+
+    override suspend fun updateUserInfo(userId: String, result: HistoryEntity) {
         withContext(Dispatchers.IO) {
             val currentDocument = userCollection.document(userId)
             var currentInfo = getInfo(userId)
@@ -93,8 +101,6 @@ class UserRepositoryImpl : UserRepository {
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
         var resultList = mutableListOf<HistoryEntity>()
 
-
-
         items.forEach { item ->
             when (item["type"]) {
                 RESULT_TYPE -> {
@@ -127,6 +133,7 @@ class UserRepositoryImpl : UserRepository {
             )
         }
     }
+
 
     private fun convertToAchieve(item: Map<String, Any>): AchievementEntity {
         with(item) {

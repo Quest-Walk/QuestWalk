@@ -9,7 +9,7 @@
         android:id="@+id/frag_my_info"
         android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
-        tools:layout="@layout/fragment_my_info" >
+        tools:layout="@layout/fragment_my_info">
         <action
             android:id="@+id/action_frag_my_info_to_frag_login"
             app:destination="@id/frag_login"
@@ -21,7 +21,11 @@
         android:id="@+id/frag_record"
         android:name="com.hapataka.questwalk.ui.record.RecordFragment"
         android:label="frag_record"
-        tools:layout="@layout/fragment_record" />
+        tools:layout="@layout/fragment_record" >
+        <action
+            android:id="@+id/action_frag_record_to_frag_result"
+            app:destination="@id/frag_result" />
+    </fragment>
 
     <fragment
         android:id="@+id/frag_home"
@@ -44,9 +48,9 @@
 
     <fragment
         android:id="@+id/frag_camera"
-        android:name="com.hapataka.questwalk.camerafragment.CameraFragment"
+        android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
         android:label="frag_camera"
-        tools:layout="@layout/fragment_camera" >
+        tools:layout="@layout/fragment_camera">
         <action
             android:id="@+id/action_frag_camera_to_frag_capture"
             app:destination="@id/frag_capture" />
@@ -54,7 +58,7 @@
 
     <fragment
         android:id="@+id/frag_capture"
-        android:name="com.hapataka.questwalk.camerafragment.CaptureFragment"
+        android:name="com.hapataka.questwalk.ui.camera.CaptureFragment"
         android:label="frag_capture"
         tools:layout="@layout/fragment_capture" />
 
@@ -82,7 +86,7 @@
         android:id="@+id/frag_sign_up"
         android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
         android:label="frag_sign_up"
-        tools:layout="@layout/fragment_sign_up" >
+        tools:layout="@layout/fragment_sign_up">
         <action
             android:id="@+id/action_frag_sign_up_to_frag_home"
             app:destination="@id/frag_home"
@@ -97,9 +101,9 @@
 
     <fragment
         android:id="@+id/frag_on_boarding"
-        android:name="com.hapataka.questwalk.OnBoardingFragment"
+        android:name="com.hapataka.questwalk.ui.onboarding.OnBoardingFragment"
         android:label="frag_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" >
+        tools:layout="@layout/fragment_on_boarding">
         <action
             android:id="@+id/action_frag_on_boarding_to_frag_home"
             app:destination="@id/frag_home" />
@@ -119,7 +123,7 @@
         android:id="@+id/frag_quest"
         android:name="com.hapataka.questwalk.ui.quest.QuestFragment"
         android:label="frag_quest"
-        tools:layout="@layout/fragment_quest" >
+        tools:layout="@layout/fragment_quest">
         <action
             android:id="@+id/action_frag_quest_to_frag_quest_detail"
             app:destination="@id/frag_quest_detail" />
@@ -134,9 +138,11 @@
             android:id="@+id/action_frag_quest_detail_to_frag_result"
             app:destination="@id/frag_result" />
     </fragment>
+
     <fragment
         android:id="@+id/findPassWordFragment"
         android:name="com.example.firebasetestapp.FindPassWordFragment"
-        android:label="FindPassWordFragment" />
+        android:label="FindPassWordFragment"
+        tools:layout="@layout/fragment_find_pass_word" />
 
 </navigation>

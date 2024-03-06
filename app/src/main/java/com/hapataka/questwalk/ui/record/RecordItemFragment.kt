@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentRecordItemBinding
 import com.hapataka.questwalk.ui.record.adapter.HEADER_TYPE
 import com.hapataka.questwalk.ui.record.adapter.RecordDetailAdapter
@@ -18,6 +21,9 @@ const val TAG = "item_test"
 class RecordItemFragment(val items: List<RecordItem>) : Fragment() {
     private val binding by lazy { FragmentRecordItemBinding.inflate(layoutInflater) }
     private val recordDetailAdapter by lazy { RecordDetailAdapter(requireContext()) }
+    private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
+    private val navController by lazy { (parentFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).findNavController() }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +38,6 @@ class RecordItemFragment(val items: List<RecordItem>) : Fragment() {
         initItemClick()
     }
 
-    private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
 
     private fun initRecyclerView() {
         with(binding.rvRecordDetail) {
@@ -59,11 +64,16 @@ class RecordItemFragment(val items: List<RecordItem>) : Fragment() {
     private fun initItemClick() {
         object : RecordDetailAdapter.ItemClick {
             override fun onClick(item: RecordItem) {
-                if (item is RecordItem.Achievement) {
-                    Log.i(TAG, "item: ${item.name}")
+                if (item is RecordItem.AchieveItem) {
                     val dialog = AchieveDialog(item)
 
                     dialog.show(parentFragmentManager, "AchieveDialog")
+                    return
+                }
+
+                if (item is RecordItem.ResultItem) {
+                    Log.i(TAG, "item: ${item}")
+                    navController.navigate(R.id.action_frag_record_to_frag_result)
                 }
             }
         }.also { recordDetailAdapter.itemClick = it }

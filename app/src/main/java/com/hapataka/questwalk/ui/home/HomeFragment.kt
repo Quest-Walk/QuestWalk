@@ -3,19 +3,17 @@ package com.hapataka.questwalk.ui.home
 import android.content.res.ColorStateList
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.os.SystemClock
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Chronometer
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -25,16 +23,18 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
-import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment() {
-    private val homeViewModel: HomeViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
+    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels()
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
     override fun onCreateView(
@@ -49,7 +49,19 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         updateDataView()
+        setObserver()
+    }
 
+    private fun setObserver(){
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            if (isSucceed == null) return@observe
+            if (isSucceed) {
+                Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
+                cameraViewModel.initIsSucceed()
+                homeViewModel.isQuestSuccess = true
+                setQuestState()
+            }
+        }
     }
 
     private fun updateDataView() {
@@ -60,14 +72,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() {
-
+        initBackground()
         setQuestState()
         replaceFragmentByImageButton()
         setQuestButtonEvent()
         initBackPressedCallback()
     }
 
-    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private fun initBackground() {
+        with(binding) {
+            ivBgLayer1.load(R.drawable.background_day_layer1)
+            ivBgLayer2.load(R.drawable.background_night_layer2)
+            ivBgLayer3.load(R.drawable.background_night_layer3)
+        }
+    }
+
     private fun replaceFragmentByImageButton() {
         with(binding) {
             btnRecord.setOnClickListener {
@@ -90,6 +109,9 @@ class HomeFragment : Fragment() {
 
     private fun setQuestButtonEvent() {
         binding.btnQuestStatus.setOnClickListener {
+            if(homeViewModel.isQuestSuccess){
+                //TODO : 퀘스트 성공 후 값 전달 하기
+            }
             homeViewModel.isPlay = !homeViewModel.isPlay
             setQuestState()
         }
@@ -102,9 +124,14 @@ class HomeFragment : Fragment() {
                 llPlayingContents.visibility = View.VISIBLE
                 btnQuestChange.visibility = View.GONE
 
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "포기하기"
-                setBackgroundWidget(btnQuestStatus, R.color.red)
+                if (homeViewModel.isQuestSuccess) {
+                    btnQuestStatus.text = "완료하기"
+                    setBackgroundWidget(btnQuestStatus, R.color.green)
+                } else {
+                    //버튼색 이름 및 색깔 변경
+                    btnQuestStatus.text = "포기하기"
+                    setBackgroundWidget(btnQuestStatus, R.color.red)
+                }
                 initQuestStart()
 
             } else { // 모험이 끝날때!
@@ -121,6 +148,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun initQuestStart() {
         val imageLoader = ImageLoader.Builder(requireContext())
             .components {
@@ -131,27 +159,38 @@ class HomeFragment : Fragment() {
                 }
             }
             .build()
-        val request = ImageRequest.Builder(requireContext())
+
+        val requestCharacter = ImageRequest.Builder(requireContext())
             .data(R.drawable.character_move_01)
             .target(binding.ivChrImage)
             .build()
 
-        imageLoader.enqueue(request)
+        imageLoader.enqueue(requestCharacter)
 
+        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
+        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
+        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+    }
+
+    private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
         val animation = TranslateAnimation(
-            Animation.RELATIVE_TO_SELF, 1f,
+            Animation.RELATIVE_TO_SELF, fromX,
+            Animation.RELATIVE_TO_SELF, toX,
             Animation.RELATIVE_TO_SELF, 0f,
-            Animation.RELATIVE_TO_SELF, 0f,
-            Animation.RELATIVE_TO_SELF, 0f,
-            )
+            Animation.RELATIVE_TO_SELF, 0f
+        )
 
-        animation.duration = 3000
         animation.repeatCount = Animation.INFINITE
-        binding.background.startAnimation(animation)
+        animation.interpolator = LinearInterpolator()
+        animation.duration = duration
+        return animation
     }
 
     private fun initQuestEnd() {
         binding.ivChrImage.load(R.drawable.character_01)
+        binding.ivBgLayer1.clearAnimation()
+        binding.ivBgLayer2.clearAnimation()
+        binding.ivBgLayer3.clearAnimation()
     }
 
     // backgroundTint 값 변경
