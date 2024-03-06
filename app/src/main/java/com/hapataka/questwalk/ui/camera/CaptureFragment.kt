@@ -120,5 +120,8 @@ class CaptureFragment : Fragment() {
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
 
-
+    override fun onStop() {
+        super.onStop()
+        cameraViewModel.initBitmap()
+    }
 }

@@ -193,10 +193,6 @@ class HomeFragment : Fragment(), SensorEventListener {
                 binding.cmQuestTime.start()
                 totalSteps = 0
                 totalDistance = 0F
-
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "포기하기"
-                setBackgroundWidget(btnQuestStatus, R.color.red)
                 initQuestStart()
 
             } else { // 모험이 끝날때!
@@ -405,9 +401,5 @@ class HomeFragment : Fragment(), SensorEventListener {
         Log.d("result", result.toString())
 
 
-    }
-    override fun onResume() {
-        super.onResume()
-        setQuestState()
     }
 }

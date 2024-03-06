@@ -95,4 +95,10 @@ dependencies {
 
     //java-string-similarity
     implementation("info.debatty:java-string-similarity:2.0.0")
+
+    //cameraX
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+    implementation("androidx.camera:camera-extensions:1.3.1")
 }
