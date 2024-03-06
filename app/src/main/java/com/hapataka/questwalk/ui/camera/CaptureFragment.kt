@@ -61,7 +61,7 @@ class CaptureFragment : Fragment() {
                 homeViewModel.setImagePath(cameraViewModel.file.path)
                 navController.popBackStack(R.id.frag_home, false)
             } else {
-                cameraViewModel.failedImageDrawWithCanvasByMLKit()
+                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
                 binding.clCheckOcr.visibility = View.GONE
                 binding.clResultOcr.visibility = View.VISIBLE
                 cameraViewModel.initBitmap()

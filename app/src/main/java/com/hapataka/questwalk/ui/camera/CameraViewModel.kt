@@ -85,7 +85,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image = InputImage.fromBitmap(bitmap.value!!, 0)
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-        file = repository.saveBitmap(bitmap.value!!,"resultImage.png")
+        file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
         try {
             isLoading.postValue(true)
             val result = recognizer.process(image).await()
@@ -102,25 +102,25 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             _isSucceed.postValue(validationResponseByMLKit(keyword))
 
         } catch (e: Exception) {
-            Log.d("result",e.toString())
+            Log.d("result", e.toString())
             isLoading.postValue(false)
         }
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
         val similarityObj = RatcliffObershelp()
-        resultListByMLKit.forEach { element : Element ->
+        resultListByMLKit.forEach { element: Element ->
             val word = element.text
-            Log.d("result",word)
+            Log.d("result", word)
             if (word.contains(keyword)) return true
             else if (similarityObj.similarity(word, keyword) >= 0.6) return true
-            Log.d("result",similarityObj.similarity(word, keyword).toString())
+            Log.d("result", similarityObj.similarity(word, keyword).toString())
         }
 
         return false
     }
 
-    fun failedImageDrawWithCanvasByMLKit(){
+    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
         val tempBitmap = _bitmap.value ?: return
         val canvas = Canvas(tempBitmap)
         val paint = Paint().apply {
@@ -128,15 +128,24 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             style = Paint.Style.STROKE
             strokeWidth = 4f
         }
+        val similarityObj = RatcliffObershelp()
+        val keywordPaint = Paint().apply {
+            color = Color.BLUE
+            style = Paint.Style.STROKE
+            strokeWidth = 4f
+        }
         resultListByMLKit.forEach { element ->
-            canvas.drawRect(element.boundingBox!!,paint)
+            val word = element.text
+            if (similarityObj.similarity(word, keyword) >= 0.2)
+                canvas.drawRect(element.boundingBox!!, keywordPaint)
+            else
+                canvas.drawRect(element.boundingBox!!, paint)
         }
 
 
         _bitmap.value = tempBitmap
         initIsSucceed()
     }
-
 
 
     /**
