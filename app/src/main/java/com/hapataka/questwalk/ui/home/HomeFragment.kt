@@ -183,12 +183,13 @@ class HomeFragment : Fragment(), SensorEventListener {
                         val time = SystemClock.elapsedRealtime() - chronometer.base
                         val h = (time / 3600000).toInt()
                         val m = (time - h * 3600000).toInt() / 60000
+                        val s = (time - h * 3600000 - m * 3600000 * 3600000).toInt() / 1000
                         val t =
-                            (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString()
+                            (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString() + ":" + (if (s < 10) "0$s" else s).toString()
                         chronometer.text = t
                     }
                 binding.cmQuestTime.base=SystemClock.elapsedRealtime()
-                binding.cmQuestTime.text = "00:00"
+                binding.cmQuestTime.text = "00:00:00"
                 binding.cmQuestTime.start()
                 totalSteps= 0
                 totalDistance=0F
