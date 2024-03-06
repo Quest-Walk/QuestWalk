@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.camera
 import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -60,11 +61,13 @@ class CaptureFragment : Fragment() {
         with(binding) {
             btnAttach.setOnClickListener {
                 keyword = etKeyword.text.toString()
+                etKeyword.clearFocus()
                 CoroutineScope(Dispatchers.Main).launch {
                     progressDialog.show()
                     try {
                         cameraViewModel.postCapturedImage(keyword)
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        Log.d("result",e.toString())
                         Snackbar.make(requireView(),"문자가 너무 어려워요 ㅠㅠ 다시 찍어 주세요!",Snackbar.LENGTH_SHORT).show()
                         binding.clCheckOcr.visibility = View.GONE
                         binding.clResultOcr.visibility = View.VISIBLE

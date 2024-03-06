@@ -62,16 +62,17 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         file = repository.saveBitmap(bitmap.value!!, "resultImage.jpg")
 
 
-        var postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
-        postBitmap = repository.toGrayScaleBitmap(postBitmap)
-        val postFile = repository.saveBitmap(postBitmap,"postImage.jpg")
+//        var postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
+//        postBitmap = repository.toGrayScaleBitmap(postBitmap)
+//        val postFile = repository.saveBitmap(postBitmap,"postImage.jpg")
 
-        val requestFile = postFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("file", postFile.name, requestFile)
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
         val responseOcr = RetrofitInstance.ocrSpaceApi.getImageOcrResponse(file = imagePart)
         if (responseOcr.isSuccessful) {
             val response: OcrResponse = responseOcr.body()!!
+            if(response.OCRExitCode=="6") return
             resultList = response.ParsedResults[0].TextOverlay.Lines as ArrayList<Line>
             Log.d("result", resultList.toString())
             _isSucceed.value = validationResponse(keyword)
