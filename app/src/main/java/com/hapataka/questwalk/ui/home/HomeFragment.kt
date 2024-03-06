@@ -25,8 +25,8 @@ import coil.load
 import coil.request.ImageRequest
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -84,8 +84,12 @@ class HomeFragment : Fragment() {
             ivBgLayer1.load(R.drawable.background_day_layer1)
             ivBgLayer2.load(R.drawable.background_night_layer2)
             ivBgLayer3.load(R.drawable.background_night_layer3)
+            ivBgLayer1.translationX = 2115f
+            ivBgLayer2.translationX = -2800f
+            ivBgLayer3.translationX = 2115f
         }
     }
+
 
     private fun replaceFragmentByImageButton() {
         with(binding) {
@@ -166,10 +170,14 @@ class HomeFragment : Fragment() {
             .build()
 
         imageLoader.enqueue(requestCharacter)
-
-        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
-        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
-        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+        with(binding) {
+            ivBgLayer1.translationX = 0f
+            ivBgLayer2.translationX = 0f
+            ivBgLayer3.translationX = 0f
+            ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
+            ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
+            ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+        }
     }
 
     private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
@@ -187,10 +195,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun initQuestEnd() {
-        binding.ivChrImage.load(R.drawable.character_01)
-        binding.ivBgLayer1.clearAnimation()
-        binding.ivBgLayer2.clearAnimation()
-        binding.ivBgLayer3.clearAnimation()
+        with(binding) {
+            ivChrImage.load(R.drawable.character_01)
+            ivBgLayer1.clearAnimation()
+            ivBgLayer2.clearAnimation()
+            ivBgLayer3.clearAnimation()
+            ivBgLayer1.translationX = 2115f
+            ivBgLayer2.translationX = -2800f
+            ivBgLayer3.translationX = 2115f
+        }
     }
 
     // backgroundTint 값 변경

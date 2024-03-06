@@ -4,11 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
-import android.graphics.Matrix
-import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -17,11 +14,9 @@ import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.params.StreamConfigurationMap
 import android.media.ImageReader
 import android.os.Build
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Surface
 import android.view.TextureView
@@ -32,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -43,10 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
-
-
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private lateinit var binding: FragmentCameraBinding
 
@@ -60,7 +53,6 @@ class CameraFragment : Fragment() {
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }
-
 
     // 카메라 관련 변수
     private lateinit var ttvPreview: TextureView
@@ -76,9 +68,7 @@ class CameraFragment : Fragment() {
     private lateinit var captureRequestBuilder: CaptureRequest.Builder
     private lateinit var cameraCaptureSession: CameraCaptureSession
 
-
     private lateinit var imageReader: ImageReader
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
