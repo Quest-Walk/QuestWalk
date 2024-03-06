@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
+import android.widget.Chronometer.OnChronometerTickListener
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -43,16 +44,12 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.domain.entity.HistoryEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 class HomeFragment : Fragment(), SensorEventListener {
     private lateinit var binding: FragmentHomeBinding
@@ -70,6 +67,9 @@ class HomeFragment : Fragment(), SensorEventListener {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
+    private var locationHistory: ArrayList<Location> = arrayListOf()
+
+    private var totalDistance: Float= 0.0F
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -144,9 +144,20 @@ class HomeFragment : Fragment(), SensorEventListener {
                 llPlayingContents.visibility = View.VISIBLE
                 btnQuestChange.visibility = View.GONE
 
+                binding.cmQuestTime.onChronometerTickListener =
+                    OnChronometerTickListener { chronometer ->
+                        val time = SystemClock.elapsedRealtime() - chronometer.base
+                        val h = (time / 3600000).toInt()
+                        val m = (time - h * 3600000).toInt() / 60000
+                        val t =
+                            (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString()
+                        chronometer.text = t
+                    };
                 binding.cmQuestTime.base=SystemClock.elapsedRealtime()
+                binding.cmQuestTime.text = "00:00"
                 binding.cmQuestTime.start()
                 totalSteps= 0
+                totalDistance=0F
 
                 //버튼색 이름 및 색깔 변경
                 btnQuestStatus.text = "포기하기"
@@ -159,6 +170,7 @@ class HomeFragment : Fragment(), SensorEventListener {
                 btnQuestChange.visibility = View.VISIBLE
 
                 binding.cmQuestTime.stop()
+                testResults()
 
                 //버튼색 이름 및 색깔 변경
                 btnQuestStatus.text = "모험 시작하기"
@@ -301,8 +313,19 @@ class HomeFragment : Fragment(), SensorEventListener {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.let{
                     for (location in it.locations){
-                        preLocation=location
-                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
+//                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
+                        if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)){
+                            if(location.accuracy*1.5<location.distanceTo(preLocation!!)){
+                                totalDistance+=location.distanceTo(preLocation!!)
+                                binding.tvQuestDistance.text="%.1f km".format(totalDistance)
+                                preLocation=location
+                                locationHistory.add(location)
+                            }
+                        }
+                        else{
+                            locationHistory.add(location)
+                            preLocation=location
+                        }
                     }
                 }
             }
@@ -324,4 +347,17 @@ class HomeFragment : Fragment(), SensorEventListener {
         )
     }
 
+    fun testResults() {
+        var result=HistoryEntity.ResultEntity(
+            quest = binding.tvQuestTitlePlay.text.toString(),
+            time = binding.cmQuestTime.text.toString(),
+            distance = totalDistance,
+            step = totalSteps,
+            latitueds = locationHistory.map{it.latitude.toFloat()},
+            longitudes = locationHistory.map{it.longitude.toFloat()},
+            questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
+            questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
+        )
+        Log.d("result", result.toString())
+    }
 }
