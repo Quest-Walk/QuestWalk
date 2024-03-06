@@ -153,12 +153,19 @@ class HomeFragment : Fragment(), SensorEventListener {
             }
             homeViewModel.isPlay = !homeViewModel.isPlay
             setQuestState()
+            if (homeViewModel.isPlay) {
+                updateLocation()
+            } else {
+                finishLocationClient()
+                locationHistory.clear()
+            }
         }
     }
 
     private fun setQuestState() {
         with(binding) {
             if (homeViewModel.isPlay) { // 모험 시작!
+
                 clPlayingBottomWidgets.visibility = View.VISIBLE
                 llPlayingContents.visibility = View.VISIBLE
                 btnQuestChange.visibility = View.GONE
@@ -179,7 +186,7 @@ class HomeFragment : Fragment(), SensorEventListener {
                         val t =
                             (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString()
                         chronometer.text = t
-                    };
+                    }
                 binding.cmQuestTime.base=SystemClock.elapsedRealtime()
                 binding.cmQuestTime.text = "00:00"
                 binding.cmQuestTime.start()
@@ -303,7 +310,7 @@ class HomeFragment : Fragment(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
-    fun initLocation(){
+    private fun initLocation(){
         locationPermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -326,8 +333,7 @@ class HomeFragment : Fragment(), SensorEventListener {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
-        updateLocation()
+        fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this.requireContext())
     }
 
     private fun updateLocation() {
@@ -339,7 +345,7 @@ class HomeFragment : Fragment(), SensorEventListener {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.let{
                     for (location in it.locations){
-//                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
+                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
                         if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)){
                             if(location.accuracy*1.5<location.distanceTo(preLocation!!)){
                                 totalDistance+=location.distanceTo(preLocation!!)
@@ -371,6 +377,10 @@ class HomeFragment : Fragment(), SensorEventListener {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback,
             Looper.myLooper()!!
         )
+    }
+
+    private fun finishLocationClient() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     fun testResults() {
