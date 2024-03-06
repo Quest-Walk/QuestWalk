@@ -13,7 +13,9 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
@@ -24,6 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -42,17 +45,17 @@ import com.google.android.gms.location.Priority
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.record.TAG
-import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
 import com.hapataka.questwalk.util.extentions.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
-    SensorEventListener {
+class HomeFragment : Fragment(), SensorEventListener {
+    private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val viewModel: HomeViewModel by activityViewModels()
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
@@ -72,6 +75,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private var totalDistance: Float = 0.0F
     private var totalSteps: Int = 0
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -172,6 +183,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 setBackgroundWidget(btnToggleQuestState, R.color.red)
                 btnToggleQuestState.text = "포기하기"
                 updateLocation()
+                Log.d(TAG, "true")
             } else {
                 ibCamera.gone()
                 llPlayingContents.gone()
@@ -179,6 +191,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 btnToggleQuestState.text = "모험 시작하기"
                 setBackgroundWidget(btnToggleQuestState, R.color.button)
                 initQuestEnd()
+                Log.d(TAG, "false")
 //                finishLocationClient()
 //                locationHistory.clear()
 //                navController.navigate(R.id.action_frag_home_to_frag_result)
@@ -332,7 +345,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.let {
                     for (location in it.locations) {
-                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
+                        Log.d(TAG, "현위치 %s, %s".format(location.latitude, location.longitude))
                         if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)) {
                             if (location.accuracy * 1.5 < location.distanceTo(preLocation!!)) {
                                 totalDistance += location.distanceTo(preLocation!!)
@@ -371,19 +384,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-//    fun testResults() {
-//        var result = HistoryEntity.ResultEntity(
-//            quest = binding.tvQuestKeyword.text.toString(),
+    fun testResults() {
+        var result = HistoryEntity.ResultEntity(
+            quest = binding.tvQuestKeyword.text.toString(),
 //            time = binding.cmQuestTime.text.toString(),
-//            distance = totalDistance,
-//            step = totalSteps,
-//            latitueds = locationHistory.map { it.latitude.toFloat() },
-//            longitudes = locationHistory.map { it.longitude.toFloat() },
-//            questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
-//            questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
-//        )
-//        Log.d("result", result.toString())
-//    }
+            distance = totalDistance,
+            step = totalSteps,
+            latitueds = locationHistory.map { it.latitude.toFloat() },
+            longitudes = locationHistory.map { it.longitude.toFloat() },
+            questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
+            questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
+        )
+        Log.d("result", result.toString())
+    }
 
     private fun Long.convertTime(): String {
         val second = this % 60

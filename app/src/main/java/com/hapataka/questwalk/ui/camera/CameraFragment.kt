@@ -72,12 +72,8 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             //캡쳐 성공시 CaptureFragment 이동
             navController.navigate(R.id.action_frag_camera_to_frag_capture)
         }
-
         checkPermissions()
-
         bindingImageButton()
-
-
     }
 
     private fun bindingImageButton() {
