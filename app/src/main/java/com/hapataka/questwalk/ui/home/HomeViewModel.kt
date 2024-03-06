@@ -1,5 +1,10 @@
 package com.hapataka.questwalk.ui.home
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
