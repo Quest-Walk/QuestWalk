@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -38,6 +40,20 @@ class CaptureFragment : Fragment() {
     ): View {
         binding = FragmentCaptureBinding.inflate(inflater, container, false)
 
+
+
+        initCapturedImage()
+        progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("분석중....")
+        setObserver()
+        return binding.root
+    }
+
+    private fun setObserver() {
+        cameraViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) progressDialog.show()
+            else progressDialog.dismiss()
+        }
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
             if (isSucceed == null) return@observe
             binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
@@ -45,15 +61,11 @@ class CaptureFragment : Fragment() {
                 homeViewModel.setImagePath(cameraViewModel.file.path)
                 navController.popBackStack(R.id.frag_home, false)
             } else {
-                cameraViewModel.failedImageDrawWithCanvas()
+                cameraViewModel.failedImageDrawWithCanvasByMLKit()
                 binding.clCheckOcr.visibility = View.GONE
                 binding.clResultOcr.visibility = View.VISIBLE
             }
         }
-        initCapturedImage()
-        progressDialog = ProgressDialog(requireContext())
-        progressDialog.setMessage("분석중....")
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,18 +74,9 @@ class CaptureFragment : Fragment() {
             btnAttach.setOnClickListener {
                 keyword = etKeyword.text.toString()
                 etKeyword.clearFocus()
-                CoroutineScope(Dispatchers.Main).launch {
-                    progressDialog.show()
-                    try {
-                        cameraViewModel.postCapturedImage(keyword)
-                    } catch (e: Exception) {
-                        Log.d("result",e.toString())
-                        Snackbar.make(requireView(),"문자가 너무 어려워요 ㅠㅠ 다시 찍어 주세요!",Snackbar.LENGTH_SHORT).show()
-                        binding.clCheckOcr.visibility = View.GONE
-                        binding.clResultOcr.visibility = View.VISIBLE
-                    }
-                    progressDialog.dismiss()
-                }
+                hideKeyboard()
+                cameraViewModel.postCapturedImageWithMLKit(keyword)
+
             }
             ibBackBtn.setOnClickListener {
                 navController.popBackStack()
@@ -83,6 +86,13 @@ class CaptureFragment : Fragment() {
             }
         }
 
+    }
+
+    // 키보드 내리기
+    private fun hideKeyboard() {
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
     private fun initCapturedImage() {
