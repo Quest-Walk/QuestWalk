@@ -14,37 +14,40 @@
             android:id="@+id/ib_back_btn"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
+            android:elevation="1dp"
             android:rotation="180"
             android:scaleX="1"
             android:scaleY="1"
             android:src="@drawable/ic_arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black" />
-
-        <TextureView
-            android:id="@+id/ttv_preview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintDimensionRatio="960:1280"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_back_btn" />
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/ib_capture"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
             android:background="@android:color/transparent"
+            android:elevation="1dp"
             android:src="@drawable/ico_camera_capture"
+            android:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/pv_preview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ttv_preview" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/ib_flash"
@@ -53,6 +56,7 @@
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:src="@drawable/ico_camera_flash"
+            android:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
             app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
             app:layout_constraintTop_toTopOf="@+id/ib_back_btn" />

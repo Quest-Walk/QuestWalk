@@ -193,6 +193,7 @@ class HomeFragment : Fragment(), SensorEventListener {
                 binding.cmQuestTime.start()
                 totalSteps = 0
                 totalDistance = 0F
+                initQuestStart()
 
             } else { // 모험이 끝날때!
                 clPlayingBottomWidgets.visibility = View.GONE

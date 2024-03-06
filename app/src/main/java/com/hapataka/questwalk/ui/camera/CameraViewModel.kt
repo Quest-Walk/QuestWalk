@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
@@ -40,7 +39,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     val isSucceed: LiveData<Boolean?> get() = _isSucceed
 
     private var resultListBySpaceAPI: ArrayList<Line> = arrayListOf()
-    private var resultListByMLKit: MutableList<Text.Element> = mutableListOf()
+    private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
     // 카메라 Hardware 정보
     private var rotation: Float = 0F
@@ -65,12 +64,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         resultListByMLKit.clear()
     }
 
-    fun setCameraCharacteristics(rotate: Float, sizes: Array<Size>) {
+    fun setCameraCharacteristics(rotate: Float) {
         rotation = rotate
-        sizeList = sizes
     }
 
-    fun getCameraMaxSize() = sizeList.last()
 
 
     /**
