@@ -122,8 +122,6 @@ class ResultFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
             override fun run() {
                 val mHandler = Handler(Looper.getMainLooper())
                 mHandler.postDelayed({
-                    // 반복실행할 구문
-                    Log.d("TAG","$tCount")
                     binding.tvAdvTime.text="%d시간 %d분".format(tCount /60, tCount %60)
                     tCount++
                 }, 0)

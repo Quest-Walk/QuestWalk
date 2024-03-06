@@ -1,5 +1,10 @@
 package com.hapataka.questwalk.ui.home
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.lifecycle.ViewModel
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import kotlin.random.Random
