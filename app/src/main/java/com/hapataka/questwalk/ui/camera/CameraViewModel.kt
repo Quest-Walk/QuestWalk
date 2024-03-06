@@ -48,6 +48,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     lateinit var file: File
 
+    private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDebug: LiveData<Boolean> get() = _isDebug
     fun setBitmap(bitmap: Bitmap) {
         //전처리 과정을 마치고 포스트??
 
@@ -210,5 +212,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     //초기화
     fun initIsSucceed() {
         _isSucceed.value = null
+    }
+
+    fun setDebug(){
+        _isDebug.value = !_isDebug.value!!
     }
 }

@@ -56,7 +56,7 @@ class CaptureFragment : Fragment() {
         }
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
             if (isSucceed == null) return@observe
-            binding.tvResult.text = cameraViewModel.isSucceed.value.toString()
+
             if (isSucceed) {
                 homeViewModel.setImagePath(cameraViewModel.file.path)
                 navController.popBackStack(R.id.frag_home, false)
@@ -67,13 +67,28 @@ class CaptureFragment : Fragment() {
                 cameraViewModel.initBitmap()
             }
         }
+        cameraViewModel.isDebug.observe(viewLifecycleOwner) { isDebug ->
+            if(isDebug) {
+                binding.etKeyword.visibility = View.VISIBLE
+                Snackbar.make(requireView(),"Debug Mode!",Snackbar.LENGTH_SHORT).show()
+            }
+            else{
+                binding.etKeyword.visibility = View.GONE
+            }
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             btnAttach.setOnClickListener {
-                keyword = etKeyword.text.toString()
+
+                keyword = if(cameraViewModel.isDebug.value==true)
+                    etKeyword.text.toString()
+                else
+                    homeViewModel.getKeyword()!!
+
                 etKeyword.clearFocus()
                 hideKeyboard()
                 cameraViewModel.postCapturedImageWithMLKit(keyword)
@@ -84,6 +99,10 @@ class CaptureFragment : Fragment() {
             }
             btnResult.setOnClickListener {
                 navController.popBackStack()
+            }
+            ivCapturedImage.setOnLongClickListener {
+                cameraViewModel.setDebug()
+                true
             }
         }
 
@@ -100,7 +119,6 @@ class CaptureFragment : Fragment() {
         bitmap = cameraViewModel.bitmap.value
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
-
 
 
 }
