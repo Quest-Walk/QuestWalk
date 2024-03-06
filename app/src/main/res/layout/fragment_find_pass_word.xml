@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="비밀번호 재설정"
-        style="@style/body_big"
+        style="@style/pixel_body_big"
         android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,7 +26,7 @@
         android:id="@+id/et_findEmail"
         android:layout_width="240dp"
         android:layout_height="50dp"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:hint="가입한 이메일을 입력해 주세요"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/et_findEmail"
             app:layout_constraintTop_toBottomOf="@id/et_findEmail"
-            style="@style/small"
+            style="@style/pixel_body_small"
             android:textColor="@color/red"
             android:visibility="invisible"
             android:text="올바르지 않은 이메일 형식입니다."/>
@@ -55,7 +55,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="60dp"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:text="이메일 보내기"/>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -64,7 +64,7 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="@id/btn_sendEmail"
         app:layout_constraintTop_toBottomOf="@id/btn_sendEmail"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_marginTop="10dp"
         android:text="로그인 페이지로"/>
 

@@ -1,24 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="head">
+<!--  상속용 폰트 지정  -->
+    <style name="ramche">
+        <item name="android:fontFamily">@font/ramche</item>
+    </style>
+
+    <style name="pretendard">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+    </style>
+
+<!--  람체 -->
+
+    <style name="pixel_head" parent="ramche">
         <item name="android:textSize">32sp</item>
-        <item name="android:fontFamily">@font/ramche</item>
     </style>
 
-    <style name="body_big">
+    <style name="pixel_body_big" parent="ramche">
         <item name="android:textSize">28sp</item>
-        <item name="android:fontFamily">@font/ramche</item>
     </style>
 
-    <style name="body_default">
+    <style name="pixel_body_default" parent="ramche">
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/ramche</item>
     </style>
 
-    <style name="small">
+    <style name="pixel_body_small" parent="ramche">
         <item name="android:textSize">12sp</item>
-        <item name="android:fontFamily">@font/ramche</item>
     </style>
+
+<!--  프리텐다드  -->
+
+    <style name="snas_head" parent="pretendard">
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="sans_body_big" parent="pretendard">
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="sans_body_default" parent="pretendard">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="sans_body_small" parent="pretendard">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
 
     <style name="tabTextSize" parent="TextAppearance.Design.Tab">
         <item name="fontFamily">@font/ramche</item>

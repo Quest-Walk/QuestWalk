@@ -36,13 +36,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="80dp"
-        style="@style/body_big"/>
+        style="@style/pixel_body_big"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tv_change_character"
-        style="@style/small"
+        style="@style/pixel_body_small"
         android:text="변경할 캐릭터를 골라주세요"
         app:layout_constraintStart_toStartOf="@id/tv_change_character"
         android:layout_marginTop="5dp"/>

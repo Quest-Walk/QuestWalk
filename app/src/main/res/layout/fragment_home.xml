@@ -54,11 +54,11 @@
 
         <TextView
             android:id="@+id/tv_my_page"
-            style="@style/body_default"
+            style="@style/sans_body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="마이페이지"
+            android:text="내정보"
             android:textColor="@color/white" />
 
     </LinearLayout>
@@ -81,7 +81,7 @@
 
         <TextView
             android:id="@+id/tv_weather"
-            style="@style/body_default"
+            style="@style/sans_body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -108,7 +108,7 @@
 
         <TextView
             android:id="@+id/tv_history"
-            style="@style/body_default"
+            style="@style/sans_body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -119,7 +119,7 @@
 
     <TextView
         android:id="@+id/tv_quest_title_play"
-        style="@style/head"
+        style="@style/pixel_head"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
@@ -135,7 +135,7 @@
 
     <Button
         android:id="@+id/btn_quest_change"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -158,7 +158,7 @@
 
         <TextView
             android:id="@+id/tv_quest_distance"
-            style="@style/body_default"
+            style="@style/sans_body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
@@ -167,7 +167,7 @@
 
         <TextView
             android:id="@+id/tv_quest_playing"
-            style="@style/body_default"
+            style="@style/sans_body_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
@@ -176,7 +176,7 @@
 
         <Chronometer
             android:id="@+id/cm_quest_time"
-            style="@style/small"
+            style="@style/sans_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
@@ -223,7 +223,7 @@
 
     <Button
         android:id="@+id/btn_quest_status"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
