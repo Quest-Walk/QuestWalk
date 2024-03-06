@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_frag_home_to_frag_quest"
             app:destination="@id/frag_quest" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_result"
+            app:destination="@id/frag_result" />
     </fragment>
 
     <fragment
