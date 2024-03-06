@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
         setObserver()
     }
 
-    private fun setObserver(){
+    private fun setObserver() {
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
             if (isSucceed == null) return@observe
             if (isSucceed) {
@@ -109,11 +109,15 @@ class HomeFragment : Fragment() {
 
     private fun setQuestButtonEvent() {
         binding.btnQuestStatus.setOnClickListener {
-            if(homeViewModel.isQuestSuccess){
-                //TODO : 퀘스트 성공 후 값 전달 하기
-            }
             homeViewModel.isPlay = !homeViewModel.isPlay
-            setQuestState()
+
+            if(!homeViewModel.isPlay) {
+                //포기 하기,완료 하기 누르면 결과 프래그먼트 이동
+                navController.navigate(R.id.action_frag_home_to_frag_result)
+            }
+            else {
+                setQuestState()
+            }
         }
     }
 
@@ -222,5 +226,10 @@ class HomeFragment : Fragment() {
         }.also {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setQuestState()
     }
 }
