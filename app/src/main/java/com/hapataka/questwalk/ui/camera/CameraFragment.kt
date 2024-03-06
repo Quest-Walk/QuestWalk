@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.camera
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraCharacteristics
@@ -12,11 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -32,14 +27,14 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
+import com.hapataka.questwalk.util.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class CameraFragment : Fragment() {
+class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
-    private lateinit var binding: FragmentCameraBinding
 
     // permission 등록 콜백 함수
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
@@ -65,14 +60,6 @@ class CameraFragment : Fragment() {
             cameraViewModel.setBitmap(bitmap)
             image.close()
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentCameraBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -165,5 +152,4 @@ class CameraFragment : Fragment() {
             imageCaptureCallback
         )
     }
-
 }

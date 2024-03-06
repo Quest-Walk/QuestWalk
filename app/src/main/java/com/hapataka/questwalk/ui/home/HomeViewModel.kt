@@ -6,48 +6,64 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class HomeViewModel : ViewModel() {
-    private val questRepo = QuestStackRepositoryImpl()
-    private var _currentKeyword = MutableLiveData<String> ()
+    private var _currentKeyword = MutableLiveData<String>()
+    private var _isPlay = MutableLiveData<Boolean>(false)
+    private var _durationTime = MutableLiveData<Long>(0)
+
     val currentKeyword: LiveData<String> get() = _currentKeyword
+    val isPlay: LiveData<Boolean> get() = _isPlay
+    val durationTime: LiveData<Long> get() = _durationTime
+
 
     private val filteringUseCase = QuestFilteringUseCase()
+    private var timer: Job? = null
 
     private var imgPath: Uri? = null
-
-    var isPlay: Boolean = false
-    var isQuestSuccess : Boolean = false
-    var questKeyword = ""
+    var isQuestSuccess: Boolean = false
 
     fun getRandomKeyword() {
-        viewModelScope.launch {
-            val remainingKeyword = filteringUseCase().map { it.keyWord }
+        if (currentKeyword.value.isNullOrEmpty()) {
+            viewModelScope.launch {
+                val remainingKeyword = filteringUseCase().map { it.keyWord }
 
-            _currentKeyword.value = remainingKeyword.random()
+                _currentKeyword.value = remainingKeyword.random()
+            }
         }
     }
 
-    suspend fun getQuestWithRepository() {
-        val items =
-            questRepo.getAllItems()
-        val size = items.size
-        val idx = Random.nextInt(size)
-        questKeyword = items[idx].keyWord
+    fun toggleIsPlay() {
+        _isPlay.value = isPlay.value?.not()
+        toggleTimer()
     }
-
-    fun getKeyword() = questKeyword
 
     fun setKeyword(keyword: String) {
-        questKeyword = keyword
+        _currentKeyword.value = keyword
     }
-
 
     fun setImagePath(uri: String) {
         imgPath = uri.toUri()
+    }
+
+    private fun toggleTimer() {
+        if (isPlay.value!!) {
+            timer = viewModelScope.launch {
+                _durationTime.value = 0L
+
+                while (true) {
+                    var currentTime = durationTime.value!!
+
+                    delay(1000L)
+                    _durationTime.value = currentTime + 1
+                }
+            }
+        } else {
+            timer?.cancel()
+        }
     }
 }

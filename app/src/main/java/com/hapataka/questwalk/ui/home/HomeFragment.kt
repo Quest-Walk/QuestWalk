@@ -12,13 +12,11 @@ import android.location.Location
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
-import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Chronometer.OnChronometerTickListener
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -44,14 +42,17 @@ import com.google.android.gms.location.Priority
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
-import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.extentions.gone
+import com.hapataka.questwalk.util.extentions.invisible
+import com.hapataka.questwalk.util.extentions.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), SensorEventListener {
+class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
+    SensorEventListener {
     private val viewModel: HomeViewModel by activityViewModels()
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
@@ -81,29 +82,42 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initView() {
         initBackground()
-        setQuestState()
         initNaviButtons()
-        setQuestButtonEvent()
+        initQuestButton()
         initBackPressedCallback()
         setStepSensor()
         initLocation()
     }
 
     private fun setObserver() {
-        viewModel.currentKeyword.observe(viewLifecycleOwner) {
-            binding.tvQuestKeyword.text = it
+        with(viewModel) {
+            currentKeyword.observe(viewLifecycleOwner) {
+                binding.tvQuestKeyword.text = it
+            }
+            isPlay.observe(viewLifecycleOwner) {
+                toggleViews(it)
+            }
+            durationTime.observe(viewLifecycleOwner) {
+                binding.tvQuestTime.text = it.convertTime()
+            }
         }
 
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            Log.d(TAG, "isSucceed: ${isSucceed}")
             if (isSucceed == null) return@observe
             if (isSucceed) {
                 Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
+
                 cameraViewModel.initIsSucceed()
                 viewModel.isQuestSuccess = true
-                setQuestState()
+                with(binding) {
+                    setBackgroundWidget(btnToggleQuestState, R.color.green)
+                    btnToggleQuestState.text = "완료하기"
+                }
             }
         }
     }
+
 
     private fun getItems() {
         viewModel.getRandomKeyword()
@@ -140,70 +154,38 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun setQuestButtonEvent() {
-        binding.btnQuestStatus.setOnClickListener {
-            viewModel.isPlay = !viewModel.isPlay
-
-            setQuestState()
-            if (viewModel.isPlay) {
-                updateLocation()
-            } else {
-                finishLocationClient()
-                locationHistory.clear()
-                navController.navigate(R.id.action_frag_home_to_frag_result)
-            }
+    private fun initQuestButton() {
+        binding.btnToggleQuestState.setOnClickListener {
+            viewModel.toggleIsPlay()
         }
     }
 
-    private fun setQuestState() {
+    private fun toggleViews(isPlay: Boolean) {
         with(binding) {
-            if (viewModel.isPlay) { // 모험 시작!
-
-                ibCamera.visibility = View.VISIBLE
-                llPlayingContents.visibility = View.VISIBLE
-                btnQuestChange.visibility = View.GONE
-
-                if (viewModel.isQuestSuccess) {
-                    btnQuestStatus.text = "완료하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.green)
-                } else {
-                    //버튼색 이름 및 색깔 변경
-                    btnQuestStatus.text = "포기하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.red)
-                }
-                binding.cmQuestTime.onChronometerTickListener =
-                    OnChronometerTickListener { chronometer ->
-                        val time = SystemClock.elapsedRealtime() - chronometer.base
-                        val h = (time / 3600000).toInt()
-                        val m = (time - h * 3600000).toInt() / 60000
-                        val s = (time - h * 3600000 - m * 3600000 * 3600000).toInt() / 1000
-                        val t =
-                            (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString() + ":" + (if (s < 10) "0$s" else s).toString()
-                        chronometer.text = t
-                    }
-                binding.cmQuestTime.base = SystemClock.elapsedRealtime()
-                binding.cmQuestTime.text = "00:00:00"
-                binding.cmQuestTime.start()
+            if (isPlay) {
+                ibCamera.visible()
+                llPlayingContents.visible()
+                tvQuestChange.invisible()
+                initQuestStart()
                 totalSteps = 0
                 totalDistance = 0F
-                initQuestStart()
-
-            } else { // 모험이 끝날때!
-                ibCamera.visibility = View.GONE
-                llPlayingContents.visibility = View.GONE
-                btnQuestChange.visibility = View.VISIBLE
-
-                binding.cmQuestTime.stop()
-                testResults()
-
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "모험 시작하기"
-                setBackgroundWidget(btnQuestStatus, R.color.green)
+                setBackgroundWidget(btnToggleQuestState, R.color.red)
+                btnToggleQuestState.text = "포기하기"
+                updateLocation()
+            } else {
+                ibCamera.gone()
+                llPlayingContents.gone()
+                tvQuestChange.visible()
+                btnToggleQuestState.text = "모험 시작하기"
+                setBackgroundWidget(btnToggleQuestState, R.color.button)
                 initQuestEnd()
+//                finishLocationClient()
+//                locationHistory.clear()
+//                navController.navigate(R.id.action_frag_home_to_frag_result)
+//                testResults()
             }
         }
     }
-
 
     private fun initQuestStart() {
         val imageLoader = ImageLoader.Builder(requireContext())
@@ -215,7 +197,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 }
             }
             .build()
-
         val requestCharacter = ImageRequest.Builder(requireContext())
             .data(R.drawable.character_move_01)
             .target(binding.ivChrImage)
@@ -232,6 +213,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
+    private fun initQuestEnd() {
+        with(binding) {
+            ivChrImage.load(R.drawable.character_01)
+            ivBgLayer1.clearAnimation()
+            ivBgLayer2.clearAnimation()
+            ivBgLayer3.clearAnimation()
+            ivBgLayer1.translationX = 2115f
+            ivBgLayer2.translationX = -2800f
+            ivBgLayer3.translationX = 2115f
+        }
+    }
+
     private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
         val animation = TranslateAnimation(
             Animation.RELATIVE_TO_SELF, fromX,
@@ -244,18 +237,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         animation.interpolator = LinearInterpolator()
         animation.duration = duration
         return animation
-    }
-
-    private fun initQuestEnd() {
-        with(binding) {
-            ivChrImage.load(R.drawable.character_01)
-            ivBgLayer1.clearAnimation()
-            ivBgLayer2.clearAnimation()
-            ivBgLayer3.clearAnimation()
-            ivBgLayer1.translationX = 2115f
-            ivBgLayer2.translationX = -2800f
-            ivBgLayer3.translationX = 2115f
-        }
     }
 
     // backgroundTint 값 변경
@@ -282,7 +263,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     delay(2000)
                     backPressedOnce = false
                 }
-
             }
         }.also {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
@@ -310,8 +290,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun initLocation() {
         locationPermission = registerForActivityResult(
@@ -339,11 +318,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(this.requireContext())
     }
 
     private fun updateLocation() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
+        val locationRequest =
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
         var preLocation: Location? = null
 
         locationCallback = object : LocationCallback() {
@@ -367,6 +348,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 }
             }
         }
+
         //권한 처리
         if (ActivityCompat.checkSelfPermission(
                 this.requireContext(),
@@ -389,19 +371,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    fun testResults() {
-        var result = HistoryEntity.ResultEntity(
-            quest = binding.tvQuestKeyword.text.toString(),
-            time = binding.cmQuestTime.text.toString(),
-            distance = totalDistance,
-            step = totalSteps,
-            latitueds = locationHistory.map { it.latitude.toFloat() },
-            longitudes = locationHistory.map { it.longitude.toFloat() },
-            questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
-            questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
-        )
-        Log.d("result", result.toString())
+//    fun testResults() {
+//        var result = HistoryEntity.ResultEntity(
+//            quest = binding.tvQuestKeyword.text.toString(),
+//            time = binding.cmQuestTime.text.toString(),
+//            distance = totalDistance,
+//            step = totalSteps,
+//            latitueds = locationHistory.map { it.latitude.toFloat() },
+//            longitudes = locationHistory.map { it.longitude.toFloat() },
+//            questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
+//            questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
+//        )
+//        Log.d("result", result.toString())
+//    }
 
+    private fun Long.convertTime(): String {
+        val second = this % 60
+        val minute = this / 60
+        val displaySecond = if (second < 10) "0$second" else second.toString()
+        val displayMinute = when (minute) {
+            0L -> "00"
+            in 1..9 -> "0$minute"
+            else -> minute.toString()
+        }
 
+        return "$displayMinute:$displaySecond"
     }
 }

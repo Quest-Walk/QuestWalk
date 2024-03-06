@@ -4,12 +4,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -17,37 +16,19 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.hapataka.questwalk.util.BaseFragment
 
-class CaptureFragment : Fragment() {
+class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBinding::inflate) {
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val homeViewModel: HomeViewModel by activityViewModels()
-    private lateinit var binding: FragmentCaptureBinding
 
     private var bitmap: Bitmap? = null
     private var keyword: String = ""
 
     private lateinit var progressDialog: ProgressDialog
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentCaptureBinding.inflate(inflater, container, false)
-
-
-
-        initCapturedImage()
-        progressDialog = ProgressDialog(requireContext())
-        progressDialog.setMessage("분석중....")
-        setObserver()
-        return binding.root
-    }
 
     private fun setObserver() {
         cameraViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -81,13 +62,18 @@ class CaptureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initCapturedImage()
+        progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("분석중....")
+        setObserver()
+
         with(binding) {
             btnAttach.setOnClickListener {
 
                 keyword = if(cameraViewModel.isDebug.value==true)
                     etKeyword.text.toString()
                 else
-                    homeViewModel.getKeyword()!!
+                    homeViewModel.currentKeyword.value ?: ""
 
                 etKeyword.clearFocus()
                 hideKeyboard()
