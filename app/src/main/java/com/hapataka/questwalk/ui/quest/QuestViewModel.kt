@@ -20,9 +20,12 @@ class QuestViewModel : ViewModel() {
     private var currentLevel = 0
     private val _questItems = MutableLiveData<MutableList<QuestData>>()
     val questItems: LiveData<MutableList<QuestData>> = _questItems
+    private val _allUserSize = MutableLiveData<Long>()
+    val allUserSize: LiveData<Long> = _allUserSize
 
     init {
         getQuestItems(false)
+        getAllUserSize()
     }
 
     private fun getQuestItems(completeFilter: Boolean) {
@@ -49,7 +52,6 @@ class QuestViewModel : ViewModel() {
         if (isChecked) {
             viewModelScope.launch {
                 val uid = authRepositoryImpl.getCurrentUserUid()
-//                val testUid = "8fEEPVnXYjPMyXIeoWTxelYc9qo1"
                 val completeKeywords = userRepositoryImpl.getResultHistory(uid).map { it.quest }
 
                 val filterList = allQuestItems?.filter { !completeKeywords.contains(it.keyWord) }
@@ -59,7 +61,12 @@ class QuestViewModel : ViewModel() {
             }
         } else {
             getQuestItems(true)
-//            filterLevel(currentLevel)
+        }
+    }
+
+    private fun getAllUserSize() {
+        viewModelScope.launch {
+            _allUserSize.value = userRepositoryImpl.getAllUserSize()
         }
     }
 
