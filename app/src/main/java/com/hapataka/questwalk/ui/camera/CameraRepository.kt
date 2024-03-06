@@ -18,7 +18,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         val file = File(context.filesDir, filename)
         val fos = FileOutputStream(file)
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
         fos.close()
 
         return file

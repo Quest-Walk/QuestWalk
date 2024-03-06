@@ -84,7 +84,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image = InputImage.fromBitmap(bitmap.value!!, 0)
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-        file = repository.saveBitmap(bitmap.value!!,"resultImage.jpg")
+        file = repository.saveBitmap(bitmap.value!!,"resultImage.png")
         try {
             isLoading.postValue(true)
             val result = recognizer.process(image).await()
@@ -195,6 +195,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         initIsSucceed()
     }
 
+
+    //초기화
     fun initIsSucceed() {
         _isSucceed.value = null
     }
