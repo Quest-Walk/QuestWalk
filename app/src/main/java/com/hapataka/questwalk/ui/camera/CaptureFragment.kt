@@ -64,6 +64,7 @@ class CaptureFragment : Fragment() {
                 cameraViewModel.failedImageDrawWithCanvasByMLKit()
                 binding.clCheckOcr.visibility = View.GONE
                 binding.clResultOcr.visibility = View.VISIBLE
+                cameraViewModel.initBitmap()
             }
         }
     }
@@ -100,10 +101,6 @@ class CaptureFragment : Fragment() {
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
 
-    override fun onStop() {
-        super.onStop()
-        cameraViewModel.initBitmap()
-    }
 
 
 }

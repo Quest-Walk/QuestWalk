@@ -60,6 +60,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun initBitmap() {
         _bitmap.value = null
+        resultListByMLKit.clear()
     }
 
     fun setCameraCharacteristics(rotate: Float, sizes: Array<Size>) {
@@ -113,6 +114,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             Log.d("result",word)
             if (word.contains(keyword)) return true
             else if (similarityObj.similarity(word, keyword) >= 0.6) return true
+            Log.d("result",similarityObj.similarity(word, keyword).toString())
         }
 
         return false
