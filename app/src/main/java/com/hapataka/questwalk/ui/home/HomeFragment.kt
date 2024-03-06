@@ -89,7 +89,7 @@ class HomeFragment : Fragment(), SensorEventListener {
         setObserver()
     }
 
-    private fun setObserver(){
+    private fun setObserver() {
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
             if (isSucceed == null) return@observe
             if (isSucceed) {
@@ -148,16 +148,15 @@ class HomeFragment : Fragment(), SensorEventListener {
 
     private fun setQuestButtonEvent() {
         binding.btnQuestStatus.setOnClickListener {
-            if(homeViewModel.isQuestSuccess){
-                //TODO : 퀘스트 성공 후 값 전달 하기
-            }
             homeViewModel.isPlay = !homeViewModel.isPlay
+
             setQuestState()
             if (homeViewModel.isPlay) {
                 updateLocation()
             } else {
                 finishLocationClient()
                 locationHistory.clear()
+                navController.navigate(R.id.action_frag_home_to_frag_result)
             }
         }
     }
@@ -396,5 +395,9 @@ class HomeFragment : Fragment(), SensorEventListener {
             questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
         )
         Log.d("result", result.toString())
+
+    override fun onResume() {
+        super.onResume()
+        setQuestState()
     }
 }

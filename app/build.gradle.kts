@@ -50,6 +50,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.0")
+
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
