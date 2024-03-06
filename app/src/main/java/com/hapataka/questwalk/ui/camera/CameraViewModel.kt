@@ -34,12 +34,10 @@ import kotlinx.coroutines.withContext
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
     val bitmap: LiveData<Bitmap?> get() = _bitmap
-
     private var _isSucceed: MutableLiveData<Boolean?> = MutableLiveData()
     val isSucceed: LiveData<Boolean?> get() = _isSucceed
-
     private var resultListBySpaceAPI: ArrayList<Line> = arrayListOf()
-    private var resultListByMLKit: MutableList<com.google.mlkit.vision.text.Text.Element> = mutableListOf()
+    private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
     // 카메라 Hardware 정보
     private var rotation: Float = 0F
@@ -64,12 +62,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         resultListByMLKit.clear()
     }
 
-    fun setCameraCharacteristics(rotate: Float, sizes: Array<Size>) {
+    fun setCameraCharacteristics(rotate: Float) {
         rotation = rotate
-        sizeList = sizes
     }
 
-    fun getCameraMaxSize() = sizeList.last()
 
 
     /**

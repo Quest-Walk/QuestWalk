@@ -35,17 +35,17 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
-import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -186,10 +186,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 binding.cmQuestTime.start()
                 totalSteps = 0
                 totalDistance = 0F
-
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "포기하기"
-                setBackgroundWidget(btnQuestStatus, R.color.red)
                 initQuestStart()
 
             } else { // 모험이 끝날때!
@@ -407,9 +403,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         Log.d("result", result.toString())
 
 
-    }
-    override fun onResume() {
-        super.onResume()
-        setQuestState()
     }
 }
