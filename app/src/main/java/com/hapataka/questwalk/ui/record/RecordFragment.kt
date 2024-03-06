@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
 import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
+import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.util.ViewModelFactory
 
 class RecordFragment : Fragment() {
@@ -34,13 +35,12 @@ class RecordFragment : Fragment() {
     }
 
     private fun initView() {
-        initViewPager()
         initBackButton()
     }
 
     private fun setObserver() {
         viewModel.recordItems.observe(viewLifecycleOwner) {
-            recordItemAdapter.items = it
+            initViewPager(it)
         }
     }
 
@@ -48,12 +48,13 @@ class RecordFragment : Fragment() {
         viewModel.getRecordItems()
     }
 
-    private fun initViewPager() {
+    private fun initViewPager(recordItems: List<RecordItem>) {
         val tabTitle = listOf("히스토리", "업적")
 
+        recordItemAdapter.items = recordItems
         with(binding) {
             vpRecordContents.adapter = recordItemAdapter
-            TabLayoutMediator(tlRecordMenu, vpRecordContents) {tab, position ->
+            TabLayoutMediator(tlRecordMenu, vpRecordContents) { tab, position ->
                 tab.text = tabTitle[position]
             }.attach()
         }

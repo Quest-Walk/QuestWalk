@@ -53,14 +53,13 @@ class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = 
         val name = binding.tvName
 
         fun bind(item: AchieveItem) {
-            if (successAchieve.contains(item.achieveId)) {
+            if (item.isSuccess) {
                 icon.load(item.achieveIcon)
                 name.text = item.achieveTitle
                 return
             }
             icon.load(R.drawable.ic_lock)
             name.text = "???"
-            name.text = item.achieveTitle
         }
     }
 
@@ -94,7 +93,10 @@ class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = 
 
         when (holder) {
             is HeaderViewHolder -> holder.bind(item as Header)
-            is ResultViewHolder -> holder.bind(item as ResultItem)
+            is ResultViewHolder -> {
+                holder.bind(item as ResultItem)
+                holder.itemView.setOnClickListener { itemClick?.onClick(item) }
+            }
             is AchievementViewHolder -> {
                 holder.bind(item as AchieveItem)
                 holder.itemView.setOnClickListener { itemClick?.onClick(item) }
