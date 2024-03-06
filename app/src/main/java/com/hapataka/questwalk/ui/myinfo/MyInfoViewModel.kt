@@ -38,6 +38,7 @@ class MyInfoViewModel(
                 if (task.isSuccessful) {
                     _snackbarMsg.value = "탈퇴 완료"
                     callback()
+                    return@deleteCurrentUser
                 }
             }
         }

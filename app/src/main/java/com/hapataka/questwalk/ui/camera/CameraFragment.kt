@@ -4,8 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
+import android.graphics.PixelFormat
+import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -35,6 +39,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.nio.ByteBuffer
+import java.nio.IntBuffer
 
 
 @AndroidEntryPoint
@@ -150,7 +156,7 @@ class CameraFragment : Fragment() {
         imageReader = ImageReader.newInstance(
             maxSize.width,
             maxSize.height,
-            ImageFormat.JPEG,
+            PixelFormat.RGBA_8888,
             1
         )
         imageReader.setOnImageAvailableListener({ reader ->
@@ -158,11 +164,11 @@ class CameraFragment : Fragment() {
 
             //image to byteArray()
             val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-
+            val pixelValues = IntArray(buffer.capacity()/4)
+            buffer.asIntBuffer().get(pixelValues)
             //decodeByteArray Bitmap
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val bitmap = Bitmap.createBitmap(image.width,image.height, Bitmap.Config.ARGB_8888)
+            bitmap.copyPixelsFromBuffer(IntBuffer.wrap(pixelValues))
             cameraViewModel.setBitmap(bitmap)
 
             image?.close()
@@ -183,7 +189,7 @@ class CameraFragment : Fragment() {
                 getCameraCharacteristics(cameraId).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         }
 
-        cameraViewModel.setCameraCharacteristics(rotation, map?.getOutputSizes(ImageFormat.JPEG)!!)
+        cameraViewModel.setCameraCharacteristics(rotation, map?.getOutputSizes(PixelFormat.RGBA_8888)!!)
     }
 
     @SuppressLint("MissingPermission", "NewApi")

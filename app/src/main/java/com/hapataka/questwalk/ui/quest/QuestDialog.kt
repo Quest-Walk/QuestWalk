@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.hapataka.questwalk.R
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.databinding.DialogQuestBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
 
 class QuestDialog(private val keyWord: String): DialogFragment() {
     private val binding by lazy { DialogQuestBinding.inflate(layoutInflater) }
+    private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val homeViewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -39,6 +41,7 @@ class QuestDialog(private val keyWord: String): DialogFragment() {
             btnConfirm.setOnClickListener {
                 // keyword 변경 로직
                 homeViewModel.setKeyword(keyWord)
+                navHost.popBackStack()
                 dismiss()
             }
         }

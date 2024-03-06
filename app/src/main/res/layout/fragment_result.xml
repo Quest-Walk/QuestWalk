@@ -113,6 +113,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/tv_complete_rate"
                         style="@style/pixel_body_small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -122,88 +123,76 @@
                         app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.viewpager2.widget.ViewPager2
+                <ImageView
+                    android:id="@+id/iv_quest_image"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="10dp" />
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/bg_quest_image"
+                    android:clipToOutline="true"
+                    android:scaleType="fitXY" />
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:weightSum="4">
+                    android:layout_marginTop="20dp">
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cvResult1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="30dp">
+                    <ImageView
+                        android:id="@+id/iv_image_1"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bg_quest_image"
+                        android:clipToOutline="true"
+                        android:scaleType="fitXY"
+                        android:visibility="invisible"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0.23" />
 
-                        <ImageView
-                            android:id="@+id/ivResult1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:adjustViewBounds="true"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_launcher_background"
-                            tools:srcCompat="@tools:sample/avatars" />
-                    </androidx.cardview.widget.CardView>
+                    <ImageView
+                        android:id="@+id/iv_image_2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bg_quest_image"
+                        android:clipToOutline="true"
+                        android:scaleType="fitXY"
+                        android:visibility="invisible"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toStartOf="@id/iv_image_3"
+                        app:layout_constraintStart_toEndOf="@id/iv_image_1"
+                        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+                        app:layout_constraintWidth_percent="0.23" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cvResult2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="30dp">
+                    <ImageView
+                        android:id="@+id/iv_image_3"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bg_quest_image"
+                        android:clipToOutline="true"
+                        android:scaleType="fitXY"
+                        android:visibility="invisible"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toStartOf="@id/iv_image_4"
+                        app:layout_constraintStart_toEndOf="@id/iv_image_2"
+                        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+                        app:layout_constraintWidth_percent="0.23" />
 
-                        <ImageView
-                            android:id="@+id/ivResult2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:adjustViewBounds="true"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/hikeimg" />
-                    </androidx.cardview.widget.CardView>
+                    <ImageView
+                        android:id="@+id/iv_image_4"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bg_quest_image"
+                        android:clipToOutline="true"
+                        android:scaleType="fitXY"
+                        android:visibility="invisible"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/iv_image_1"
+                        app:layout_constraintWidth_percent="0.23" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cvResult3"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="30dp">
 
-                        <ImageView
-                            android:id="@+id/ivResult3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:adjustViewBounds="true"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_launcher_background"
-                            tools:srcCompat="@tools:sample/avatars" />
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cvResult4"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="30dp">
-
-                        <ImageView
-                            android:id="@+id/ivResult4"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:adjustViewBounds="true"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_launcher_background"
-                            tools:srcCompat="@tools:sample/avatars" />
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
         </LinearLayout>
