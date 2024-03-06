@@ -57,6 +57,7 @@ class QuestDetailFragment : Fragment() {
         if (binding.revQuestDetail.itemDecorationCount != 0) {
             binding.revQuestDetail.removeItemDecorationAt(0)
         }
+
         binding.revQuestDetail.addItemDecoration(QuestDetailRecyclerViewDecoration())
 
         questDetailAdapter = QuestDetailAdapter {
