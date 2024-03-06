@@ -1,11 +1,13 @@
 package com.hapataka.questwalk.util
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.hapataka.questwalk.ui.record.TAG
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
@@ -24,6 +26,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.e(TAG, "destroy")
         _binding = null
     }
 }
