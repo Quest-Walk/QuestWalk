@@ -23,13 +23,11 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
-import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
-    private val authRepo by lazy { AuthRepositoryImpl() }
-    private val viewModel: SignUpViewModel by viewModels()
+    private val viewModel: SignUpViewModel by viewModels{SignUpViewModelFactory(AuthRepositoryImpl())}
     private var isUiPassWord = false
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var emailId = ""
@@ -64,12 +62,7 @@ class SignUpFragment : Fragment() {
         showPasswordVisibility(binding.ivShowPassWordCheck, binding.etSignUpPassWordCheck)
     }
 
-//    fun TextView.showError(msg: String) {
-//        val animShake = AnimationUtils.loadAnimation(requireContext(), R.anim.shake_error)
-//
-//        text = msg
-//        startAnimation(animShake)
-//    }
+
 
     private fun initGoToPasswordButton() {
         with(binding) {
@@ -105,6 +98,7 @@ class SignUpFragment : Fragment() {
                 val passwordCheck = etSignUpPassWordCheck.text.toString()
                 hideKeyBoard()
 
+
                 if (password != passwordCheck) {
                     ("비밀번호가 일치하지 않습니다.").showSnackbar(requireView())
                     return@setOnClickListener
@@ -114,35 +108,53 @@ class SignUpFragment : Fragment() {
                     return@setOnClickListener
                 }
 
+                viewModel.registerByEmailAndPw(emailId, password,
+                    {moveHomeWithLogin(emailId, password)},
+                    {("이미 가입된 아이디입니다.").showSnackbar(requireView())})
 
-                lifecycleScope.launch {
-                    authRepo.registerByEmailAndPw(emailId, password) { task ->
-                        if (task.isSuccessful) {
-                            moveHomeWithLogin(emailId, password)
-                            return@registerByEmailAndPw
-                        }
-                        ("이미 가입된 아이디입니다.").showSnackbar(requireView())
-                    }
-                }
+
+
+//                lifecycleScope.launch {
+//                    authRepo.registerByEmailAndPw(emailId, password) { task ->
+//                        if (task.isSuccessful) {
+//                            moveHomeWithLogin(emailId, password)
+//                            return@registerByEmailAndPw
+//                        }
+//                        ("이미 가입된 아이디입니다.").showSnackbar(requireView())
+//                    }
+//                }
             }
         }
     }
 
     private fun moveHomeWithLogin(id: String, pw: String) {
-        lifecycleScope.launch {
-            authRepo.loginByEmailAndPw(id, pw) { task ->
-                if (task.isSuccessful) {
-                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
-                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
-                    navGraph.setStartDestination(R.id.frag_home)
+        viewModel.logByEmailAndPw(id , pw ,
+            {navigateToOnBoarding()}, { Log.d("로그디", "에러" )})
+
+//        lifecycleScope.launch {
+//            authRepo.loginByEmailAndPw(id, pw) { task ->
+//                if (task.isSuccessful) {
+//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+//
+//                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
+////                    navGraph.setStartDestination(R.id.frag_home)
 //                    navGraph.setStartDestination(R.id.frag_on_boarding)
-                    navController.graph = navGraph
-                    return@loginByEmailAndPw
-                }
-                Log.e(TAG, "에러남")
-            }
-        }
+//                    navController.graph = navGraph
+//                    return@loginByEmailAndPw
+//                }
+//                Log.e("로그디", "에러남")
+//            }
+//        }
+    }
+
+    private fun navigateToOnBoarding() {
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+        navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
+        navGraph.setStartDestination(R.id.frag_on_boarding)
+        navController.graph = navGraph
+
     }
 
 

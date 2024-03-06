@@ -64,7 +64,8 @@ class HomeFragment : Fragment(), SensorEventListener {
         this.context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
     private val sensor: Sensor? by lazy {
-        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) }
+        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+    }
     private var totalSteps: Int = 0
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -72,7 +73,7 @@ class HomeFragment : Fragment(), SensorEventListener {
     private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
     private var locationHistory: ArrayList<Location> = arrayListOf()
 
-    private var totalDistance: Float= 0.0F
+    private var totalDistance: Float = 0.0F
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -187,11 +188,11 @@ class HomeFragment : Fragment(), SensorEventListener {
                             (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString() + ":" + (if (s < 10) "0$s" else s).toString()
                         chronometer.text = t
                     }
-                binding.cmQuestTime.base=SystemClock.elapsedRealtime()
+                binding.cmQuestTime.base = SystemClock.elapsedRealtime()
                 binding.cmQuestTime.text = "00:00:00"
                 binding.cmQuestTime.start()
-                totalSteps= 0
-                totalDistance=0F
+                totalSteps = 0
+                totalDistance = 0F
 
                 //버튼색 이름 및 색깔 변경
                 btnQuestStatus.text = "포기하기"
@@ -290,9 +291,13 @@ class HomeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun setStepSensor(){
+    private fun setStepSensor() {
         if (sensor == null) {
-            Toast.makeText(this.requireContext(), "No sensor detected on this device", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this.requireContext(),
+                "No sensor detected on this device",
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
         }
@@ -310,7 +315,7 @@ class HomeFragment : Fragment(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
-    private fun initLocation(){
+    private fun initLocation() {
         locationPermission = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -318,11 +323,14 @@ class HomeFragment : Fragment(), SensorEventListener {
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     // Precise location access granted.
                 }
+
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     // Only approximate location access granted.
-                } else -> {
-                // No location access granted.
-            }
+                }
+
+                else -> {
+                    // No location access granted.
+                }
             }
         }
 
@@ -333,30 +341,29 @@ class HomeFragment : Fragment(), SensorEventListener {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-        fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this.requireContext())
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
     }
 
     private fun updateLocation() {
         val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
-        var preLocation : Location? = null
+        var preLocation: Location? = null
 
-        locationCallback = object : LocationCallback(){
+        locationCallback = object : LocationCallback() {
             //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.let{
-                    for (location in it.locations){
+                locationResult.let {
+                    for (location in it.locations) {
                         Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
-                        if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)){
-                            if(location.accuracy*1.5<location.distanceTo(preLocation!!)){
-                                totalDistance+=location.distanceTo(preLocation!!)
-                                binding.tvQuestDistance.text="%.1f km".format(totalDistance)
-                                preLocation=location
+                        if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)) {
+                            if (location.accuracy * 1.5 < location.distanceTo(preLocation!!)) {
+                                totalDistance += location.distanceTo(preLocation!!)
+                                binding.tvQuestDistance.text = "%.1f km".format(totalDistance)
+                                preLocation = location
                                 locationHistory.add(location)
                             }
-                        }
-                        else{
+                        } else {
                             locationHistory.add(location)
-                            preLocation=location
+                            preLocation = location
                         }
                     }
                 }
@@ -374,7 +381,8 @@ class HomeFragment : Fragment(), SensorEventListener {
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback,
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest, locationCallback,
             Looper.myLooper()!!
         )
     }
@@ -384,18 +392,20 @@ class HomeFragment : Fragment(), SensorEventListener {
     }
 
     fun testResults() {
-        var result=HistoryEntity.ResultEntity(
+        var result = HistoryEntity.ResultEntity(
             quest = binding.tvQuestTitlePlay.text.toString(),
             time = binding.cmQuestTime.text.toString(),
             distance = totalDistance,
             step = totalSteps,
-            latitueds = locationHistory.map{it.latitude.toFloat()},
-            longitudes = locationHistory.map{it.longitude.toFloat()},
+            latitueds = locationHistory.map { it.latitude.toFloat() },
+            longitudes = locationHistory.map { it.longitude.toFloat() },
             questLatitued = locationHistory.lastOrNull()?.latitude?.toFloat() ?: 0F,
             questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
         )
         Log.d("result", result.toString())
 
+
+    }
     override fun onResume() {
         super.onResume()
         setQuestState()

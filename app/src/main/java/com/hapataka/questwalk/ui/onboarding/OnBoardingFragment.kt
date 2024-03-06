@@ -3,11 +3,13 @@ package com.hapataka.questwalk.ui.onboarding
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -24,8 +26,7 @@ class OnBoardingFragment : Fragment() {
 
     private val binding get() = _binding!!
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val userRepo by lazy { UserRepositoryImpl() }
-    private val authRepo by lazy { AuthRepositoryImpl() }
+    private val viewModel : OnBoardingViewModel by viewModels { OnBoardingViewModelFactory(UserRepositoryImpl(), AuthRepositoryImpl()) }
     private var characterNum = 0
 
 
@@ -73,20 +74,30 @@ class OnBoardingFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch {
-                val userId = authRepo.getCurrentUserUid()
-                userRepo.setUserInfo(userId,characterNum,nickName)
+            viewModel.getCurrentUserId{ userId ->
+                if (userId.isNotEmpty()) {
+                    viewModel.setUserInfo(userId , characterNum , nickName,
+                        { navigateGoHome() } , onError = { error-> error.showSnackbar(requireView())} )
+                }else {
+                    ("로그인 상태를 확인할 수 없습니다.").showSnackbar(requireView())
+                }
             }
+
+//            lifecycleScope.launch {
+//                val userId = authRepo.getCurrentUserUid()
+//                userRepo.setUserInfo(userId,characterNum,nickName)
+//            }
+
         }
+    }
+
+    private fun navigateGoHome() {
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
         navController.navigate(R.id.action_frag_on_boarding_to_frag_home)
         navGraph.setStartDestination(R.id.frag_home)
         navController.graph = navGraph
     }
-
-
-
 
 
     override fun onDestroyView() {
