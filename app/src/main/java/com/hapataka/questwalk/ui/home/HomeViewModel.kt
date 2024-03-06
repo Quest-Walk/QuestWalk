@@ -24,6 +24,11 @@ class HomeViewModel : ViewModel() {
 
     fun getKeyword() = questKeyword
 
+    fun setKeyword(keyword: String) {
+        questKeyword = keyword
+    }
+
+
     fun setImagePath(uri: String) {
         imgPath = uri.toUri()
     }

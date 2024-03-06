@@ -1,8 +1,6 @@
 package com.hapataka.questwalk.ui.quest
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,15 +9,24 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
-import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
-import com.hapataka.questwalk.ui.quest.adapter.QuestAdapterDecoration
+import com.hapataka.questwalk.ui.quest.adapter.QuestDetailRecyclerViewDecoration
 import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
+import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
     private lateinit var questDetailAdapter: QuestDetailAdapter
-    private val item by lazy { arguments?.getParcelable("item") as? QuestData}
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var item: QuestData? = null
+    private var allUser: Long = 0L
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            item = it.getParcelable("item") as? QuestData
+            allUser = it.getLong("allUser")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +42,12 @@ class QuestDetailFragment : Fragment() {
     }
 
     private fun initViews() {
+        val completeRate = round((item?.successItems?.size?.toDouble()?.div(allUser))?.times(100) ?: 0.0)
+
         binding.tvKeyword.text = item?.keyWord
+        binding.tvSolve.text = "이 퀘스트는 ${item?.successItems?.size}명이 해결했어요"
+        binding.tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
+
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
         }
@@ -43,12 +55,16 @@ class QuestDetailFragment : Fragment() {
 
     private fun initQuestDetailRecyclerView() {
 
+        binding.revQuestDetail.addItemDecoration(QuestDetailRecyclerViewDecoration())
+
         questDetailAdapter = QuestDetailAdapter {
-            // detail page 이동
+            val bundle = Bundle().apply {
+                putParcelable("SuccessItem",item)
+            }
+            navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
         }
-        binding.revQuestDetail.addItemDecoration(QuestAdapterDecoration())
+
         binding.revQuestDetail.adapter = questDetailAdapter
-        val urlList = item?.successItems?.map { it.imageUrl }?.reversed()
-        questDetailAdapter.submitList(urlList?.toMutableList())
+        questDetailAdapter.submitList(item?.successItems?.reversed())
     }
 }
