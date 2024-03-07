@@ -137,8 +137,8 @@ class HomeFragment : Fragment(), SensorEventListener {
     private fun initBackground() {
         with(binding) {
             ivBgLayer1.load(R.drawable.background_day_layer1)
-            ivBgLayer2.load(R.drawable.background_night_layer2)
-            ivBgLayer3.load(R.drawable.background_night_layer3)
+            ivBgLayer2.load(R.drawable.background_day_layer2)
+            ivBgLayer3.load(R.drawable.background_day_layer3)
             ivBgLayer1.translationX = 2115f
             ivBgLayer2.translationX = -2800f
             ivBgLayer3.translationX = 2115f
@@ -167,7 +167,9 @@ class HomeFragment : Fragment(), SensorEventListener {
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay()
+            viewModel.toggleIsPlay() {
+                navController.navigate(R.id.action_frag_home_to_frag_result)
+            }
         }
     }
 
@@ -194,7 +196,6 @@ class HomeFragment : Fragment(), SensorEventListener {
                 Log.d(TAG, "false")
 //                finishLocationClient()
 //                locationHistory.clear()
-//                navController.navigate(R.id.action_frag_home_to_frag_result)
 //                testResults()
             }
         }
