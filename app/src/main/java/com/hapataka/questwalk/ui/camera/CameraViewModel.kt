@@ -215,6 +215,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     //디버그
     fun setBitmapByGallery(bitmap: Bitmap){
-        _bitmap.value = bitmap
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
+        _bitmap.value = mutableBitmap
     }
 }
