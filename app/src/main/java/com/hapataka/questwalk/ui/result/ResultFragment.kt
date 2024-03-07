@@ -1,12 +1,31 @@
 package com.hapataka.questwalk
 
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.JointType
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
@@ -14,10 +33,12 @@ import com.hapataka.questwalk.ui.result.ResultViewModel
 import com.hapataka.questwalk.util.BaseFragment
 
 
-class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate) {
+class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
+    OnMapReadyCallback {
     private val resultViewModel: ResultViewModel by viewModels()
     private var successItem: QuestData.SuccessItem? = null
     private var completeRate: Double? = null
+    private var resultMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +54,9 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
         dataObserve()
         getInfo()
+
+        binding.fragMap.onCreate(savedInstanceState)
+        binding.fragMap.getMapAsync(this)
     }
 
     private fun dataObserve() {
@@ -62,6 +86,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             tvQuestKeyword.text = result.quest
             tvCompleteRate.text = "$completeRate"
         }
+        updateLocation(resultMap!!, result)
     }
 
     private fun initImageViews(questItem: QuestData) {
@@ -79,6 +104,42 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
         questItem.successItems.reversed().take(4).forEachIndexed { index, successItem ->
             imageList[index].load(successItem.imageUrl)
+        }
+    }
+
+    override fun onMapReady(p0: GoogleMap) {
+        MapsInitializer.initialize(this.requireContext())
+        resultMap=p0
+    }
+
+    private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
+        var preLocation : Pair<Float, Float>? = null
+        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
+            LatLngBounds(
+                LatLng(result.latitueds.min().toDouble(), result.longitudes.min().toDouble()),
+                LatLng(result.latitueds.max().toDouble(), result.longitudes.max().toDouble()),
+            ), 10
+        )
+        p0.animateCamera(cameraUpdate)
+
+        for (location in result.latitueds.zip(result.longitudes)){
+            Log.d("위치정보",  "위도: ${location.first} 경도: ${location.second}")
+            if(preLocation!=null){
+                var polyline = p0.addPolyline(
+                    PolylineOptions()
+                        .clickable(true)
+                        .add(
+                            LatLng(preLocation!!.first.toDouble(), preLocation!!.second.toDouble()),
+                            LatLng(location.first.toDouble(), location.second.toDouble())
+                        )
+                )
+                polyline.width = 15.toFloat()
+                polyline.color = -0xa80e9
+                polyline.jointType = JointType.ROUND
+                polyline.startCap=RoundCap()
+                polyline.endCap= RoundCap()
+            }
+            preLocation=location
         }
     }
 }
