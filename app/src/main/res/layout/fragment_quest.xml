@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="난이도"
-        style="@style/small"
+        style="@style/pixel_body_small"
         app:layout_constraintBottom_toBottomOf="@id/spinner_level"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/spinner_level" />
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        style="@style/small"
+        style="@style/pixel_body_small"
         android:text="완료한 퀘스트 숨기기"
         app:layout_constraintBottom_toBottomOf="@id/spinner_level"
         app:layout_constraintEnd_toStartOf="@id/iv_complete"

@@ -1,11 +1,10 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.ui.mainactivity
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val authRepo by lazy { AuthRepositoryImpl() }
-    private val cameraViewModel: CameraViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -39,5 +38,4 @@ class MainActivity : AppCompatActivity() {
             navController.graph = navGraph
         }
     }
-
 }

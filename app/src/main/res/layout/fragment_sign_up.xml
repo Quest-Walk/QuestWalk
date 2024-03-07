@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/tv_id"
-            style="@style/head"
+            style="@style/pixel_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/tv_explain"
-            style="@style/small"
+            style="@style/pixel_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="아이디는 이메일 형식으로 입력해 주세요"
@@ -43,13 +43,13 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:text="뒤로가기"/>
 
 
         <EditText
             android:id="@+id/et_signUpId"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
@@ -62,7 +62,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_goToPassWord"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="15dp"
@@ -134,7 +134,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_goToJoin"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="15dp"

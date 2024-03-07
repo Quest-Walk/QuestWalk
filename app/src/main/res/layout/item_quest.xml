@@ -17,7 +17,7 @@
 
         <TextView
             android:id="@+id/tv_keyword"
-            style="@style/head"
+            style="@style/pixel_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="한의원"
@@ -27,7 +27,7 @@
 
         <TextView
             android:id="@+id/tv_solve_percent"
-            style="@style/small"
+            style="@style/pixel_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="해결 인원 58%"
@@ -93,7 +93,7 @@
 
     <TextView
         android:id="@+id/tv_more"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
