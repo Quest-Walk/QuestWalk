@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.UserInfo
@@ -17,9 +18,11 @@ import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
+import com.hapataka.questwalk.ui.onboarding.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val myInfoViewModel by viewModels<MyInfoViewModel> { ViewModelFactory() }
@@ -137,40 +140,29 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun changeName() {
         binding.tvPlayerName.setOnClickListener {
-            showNickNameChangeDialog()
+            startEditNameDialog()
         }
     }
 
-    private fun showNickNameChangeDialog() {
-        val dialogBinding = DialogEditNicknameBinding.inflate(layoutInflater)
-        val dialog = AlertDialog.Builder(requireContext()).create()
-        dialog.setView(dialogBinding.root)
-        dialogBinding.etChangeNickname.hint = binding.tvPlayerName.text
-
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialogBinding.btnChange.setOnClickListener {
-            val newNickName = dialogBinding.etChangeNickname.text.toString()
-            if (newNickName.isBlank()) {
-                "변경된 정보가 없습니다.".showSnackbar(requireView())
-                dialog.dismiss()
-            } else {
-                myInfoViewModel.getUserCharacterNum { characterNum ->
-                    myInfoViewModel.getCurrentUserId { userId ->
-                        val charNum = characterNum ?: 1
-                        myInfoViewModel.setUserInfo(userId, charNum, newNickName, onSuccess = {
-                            "닉네임이 성공적으로 변경되었습니다.".showSnackbar(requireView())
-                            dialog.dismiss()
-                            binding.tvPlayerName.text = newNickName
-                        }, onError = {"닉네임 변경에 실패하였습니다.".showSnackbar(requireView()) })
-                    }
-                }
+    private fun startEditNameDialog() {
+        val dialogFragment = NickNameChangeDialog().apply {
+            onNicknameChanged = { newNickname ->
+                updateNickName(newNickname)
             }
         }
-        dialog.show()
+        dialogFragment.show(parentFragmentManager,"NickNameChangeDialog")
     }
 
+    private fun updateNickName(newNickname: String) {
+        myInfoViewModel.getCurrentUserId { userId ->
+            myInfoViewModel.getUserCharacterNum { characterNum ->
+                val charNum = characterNum ?: 1
+                myInfoViewModel.setUserInfo(userId, charNum, newNickname,
+                    onSuccess = { ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
+                    binding.tvPlayerName.text = newNickname },
+                    onError ={"정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
+            }
+        }
+    }
 
 }

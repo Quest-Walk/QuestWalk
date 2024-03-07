@@ -26,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:hint="현재 닉네임"
+        android:hint="변경할 닉네임을 입력해 주세요"
         android:gravity="center"
         android:layout_marginTop="80dp"/>
 
@@ -35,13 +35,14 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/et_change_nickname"
-        android:layout_marginTop="40dp">
+        android:layout_marginTop="60dp">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/pixel_body_default"
             android:text="취소"/>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -49,11 +50,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/pixel_body_default"
             android:text="확인"/>
-
-
-
-
 
 
 
