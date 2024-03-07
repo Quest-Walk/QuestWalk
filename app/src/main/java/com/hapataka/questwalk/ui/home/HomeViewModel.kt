@@ -37,9 +37,14 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun toggleIsPlay() {
+    fun toggleIsPlay(callBack: () -> Unit) {
         _isPlay.value = isPlay.value?.not()
         toggleTimer()
+        // TODO: 모험하기 눌렸을때 실행되는 코드들
+
+        if (!isPlay.value!!){
+            callBack()
+        }
     }
 
     fun setKeyword(keyword: String) {
