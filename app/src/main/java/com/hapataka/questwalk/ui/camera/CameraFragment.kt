@@ -87,7 +87,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             startCamera()
         } else {
             Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT).show()
-            requireActivity().supportFragmentManager.popBackStack()
+            navController.popBackStack()
         }
     }
 
