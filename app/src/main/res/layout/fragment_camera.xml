@@ -38,6 +38,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/tv_camera_quest"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="1dp"
+            android:text="quest_keyword"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ib_flash"
+            app:layout_constraintTop_toTopOf="@+id/ib_back_btn" />
+
         <androidx.camera.view.PreviewView
             android:id="@+id/pv_preview"
             android:layout_width="0dp"
@@ -47,7 +61,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+
+        </androidx.camera.view.PreviewView>
 
         <ImageButton
             android:id="@+id/ib_flash"

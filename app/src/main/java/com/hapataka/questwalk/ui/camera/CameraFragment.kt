@@ -27,29 +27,19 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
+import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Runnable
 
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
-
+    private val homeViewModel : HomeViewModel by activityViewModels()
     // 카메라 관련 변수
     private var imageCapture: ImageCapture? = null
-    private val imageCaptureCallback = object : ImageCapture.OnImageCapturedCallback() {
-        override fun onCaptureSuccess(image: ImageProxy) {
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-            cameraViewModel.setCameraCharacteristics(image.imageInfo.rotationDegrees.toFloat())
-            cameraViewModel.setBitmap(bitmap)
-            image.close()
-        }
-    }
     private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -58,7 +48,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
         checkPermissions()
         setObserver()
-        bindingImageButton()
+        bindingWidgets()
     }
 
     /**
@@ -70,6 +60,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             ActivityResultContracts.RequestPermission(),
             ::handlePermissionResult
         )
+
     private fun checkPermissions() {
         if (
             ContextCompat.checkSelfPermission(
@@ -82,6 +73,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
+
     private fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
             startCamera()
@@ -104,7 +96,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    private fun bindingImageButton() {
+    private fun bindingWidgets() {
         with(binding) {
             ibCapture.setOnClickListener {
                 capturePhoto()
@@ -115,6 +107,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             ibBackBtn.setOnClickListener {
                 navController.popBackStack()
             }
+            tvCameraQuest.text = homeViewModel.currentKeyword.value
         }
     }
 
@@ -126,29 +119,38 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-        cameraProviderFuture.addListener({
-            val preview = Preview.Builder()
-                .build()
-                .also { mPreview ->
-                    mPreview.setSurfaceProvider(
-                        binding.pvPreview.surfaceProvider
-                    )
-                }
-            imageCapture = ImageCapture.Builder()
-                .setTargetResolution(getLargestSize())
-                .build()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
-                )
-            } catch (e: Exception) {
-                Log.d("CameraX", "startCamera Fail", e)
-            }
-        }, ContextCompat.getMainExecutor(requireContext()))
+        cameraProviderFuture.addListener(
+            setCamera(cameraProvider),
+            ContextCompat.getMainExecutor(requireContext())
+        )
     }
+
+    private fun setCamera(cameraProvider: ProcessCameraProvider): Runnable = Runnable {
+        val preview = Preview.Builder()
+            .build()
+            .also { mPreview ->
+                mPreview.setSurfaceProvider(
+                    binding.pvPreview.surfaceProvider
+                )
+            }
+
+        imageCapture = ImageCapture.Builder()
+            .setTargetResolution(getLargestSize())
+            .build()
+
+        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+        try {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(
+                this, cameraSelector, preview, imageCapture
+            )
+        } catch (e: Exception) {
+            Log.d("CameraX", "startCamera Fail", e)
+        }
+    }
+    //실패 했을떄, imageUri 이 null 으로 반환 해야 한다.
+
     private fun getLargestSize(): Size {
         val cameraManager =
             requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -159,13 +161,30 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         return configurations?.getOutputSizes(ImageFormat.JPEG)
             ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
     }
+
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(requireContext()),
-            imageCaptureCallback
+            imageCaptureCallback()
         )
     }
+
+    private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
+        return object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                cameraViewModel.setCameraCharacteristics(image.imageInfo.rotationDegrees.toFloat())
+                cameraViewModel.setBitmap(bitmap)
+                image.close()
+            }
+        }
+    }
+
 
     private fun toggleFlash() {
 

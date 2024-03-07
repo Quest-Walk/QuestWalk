@@ -141,7 +141,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 canvas.drawRect(element.boundingBox!!, paint)
         }
 
-
         _bitmap.value = tempBitmap
         initIsSucceed()
     }
