@@ -167,7 +167,9 @@ class HomeFragment : Fragment(), SensorEventListener {
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay()
+            viewModel.toggleIsPlay() {
+                navController.navigate(R.id.action_frag_home_to_frag_result)
+            }
         }
     }
 
@@ -194,7 +196,6 @@ class HomeFragment : Fragment(), SensorEventListener {
                 Log.d(TAG, "false")
 //                finishLocationClient()
 //                locationHistory.clear()
-//                navController.navigate(R.id.action_frag_home_to_frag_result)
 //                testResults()
             }
         }
