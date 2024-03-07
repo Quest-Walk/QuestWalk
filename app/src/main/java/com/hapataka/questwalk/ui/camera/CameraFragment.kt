@@ -196,7 +196,7 @@ class CameraFragment : Fragment() {
                 getCameraCharacteristics(cameraId).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         }
 
-        cameraViewModel.setCameraCharacteristics(rotation, map?.getOutputSizes(PixelFormat.RGBA_8888)!!)
+        cameraViewModel.setCameraCharacteristics(rotation, map?.getOutputSizes(ImageFormat.JPEG)!!)
     }
 
     @SuppressLint("MissingPermission", "NewApi")

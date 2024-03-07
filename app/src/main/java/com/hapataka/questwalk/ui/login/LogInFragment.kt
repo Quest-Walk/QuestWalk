@@ -71,7 +71,6 @@ class LogInFragment : Fragment() {
                 loginByEmailPassword(id, pw)
                 hideKeyBoard()
             }
-//            navController.navigate(R.id.action_frag_login_to_frag_on_boarding)
         }
     }
 
