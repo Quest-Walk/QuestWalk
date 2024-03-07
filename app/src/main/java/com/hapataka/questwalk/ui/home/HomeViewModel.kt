@@ -9,16 +9,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalTime
 
 class HomeViewModel(
     private val authRepo: AuthRepositoryImpl,
@@ -50,14 +49,17 @@ class HomeViewModel(
     private var questLocation: Location? = null
 
     var isQuestSuccess: Boolean = false
-
+    var time = 12
+//    var time = LocalTime.now().hour
 
     fun checkCurrentTime() {
-        when (LocalTime.now().hour) {
-            in 7 .. 18 -> _isNight.value = false
+        Log.d(TAG, "time: $time")
+        when (time) {
+            in 7..18 -> _isNight.value = false
             else -> _isNight.value = true
         }
     }
+
     fun getRandomKeyword() {
         if (currentKeyword.value.isNullOrEmpty()) {
             viewModelScope.launch {
@@ -79,8 +81,8 @@ class HomeViewModel(
         if (!isPlay.value!!) {
             // 포기하기 or 완료하기
             callBack()
-            if(imagePath.value != null) {
-                Log.d("HomeViewModel:","HomeViewModel:$imagePath 진입")
+            if (imagePath.value != null) {
+                Log.d("HomeViewModel:", "HomeViewModel:$imagePath 진입")
                 setImage()
             }
 //            updateUserInfo(requestUserInfo())
@@ -119,7 +121,7 @@ class HomeViewModel(
     fun updateLocation(locationResult: LocationResult) {
         locationResult.let {
             for (location in it.locations) {
-//                Log.d("HomeViewModel:", "현재위치 ${location.latitude}, ${location.longitude}")
+                Log.d(TAG, "현재위치 ${location.latitude}, ${location.longitude}")
                 if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)) {
                     if (location.accuracy * 1.5 < location.distanceTo(preLocation!!)) {
                         _totalDistance.value = location.distanceTo(preLocation!!)
@@ -177,7 +179,7 @@ class HomeViewModel(
             questLatitued = questLocation?.latitude?.toFloat() ?: 0F,
             questLongitude = questLocation?.longitude?.toFloat() ?: 0F,
             registerAt = "20240307",
-            isFailed =  imagePath.value == null,
+            isFailed = imagePath.value == null,
             questImg = "$imgDownloadUrl"
         )
     }
