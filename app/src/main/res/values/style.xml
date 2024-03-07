@@ -16,7 +16,7 @@
     </style>
 
     <style name="pixel_body_big" parent="ramche">
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="pixel_body_default" parent="ramche">
@@ -34,7 +34,7 @@
     </style>
 
     <style name="sans_body_big" parent="pretendard">
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="sans_body_default" parent="pretendard">

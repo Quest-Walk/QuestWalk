@@ -62,7 +62,7 @@
 
                 <TextView
                     android:id="@+id/tv_player_name"
-                    style="@style/pixel_body_default"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
@@ -208,16 +208,18 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_logout"
-                    style="@style/pixel_body_default"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    style="@style/pixel_body_big"
+                    android:layout_width="280dp"
+                    android:layout_height="40dp"
                     android:layout_marginTop="40dp"
                     android:background="@drawable/background_drop_out_button"
-                    android:backgroundTint="#007AFF"
+                    android:backgroundTint="@color/main_purple"
                     android:gravity="center"
                     android:paddingVertical="8dp"
                     android:text="로그아웃"
                     android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ll_quest_content_1" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

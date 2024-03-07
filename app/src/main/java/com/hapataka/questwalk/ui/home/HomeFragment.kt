@@ -111,6 +111,15 @@ class HomeFragment : Fragment(), SensorEventListener {
             durationTime.observe(viewLifecycleOwner) {
                 binding.tvQuestTime.text = it.convertTime()
             }
+            isNight.observe(viewLifecycleOwner) { night ->
+                if (night) {
+                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
+                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
+                } else {
+                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
+                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
+                }
+            }
         }
 
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
@@ -129,16 +138,14 @@ class HomeFragment : Fragment(), SensorEventListener {
         }
     }
 
-
     private fun getItems() {
+        viewModel.checkCurrentTime()
         viewModel.getRandomKeyword()
     }
 
     private fun initBackground() {
         with(binding) {
             ivBgLayer1.load(R.drawable.background_day_layer1)
-            ivBgLayer2.load(R.drawable.background_day_layer2)
-            ivBgLayer3.load(R.drawable.background_day_layer3)
             ivBgLayer1.translationX = 2115f
             ivBgLayer2.translationX = -2800f
             ivBgLayer3.translationX = 2115f
@@ -153,9 +160,9 @@ class HomeFragment : Fragment(), SensorEventListener {
             btnMyPage.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
-            btnWheather.setOnClickListener {
-                // TODO : wheatherFragment 이동
-            }
+//            btnWheather.setOnClickListener {
+//                // TODO : wheatherFragment 이동
+//            }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
             }

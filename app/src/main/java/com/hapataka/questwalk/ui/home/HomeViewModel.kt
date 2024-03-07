@@ -10,15 +10,18 @@ import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 class HomeViewModel : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
-    private var _isPlay = MutableLiveData<Boolean>(false)
+    private var _isPlay = MutableLiveData(false)
     private var _durationTime = MutableLiveData<Long>(0)
+    private var _isNight = MutableLiveData(false)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
     val durationTime: LiveData<Long> get() = _durationTime
+    val isNight: LiveData<Boolean> get() = _isNight
 
 
     private val filteringUseCase = QuestFilteringUseCase()
@@ -27,6 +30,13 @@ class HomeViewModel : ViewModel() {
     private var imgPath: Uri? = null
     var isQuestSuccess: Boolean = false
 
+
+    fun checkCurrentTime() {
+        when (LocalTime.now().hour) {
+            in 7 .. 18 -> _isNight.value = false
+            else -> _isNight.value = true
+        }
+    }
     fun getRandomKeyword() {
         if (currentKeyword.value.isNullOrEmpty()) {
             viewModelScope.launch {
