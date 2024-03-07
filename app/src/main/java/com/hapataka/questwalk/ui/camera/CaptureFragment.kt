@@ -46,7 +46,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         with(binding) {
             btnAttach.setOnClickListener {
 
-                if (cameraViewModel.isDebug.value == true) {
+                if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
                     keyword = etKeywordDebug.text.toString()
                     etKeywordDebug.clearFocus()
                 } else {
@@ -127,7 +127,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         }
 
         getContext = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let{
+            uri?.let {
                 val inputStream = requireActivity().contentResolver.openInputStream(it)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 cameraViewModel.setBitmapByGallery(bitmap)
