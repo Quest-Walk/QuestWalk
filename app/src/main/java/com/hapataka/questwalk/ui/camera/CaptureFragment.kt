@@ -2,12 +2,17 @@ package com.hapataka.questwalk.ui.camera
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -30,35 +35,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
 
     private lateinit var progressDialog: ProgressDialog
 
-    private fun setObserver() {
-        cameraViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) progressDialog.show()
-            else progressDialog.dismiss()
-        }
-        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            if (isSucceed == null) return@observe
-
-            if (isSucceed) {
-                homeViewModel.setImagePath(cameraViewModel.file.path)
-                navController.popBackStack(R.id.frag_home, false)
-            } else {
-                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
-                binding.clCheckOcr.visibility = View.GONE
-                binding.clResultOcr.visibility = View.VISIBLE
-                cameraViewModel.initBitmap()
-            }
-        }
-        cameraViewModel.isDebug.observe(viewLifecycleOwner) { isDebug ->
-            if(isDebug) {
-                binding.etKeyword.visibility = View.VISIBLE
-                Snackbar.make(requireView(),"Debug Mode!",Snackbar.LENGTH_SHORT).show()
-            }
-            else{
-                binding.etKeyword.visibility = View.GONE
-            }
-
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,16 +42,16 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         progressDialog = ProgressDialog(requireContext())
         progressDialog.setMessage("분석중....")
         setObserver()
-
+        initDebug()
         with(binding) {
             btnAttach.setOnClickListener {
 
-                keyword = if(cameraViewModel.isDebug.value==true)
-                    etKeyword.text.toString()
-                else
-                    homeViewModel.currentKeyword.value ?: ""
-
-                etKeyword.clearFocus()
+                if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
+                    keyword = etKeywordDebug.text.toString()
+                    etKeywordDebug.clearFocus()
+                } else {
+                    keyword = homeViewModel.currentKeyword.value ?: ""
+                }
                 hideKeyboard()
                 cameraViewModel.postCapturedImageWithMLKit(keyword)
 
@@ -89,6 +65,27 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             ivCapturedImage.setOnLongClickListener {
                 cameraViewModel.setDebug()
                 true
+            }
+        }
+
+    }
+
+    private fun setObserver() {
+        cameraViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) progressDialog.show()
+            else progressDialog.dismiss()
+        }
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            if (isSucceed == null) return@observe
+
+            if (isSucceed) {
+                homeViewModel.setImagePath(cameraViewModel.file!!.path)
+                navController.popBackStack(R.id.frag_home, false)
+            } else {
+                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
+                binding.clCheckOcr.visibility = View.GONE
+                binding.clResultOcr.visibility = View.VISIBLE
+                cameraViewModel.initBitmap()
             }
         }
 
@@ -109,5 +106,36 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     override fun onStop() {
         super.onStop()
         cameraViewModel.initBitmap()
+    }
+
+    /**
+     *  Debug
+     */
+    private lateinit var getContext: ActivityResultLauncher<String>
+    private fun initDebug() {
+
+        cameraViewModel.isDebug.observe(viewLifecycleOwner) { isDebug ->
+            if (isDebug) {
+                binding.etKeywordDebug.visibility = View.VISIBLE
+                binding.btnLoadImageDebug.visibility = View.VISIBLE
+                Snackbar.make(requireView(), "Debug Mode!", Snackbar.LENGTH_SHORT).show()
+            } else {
+                binding.etKeywordDebug.visibility = View.GONE
+                binding.btnLoadImageDebug.visibility = View.GONE
+            }
+
+        }
+
+        getContext = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                val inputStream = requireActivity().contentResolver.openInputStream(it)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                cameraViewModel.setBitmapByGallery(bitmap)
+                initCapturedImage()
+            }
+        }
+        binding.btnLoadImageDebug.setOnClickListener {
+            getContext.launch("image/*")
+        }
     }
 }
