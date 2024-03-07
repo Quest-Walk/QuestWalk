@@ -43,7 +43,6 @@ class MyInfoViewModel(
             }
         }
     }
-
     fun getCurrentUserId(onResult: (String) -> Unit) {
         viewModelScope.launch {
             val userId = authRepo.getCurrentUserUid()
@@ -66,4 +65,8 @@ class MyInfoViewModel(
         }
     }
 
+    fun getUserCharacterNum(onResult: (Int?) -> Unit) {
+        val characterId = _userInfo.value?.characterId
+        onResult(characterId)
+    }
 }

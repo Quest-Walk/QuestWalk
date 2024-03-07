@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
@@ -13,7 +12,6 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class CameraRepository @Inject constructor(@ApplicationContext private val context: Context) {
-
     fun saveBitmap(bitmap: Bitmap, filename: String): File {
         val file = File(context.filesDir, filename)
         val fos = FileOutputStream(file)

@@ -31,6 +31,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         initView()
         setObserver()
         myInfoViewModel.getUserInfo()
+
     }
 
     private fun initView() {
@@ -129,11 +130,9 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun updateUserInfo(userId: String, characterNum: Int) {
         val nickName = binding.tvPlayerName.text.toString()
-        myInfoViewModel.setUserInfo(userId, characterNum, nickName, onSuccess = {
-            "변경완료".showSnackbar(requireView())
-        }, onError = {
-            "정보 변경에 실패하였습니다.".showSnackbar(requireView())
-        })
+        myInfoViewModel.setUserInfo(userId, characterNum, nickName,
+            onSuccess = { "변경완료".showSnackbar(requireView()) },
+            onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
     }
 
     private fun changeName() {
@@ -142,11 +141,10 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         }
     }
 
-    private fun showNickNameChangeDialog(){
+    private fun showNickNameChangeDialog() {
         val dialogBinding = DialogEditNicknameBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(requireContext()).create()
         dialog.setView(dialogBinding.root)
-
         dialogBinding.etChangeNickname.hint = binding.tvPlayerName.text
 
         dialogBinding.btnCancel.setOnClickListener {
@@ -159,18 +157,20 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
                 "변경된 정보가 없습니다.".showSnackbar(requireView())
                 dialog.dismiss()
             } else {
-                myInfoViewModel.getCurrentUserId { userId ->
-                    //val characterNum = Todo("이거 어케 구할지 생각해보기")
-                    myInfoViewModel.setUserInfo(userId, 0, newNickName, onSuccess = {
-                        "닉네임이 성공적으로 변경되었습니다.".showSnackbar(requireView())
-                        dialog.dismiss()
-                        binding.tvPlayerName.text = newNickName}, onError = {
-                        "닉네임 변경에 실패하였습니다.".showSnackbar(requireView())
-                        }
-                    )
+                myInfoViewModel.getUserCharacterNum { characterNum ->
+                    myInfoViewModel.getCurrentUserId { userId ->
+                        val charNum = characterNum ?: 1
+                        myInfoViewModel.setUserInfo(userId, charNum, newNickName, onSuccess = {
+                            "닉네임이 성공적으로 변경되었습니다.".showSnackbar(requireView())
+                            dialog.dismiss()
+                            binding.tvPlayerName.text = newNickName
+                        }, onError = {"닉네임 변경에 실패하였습니다.".showSnackbar(requireView()) })
+                    }
                 }
             }
         }
         dialog.show()
     }
+
+
 }
