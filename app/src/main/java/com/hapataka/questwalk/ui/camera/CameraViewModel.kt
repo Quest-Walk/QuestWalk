@@ -36,14 +36,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     val bitmap: LiveData<Bitmap?> get() = _bitmap
     private var _isSucceed: MutableLiveData<Boolean?> = MutableLiveData()
     val isSucceed: LiveData<Boolean?> get() = _isSucceed
-    private var resultListBySpaceAPI: ArrayList<Line> = arrayListOf()
+
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
     // 카메라 Hardware 정보
     private var rotation: Float = 0F
-    private lateinit var sizeList: Array<Size>
 
-    lateinit var file: File
+
+    // 해당 imageFile 경로
+    var file: File? = null
 
     private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDebug: LiveData<Boolean> get() = _isDebug
@@ -59,6 +60,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun initBitmap() {
         _bitmap.value = null
+        file = null
         resultListByMLKit.clear()
     }
 
@@ -70,8 +72,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     /**
      *  google MLKit 이용
-     *
      */
+
     val isLoading = MutableLiveData(false)
     fun postCapturedImageWithMLKit(keyword: String) {
         viewModelScope.launch {
@@ -144,76 +146,17 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         initIsSucceed()
     }
 
-
-    /**
-     *  OcrSpaceAPI 이용
-     */
-    suspend fun postCapturedImageWithOcrSpaceAPI(keyword: String) {
-        file = repository.saveBitmap(bitmap.value!!, "resultImage.jpg")
-
-
-//        var postBitmap = repository.resizedBitmap(bitmap.value!!,1000)
-//        postBitmap = repository.toGrayScaleBitmap(postBitmap)
-//        val postFile = repository.saveBitmap(postBitmap,"postImage.jpg")
-
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-        val responseOcr = RetrofitInstance.ocrSpaceApi.getImageOcrResponse(file = imagePart)
-        if (responseOcr.isSuccessful) {
-            val response: OcrResponse = responseOcr.body()!!
-            if (response.OCRExitCode == "6") return
-            resultListBySpaceAPI = response.ParsedResults[0].TextOverlay.Lines as ArrayList<Line>
-            Log.d("result", resultListBySpaceAPI.toString())
-            _isSucceed.value = validationResponseByOcrSpaceAPI(keyword)
-        }
-    }
-
-    private fun validationResponseByOcrSpaceAPI(keyword: String): Boolean {
-        //Line 내에 Words 의 WordText 를 비교해야함
-        val similarityObj = RatcliffObershelp()
-        resultListBySpaceAPI.forEach { line: Line ->
-            val word = line.Words[0].WordText
-            Log.d("result", (similarityObj.similarity(word, keyword)).toString())
-            if (word.contains(keyword)) return true
-            else if (similarityObj.similarity(word, keyword) >= 0.6) return true
-        }
-
-        return false
-    }
-
-    fun failedImageDrawWithCanvasByOcrSpaceAPI() {
-        val tempBitmap = _bitmap.value ?: return
-        val canvas = Canvas(tempBitmap)
-        val paint = Paint().apply {
-            color = Color.RED
-            style = Paint.Style.STROKE
-            strokeWidth = 4f
-        }
-        //Left":155.0,"Top":516.0,"Height":153.0,"Width":464.0
-        resultListBySpaceAPI.forEach { line ->
-            canvas.drawRect(
-                line.Words[0].Left.toFloat(),
-                line.Words[0].Top.toFloat(),
-                line.Words[0].Left + line.Words[0].Width.toFloat(),
-                line.Words[0].Top + line.Words[0].Height.toFloat(), paint
-            )
-        }
-        _bitmap.value = tempBitmap
-        initIsSucceed()
-    }
-
-
     //초기화
     fun initIsSucceed() {
         _isSucceed.value = null
     }
 
+    /**
+     *  Debug
+     */
     fun setDebug(){
         _isDebug.value = !_isDebug.value!!
     }
-
-    //디버그
     fun setBitmapByGallery(bitmap: Bitmap){
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
         _bitmap.value = mutableBitmap

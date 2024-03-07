@@ -36,17 +36,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
 
-    // permission 등록 콜백 함수
-    private val requestPermissionLauncher: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                startCamera()
-            } else {
-                Snackbar.make(requireView(), "권한 받아오기 실패", Snackbar.LENGTH_SHORT).show()
-                requireActivity().supportFragmentManager.popBackStack()
-            }
-        }
-
     // 카메라 관련 변수
     private var imageCapture: ImageCapture? = null
     private val imageCaptureCallback = object : ImageCapture.OnImageCapturedCallback() {
@@ -67,14 +56,52 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        checkPermissions()
+        setObserver()
+        bindingImageButton()
+    }
+
+    /**
+     *  Camera Permission 등록
+     */
+
+    private val requestPermissionLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            ::handlePermissionResult
+        )
+    private fun checkPermissions() {
+        if (
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            startCamera()
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+    private fun handlePermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            startCamera()
+        } else {
+            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+    }
+
+    /**
+     *  Observer 및 ViewBinding
+     */
+
+    private fun setObserver() {
+
         cameraViewModel.bitmap.observe(viewLifecycleOwner) {
             if (it == null) return@observe
-
             //캡쳐 성공시 CaptureFragment 이동
             navController.navigate(R.id.action_frag_camera_to_frag_capture)
         }
-        checkPermissions()
-        bindingImageButton()
     }
 
     private fun bindingImageButton() {
@@ -91,29 +118,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    private fun checkPermissions() {
-        if (
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            startCamera()
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
 
-    private fun getLargestSize(): Size {
-        val cameraManager =
-            requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val cameraId = cameraManager.cameraIdList[0] // 사용할 카메라 ID를 선택
-        val characteristics = cameraManager.getCameraCharacteristics(cameraId)
-        val configurations =
-            characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        return configurations?.getOutputSizes(ImageFormat.JPEG)
-            ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
-    }
+    /**
+     *  카메라 기능
+     */
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -141,7 +149,16 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
-
+    private fun getLargestSize(): Size {
+        val cameraManager =
+            requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        val cameraId = cameraManager.cameraIdList[0] // 사용할 카메라 ID를 선택
+        val characteristics = cameraManager.getCameraCharacteristics(cameraId)
+        val configurations =
+            characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        return configurations?.getOutputSizes(ImageFormat.JPEG)
+            ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
+    }
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
         imageCapture.takePicture(

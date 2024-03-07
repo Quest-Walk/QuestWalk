@@ -79,7 +79,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             if (isSucceed == null) return@observe
 
             if (isSucceed) {
-                homeViewModel.setImagePath(cameraViewModel.file.path)
+                homeViewModel.setImagePath(cameraViewModel.file!!.path)
                 navController.popBackStack(R.id.frag_home, false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
