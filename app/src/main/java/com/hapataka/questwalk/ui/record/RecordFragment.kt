@@ -53,7 +53,10 @@ class RecordFragment : Fragment() {
 
         recordItemAdapter.items = recordItems
         with(binding) {
-            vpRecordContents.adapter = recordItemAdapter
+            vpRecordContents.apply {
+                adapter = recordItemAdapter
+                isSaveEnabled = false
+            }
             TabLayoutMediator(tlRecordMenu, vpRecordContents) { tab, position ->
                 tab.text = tabTitle[position]
             }.attach()

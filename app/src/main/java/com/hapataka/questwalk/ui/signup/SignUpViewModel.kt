@@ -1,13 +1,8 @@
 package com.hapataka.questwalk.ui.signup
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import kotlinx.coroutines.launch
 

@@ -56,10 +56,10 @@
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:src="@drawable/ico_camera_flash"
-            android:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
             app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
-            app:layout_constraintTop_toTopOf="@+id/ib_back_btn" />
+            app:layout_constraintTop_toTopOf="@+id/ib_back_btn"
+            app:tint="@color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

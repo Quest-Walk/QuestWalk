@@ -35,7 +35,7 @@
 
                 <TextView
                     android:id="@+id/tvAdvTimeLabel"
-                    style="@style/body_default"
+                    style="@style/pixel_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -43,7 +43,7 @@
 
                 <TextView
                     android:id="@+id/tvAdvTime"
-                    style="@style/head"
+                    style="@style/pixel_head"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1234시간 5분"
@@ -51,7 +51,7 @@
 
                 <TextView
                     android:id="@+id/tvAdvDistanceLabel"
-                    style="@style/body_default"
+                    style="@style/pixel_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -59,7 +59,7 @@
 
                 <TextView
                     android:id="@+id/tvAdvDistance"
-                    style="@style/head"
+                    style="@style/pixel_head"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1234 km"
@@ -67,7 +67,7 @@
 
                 <TextView
                     android:id="@+id/tvTotalStepsLabel"
-                    style="@style/body_default"
+                    style="@style/pixel_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -80,7 +80,7 @@
 
                     <TextView
                         android:id="@+id/tvTotalSteps"
-                        style="@style/head"
+                        style="@style/pixel_head"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1,234,567 걸음"
@@ -88,7 +88,7 @@
 
                     <TextView
                         android:id="@+id/tvCalories"
-                        style="@style/small"
+                        style="@style/pixel_body_small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -103,7 +103,7 @@
 
                     <TextView
                         android:id="@+id/tvQuestKeyword"
-                        style="@style/head"
+                        style="@style/pixel_head"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="[퀘스트 키워드]"
@@ -114,7 +114,7 @@
 
                     <TextView
                         android:id="@+id/tv_complete_rate"
-                        style="@style/small"
+                        style="@style/pixel_body_small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="해결 인원 54%"

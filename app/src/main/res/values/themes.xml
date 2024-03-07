@@ -4,6 +4,7 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name ="android:fontFamily">@font/ramche</item>
+        <item name="android:statusBarColor">@android:color/darker_gray</item>
     </style>
 
     <style name="Theme.QuestWalk" parent="Base.Theme.QuestWalk" />

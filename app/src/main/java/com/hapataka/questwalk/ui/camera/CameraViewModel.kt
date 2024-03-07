@@ -34,10 +34,8 @@ import kotlinx.coroutines.withContext
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
     val bitmap: LiveData<Bitmap?> get() = _bitmap
-
     private var _isSucceed: MutableLiveData<Boolean?> = MutableLiveData()
     val isSucceed: LiveData<Boolean?> get() = _isSucceed
-
     private var resultListBySpaceAPI: ArrayList<Line> = arrayListOf()
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 

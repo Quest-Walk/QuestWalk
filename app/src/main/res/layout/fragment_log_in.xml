@@ -13,7 +13,7 @@
 
         <EditText
             android:id="@+id/et_login_id"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="240dp"
             android:layout_height="50dp"
             android:layout_marginTop="140dp"
@@ -26,7 +26,7 @@
 
         <EditText
             android:id="@+id/et_login_password"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="240dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
@@ -38,7 +38,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_logIn"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:layout_width="240dp"
             android:layout_height="45dp"
             android:layout_marginTop="30dp"
@@ -56,7 +56,7 @@
             android:layout_marginEnd="50dp"
             android:layout_marginTop="50dp"
             android:textColor="#C8c8c8"
-            style="@style/small"
+            style="@style/pixel_body_small"
             android:text="비밀번호를 잊어버리셨나요?"/>
 
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="또는"
             android:layout_marginTop="24dp"
-            style="@style/small"
+            style="@style/pixel_body_small"
             app:layout_constraintTop_toBottomOf="@id/btn_logIn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -101,7 +101,7 @@
 
             <TextView
                 android:id="@+id/tv_join"
-                style="@style/small"
+                style="@style/pixel_body_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -114,7 +114,7 @@
 
             <TextView
                 android:id="@+id/tv_goJoin"
-                style="@style/small"
+                style="@style/pixel_body_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
