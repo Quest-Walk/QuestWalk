@@ -99,7 +99,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             _isSucceed.postValue(validationResponseByMLKit(keyword))
 
         } catch (e: Exception) {
-            Log.d("result", e.toString())
+            Log.d("ocrResult", e.toString())
             isLoading.postValue(false)
         }
     }
@@ -108,10 +108,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val similarityObj = RatcliffObershelp()
         resultListByMLKit.forEach { element: Element ->
             val word = element.text
-            Log.d("result", word)
+            Log.d("ocrResult", word)
             if (word.contains(keyword)) return true
             else if (similarityObj.similarity(word, keyword) >= 0.6) return true
-            Log.d("result", similarityObj.similarity(word, keyword).toString())
+            Log.d("ocrResult", similarityObj.similarity(word, keyword).toString())
         }
 
         return false
@@ -211,5 +211,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun setDebug(){
         _isDebug.value = !_isDebug.value!!
+    }
+
+    //디버그
+    fun setBitmapByGallery(bitmap: Bitmap){
+        _bitmap.value = bitmap
     }
 }
