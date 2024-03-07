@@ -61,6 +61,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             image.close()
         }
     }
+    private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +83,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 capturePhoto()
             }
             ibFlash.setOnClickListener {
-                // TODO : 플래시 ON/OFF
+                toggleFlash()
             }
             ibBackBtn.setOnClickListener {
                 navController.popBackStack()
@@ -147,5 +148,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             ContextCompat.getMainExecutor(requireContext()),
             imageCaptureCallback
         )
+    }
+
+    private fun toggleFlash() {
+
+        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
+            ImageCapture.FLASH_MODE_ON
+        } else {
+            ImageCapture.FLASH_MODE_OFF
+        }
+        imageCapture?.flashMode = flashMode
     }
 }
