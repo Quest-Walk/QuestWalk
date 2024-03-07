@@ -43,4 +43,27 @@ class MyInfoViewModel(
             }
         }
     }
+
+    fun getCurrentUserId(onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            val userId = authRepo.getCurrentUserUid()
+            onResult(userId)
+        }
+    }
+
+    fun setUserInfo(userId: String, characterNum: Int, nickName: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        if (userId.isEmpty()) {
+            onError("사용자가 로그인하지 않았습니다.")
+            return
+        }
+        viewModelScope.launch {
+            try {
+                userRepo.setUserInfo(userId, characterNum, nickName)
+                onSuccess()
+            } catch (e: Exception) {
+                onError(e.message ?: "사용자 정보 저장 중 오류가 발생했습니다.")
+            }
+        }
+    }
+
 }

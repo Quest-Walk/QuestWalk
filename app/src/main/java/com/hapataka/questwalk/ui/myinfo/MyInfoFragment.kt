@@ -1,16 +1,23 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.UserInfo
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
 import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
+import com.hapataka.questwalk.ui.onboarding.CharacterData
+import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
+import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 
@@ -30,6 +37,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         initLogoutButton()
         initDropOut()
         initBackButton()
+        changeCharacter()
+        changeName()
     }
 
     private fun setObserver() {
@@ -56,6 +65,11 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             tvSolveQuestValue.text ="$successResultCount 개"
             tvTimeValue.text = userInfo.totalTime
             tvCalorie.text = (userInfo.totalStep * 0.06f).toString() + " kcal"
+
+            when (userInfo.characterId) {
+                 1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
+                else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
+            }
         }
     }
 
@@ -83,5 +97,80 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         binding.btnBack.setOnClickListener {
             navController.popBackStack()
         }
+    }
+
+    private fun changeCharacter() {
+        binding.ivPlayerCharacter.setOnClickListener {
+            startCharacterDialog()
+        }
+    }
+
+    private fun startCharacterDialog() {
+        val dialogFragment = ChooseCharacterDialog().apply {
+            listener = object : OnCharacterSelectedListener {
+                override fun onCharacterSelected(characterData: CharacterData) {
+                    updateCharacterInfo(characterData)
+                }
+            }
+        }
+        dialogFragment.show(requireFragmentManager(), "ChooseCharacterDialog")
+    }
+
+    private fun updateCharacterInfo(characterData: CharacterData) {
+        binding.ivPlayerCharacter.setImageResource(characterData.img)
+        myInfoViewModel.getCurrentUserId { userId ->
+            if (userId.isNotEmpty()) {
+                updateUserInfo(userId, characterData.num)
+            } else {
+                "로그인 상태를 확인할 수 없습니다.".showSnackbar(requireView())
+            }
+        }
+    }
+
+    private fun updateUserInfo(userId: String, characterNum: Int) {
+        val nickName = binding.tvPlayerName.text.toString()
+        myInfoViewModel.setUserInfo(userId, characterNum, nickName, onSuccess = {
+            "변경완료".showSnackbar(requireView())
+        }, onError = {
+            "정보 변경에 실패하였습니다.".showSnackbar(requireView())
+        })
+    }
+
+    private fun changeName() {
+        binding.tvPlayerName.setOnClickListener {
+            showNickNameChangeDialog()
+        }
+    }
+
+    private fun showNickNameChangeDialog(){
+        val dialogBinding = DialogEditNicknameBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(requireContext()).create()
+        dialog.setView(dialogBinding.root)
+
+        dialogBinding.etChangeNickname.hint = binding.tvPlayerName.text
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnChange.setOnClickListener {
+            val newNickName = dialogBinding.etChangeNickname.text.toString()
+            if (newNickName.isBlank()) {
+                "변경된 정보가 없습니다.".showSnackbar(requireView())
+                dialog.dismiss()
+            } else {
+                myInfoViewModel.getCurrentUserId { userId ->
+                    //val characterNum = Todo("이거 어케 구할지 생각해보기")
+                    myInfoViewModel.setUserInfo(userId, 0, newNickName, onSuccess = {
+                        "닉네임이 성공적으로 변경되었습니다.".showSnackbar(requireView())
+                        dialog.dismiss()
+                        binding.tvPlayerName.text = newNickName}, onError = {
+                        "닉네임 변경에 실패하였습니다.".showSnackbar(requireView())
+                        }
+                    )
+                }
+            }
+        }
+        dialog.show()
     }
 }
