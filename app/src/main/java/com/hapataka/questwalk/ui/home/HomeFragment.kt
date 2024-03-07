@@ -12,7 +12,6 @@ import android.location.Location
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
-import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Chronometer.OnChronometerTickListener
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -38,35 +36,37 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.util.extentions.gone
+import com.hapataka.questwalk.util.extentions.invisible
+import com.hapataka.questwalk.util.extentions.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 class HomeFragment : Fragment(), SensorEventListener {
-    private lateinit var binding: FragmentHomeBinding
-    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
+    private val viewModel: HomeViewModel by activityViewModels()
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
     private val sensorManager by lazy {
-        this.context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
     private val sensor: Sensor? by lazy {
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
     }
-    private var totalSteps: Int = 0
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -74,49 +74,64 @@ class HomeFragment : Fragment(), SensorEventListener {
     private var locationHistory: ArrayList<Location> = arrayListOf()
 
     private var totalDistance: Float = 0.0F
+    private var totalSteps: Int = 0
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        updateDataView()
         setObserver()
-    }
-
-    private fun setObserver() {
-        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            if (isSucceed == null) return@observe
-            if (isSucceed) {
-                Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
-                cameraViewModel.initIsSucceed()
-                homeViewModel.isQuestSuccess = true
-                setQuestState()
-            }
-        }
-    }
-
-    private fun updateDataView() {
-        lifecycleScope.launch {
-            if (homeViewModel.getKeyword() == null) homeViewModel.getQuestWithRepository()
-            binding.tvQuestTitlePlay.text = homeViewModel.getKeyword()
-        }
+        getItems()
     }
 
     private fun initView() {
         initBackground()
-        setQuestState()
-        replaceFragmentByImageButton()
-        setQuestButtonEvent()
+        initNaviButtons()
+        initQuestButton()
         initBackPressedCallback()
         setStepSensor()
         initLocation()
+    }
+
+    private fun setObserver() {
+        with(viewModel) {
+            currentKeyword.observe(viewLifecycleOwner) {
+                binding.tvQuestKeyword.text = it
+            }
+            isPlay.observe(viewLifecycleOwner) {
+                toggleViews(it)
+            }
+            durationTime.observe(viewLifecycleOwner) {
+                binding.tvQuestTime.text = it.convertTime()
+            }
+        }
+
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            Log.d(TAG, "isSucceed: ${isSucceed}")
+            if (isSucceed == null) return@observe
+            if (isSucceed) {
+                Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
+
+                cameraViewModel.initIsSucceed()
+                viewModel.isQuestSuccess = true
+                with(binding) {
+                    setBackgroundWidget(btnToggleQuestState, R.color.green)
+                    btnToggleQuestState.text = "완료하기"
+                }
+            }
+        }
+    }
+
+
+    private fun getItems() {
+        viewModel.getRandomKeyword()
     }
 
     private fun initBackground() {
@@ -124,10 +139,13 @@ class HomeFragment : Fragment(), SensorEventListener {
             ivBgLayer1.load(R.drawable.background_day_layer1)
             ivBgLayer2.load(R.drawable.background_night_layer2)
             ivBgLayer3.load(R.drawable.background_night_layer3)
+            ivBgLayer1.translationX = 2115f
+            ivBgLayer2.translationX = -2800f
+            ivBgLayer3.translationX = 2115f
         }
     }
 
-    private fun replaceFragmentByImageButton() {
+    private fun initNaviButtons() {
         with(binding) {
             btnRecord.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_record)
@@ -147,74 +165,40 @@ class HomeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun setQuestButtonEvent() {
-        binding.btnQuestStatus.setOnClickListener {
-            homeViewModel.isPlay = !homeViewModel.isPlay
-
-            setQuestState()
-            if (homeViewModel.isPlay) {
-                updateLocation()
-            } else {
-                finishLocationClient()
-                locationHistory.clear()
-                navController.navigate(R.id.action_frag_home_to_frag_result)
-            }
+    private fun initQuestButton() {
+        binding.btnToggleQuestState.setOnClickListener {
+            viewModel.toggleIsPlay()
         }
     }
 
-    private fun setQuestState() {
+    private fun toggleViews(isPlay: Boolean) {
         with(binding) {
-            if (homeViewModel.isPlay) { // 모험 시작!
-
-                clPlayingBottomWidgets.visibility = View.VISIBLE
-                llPlayingContents.visibility = View.VISIBLE
-                btnQuestChange.visibility = View.GONE
-
-                if (homeViewModel.isQuestSuccess) {
-                    btnQuestStatus.text = "완료하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.green)
-                } else {
-                    //버튼색 이름 및 색깔 변경
-                    btnQuestStatus.text = "포기하기"
-                    setBackgroundWidget(btnQuestStatus, R.color.red)
-                }
-                binding.cmQuestTime.onChronometerTickListener =
-                    OnChronometerTickListener { chronometer ->
-                        val time = SystemClock.elapsedRealtime() - chronometer.base
-                        val h = (time / 3600000).toInt()
-                        val m = (time - h * 3600000).toInt() / 60000
-                        val s = (time - h * 3600000 - m * 3600000 * 3600000).toInt() / 1000
-                        val t =
-                            (if (h < 10) "0$h" else h).toString() + ":" + (if (m < 10) "0$m" else m).toString() + ":" + (if (s < 10) "0$s" else s).toString()
-                        chronometer.text = t
-                    }
-                binding.cmQuestTime.base = SystemClock.elapsedRealtime()
-                binding.cmQuestTime.text = "00:00:00"
-                binding.cmQuestTime.start()
+            if (isPlay) {
+                ibCamera.visible()
+                llPlayingContents.visible()
+                tvQuestChange.invisible()
+                initQuestStart()
                 totalSteps = 0
                 totalDistance = 0F
-
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "포기하기"
-                setBackgroundWidget(btnQuestStatus, R.color.red)
-                initQuestStart()
-
-            } else { // 모험이 끝날때!
-                clPlayingBottomWidgets.visibility = View.GONE
-                llPlayingContents.visibility = View.GONE
-                btnQuestChange.visibility = View.VISIBLE
-
-                binding.cmQuestTime.stop()
-                testResults()
-
-                //버튼색 이름 및 색깔 변경
-                btnQuestStatus.text = "모험 시작하기"
-                setBackgroundWidget(btnQuestStatus, R.color.green)
+                setBackgroundWidget(btnToggleQuestState, R.color.red)
+                btnToggleQuestState.text = "포기하기"
+                updateLocation()
+                Log.d(TAG, "true")
+            } else {
+                ibCamera.gone()
+                llPlayingContents.gone()
+                tvQuestChange.visible()
+                btnToggleQuestState.text = "모험 시작하기"
+                setBackgroundWidget(btnToggleQuestState, R.color.button)
                 initQuestEnd()
+                Log.d(TAG, "false")
+//                finishLocationClient()
+//                locationHistory.clear()
+//                navController.navigate(R.id.action_frag_home_to_frag_result)
+//                testResults()
             }
         }
     }
-
 
     private fun initQuestStart() {
         val imageLoader = ImageLoader.Builder(requireContext())
@@ -226,17 +210,32 @@ class HomeFragment : Fragment(), SensorEventListener {
                 }
             }
             .build()
-
         val requestCharacter = ImageRequest.Builder(requireContext())
             .data(R.drawable.character_move_01)
             .target(binding.ivChrImage)
             .build()
 
         imageLoader.enqueue(requestCharacter)
+        with(binding) {
+            ivBgLayer1.translationX = 0f
+            ivBgLayer2.translationX = 0f
+            ivBgLayer3.translationX = 0f
+            ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
+            ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
+            ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+        }
+    }
 
-        binding.ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
-        binding.ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
-        binding.ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
+    private fun initQuestEnd() {
+        with(binding) {
+            ivChrImage.load(R.drawable.character_01)
+            ivBgLayer1.clearAnimation()
+            ivBgLayer2.clearAnimation()
+            ivBgLayer3.clearAnimation()
+            ivBgLayer1.translationX = 2115f
+            ivBgLayer2.translationX = -2800f
+            ivBgLayer3.translationX = 2115f
+        }
     }
 
     private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
@@ -251,13 +250,6 @@ class HomeFragment : Fragment(), SensorEventListener {
         animation.interpolator = LinearInterpolator()
         animation.duration = duration
         return animation
-    }
-
-    private fun initQuestEnd() {
-        binding.ivChrImage.load(R.drawable.character_01)
-        binding.ivBgLayer1.clearAnimation()
-        binding.ivBgLayer2.clearAnimation()
-        binding.ivBgLayer3.clearAnimation()
     }
 
     // backgroundTint 값 변경
@@ -284,7 +276,6 @@ class HomeFragment : Fragment(), SensorEventListener {
                     delay(2000)
                     backPressedOnce = false
                 }
-
             }
         }.also {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
@@ -312,8 +303,7 @@ class HomeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun initLocation() {
         locationPermission = registerForActivityResult(
@@ -341,11 +331,13 @@ class HomeFragment : Fragment(), SensorEventListener {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(this.requireContext())
     }
 
     private fun updateLocation() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
+        val locationRequest =
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
         var preLocation: Location? = null
 
         locationCallback = object : LocationCallback() {
@@ -353,7 +345,7 @@ class HomeFragment : Fragment(), SensorEventListener {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.let {
                     for (location in it.locations) {
-                        Log.d("loc", "현위치 %s, %s".format(location.latitude, location.longitude))
+                        Log.d(TAG, "현위치 %s, %s".format(location.latitude, location.longitude))
                         if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)) {
                             if (location.accuracy * 1.5 < location.distanceTo(preLocation!!)) {
                                 totalDistance += location.distanceTo(preLocation!!)
@@ -369,6 +361,7 @@ class HomeFragment : Fragment(), SensorEventListener {
                 }
             }
         }
+
         //권한 처리
         if (ActivityCompat.checkSelfPermission(
                 this.requireContext(),
@@ -393,8 +386,8 @@ class HomeFragment : Fragment(), SensorEventListener {
 
     fun testResults() {
         var result = HistoryEntity.ResultEntity(
-            quest = binding.tvQuestTitlePlay.text.toString(),
-            time = binding.cmQuestTime.text.toString(),
+            quest = binding.tvQuestKeyword.text.toString(),
+//            time = binding.cmQuestTime.text.toString(),
             distance = totalDistance,
             step = totalSteps,
             latitueds = locationHistory.map { it.latitude.toFloat() },
@@ -403,11 +396,18 @@ class HomeFragment : Fragment(), SensorEventListener {
             questLongitude = locationHistory.lastOrNull()?.longitude?.toFloat() ?: 0F
         )
         Log.d("result", result.toString())
-
-
     }
-    override fun onResume() {
-        super.onResume()
-        setQuestState()
+
+    private fun Long.convertTime(): String {
+        val second = this % 60
+        val minute = this / 60
+        val displaySecond = if (second < 10) "0$second" else second.toString()
+        val displayMinute = when (minute) {
+            0L -> "00"
+            in 1..9 -> "0$minute"
+            else -> minute.toString()
+        }
+
+        return "$displayMinute:$displaySecond"
     }
 }

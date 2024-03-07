@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/tv_content"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -37,7 +37,7 @@
 
     <TextView
         android:id="@+id/btn_cancel"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -62,7 +62,7 @@
 
     <TextView
         android:id="@+id/btn_confirm"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

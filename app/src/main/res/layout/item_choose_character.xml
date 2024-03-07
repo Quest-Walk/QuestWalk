@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="@id/cv_profile_image"
         app:layout_constraintTop_toBottomOf="@id/cv_profile_image"
         android:layout_marginTop="5dp"
-        style="@style/small"/>
+        style="@style/pixel_body_small"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

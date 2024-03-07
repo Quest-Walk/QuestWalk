@@ -1,11 +1,9 @@
 package com.hapataka.questwalk
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
@@ -13,11 +11,10 @@ import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.result.ResultViewModel
+import com.hapataka.questwalk.util.BaseFragment
 
 
-class ResultFragment : Fragment() {
-    private var _binding : FragmentResultBinding? = null
-    private val binding get() = _binding!!
+class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate) {
     private val resultViewModel: ResultViewModel by viewModels()
     private var successItem: QuestData.SuccessItem? = null
     private var completeRate: Double? = null
@@ -29,15 +26,6 @@ class ResultFragment : Fragment() {
             completeRate = it.getDouble("CompleteRate")
         }
 
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentResultBinding.inflate(inflater,container,false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,8 +81,4 @@ class ResultFragment : Fragment() {
             imageList[index].load(successItem.imageUrl)
         }
     }
-
-
-
-
 }

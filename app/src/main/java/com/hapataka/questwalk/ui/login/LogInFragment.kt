@@ -3,13 +3,10 @@ package com.hapataka.questwalk.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -19,26 +16,17 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
+import com.hapataka.questwalk.util.BaseFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class LogInFragment : Fragment() {
-    private var _binding: FragmentLogInBinding? = null
-    private val binding get() = _binding!!
+class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
     private val RC_SIGN_IN = 100
     private val authRepo by lazy { AuthRepositoryImpl() }
     private val userRepo by lazy { UserRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentLogInBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -104,9 +92,10 @@ class LogInFragment : Fragment() {
             }
         }
     }
+
     private fun handleFirebaseAuthException(exception: FirebaseAuthException) {
         val errorCode = exception.errorCode
-        Log.d("로그디",errorCode)
+        Log.d("로그디", errorCode)
         val errorMessage = getErrorMessageByErrorCode(errorCode)
         errorMessage.showSnackbar(requireView())
     }
@@ -148,22 +137,15 @@ class LogInFragment : Fragment() {
     }
 
     private fun hideKeyBoard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
 }
-
-
 
 fun String.showSnackbar(view: View) {
     Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
 }
-
 
 
 // 실패코드 참고용입니당
@@ -236,8 +218,6 @@ fun String.showSnackbar(view: View) {
 //                Snackbar.make(requireView(), "Firebase 인증 실패", Snackbar.LENGTH_SHORT).show()
 //            }
 //        }
-
-
 
 
 //    private fun signUpWithKakao() {

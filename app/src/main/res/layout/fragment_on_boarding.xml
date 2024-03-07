@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            style="@style/head"
+            style="@style/pixel_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="닉네임을 입력해 주세요"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="@id/cv_profile_image"
             app:layout_constraintStart_toStartOf="@id/cv_profile_image"
@@ -61,7 +61,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:text="가입완료"
-            style="@style/body_default"
+            style="@style/pixel_body_default"
             app:layout_constraintEnd_toEndOf="@id/et_nickname"
             app:layout_constraintStart_toStartOf="@id/et_nickname"
             app:layout_constraintTop_toBottomOf="@id/et_nickname" />

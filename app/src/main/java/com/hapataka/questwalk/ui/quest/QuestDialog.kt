@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogQuestBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
 
