@@ -27,68 +27,39 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
+import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Runnable
 
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
-
-    // permission 등록 콜백 함수
-    private val requestPermissionLauncher: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                startCamera()
-            } else {
-                Snackbar.make(requireView(), "권한 받아오기 실패", Snackbar.LENGTH_SHORT).show()
-                requireActivity().supportFragmentManager.popBackStack()
-            }
-        }
-
+    private val homeViewModel : HomeViewModel by activityViewModels()
     // 카메라 관련 변수
     private var imageCapture: ImageCapture? = null
-    private val imageCaptureCallback = object : ImageCapture.OnImageCapturedCallback() {
-        override fun onCaptureSuccess(image: ImageProxy) {
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-            cameraViewModel.setCameraCharacteristics(image.imageInfo.rotationDegrees.toFloat())
-            cameraViewModel.setBitmap(bitmap)
-            image.close()
-        }
-    }
+    private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-
-            //캡쳐 성공시 CaptureFragment 이동
-            navController.navigate(R.id.action_frag_camera_to_frag_capture)
-        }
         checkPermissions()
-        bindingImageButton()
+        setObserver()
+        bindingWidgets()
     }
 
-    private fun bindingImageButton() {
-        with(binding) {
-            ibCapture.setOnClickListener {
-                capturePhoto()
-            }
-            ibFlash.setOnClickListener {
-                // TODO : 플래시 ON/OFF
-            }
-            ibBackBtn.setOnClickListener {
-                navController.popBackStack()
-            }
-        }
-    }
+    /**
+     *  Camera Permission 등록
+     */
+
+    private val requestPermissionLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            ::handlePermissionResult
+        )
 
     private fun checkPermissions() {
         if (
@@ -103,6 +74,83 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
+    private fun handlePermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            startCamera()
+        } else {
+            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT).show()
+            navController.popBackStack()
+        }
+    }
+
+    /**
+     *  Observer 및 ViewBinding
+     */
+
+    private fun setObserver() {
+
+        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            //캡쳐 성공시 CaptureFragment 이동
+            navController.navigate(R.id.action_frag_camera_to_frag_capture)
+        }
+    }
+
+    private fun bindingWidgets() {
+        with(binding) {
+            ibCapture.setOnClickListener {
+                capturePhoto()
+            }
+            ibFlash.setOnClickListener {
+                toggleFlash()
+            }
+            ibBackBtn.setOnClickListener {
+                navController.popBackStack()
+            }
+            tvCameraQuest.text = homeViewModel.currentKeyword.value
+        }
+    }
+
+
+    /**
+     *  카메라 기능
+     */
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+        cameraProviderFuture.addListener(
+            setCamera(cameraProvider),
+            ContextCompat.getMainExecutor(requireContext())
+        )
+    }
+
+    private fun setCamera(cameraProvider: ProcessCameraProvider): Runnable = Runnable {
+        val preview = Preview.Builder()
+            .build()
+            .also { mPreview ->
+                mPreview.setSurfaceProvider(
+                    binding.pvPreview.surfaceProvider
+                )
+            }
+
+        imageCapture = ImageCapture.Builder()
+            .setTargetResolution(getLargestSize())
+            .build()
+
+        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+        try {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(
+                this, cameraSelector, preview, imageCapture
+            )
+        } catch (e: Exception) {
+            Log.d("CameraX", "startCamera Fail", e)
+        }
+    }
+    //실패 했을떄, imageUri 이 null 으로 반환 해야 한다.
+
     private fun getLargestSize(): Size {
         val cameraManager =
             requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -114,38 +162,37 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
     }
 
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-        cameraProviderFuture.addListener({
-            val preview = Preview.Builder()
-                .build()
-                .also { mPreview ->
-                    mPreview.setSurfaceProvider(
-                        binding.pvPreview.surfaceProvider
-                    )
-                }
-            imageCapture = ImageCapture.Builder()
-                .setTargetResolution(getLargestSize())
-                .build()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
-                )
-            } catch (e: Exception) {
-                Log.d("CameraX", "startCamera Fail", e)
-            }
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(requireContext()),
-            imageCaptureCallback
+            imageCaptureCallback()
         )
+    }
+
+    private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
+        return object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                cameraViewModel.setCameraCharacteristics(image.imageInfo.rotationDegrees.toFloat())
+                cameraViewModel.setBitmap(bitmap)
+                image.close()
+            }
+        }
+    }
+
+
+    private fun toggleFlash() {
+
+        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
+            ImageCapture.FLASH_MODE_ON
+        } else {
+            ImageCapture.FLASH_MODE_OFF
+        }
+        imageCapture?.flashMode = flashMode
     }
 }
