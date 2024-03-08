@@ -198,8 +198,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay {
-                navController.navigate(R.id.action_frag_home_to_frag_result)
+            viewModel.toggleIsPlay {uid, keyword ->
+                val bundle = Bundle().apply {
+                    putString("userId",uid)
+                    putString("keyword",keyword)
+                }
+                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
                 finishLocationClient()
 //                viewModel.updateUserInfo()
             }

@@ -72,15 +72,15 @@ class HomeViewModel(
         _currentKeyword.value = keyword
     }
 
-    fun toggleIsPlay(callBack: () -> Unit) {
+    fun toggleIsPlay(callBack: (String, String?) -> Unit) {
         _isPlay.value = isPlay.value?.not()
         toggleTimer()
 
         if (!isPlay.value!!) {
             Log.i(TAG, "isplay 함수")
             viewModelScope.launch {
+                val uid = authRepo.getCurrentUserUid()
                 if (imageUri != null) {
-                    val uid = authRepo.getCurrentUserUid()
                     val remoteUri = imageRepo.setImage(imageUri!!, uid)
                     Log.i(TAG, "quest: ${questLocation}")
                     val result = HistoryEntity.ResultEntity(
@@ -99,7 +99,6 @@ class HomeViewModel(
                     questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
                     getRandomKeyword()
                 } else {
-                    val uid = authRepo.getCurrentUserUid()
                     val result = HistoryEntity.ResultEntity(
                         LocalTime.now().toString(),
                         currentKeyword.value ?: "",
@@ -118,8 +117,8 @@ class HomeViewModel(
                 prevLocation = null
                 imageUri = null
                 questLocation = null
+                callBack(uid, currentKeyword.value ?: "")
             }
-            callBack()
         }
     }
 
