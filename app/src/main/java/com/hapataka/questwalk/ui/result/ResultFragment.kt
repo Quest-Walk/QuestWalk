@@ -7,8 +7,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
 import com.google.android.gms.location.LocationCallback
@@ -82,7 +80,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
             ivQuestImage.load(result.questImg)
-            tvAdvTime.text = result.time
+//            tvAdvTime.text = result.time
             tvAdvDistance.text = "${result.distance}"
             tvTotalSteps.text = "${result.step}"
             tvCalories.text = "Zero"
@@ -119,15 +117,17 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
         Log.d("check", result.toString())
         var preLocation : Pair<Float, Float>? = null
+        val resultLati = result.locations?.map { it.first } ?: listOf()
+        val resultLongi = result.locations?.map {it.second} ?: listOf()
         val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
             LatLngBounds(
-                LatLng(result.latitueds.minOf{it}.toDouble(), result.longitudes.minOf{it}.toDouble()),
-                LatLng(result.latitueds.maxOf { it }.toDouble(), result.longitudes.maxOf { it }.toDouble()),
+                LatLng(resultLati.minOf{it}.toDouble(),resultLongi.minOf{it}.toDouble()),
+                LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
             ), 100
         )
         p0.animateCamera(cameraUpdate)
 
-        for (location in result.latitueds.zip(result.longitudes)){
+        for (location in resultLati.zip(resultLongi)){
             Log.d("위치정보",  "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
             if(preLocation!=null){
                 Log.d("check", "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}")

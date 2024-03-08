@@ -52,7 +52,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
 
     private fun initLoginButton() {
         with(binding) {
-            btnLogIn.setOnClickListener {
+            btnLogin.setOnClickListener {
                 val id = etLoginId.text.toString()
                 val pw = etLoginPassword.text.toString()
 

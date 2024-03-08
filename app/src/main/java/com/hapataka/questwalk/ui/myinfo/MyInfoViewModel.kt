@@ -39,6 +39,9 @@ class MyInfoViewModel(
                     _snackbarMsg.value = "탈퇴 완료"
                     callback()
                     return@deleteCurrentUser
+                } else {
+                    _snackbarMsg.value = "잠시후 다시 시도해주세요"
+                    return@deleteCurrentUser
                 }
             }
         }

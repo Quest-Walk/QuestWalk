@@ -12,14 +12,15 @@
         android:layout_height="match_parent">
 
         <TextView
-            style="@style/pixel_head"
+            android:id="@+id/tv_title"
+            style="@style/snas_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="40dp"
             android:text="프로필 설정"
             android:textSize="36sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,12 +28,12 @@
             android:id="@+id/cv_profile_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="60dp"
             app:cardCornerRadius="90dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title">
 
-            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_profile_image"
@@ -44,12 +45,13 @@
 
         <EditText
             android:id="@+id/et_nickname"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="닉네임을 입력해 주세요"
             style="@style/pixel_body_default"
+            android:layout_width="280dp"
+            android:layout_height="36dp"
+            android:background="@drawable/background_edit_text"
+            android:layout_marginTop="20dp"
             android:gravity="center"
+            android:hint="닉네임을 입력해 주세요"
             app:layout_constraintEnd_toEndOf="@id/cv_profile_image"
             app:layout_constraintStart_toStartOf="@id/cv_profile_image"
             app:layout_constraintTop_toBottomOf="@id/cv_profile_image" />
@@ -57,11 +59,14 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_complete"
-            android:layout_width="240dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="30dp"
+            style="@style/pixel_body_big"
+            android:layout_width="280dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/background_edit_text"
+            android:backgroundTint="@color/main_purple"
             android:text="가입완료"
-            style="@style/pixel_body_default"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@id/et_nickname"
             app:layout_constraintStart_toStartOf="@id/et_nickname"
             app:layout_constraintTop_toBottomOf="@id/et_nickname" />
