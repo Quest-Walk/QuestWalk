@@ -92,7 +92,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 viewModel.time = 23
             }
             viewModel.checkCurrentTime()
-            LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
         }
     }
 
@@ -134,7 +133,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 toggleViews(it)
                 toggleLocation(it)
             }
+            isEnabledButton.observe(viewLifecycleOwner) {
+                binding.btnToggleQuestState.isEnabled = it
+            }
             durationTime.observe(viewLifecycleOwner) {
+//                binding.btnToggleQuestState.isEnabled = it !in 1L..20L
                 binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
             }
             isNight.observe(viewLifecycleOwner) { night ->

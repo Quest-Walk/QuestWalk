@@ -33,6 +33,7 @@ class HomeViewModel(
     private var _totalStep = MutableLiveData<Int>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _isLoading = MutableLiveData<Boolean>(false)
+    private var _isEnabledButton = MutableLiveData<Boolean>(true)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
@@ -41,6 +42,7 @@ class HomeViewModel(
     val totalStep: LiveData<Int> get() = _totalStep
     val totalDistance: LiveData<Float> get() = _totalDistance
     val isLoading: LiveData<Boolean> get() = _isLoading
+    val isEnabledButton: LiveData<Boolean> get() = _isEnabledButton
 
     private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
@@ -85,10 +87,10 @@ class HomeViewModel(
 
         if (!isPlay.value!!) {
             viewModelScope.launch {
-                _isLoading.value = true
                 val uid = authRepo.getCurrentUserUid()
                 val registerAt = LocalTime.now().toString()
                 if (imageUri != null) {
+                    _isLoading.value = true
                     val remoteUri = imageRepo.setImage(imageUri!!, uid)
                     Log.i(TAG, "quest: ${questLocation}")
                     val result = HistoryEntity.ResultEntity(
@@ -138,6 +140,7 @@ class HomeViewModel(
 
                 while (true) {
                     var currentTime = durationTime.value!!
+                    _isEnabledButton.value = currentTime !in 0L..20L
 
                     delay(1000L)
                     _durationTime.value = currentTime + 1
