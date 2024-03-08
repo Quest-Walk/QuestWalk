@@ -11,9 +11,10 @@ import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.ui.quest.QuestData
 import kotlinx.coroutines.launch
 
-class ResultViewModel: ViewModel() {
-    private val userRepositoryImpl = UserRepositoryImpl()
-    private val questRepositoryImpl = QuestStackRepositoryImpl()
+class ResultViewModel(
+    private val userRepo: UserRepositoryImpl,
+    private val questRepo: QuestStackRepositoryImpl
+) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
     private val _questItem = MutableLiveData<QuestData>()
@@ -21,7 +22,7 @@ class ResultViewModel: ViewModel() {
 
     fun getResultHistory(userId: String, imageUrl: String) {
         viewModelScope.launch {
-            val userResults = userRepositoryImpl.getResultHistory(userId)
+            val userResults = userRepo.getResultHistory(userId)
             _resultItem.value = userResults.first {
                 it.questImg == imageUrl
             }
@@ -31,11 +32,11 @@ class ResultViewModel: ViewModel() {
     fun getQuestByKeyword(keyWord: String) {
         viewModelScope.launch {
 //            _questItem.value = questRepositoryImpl.getItemByKeyword(keyWord)
-            _questItem.value = convertToQuestData(questRepositoryImpl.getItemByKeyword(keyWord))
+            _questItem.value = convertToQuestData(questRepo.getItemByKeyword(keyWord))
         }
     }
 
-    private fun convertToQuestData(questStackEntity: QuestStackEntity):QuestData {
+    private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
             QuestData.SuccessItem(it.userId, it.imageUrl)
         }

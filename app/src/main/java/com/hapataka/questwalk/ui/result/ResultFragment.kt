@@ -1,37 +1,24 @@
-package com.hapataka.questwalk
+package com.hapataka.questwalk.ui.result
 
 import android.graphics.Color
-import android.location.Location
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
 import coil.load
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
-import com.hapataka.questwalk.ui.result.ResultViewModel
 import com.hapataka.questwalk.util.BaseFragment
-import okhttp3.internal.notify
-
 
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
     OnMapReadyCallback {
