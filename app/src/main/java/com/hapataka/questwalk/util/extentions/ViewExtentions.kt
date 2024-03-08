@@ -26,3 +26,16 @@ fun TextView.showErrMsg(msg: String, context: Context) {
     setTextColor(resources.getColor(R.color.red))
     startAnimation(animShake)
 }
+
+fun Long.convertTime(): String {
+    val second = this % 60
+    val minute = this / 60
+    val displaySecond = if (second < 10) "0$second" else second.toString()
+    val displayMinute = when (minute) {
+        0L -> "00"
+        in 1..9 -> "0$minute"
+        else -> minute.toString()
+    }
+
+    return "$displayMinute:$displaySecond"
+}

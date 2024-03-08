@@ -45,8 +45,6 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-
-
     <style name="tabTextSize" parent="TextAppearance.Design.Tab">
         <item name="fontFamily">@font/ramche</item>
     </style>

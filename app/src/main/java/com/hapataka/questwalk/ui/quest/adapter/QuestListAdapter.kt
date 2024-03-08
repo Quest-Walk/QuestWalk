@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 import kotlin.math.round
@@ -35,6 +36,7 @@ class QuestListAdapter(
             binding.ivImage3,
             binding.ivImage4
         )
+
         fun bind(item: QuestData) {
             if (allUser == 0L) {
                 binding.tvSolvePercent.text = "로딩중"
@@ -45,13 +47,16 @@ class QuestListAdapter(
                 0.0
             }
 
-            setImageView(item.successItems.size, imageList)
+            imageList.forEach { it.load(R.drawable.image_empty) }
+
             binding.tvKeyword.text = item.keyWord
             binding.tvSolvePercent.text = "해결 인원$completeRate%"
 
 
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
-                imageList[index].load(successItem.imageUrl)
+                imageList[index].load(successItem.imageUrl) {
+                    crossfade(true)
+                }
             }
 
             binding.tvMore.setOnClickListener {

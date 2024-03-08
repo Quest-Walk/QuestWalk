@@ -31,8 +31,7 @@ class UserRepositoryImpl : UserRepository {
             if (result is ResultEntity) {
                 with(currentInfo) {
                     totalDistance += result.distance
-                    /// TODO: time값이 Stiring이기때문에 추후에 사용한 Time의 값을 이용해 더해서 ToString 해죠야해
-                    totalTime += result.time
+                    totalTime = if(totalTime.isEmpty()) result.time.toString() else (totalTime.toLong() + result.time).toString()
                     totalStep += result.step
                 }
             }
@@ -62,7 +61,7 @@ class UserRepositoryImpl : UserRepository {
             totalTime = document.data?.get("totalTime").toString()
             totalDistance = document.data?.get("totalDistance").toString().toFloat()
             totalStep = document.data?.get("totalStep").toString().toLong()
-            histories = document.data?.get("histories") as MutableList<Map<String, Any>>
+            histories = document.data?.get("histories") as? MutableList<Map<String, Any>> ?: mutableListOf()
         }
         return@withContext UserEntity(
             userId,
@@ -115,25 +114,45 @@ class UserRepositoryImpl : UserRepository {
         return resultList
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun convertToResult(item: Map<String, Any>): ResultEntity {
         with(item) {
             return ResultEntity(
                 get("registerAt").toString(),
                 get("quest").toString(),
-                get("time").toString(),
+                get("time").toString().toLong(),
                 get("distance").toString().toFloat(),
                 get("step").toString().toInt(),
                 get("isFailed") as Boolean,
-                get("longitudes") as List<Float>,
-                get("latitueds") as List<Float>,
-                get("questLongitude").toString().toFloat(),
-                get("questLatitued").toString().toFloat(),
+                convertLocationHistories(get("locations") as? List<Map<String, Any>>),
+                convertLocation(get("questLocation") as? Map<String, Any>),
                 get("questImg").toString(),
                 RESULT_TYPE
             )
         }
     }
 
+    private fun convertLocation(item: Map<String, Any>?): Pair<Float, Float>? {
+        if (item == null) {
+            return null
+        }
+        val latitude = item["first"].toString().toFloat()
+        val longitude = item["second"].toString().toFloat()
+
+        return Pair(latitude, longitude)
+    }
+
+    private fun convertLocationHistories(item: List<Map<String, Any>>?): List<Pair<Float, Float>>? {
+        if (item == null) {
+            return null
+        }
+        val result = mutableListOf<Pair<Float, Float>>()
+
+        item.forEach {
+            result += convertLocation(it)!!
+        }
+        return result
+    }
 
     private fun convertToAchieve(item: Map<String, Any>): AchievementEntity {
         with(item) {
