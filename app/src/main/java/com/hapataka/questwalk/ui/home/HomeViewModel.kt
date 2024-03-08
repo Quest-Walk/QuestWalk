@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.home
 import android.location.Location
 import android.net.Uri
 import android.util.Log
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationResult
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
+import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
@@ -18,11 +18,13 @@ import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 class HomeViewModel(
     private val authRepo: AuthRepositoryImpl,
     private val userRepo: UserRepositoryImpl,
-    private val imageRepo: ImageRepositoryImpl
+    private val imageRepo: ImageRepositoryImpl,
+    private val questRepo: QuestStackRepositoryImpl
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     private var _isPlay = MutableLiveData(false)
@@ -30,7 +32,6 @@ class HomeViewModel(
     private var _isNight = MutableLiveData(false)
     private var _totalStep = MutableLiveData<Int>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
-    private var _imagePath = MutableLiveData<Uri>()
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
@@ -38,22 +39,19 @@ class HomeViewModel(
     val isNight: LiveData<Boolean> get() = _isNight
     val totalStep: LiveData<Int> get() = _totalStep
     val totalDistance: LiveData<Float> get() = _totalDistance
-    val imagePath: LiveData<Uri> get() = _imagePath
 
+    private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
     private var timer: Job? = null
 
     private lateinit var imgDownloadUrl: Uri
-    private var locationHistory = ArrayList<Location>()
-    private var preLocation: Location? = null
-    private var questLocation: Location? = null
+    private var locationHistory = mutableListOf<Pair<Float, Float>>()
+    private var questLocation: Pair<Float, Float>? = null
 
-    var isQuestSuccess: Boolean = false
     var time = 12
 //    var time = LocalTime.now().hour
 
     fun checkCurrentTime() {
-        Log.d(TAG, "time: $time")
         when (time) {
             in 7..18 -> _isNight.value = false
             else -> _isNight.value = true
@@ -79,13 +77,49 @@ class HomeViewModel(
         toggleTimer()
 
         if (!isPlay.value!!) {
-            // 포기하기 or 완료하기
-            callBack()
-            if (imagePath.value != null) {
-                Log.d("HomeViewModel:", "HomeViewModel:$imagePath 진입")
-                setImage()
+            Log.i(TAG, "isplay 함수")
+            viewModelScope.launch {
+                if (imageUri != null) {
+                    val uid = authRepo.getCurrentUserUid()
+                    val remoteUri = imageRepo.setImage(imageUri!!, uid)
+                    Log.i(TAG, "quest: ${questLocation}")
+                    val result = HistoryEntity.ResultEntity(
+                        LocalTime.now().toString(),
+                        currentKeyword.value ?: "",
+                        durationTime.value ?: 0,
+                        totalDistance.value ?: 0f,
+                        totalStep.value ?: 0,
+                        true,
+                        locationHistory,
+                        questLocation,
+                        remoteUri.toString()
+                    )
+
+                    userRepo.updateUserInfo(uid, result)
+                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
+                    getRandomKeyword()
+                } else {
+                    val uid = authRepo.getCurrentUserUid()
+                    val result = HistoryEntity.ResultEntity(
+                        LocalTime.now().toString(),
+                        currentKeyword.value ?: "",
+                        durationTime.value ?: 0,
+                        totalDistance.value ?: 0f,
+                        totalStep.value ?: 0,
+                        false,
+                        locationHistory
+                    )
+
+                    userRepo.updateUserInfo(uid, result)
+                }
+                _totalDistance.value = 0f
+                _totalStep.value = 0
+                locationHistory.clear()
+                prevLocation = null
+                imageUri = null
+                questLocation = null
             }
-//            updateUserInfo(requestUserInfo())
+            callBack()
         }
     }
 
@@ -107,81 +141,61 @@ class HomeViewModel(
     }
 
     fun updateStep() {
+        Log.i(TAG, "update step")
         if (isPlay.value!!) {
-            _totalStep.value?.plus(1)
+            val currentStep = totalStep.value ?: 0
+
+            _totalStep.value = currentStep + 1
+            Log.i(TAG, "step: ${totalStep.value}")
         } else {
             _totalStep.value = 0
         }
     }
 
-    fun setImagePath(uri: String) {
-        _imagePath.value = uri.toUri()
+    private var imageUri: Uri? = null
+    fun setImageBitmap(image: String) {
+        Log.d(TAG, "bitmap: ${image}")
+        imageUri = Uri.parse("file://$image")
     }
 
     fun updateLocation(locationResult: LocationResult) {
-        locationResult.let {
-            for (location in it.locations) {
-                Log.d(TAG, "현재위치 ${location.latitude}, ${location.longitude}")
-                if (location.hasAccuracy() && (location.accuracy <= 30) && (preLocation != null)) {
-                    if (location.accuracy * 1.5 < location.distanceTo(preLocation!!)) {
-                        _totalDistance.value = location.distanceTo(preLocation!!)
-                        locationHistory.add(location)
-                        preLocation = location
-
-                    }
-                } else {
-                    locationHistory.add(location)
-                    preLocation = location
-                }
-            }
-        }
-    }
-
-    fun checkQuestLocation() {
-        questLocation = locationHistory.lastOrNull()
-    }
-
-    private fun Long.convertTime(): String {
-        val second = this % 60
-        val minute = this / 60
-        val displaySecond = if (second < 10) "0$second" else second.toString()
-        val displayMinute = when (minute) {
-            0L -> "00"
-            in 1..9 -> "0$minute"
-            else -> minute.toString()
-        }
-
-        return "$displayMinute:$displaySecond"
-    }
-
-    private fun setImage() {
-        viewModelScope.launch {
-            val userId = authRepo.getCurrentUserUid()
-            imgDownloadUrl = imageRepo.setImage(_imagePath.value!!, userId)
-        }
-    }
-
-    private fun updateUserInfo(history: HistoryEntity.ResultEntity) {
-        viewModelScope.launch {
-            val userId = authRepo.getCurrentUserUid()
-            userRepo.updateUserInfo(userId, history)
-        }
-    }
-
-    private fun requestUserInfo(): HistoryEntity.ResultEntity {
-        return HistoryEntity.ResultEntity(
-            quest = _currentKeyword.value ?: "",
-            time = _durationTime.value?.convertTime() ?: "",
-            distance = _totalDistance.value ?: 0F,
-            step = _totalStep.value ?: 0,
-            latitueds = locationHistory.map { it.latitude.toFloat() },
-            longitudes = locationHistory.map { it.longitude.toFloat() },
-            questLatitued = questLocation?.latitude?.toFloat() ?: 0F,
-            questLongitude = questLocation?.longitude?.toFloat() ?: 0F,
-            registerAt = "20240307",
-            isFailed = imagePath.value == null,
-            questImg = "$imgDownloadUrl"
+        val currentLocation = locationResult.locations.last()
+        val currentDistance = totalDistance.value ?: 0f
+        val moveDistance = currentLocation.distanceTo(
+            if (prevLocation != null) prevLocation!! else currentLocation
         )
+
+        prevLocation = currentLocation
+
+        if (currentLocation.hasAccuracy().not()) {
+            return
+        }
+
+        if (currentLocation.accuracy > 30) {
+            return
+        }
+        _totalDistance.value = currentDistance + if (moveDistance < 1f) 0f else moveDistance
+        locationHistory += Pair(currentLocation.latitude.toFloat(), currentLocation.longitude.toFloat())
     }
+
+    fun setQuestSuccessLocation() {
+        questLocation = locationHistory.last()
+    }
+
+//    private fun requestUserInfo(): HistoryEntity.ResultEntity {
+//        return HistoryEntity.ResultEntity(
+//            quest = _currentKeyword.value ?: "",
+//            time = _durationTime.value?.convertTime() ?: "",
+//            distance = _totalDistance.value ?: 0F,
+//            step = _totalStep.value ?: 0,
+//            latitueds = locationHistory.map { it.latitude.toFloat() },
+//            longitudes = locationHistory.map { it.longitude.toFloat() },
+//            questLatitued = questLocation?.latitude?.toFloat() ?: 0F,
+//            questLongitude = questLocation?.longitude?.toFloat() ?: 0F,
+//            registerAt = "20240307",
+//            isFailed = imagePath.value == null,
+//            questImg = "$imgDownloadUrl"
+//        )
+//    }
 
 }

@@ -1,10 +1,7 @@
 package com.hapataka.questwalk
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
 import com.hapataka.questwalk.databinding.FragmentResultBinding
@@ -55,7 +52,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
             ivQuestImage.load(result.questImg)
-            tvAdvTime.text = result.time
+//            tvAdvTime.text = result.time
             tvAdvDistance.text = "${result.distance}"
             tvTotalSteps.text = "${result.step}"
             tvCalories.text = "Zero"

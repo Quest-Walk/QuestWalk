@@ -36,7 +36,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
             return RecordViewModel(authRepo, userRepo) as T
         }
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(authRepo, userRepo, imageRepo ) as T
+            return HomeViewModel(authRepo, userRepo, imageRepo, questRepo) as T
         }
         throw IllegalArgumentException("unknown view model")
     }

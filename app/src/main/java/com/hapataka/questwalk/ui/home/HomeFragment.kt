@@ -8,15 +8,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.location.Location
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
@@ -27,7 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -47,16 +41,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
-import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
 import com.hapataka.questwalk.util.extentions.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment(), SensorEventListener {
-    private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
+class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
     private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
@@ -66,23 +60,9 @@ class HomeFragment : Fragment(), SensorEventListener {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
-    private var locationHistory: ArrayList<Location> = arrayListOf()
-
-    //    private var totalDistance: Float = 0.0F
-//    private var totalSteps: Int = 0
-    private var imagePath: Uri? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,7 +76,6 @@ class HomeFragment : Fragment(), SensorEventListener {
         initNaviButtons()
         initQuestButton()
         initBackPressedCallback()
-        setStepSensor()
         checkPermission()
         setLocationClient()
 
@@ -160,31 +139,25 @@ class HomeFragment : Fragment(), SensorEventListener {
                     binding.ivBgLayer3.load(R.drawable.background_day_layer3)
                 }
             }
-            totalStep.observe(viewLifecycleOwner) {
-                binding.tvQuestPlaying.text = "%d걸음".format(it)
+            totalStep.observe(viewLifecycleOwner) { step ->
+                binding.tvQuestPlaying.text = "${step}걸음"
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
             }
-            imagePath.observe(viewLifecycleOwner) {
-                Log.d("HomeFragment:", "$it")
-                this@HomeFragment.imagePath = it
-            }
         }
 
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            Log.d(TAG, "isSucceed: ${isSucceed}")
             if (isSucceed == null) return@observe
             if (isSucceed) {
                 Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
 
                 cameraViewModel.initIsSucceed()
-                viewModel.isQuestSuccess = true
                 with(binding) {
                     setBackgroundWidget(btnToggleQuestState, R.color.green)
                     btnToggleQuestState.text = "완료하기"
                 }
-                viewModel.checkQuestLocation()
+                viewModel.setQuestSuccessLocation()
             }
         }
     }
@@ -256,6 +229,9 @@ class HomeFragment : Fragment(), SensorEventListener {
     private fun toggleLocation(isPlay: Boolean) {
         if (isPlay) {
             updateLocation()
+            initStepSensor()
+        } else {
+            sensorManager.unregisterListener(sensorListener, stepSensor)
         }
     }
 
@@ -341,33 +317,33 @@ class HomeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun setStepSensor() {
-        val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
-
-        if (sensor == null) {
-            Toast.makeText(
-                this.requireContext(),
-                "No sensor detected on this device",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            Log.d(TAG, "sensor: ${sensor.type}")
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
+    private fun initStepSensor() {
+        if (stepSensor == null) {
+            "No sensor detected on this device".showToast()
+            return
         }
+        sensorManager.registerListener(sensorListener, stepSensor, SensorManager.SENSOR_DELAY_UI)
     }
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        val sensor = event!!.sensor
+    private val sensorListener by lazy { makeSensorListener() }
+    private val stepSensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) }
 
-        if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-            viewModel.updateStep()
+    private fun makeSensorListener(): SensorEventListener {
+        return object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent?) {
+                val sensor = event!!.sensor
+
+                if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
+                    viewModel.updateStep()
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
         }
     }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun updateLocation() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
 
         locationCallback = object : LocationCallback() {
             //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
@@ -406,16 +382,7 @@ class HomeFragment : Fragment(), SensorEventListener {
         )
     }
 
-    private fun Long.convertTime(): String {
-        val second = this % 60
-        val minute = this / 60
-        val displaySecond = if (second < 10) "0$second" else second.toString()
-        val displayMinute = when (minute) {
-            0L -> "00"
-            in 1..9 -> "0$minute"
-            else -> minute.toString()
-        }
-
-        return "$displayMinute:$displaySecond"
+    private fun String.showToast() {
+        Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()
     }
 }
