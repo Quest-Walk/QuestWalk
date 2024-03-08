@@ -7,7 +7,7 @@ sealed class RecordItem {
 
     data class ResultItem(
         val thumbnail: String?,
-        val isSuccess: Boolean
+        val isFail: Boolean
     ) : RecordItem()
 
     data class AchieveItem(

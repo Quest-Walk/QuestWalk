@@ -1,30 +1,26 @@
 package com.hapataka.questwalk.ui.myinfo
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.UserInfo
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
 import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertTime
-import kotlinx.coroutines.launch
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val myInfoViewModel by viewModels<MyInfoViewModel> { ViewModelFactory() }
@@ -76,11 +72,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
                  1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
                 else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
             }
-            tvTimeValue.text = if (time == null) {
-                "00시간 00분"
-            } else {
-                time.convertTime()
-            }
+            tvTimeValue.text = time?.convertTime(DETAIL_TIME) ?: "00시간 00분 00초"
         }
     }
 

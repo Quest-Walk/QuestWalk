@@ -10,6 +10,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.ui.quest.QuestData
 import kotlinx.coroutines.launch
+import kotlin.math.round
 
 class ResultViewModel(
     private val userRepo: UserRepositoryImpl,
@@ -19,20 +20,24 @@ class ResultViewModel(
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
     private val _questItem = MutableLiveData<QuestData>()
     val questItem: LiveData<QuestData> = _questItem
+    private val _completeRate = MutableLiveData<Double>()
+    val completeRate: LiveData<Double> = _completeRate
 
-    fun getResultHistory(userId: String, imageUrl: String) {
+    fun getResultHistory(userId: String, keyword: String) {
         viewModelScope.launch {
             val userResults = userRepo.getResultHistory(userId)
             _resultItem.value = userResults.first {
-                it.questImg == imageUrl
+                it.quest == keyword
             }
         }
     }
 
     fun getQuestByKeyword(keyWord: String) {
         viewModelScope.launch {
-//            _questItem.value = questRepositoryImpl.getItemByKeyword(keyWord)
-            _questItem.value = convertToQuestData(questRepo.getItemByKeyword(keyWord))
+            val allUser = userRepo.getAllUserSize()
+            val questItem = convertToQuestData(questRepo.getItemByKeyword(keyWord))
+            _questItem.value = questItem
+            _completeRate.value = round((questItem.successItems.size.toDouble() / allUser) * 100)
         }
     }
 

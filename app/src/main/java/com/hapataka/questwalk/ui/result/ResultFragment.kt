@@ -15,23 +15,25 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
     OnMapReadyCallback {
-    private val resultViewModel: ResultViewModel by viewModels()
-    private var successItem: QuestData.SuccessItem? = null
-    private var completeRate: Double? = null
+    private val resultViewModel: ResultViewModel by viewModels<ResultViewModel> { ViewModelFactory() }
+    private var userId: String? = null
+    private var keyword: String? = null
     private lateinit var result: HistoryEntity.ResultEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            successItem = it.getParcelable("SuccessItem") as? QuestData.SuccessItem
-            completeRate = it.getDouble("CompleteRate")
+            userId = it.getString("userId")
+            keyword = it.getString("keyword")
         }
 
     }
@@ -44,37 +46,40 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
         binding.fragMap.onCreate(savedInstanceState)
         binding.fragMap.getMapAsync(this)
-        Log.d("check", "onviewcreated")
     }
 
     private fun dataObserve() {
-        resultViewModel.resultItem.observe(viewLifecycleOwner) {
-            initViews(it)
-            resultViewModel.getQuestByKeyword(it.quest)
-        }
-
-        resultViewModel.questItem.observe(viewLifecycleOwner) {
-            initImageViews(it)
+        with(resultViewModel) {
+            resultItem.observe(viewLifecycleOwner) {
+                initViews(it)
+                resultViewModel.getQuestByKeyword(it.quest)
+            }
+            questItem.observe(viewLifecycleOwner) {
+                initImageViews(it)
+            }
+            completeRate.observe(viewLifecycleOwner) {
+                binding.tvCompleteRate.text = "$it"
+            }
         }
     }
 
     private fun getInfo() {
-        successItem?.let {
-            resultViewModel.getResultHistory(it.userId, it.imageUrl)
+        if (userId != null && keyword != null) {
+            resultViewModel.getResultHistory(userId!!, keyword!!)
         }
     }
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
             ivQuestImage.load(result.questImg)
-//            tvAdvTime.text = result.time
+            tvAdvTime.text = result.time.toString()
             tvAdvDistance.text = "${result.distance}"
             tvTotalSteps.text = "${result.step}"
             tvCalories.text = "Zero"
             tvQuestKeyword.text = result.quest
-            tvCompleteRate.text = "$completeRate"
+
         }
-        this.result =result
+        this.result = result
     }
 
     private fun initImageViews(questItem: QuestData) {
@@ -85,13 +90,12 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             binding.ivImage4
         )
 
-        for (i in imageList.indices) {
-            if (i < questItem.successItems.size) imageList[i].visibility = View.VISIBLE
-            else imageList[i].visibility = View.INVISIBLE
-        }
+        imageList.forEach { it.load(R.drawable.image_empty) }
 
         questItem.successItems.reversed().take(4).forEachIndexed { index, successItem ->
-            imageList[index].load(successItem.imageUrl)
+            imageList[index].load(successItem.imageUrl) {
+                crossfade(true)
+            }
         }
     }
 
@@ -103,21 +107,24 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
         Log.d("check", result.toString())
-        var preLocation : Pair<Float, Float>? = null
+        var preLocation: Pair<Float, Float>? = null
         val resultLati = result.locations?.map { it.first } ?: listOf()
-        val resultLongi = result.locations?.map {it.second} ?: listOf()
+        val resultLongi = result.locations?.map { it.second } ?: listOf()
         val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
             LatLngBounds(
-                LatLng(resultLati.minOf{it}.toDouble(),resultLongi.minOf{it}.toDouble()),
+                LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
                 LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
             ), 100
         )
         p0.animateCamera(cameraUpdate)
 
-        for (location in resultLati.zip(resultLongi)){
-            Log.d("위치정보",  "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
-            if(preLocation!=null){
-                Log.d("check", "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}")
+        for (location in resultLati.zip(resultLongi)) {
+            Log.d("위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
+            if (preLocation != null) {
+                Log.d(
+                    "check",
+                    "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}"
+                )
                 var polyline = p0.addPolyline(
                     PolylineOptions()
                         .clickable(true)
@@ -129,10 +136,10 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                 polyline.width = 15.0F
                 polyline.color = Color.BLACK
                 polyline.jointType = JointType.ROUND
-                polyline.startCap=RoundCap()
-                polyline.endCap= RoundCap()
+                polyline.startCap = RoundCap()
+                polyline.endCap = RoundCap()
             }
-            preLocation=location
+            preLocation = location
         }
     }
 }
