@@ -1,5 +1,6 @@
 package com.hapataka.questwalk
 
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -31,6 +32,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.result.ResultViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import okhttp3.internal.notify
 
 
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
@@ -38,7 +40,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private val resultViewModel: ResultViewModel by viewModels()
     private var successItem: QuestData.SuccessItem? = null
     private var completeRate: Double? = null
-    private var resultMap: GoogleMap? = null
+    private lateinit var result: HistoryEntity.ResultEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
         binding.fragMap.onCreate(savedInstanceState)
         binding.fragMap.getMapAsync(this)
+        Log.d("check", "onviewcreated")
     }
 
     private fun dataObserve() {
@@ -86,7 +89,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             tvQuestKeyword.text = result.quest
             tvCompleteRate.text = "$completeRate"
         }
-        updateLocation(resultMap!!, result)
+        this.result =result
     }
 
     private fun initImageViews(questItem: QuestData) {
@@ -108,33 +111,37 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     }
 
     override fun onMapReady(p0: GoogleMap) {
+        Log.d("check", "onmapready")
         MapsInitializer.initialize(this.requireContext())
-        resultMap=p0
+        updateLocation(p0, result)
     }
 
     private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
+        Log.d("check", result.toString())
         var preLocation : Pair<Float, Float>? = null
         val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
             LatLngBounds(
-                LatLng(result.latitueds.min().toDouble(), result.longitudes.min().toDouble()),
-                LatLng(result.latitueds.max().toDouble(), result.longitudes.max().toDouble()),
-            ), 10
+                LatLng(result.latitueds.minOf{it}.toDouble(), result.longitudes.minOf{it}.toDouble()),
+                LatLng(result.latitueds.maxOf { it }.toDouble(), result.longitudes.maxOf { it }.toDouble()),
+            ), 100
         )
         p0.animateCamera(cameraUpdate)
 
         for (location in result.latitueds.zip(result.longitudes)){
-            Log.d("위치정보",  "위도: ${location.first} 경도: ${location.second}")
+            Log.d("위치정보",  "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
             if(preLocation!=null){
-                var polyline = p0.addPolyline(
+                Log.d("check", "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}")
+//                var polyline =
+                    p0.addPolyline(
                     PolylineOptions()
                         .clickable(true)
                         .add(
-                            LatLng(preLocation!!.first.toDouble(), preLocation!!.second.toDouble()),
+                            LatLng(preLocation!!.first.toDouble()., preLocation!!.second.toDouble()),
                             LatLng(location.first.toDouble(), location.second.toDouble())
                         )
                 )
-                polyline.width = 15.toFloat()
-                polyline.color = -0xa80e9
+                polyline.width = 15.0F
+                polyline.color = Color.BLACK
                 polyline.jointType = JointType.ROUND
                 polyline.startCap=RoundCap()
                 polyline.endCap= RoundCap()
