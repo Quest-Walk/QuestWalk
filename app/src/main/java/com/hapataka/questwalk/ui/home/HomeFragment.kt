@@ -56,6 +56,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
+
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
@@ -381,6 +382,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             Looper.myLooper()!!
         )
     }
+
+//        private fun getUserNum() {
+//        viewModel.charNum.observe(viewLifecycleOwner) {
+//            when(it) {
+//                1 -> binding.ivChrImage.setImageResource(R.drawable.character_01)
+//                else -> binding.ivChrImage.setImageResource(R.drawable.character_01)
+//            }
+//        }
+//    }
 
     private fun String.showToast() {
         Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()

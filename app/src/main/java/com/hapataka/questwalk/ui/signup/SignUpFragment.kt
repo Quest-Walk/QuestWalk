@@ -2,6 +2,8 @@ package com.hapataka.questwalk.ui.signup
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.util.Log
 import android.util.Patterns
@@ -25,6 +27,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var isPassWordVisible : Boolean = false
+    private var isCanClick = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,25 +52,35 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private fun initSignUpButton() {
         with(binding) {
             btnSignUp.setOnClickListener {
+                hideKeyBoard()
+                if (!isCanClick) return@setOnClickListener
+                isCanClick = false
+
                 val emailId = etSignUpId.text.toString()
                 val pw = etSignUpPw.text.toString()
                 val pwCheck = etSignUpCheckPw.text.toString()
 
-
-
                 if (checkEmailValidity(emailId)) {
                     etSignUpId.requestFocus()
+                    isCanClick = true
                     return@setOnClickListener
                 }
 
                 if (checkPwValidity(pw, pwCheck)) {
                     etSignUpPw.requestFocus()
+                    isCanClick = true
                     return@setOnClickListener
                 }
+
                 viewModel.registerByEmailAndPw(emailId, pw,
                     { moveHomeWithLogin(emailId, pw) },
-                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView()) })
+                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView())
+                    isCanClick = true })
             }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                isCanClick = true
+            },1000)
         }
     }
 

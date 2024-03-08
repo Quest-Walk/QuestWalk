@@ -202,14 +202,14 @@ class HomeViewModel(
 //    }
 
 
-    private fun getUserCharNum() {
-        viewModelScope.launch {
-            val userId = authRepo.getCurrentUserUid()
-
-            val userInfo = userRepo.getInfo(userId)
-            _charNum.postValue(userInfo.characterId)
-        }
-
-    }
+//    private fun getUserCharNum() {
+//        viewModelScope.launch {
+//            val userId = authRepo.getCurrentUserUid()
+//
+//            val userInfo = userRepo.getInfo(userId)
+//            _charNum.value = userInfo.characterId
+//        }
+//
+//    }
 
 }
