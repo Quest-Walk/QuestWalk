@@ -81,6 +81,14 @@ class UserRepositoryImpl : UserRepository {
             return@withContext currentUserInfo.histories
         }
 
+    override suspend fun deleteUserData(userId: String) {
+        withContext(Dispatchers.IO) {
+            val document = userCollection.document(userId)
+
+            document.delete()
+        }
+    }
+
 
     override suspend fun getAchieveHistory(userId: String): MutableList<AchievementEntity> =
         withContext(Dispatchers.IO) {

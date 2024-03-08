@@ -75,6 +75,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
             onClickView =  {keyWord ->
                 val dialog = QuestDialog(keyWord)
+
                 dialog.show(parentFragmentManager, "QuestDialog")
             }
         )

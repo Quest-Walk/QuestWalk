@@ -40,7 +40,7 @@ class QuestListAdapter(
             if (allUser == 0L) {
                 binding.tvSolvePercent.text = "로딩중"
             }
-            val completeRate = if (item.successItems.size > 0) {
+            val completeRate = if (item.successItems.isNotEmpty()) {
                 round((item.successItems.size.toDouble() / allUser) * 100)
             }  else {
                 0.0

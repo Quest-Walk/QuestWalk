@@ -19,40 +19,58 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 
+const val USER_ID = "user_id"
+const val QUEST_KEYWORD = "quest_keyword"
+const val REGISTER_TIME = "register_time"
+
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
     OnMapReadyCallback {
-    private val resultViewModel: ResultViewModel by viewModels<ResultViewModel> { ViewModelFactory() }
+    private val viewModel: ResultViewModel by viewModels { ViewModelFactory() }
     private var userId: String? = null
     private var keyword: String? = null
-    private lateinit var result: HistoryEntity.ResultEntity
+    private var registerAt: String? = null
+    private lateinit var googleMap: GoogleMap
+//    private lateinit var result: HistoryEntity.ResultEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            userId = it.getString("userId")
-            keyword = it.getString("keyword")
+            userId = it.getString(USER_ID)
+            keyword = it.getString(QUEST_KEYWORD)
+            registerAt = it.getString(REGISTER_TIME)
         }
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        dataObserve()
-        getInfo()
-
         binding.fragMap.onCreate(savedInstanceState)
         binding.fragMap.getMapAsync(this)
+
+        getInfo()
+        setObserver()
     }
 
-    private fun dataObserve() {
-        with(resultViewModel) {
+    private fun getInfo() {
+        if (userId != null && keyword != null && registerAt != null) {
+            viewModel.getResult(userId!!, keyword!!, registerAt!!)
+        }
+    }
+
+    private fun setObserver() {
+        with(viewModel) {
             resultItem.observe(viewLifecycleOwner) {
+                Log.i(TAG, "observ result: ${it}")
+                if (::googleMap.isInitialized) {
+                    MapsInitializer.initialize(requireContext())
+                    updateLocation(googleMap, it)
+                }
                 initViews(it)
-                resultViewModel.getQuestByKeyword(it.quest)
+                viewModel.getQuestByKeyword(it.quest)
             }
             questItem.observe(viewLifecycleOwner) {
                 initImageViews(it)
@@ -63,23 +81,26 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         }
     }
 
-    private fun getInfo() {
-        if (userId != null && keyword != null) {
-            resultViewModel.getResultHistory(userId!!, keyword!!)
-        }
-    }
-
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            ivQuestImage.load(result.questImg)
-            tvAdvTime.text = result.time.toString()
-            tvAdvDistance.text = "${result.distance}"
-            tvTotalSteps.text = "${result.step}"
-            tvCalories.text = "Zero"
-            tvQuestKeyword.text = result.quest
-
+            if (result.questImg != null) {
+                Log.d("ResultFragment:","Image Not Null!!!!!")
+                ivQuestImage.load(result.questImg)
+                tvAdvTime.text = result.time.toString()
+                tvAdvDistance.text = "${result.distance}"
+                tvTotalSteps.text = "${result.step}"
+                tvCalories.text = "Zero"
+                tvQuestKeyword.text = result.quest
+            } else {
+                Log.d("ResultFragment:","Image Null!!!!!")
+                ivQuestImage.load(R.drawable.image_fail)
+                tvAdvTime.text = result.time.toString()
+                tvAdvDistance.text = "${result.distance}"
+                tvTotalSteps.text = "${result.step}"
+                tvCalories.text = "Zero"
+                tvQuestKeyword.text = result.quest
+            }
         }
-        this.result = result
     }
 
     private fun initImageViews(questItem: QuestData) {
@@ -100,9 +121,10 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     }
 
     override fun onMapReady(p0: GoogleMap) {
-        Log.d("check", "onmapready")
+        Log.i(TAG, "map ready")
+        googleMap = p0
         MapsInitializer.initialize(this.requireContext())
-        updateLocation(p0, result)
+//        updateLocation(googleMap, result)
     }
 
     private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
@@ -119,10 +141,10 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         p0.animateCamera(cameraUpdate)
 
         for (location in resultLati.zip(resultLongi)) {
-            Log.d("위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
+            Log.d(TAG + "위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
             if (preLocation != null) {
                 Log.d(
-                    "check",
+                    TAG + "check",
                     "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}"
                 )
                 var polyline = p0.addPolyline(
@@ -134,7 +156,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                         )
                 )
                 polyline.width = 15.0F
-                polyline.color = Color.BLACK
+                polyline.color = Color.rgb(122, 94, 200)
                 polyline.jointType = JointType.ROUND
                 polyline.startCap = RoundCap()
                 polyline.endCap = RoundCap()

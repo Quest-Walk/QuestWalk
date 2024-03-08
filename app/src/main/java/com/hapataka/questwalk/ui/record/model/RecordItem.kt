@@ -6,8 +6,10 @@ sealed class RecordItem {
     ) : RecordItem()
 
     data class ResultItem(
+        val keyword: String,
         val thumbnail: String?,
-        val isFail: Boolean
+        val isFail: Boolean,
+        val registerAt: String
     ) : RecordItem()
 
     data class AchieveItem(
