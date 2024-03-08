@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -145,6 +146,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
             }
+            isLoading.observe(viewLifecycleOwner) {isLoading ->
+                if (isLoading) {
+                    //loading dialog show
+                } else {
+                    //loading dialog dismiss
+                }
+            }
         }
 
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
@@ -164,7 +172,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun getItems() {
         viewModel.checkCurrentTime()
-        viewModel.getRandomKeyword()
+//        viewModel.getRandomKeyword()
     }
 
     private fun initBackground() {

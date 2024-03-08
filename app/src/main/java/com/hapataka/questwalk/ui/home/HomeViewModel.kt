@@ -32,6 +32,7 @@ class HomeViewModel(
     private var _isNight = MutableLiveData(false)
     private var _totalStep = MutableLiveData<Int>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
+    private var _isLoading = MutableLiveData<Boolean>(false)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
@@ -39,17 +40,22 @@ class HomeViewModel(
     val isNight: LiveData<Boolean> get() = _isNight
     val totalStep: LiveData<Int> get() = _totalStep
     val totalDistance: LiveData<Float> get() = _totalDistance
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
     private var timer: Job? = null
 
-    private lateinit var imgDownloadUrl: Uri
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
 
     var time = 12
-//    var time = LocalTime.now().hour
+
+    init {
+        getRandomKeyword()
+    }
+
+
 
     fun checkCurrentTime() {
         when (time) {
@@ -58,13 +64,14 @@ class HomeViewModel(
         }
     }
 
-    fun getRandomKeyword() {
-        if (currentKeyword.value.isNullOrEmpty()) {
+    private fun getRandomKeyword() {
+        Log.d("getRandomKeyword","getRandomKeyword: Run")
+//        if (currentKeyword.value.isNullOrEmpty()) {
             viewModelScope.launch {
                 val remainingKeyword = filteringUseCase().map { it.keyWord }
 
                 _currentKeyword.value = remainingKeyword.random()
-            }
+//            }
         }
     }
 
@@ -89,7 +96,7 @@ class HomeViewModel(
                         durationTime.value ?: 0,
                         totalDistance.value ?: 0f,
                         totalStep.value ?: 0,
-                        true,
+                        false,
                         locationHistory,
                         questLocation,
                         remoteUri.toString()
@@ -105,7 +112,7 @@ class HomeViewModel(
                         durationTime.value ?: 0,
                         totalDistance.value ?: 0f,
                         totalStep.value ?: 0,
-                        false,
+                        true,
                         locationHistory
                     )
 
