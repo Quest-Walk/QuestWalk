@@ -43,6 +43,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
@@ -87,6 +88,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 viewModel.time = 23
             }
             viewModel.checkCurrentTime()
+            LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
         }
     }
 
@@ -148,9 +150,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             isLoading.observe(viewLifecycleOwner) {isLoading ->
                 if (isLoading) {
-                    //loading dialog show
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
                 } else {
                     //loading dialog dismiss
+                    val loadingFragment = parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
                 }
             }
         }

@@ -86,6 +86,7 @@ class HomeViewModel(
         if (!isPlay.value!!) {
             Log.i(TAG, "isplay 함수")
             viewModelScope.launch {
+                _isLoading.value = true
                 val uid = authRepo.getCurrentUserUid()
                 if (imageUri != null) {
                     val remoteUri = imageRepo.setImage(imageUri!!, uid)
@@ -124,6 +125,7 @@ class HomeViewModel(
                 prevLocation = null
                 imageUri = null
                 questLocation = null
+                _isLoading.value = false
                 callBack(uid, currentKeyword.value ?: "")
             }
         }
