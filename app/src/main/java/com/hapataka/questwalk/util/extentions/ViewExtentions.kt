@@ -6,6 +6,9 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import com.hapataka.questwalk.R
 
+const val SIMPLE_TIME = 0
+const val DETAIL_TIME = 1
+
 fun View.visible() {
     visibility = View.VISIBLE
 }
@@ -27,15 +30,31 @@ fun TextView.showErrMsg(msg: String, context: Context) {
     startAnimation(animShake)
 }
 
-fun Long.convertTime(): String {
-    val second = this % 60
-    val minute = this / 60
-    val displaySecond = if (second < 10) "0$second" else second.toString()
-    val displayMinute = when (minute) {
-        0L -> "00"
-        in 1..9 -> "0$minute"
-        else -> minute.toString()
-    }
+fun Long.convertTime(code: Int): String {
+    when (code) {
+        SIMPLE_TIME -> {
+            val second = this % 60
+            val minute = this / 60
+            val displaySecond = if (second < 10) "0$second" else second.toString()
+            val displayMinute = when (minute) {
+                0L -> "00"
+                in 1..9 -> "0$minute"
+                else -> minute.toString()
+            }
 
-    return "$displayMinute:$displaySecond"
+            return "$displayMinute:$displaySecond"
+        }
+
+        DETAIL_TIME -> {
+            val second = this % 60
+            val totalMinute = this / 60
+            val minute = totalMinute % 60
+            val hour = totalMinute / 60
+            val result = "${hour}시간 ${minute}분 ${second}초"
+
+            return result
+        }
+
+        else -> throw IllegalArgumentException("Unknown code type")
+    }
 }

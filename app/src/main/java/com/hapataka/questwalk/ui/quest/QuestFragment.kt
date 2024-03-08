@@ -83,6 +83,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 val dialog = QuestDialog(keyWord, successKeywords) {
                     Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
                 }
+
                 dialog.show(parentFragmentManager, "QuestDialog")
             }
         )

@@ -14,7 +14,8 @@ android {
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
-        minSdk = 26
+        targetSdk = 33
+        minSdk = 31
         versionCode = 1
         versionName = "1.0"
 

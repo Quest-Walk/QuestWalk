@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.result
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,13 +10,14 @@ import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 import kotlin.math.round
 
-class ResultViewModel: ViewModel() {
-    private val userRepositoryImpl = UserRepositoryImpl()
-    private val questRepositoryImpl = QuestStackRepositoryImpl()
-
+class ResultViewModel(
+    private val userRepo: UserRepositoryImpl,
+    private val questRepo: QuestStackRepositoryImpl
+) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
     private val _questItem = MutableLiveData<QuestData>()
@@ -23,25 +25,27 @@ class ResultViewModel: ViewModel() {
     private val _completeRate = MutableLiveData<Double>()
     val completeRate: LiveData<Double> = _completeRate
 
-    fun getResultHistory(userId: String, keyword: String) {
+    fun getResult(userId: String, keyword: String, registerAt: String) {
         viewModelScope.launch {
-            val userResults = userRepositoryImpl.getResultHistory(userId)
-            _resultItem.value = userResults.first {
-                it.quest == keyword
+            val userResults = userRepo.getResultHistory(userId)
+
+            _resultItem.value = userResults.find {
+                it.quest == keyword && it.registerAt == registerAt
             }
+            Log.d(TAG, "viewModel Result\n${resultItem.value}")
         }
     }
 
     fun getQuestByKeyword(keyWord: String) {
         viewModelScope.launch {
-            val allUser = userRepositoryImpl.getAllUserSize()
-            val questItem = convertToQuestData(questRepositoryImpl.getItemByKeyword(keyWord))
+            val allUser = userRepo.getAllUserSize()
+            val questItem = convertToQuestData(questRepo.getItemByKeyword(keyWord))
             _questItem.value = questItem
             _completeRate.value = round((questItem.successItems.size.toDouble() / allUser) * 100)
         }
     }
 
-    private fun convertToQuestData(questStackEntity: QuestStackEntity):QuestData {
+    private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
             QuestData.SuccessItem(it.userId, it.imageUrl)
         }
@@ -51,5 +55,4 @@ class ResultViewModel: ViewModel() {
             successItems = resultItems
         )
     }
-
 }

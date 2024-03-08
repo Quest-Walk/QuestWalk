@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.ui.quest.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,10 +40,9 @@ class QuestListAdapter(
             if (allUser == 0L) {
                 binding.tvSolvePercent.text = "로딩중"
             }
-
-            val completeRate = if (item.successItems.size > 0) {
+            val completeRate = if (item.successItems.isNotEmpty()) {
                 round((item.successItems.size.toDouble() / allUser) * 100)
-            }  else {
+            } else {
                 0.0
             }
 

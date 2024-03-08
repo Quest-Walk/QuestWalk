@@ -42,9 +42,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
@@ -131,7 +135,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 toggleLocation(it)
             }
             durationTime.observe(viewLifecycleOwner) {
-                binding.tvQuestTime.text = it.convertTime()
+                binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
             }
             isNight.observe(viewLifecycleOwner) { night ->
                 if (night) {
@@ -210,10 +214,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay {uid, keyword ->
+            viewModel.toggleIsPlay {uid, keyword, registerAt ->
                 val bundle = Bundle().apply {
-                    putString("userId",uid)
-                    putString("keyword",keyword)
+                    putString(USER_ID,uid)
+                    putString(QUEST_KEYWORD,keyword)
+                    putString(REGISTER_TIME, registerAt)
                 }
                 cameraViewModel.initIsSucceed()
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)

@@ -15,7 +15,7 @@ class RecordItemAdapter(fragmentActivity: FragmentActivity, var items: List<Reco
     override fun getItemCount(): Int = page
 
     override fun createFragment(position: Int): Fragment {
-        val histories = listOf(Header("히스토리")) + items
+        val histories = listOf(Header("히스토리")) + items.reversed()
         val achieveItems = Achievements.list.toList()
         var successAchieveIds = mutableListOf<Int>()
 
