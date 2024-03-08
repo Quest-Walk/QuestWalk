@@ -131,8 +131,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             Log.d("위치정보",  "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
             if(preLocation!=null){
                 Log.d("check", "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}")
-//                var polyline =
-                    p0.addPolyline(
+                var polyline = p0.addPolyline(
                     PolylineOptions()
                         .clickable(true)
                         .add(
