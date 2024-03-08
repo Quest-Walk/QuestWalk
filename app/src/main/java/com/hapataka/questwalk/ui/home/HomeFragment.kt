@@ -152,7 +152,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             if (isSucceed) {
                 Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
 
-                cameraViewModel.initIsSucceed()
+
                 with(binding) {
                     setBackgroundWidget(btnToggleQuestState, R.color.green)
                     btnToggleQuestState.text = "완료하기"
@@ -203,6 +203,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     putString("userId",uid)
                     putString("keyword",keyword)
                 }
+                cameraViewModel.initIsSucceed()
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
                 finishLocationClient()
 //                viewModel.updateUserInfo()
