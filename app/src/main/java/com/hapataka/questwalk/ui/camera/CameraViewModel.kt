@@ -40,9 +40,18 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     // 해당 imageFile 경로
     var file: File? = null
 
-    private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(false)
+    // Crop event
+
+    var isCropped = false
+    private var croppedBitmap: Bitmap? = null
+
+
+    private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(true)
     val isDebug: LiveData<Boolean> get() = _isDebug
 
+    fun clickedCropImageButton() {
+        isCropped = !isCropped
+    }
 
     /**
      *  Camera 처리 부분
@@ -74,12 +83,17 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _bitmap.postValue(postBitmap)
     }
 
+    fun setCroppedBitmap(bitmap: Bitmap?){
+        croppedBitmap = bitmap
+    }
+
     fun initBitmap() {
         _bitmap.value = null
         file = null
         resultListByMLKit.clear()
     }
-    fun deleteBitmapByFile(){
+
+    fun deleteBitmapByFile() {
         repository.deleteBitmap()
     }
 
@@ -90,13 +104,20 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     val isLoading = MutableLiveData(false)
     fun postCapturedImageWithMLKit(keyword: String) {
+
         viewModelScope.launch {
             processImage(keyword)
         }
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image = InputImage.fromBitmap(bitmap.value!!, 0)
+        val image :InputImage
+        image = if(isCropped){
+            InputImage.fromBitmap(croppedBitmap!!, 0)
+        } else{
+            InputImage.fromBitmap(bitmap.value!!, 0)
+        }
+
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
         try {
@@ -132,17 +153,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             if (word.contains(keyword)) {
                 isValidated = true
                 return@forEach
-            }
-            else if (similarityObj.similarity(word, keyword) >= 0.6) {
+            } else if (similarityObj.similarity(word, keyword) >= 0.6) {
                 isValidated = true
                 return@forEach
             }
             Log.d("ocrResult", similarityObj.similarity(word, keyword).toString())
         }
-        if(isValidated){
+        if (isValidated) {
             file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
-        }
-        else{
+        } else {
             file = null
             repository.deleteBitmap()
         }
