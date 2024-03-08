@@ -2,6 +2,7 @@ package com.hapataka.questwalk.ui.signup
 
 import android.content.Context
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -23,6 +24,7 @@ import com.hapataka.questwalk.util.extentions.showErrMsg
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
     private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var isPassWordVisible : Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,6 +35,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         initEditText()
         initSignUpButton()
         initCloseButton()
+        showPassWord()
     }
 
     private fun initEditText() {
@@ -114,20 +117,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         viewModel.logByEmailAndPw(id, pw,
             { navigateToOnBoarding() }, { Log.d("로그디", "에러") })
 
-//        lifecycleScope.launch {
-//            authRepo.loginByEmailAndPw(id, pw) { task ->
-//                if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-//
-//                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
-////                    navGraph.setStartDestination(R.id.frag_home)
-//                    navGraph.setStartDestination(R.id.frag_on_boarding)
-//                    navController.graph = navGraph
-//                    return@loginByEmailAndPw
-//                }
-//                Log.e("로그디", "에러남")
-//            }
-//        }
     }
 
     private fun navigateToOnBoarding() {
@@ -139,24 +128,28 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
     }
 
-//    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
-//        icon.setOnTouchListener { v, event ->
-//            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    editText.transformationMethod =
-//                        HideReturnsTransformationMethod.getInstance()
-//                    editText.setSelection(editText.text.length)
-//                }
-//
-//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                    editText.transformationMethod =
-//                        PasswordTransformationMethod.getInstance()
-//                    editText.setSelection(editText.text.length)
-//                }
-//            }
-//            true
-//        }
-//    }
+
+
+
+    private fun showPassWord() {
+        binding.ivShowPassWord.setOnClickListener {
+            changeState()
+
+            if (isPassWordVisible) {
+                binding.etSignUpPw.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.ivShowPassWord.setImageResource(R.drawable.ic_invisible)
+            }else {
+                binding.etSignUpPw.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.ivShowPassWord.setImageResource(R.drawable.ic_visibility)
+            }
+            binding.etSignUpPw.setSelection(binding.etSignUpPw.text.length)
+        }
+    }
+
+    private fun changeState() {
+        isPassWordVisible = !isPassWordVisible
+    }
+
 
     private fun hideKeyBoard() {
         val imm =

@@ -32,6 +32,7 @@ class HomeViewModel(
     private var _isNight = MutableLiveData(false)
     private var _totalStep = MutableLiveData<Int>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
+    private var _charNum = MutableLiveData<Int>()
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
@@ -39,6 +40,8 @@ class HomeViewModel(
     val isNight: LiveData<Boolean> get() = _isNight
     val totalStep: LiveData<Int> get() = _totalStep
     val totalDistance: LiveData<Float> get() = _totalDistance
+
+    val charNum : LiveData<Int> get() = _charNum
 
     private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
@@ -197,5 +200,16 @@ class HomeViewModel(
 //            questImg = "$imgDownloadUrl"
 //        )
 //    }
+
+
+    private fun getUserCharNum() {
+        viewModelScope.launch {
+            val userId = authRepo.getCurrentUserUid()
+
+            val userInfo = userRepo.getInfo(userId)
+            _charNum.postValue(userInfo.characterId)
+        }
+
+    }
 
 }

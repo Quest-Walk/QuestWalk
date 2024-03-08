@@ -74,7 +74,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
             when (userInfo.characterId) {
                  1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
-                else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
+                else -> ivPlayerCharacter.setImageResource(R.drawable.img_dummy_charcter)
             }
             tvTimeValue.text = if (time == null) {
                 "00시간 00분"

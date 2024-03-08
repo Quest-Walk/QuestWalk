@@ -27,7 +27,7 @@ class OnBoardingFragment : Fragment() {
     private val binding get() = _binding!!
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val viewModel : OnBoardingViewModel by viewModels { OnBoardingViewModelFactory(UserRepositoryImpl(), AuthRepositoryImpl()) }
-    private var characterNum = 0
+    private var characterNum = 1
 
 
     override fun onCreateView(
