@@ -2,18 +2,15 @@ package com.hapataka.questwalk.ui.camera
 
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -21,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 
 class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBinding::inflate) {
@@ -79,7 +77,9 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             if (isSucceed == null) return@observe
 
             if (isSucceed) {
-                homeViewModel.setImagePath(cameraViewModel.file!!.path)
+                if (cameraViewModel.file != null) {
+                    homeViewModel.setImageBitmap(cameraViewModel.file!!.path)
+                }
                 navController.popBackStack(R.id.frag_home, false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
@@ -100,6 +100,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
 
     private fun initCapturedImage() {
         bitmap = cameraViewModel.bitmap.value
+        Log.i(TAG, "capture bitmap: $bitmap")
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
 

@@ -8,11 +8,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
-import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
+import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
 import com.hapataka.questwalk.util.BaseFragment
 
 class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::inflate) {
-    private lateinit var questAdapter: QuestAdapter
+    private lateinit var questListAdapter: QuestListAdapter
     private val questViewModel: QuestViewModel by viewModels()
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
 
@@ -24,10 +24,10 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun dataObserve() {
         questViewModel.questItems.observe(viewLifecycleOwner) {
-            questAdapter.submitList(it)
+            questListAdapter.submitList(it)
         }
         questViewModel.allUserSize.observe(viewLifecycleOwner) {
-            questAdapter.setAllUser(it)
+            questListAdapter.setAllUser(it)
         }
     }
 
@@ -64,7 +64,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     }
 
     private fun initQuestRecyclerView() {
-        questAdapter = QuestAdapter(
+        questListAdapter = QuestListAdapter(
             onClickMoreText = {questData, allUser ->
                 val bundle = Bundle().apply {
                     putParcelable("item", questData)
@@ -78,6 +78,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 dialog.show(parentFragmentManager, "QuestDialog")
             }
         )
-        binding.revQuest.adapter = questAdapter
+        binding.revQuest.adapter = questListAdapter
     }
 }

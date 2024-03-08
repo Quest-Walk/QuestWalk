@@ -6,15 +6,13 @@ sealed class HistoryEntity(open val registerAt: String = "") {
     data class ResultEntity(
         override val registerAt: String = "",
         val quest: String = "",
-        val time: String = "",
+        val time: Long = 0,
         val distance: Float = 0f,
         val step: Int = 0,
         @JvmField
         val isFailed: Boolean = false,
-        val longitudes: List<Float> = listOf(),
-        val latitueds: List<Float> = listOf(),
-        val questLongitude: Float = 0f,
-        val questLatitued: Float = 0f,
+        val locations: List<Pair<Float,Float>>?,
+        val questLocation: Pair<Float, Float>? = null,
         val questImg: String? = null,
         val type: String = RESULT_TYPE
     ) : HistoryEntity(registerAt)
