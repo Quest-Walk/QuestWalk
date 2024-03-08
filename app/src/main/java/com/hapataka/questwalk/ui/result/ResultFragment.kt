@@ -38,7 +38,8 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private val resultViewModel: ResultViewModel by viewModels()
     private var userId: String? = null
     private var keyword: String? = null
-    private lateinit var result: HistoryEntity.ResultEntity
+    private lateinit var googleMap: GoogleMap
+//    private lateinit var result: HistoryEntity.ResultEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +53,8 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dataObserve()
         getInfo()
+        dataObserve()
 
         binding.fragMap.onCreate(savedInstanceState)
         binding.fragMap.getMapAsync(this)
@@ -62,6 +63,10 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun dataObserve() {
         with(resultViewModel) {
             resultItem.observe(viewLifecycleOwner) {
+                if (::googleMap.isInitialized) {
+                    MapsInitializer.initialize(requireContext())
+                    updateLocation(googleMap, it)
+                }
                 initViews(it)
                 resultViewModel.getQuestByKeyword(it.quest)
             }
@@ -82,15 +87,29 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            ivQuestImage.load(result.questImg)
-            tvAdvTime.text = result.time.toString()
-            tvAdvDistance.text = "${result.distance}"
-            tvTotalSteps.text = "${result.step}"
-            tvCalories.text = "Zero"
-            tvQuestKeyword.text = result.quest
-
+            if (result.questImg != null) {
+                Log.d("ResultFragment:","Image Not Null!!!!!")
+                ivQuestImage.load(result.questImg)
+                tvAdvTime.text = result.time.toString()
+                tvAdvDistance.text = "${result.distance}"
+                tvTotalSteps.text = "${result.step}"
+                tvCalories.text = "Zero"
+                tvQuestKeyword.text = result.quest
+            } else {
+                Log.d("ResultFragment:","Image Null!!!!!")
+                ivQuestImage.load(R.drawable.image_fail)
+                tvAdvTime.text = result.time.toString()
+                tvAdvDistance.text = "${result.distance}"
+                tvTotalSteps.text = "${result.step}"
+                tvCalories.text = "Zero"
+                tvQuestKeyword.text = result.quest
+            }
         }
-        this.result =result
+//        this.result =result
+//        if (::googleMap.isInitialized) {
+//            MapsInitializer.initialize(this.requireContext())
+//            updateLocation(googleMap, result)
+//        }
     }
 
     private fun initImageViews(questItem: QuestData) {
@@ -111,9 +130,9 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     }
 
     override fun onMapReady(p0: GoogleMap) {
-        Log.d("check", "onmapready")
+        googleMap = p0
         MapsInitializer.initialize(this.requireContext())
-        updateLocation(p0, result)
+//        updateLocation(googleMap, result)
     }
 
     private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
