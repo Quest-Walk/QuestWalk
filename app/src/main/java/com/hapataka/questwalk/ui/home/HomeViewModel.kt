@@ -104,7 +104,7 @@ class HomeViewModel(
                     )
 
                     userRepo.updateUserInfo(uid, result)
-                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
+                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString(), registerAt)
                     getRandomKeyword()
                 } else {
                     val result = HistoryEntity.ResultEntity(
@@ -189,21 +189,4 @@ class HomeViewModel(
     fun setQuestSuccessLocation() {
         questLocation = locationHistory.last()
     }
-
-//    private fun requestUserInfo(): HistoryEntity.ResultEntity {
-//        return HistoryEntity.ResultEntity(
-//            quest = _currentKeyword.value ?: "",
-//            time = _durationTime.value?.convertTime() ?: "",
-//            distance = _totalDistance.value ?: 0F,
-//            step = _totalStep.value ?: 0,
-//            latitueds = locationHistory.map { it.latitude.toFloat() },
-//            longitudes = locationHistory.map { it.longitude.toFloat() },
-//            questLatitued = questLocation?.latitude?.toFloat() ?: 0F,
-//            questLongitude = questLocation?.longitude?.toFloat() ?: 0F,
-//            registerAt = "20240307",
-//            isFailed = imagePath.value == null,
-//            questImg = "$imgDownloadUrl"
-//        )
-//    }
-
 }

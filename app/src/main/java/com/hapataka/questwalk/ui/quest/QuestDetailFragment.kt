@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,9 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.quest.adapter.QuestDetailRecyclerViewDecoration
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
@@ -63,10 +67,9 @@ class QuestDetailFragment : Fragment() {
 
         questDetailAdapter = QuestDetailAdapter {
             val bundle = Bundle().apply {
-//                putParcelable("SuccessItem",it)
-//                putDouble("CompleteRate",completeRate)
-                putString("userId",it.userId)
-                putString("keyword",item?.keyWord)
+                putString(USER_ID,it.userId)
+                putString(QUEST_KEYWORD, item?.keyWord)
+                putString(REGISTER_TIME, it.registerAt)
             }
             navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
         }

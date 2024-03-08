@@ -8,16 +8,17 @@ import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.time.LocalTime
 
 class QuestStackRepositoryImpl : QuestStackRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val questCollection by lazy { remoteDb.collection("quest") }
 
-    override suspend fun updateQuest(keyword: String, userId: String, imageUrl: String) {
+    override suspend fun updateQuest(keyword: String, userId: String, imageUrl: String, registerAt: String) {
         withContext(Dispatchers.IO) {
             var currentItem = getItemByKeyword(keyword)
 
-            currentItem.successItems += SuccessItem(userId, imageUrl)
+            currentItem.successItems += SuccessItem(userId, imageUrl, registerAt)
             questCollection.document(keyword)
                 .set(currentItem)
         }
