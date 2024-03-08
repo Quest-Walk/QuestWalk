@@ -1,11 +1,13 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
@@ -15,19 +17,23 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private lateinit var questListAdapter: QuestListAdapter
     private val questViewModel: QuestViewModel by viewModels()
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var successKeywords: MutableList<String> = mutableListOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataObserve()
+        setObserve()
         initViews()
     }
 
-    private fun dataObserve() {
+    private fun setObserve() {
         questViewModel.questItems.observe(viewLifecycleOwner) {
             questListAdapter.submitList(it)
         }
         questViewModel.allUserSize.observe(viewLifecycleOwner) {
             questListAdapter.setAllUser(it)
+        }
+        questViewModel.successKeywords.observe(viewLifecycleOwner) {
+            successKeywords = it
         }
     }
 
@@ -74,7 +80,9 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             },
 
             onClickView =  {keyWord ->
-                val dialog = QuestDialog(keyWord)
+                val dialog = QuestDialog(keyWord, successKeywords) {
+                    Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
+                }
 
                 dialog.show(parentFragmentManager, "QuestDialog")
             }
