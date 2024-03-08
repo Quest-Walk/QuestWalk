@@ -1,7 +1,6 @@
-package com.hapataka.questwalk.ui.quest
+package com.hapataka.questwalk.ui.questdetail
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +9,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
-import com.hapataka.questwalk.ui.quest.adapter.QuestDetailAdapter
-import com.hapataka.questwalk.ui.quest.adapter.QuestDetailRecyclerViewDecoration
+import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailAdapter
+import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailRecyclerViewDecoration
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
