@@ -41,18 +41,18 @@ class QuestListAdapter(
             if (allUser == 0L) {
                 binding.tvSolvePercent.text = "로딩중"
             }
+
             val completeRate = if (item.successItems.size > 0) {
                 round((item.successItems.size.toDouble() / allUser) * 100)
             }  else {
                 0.0
             }
 
-            imageList.forEach { it.load(R.drawable.image_empty) }
-
             binding.tvKeyword.text = item.keyWord
             binding.tvSolvePercent.text = "해결 인원$completeRate%"
 
 
+            imageList.forEach { it.load(R.drawable.image_empty) }
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl) {
                     crossfade(true)
@@ -60,6 +60,7 @@ class QuestListAdapter(
             }
 
             binding.tvMore.setOnClickListener {
+                if (item.successItems.isEmpty()) return@setOnClickListener
                 onClickMoreText(item, allUser)
             }
 

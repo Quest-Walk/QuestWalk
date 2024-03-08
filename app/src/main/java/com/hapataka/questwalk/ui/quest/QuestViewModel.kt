@@ -12,25 +12,30 @@ import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import kotlinx.coroutines.launch
 
 class QuestViewModel : ViewModel() {
-    private val questStackRepositoryImpl = QuestStackRepositoryImpl()
-    private val userRepositoryImpl = UserRepositoryImpl()
-    private val authRepositoryImpl = AuthRepositoryImpl()
+    private val questStackRepo = QuestStackRepositoryImpl()
+    private val userRepo = UserRepositoryImpl()
+    private val authRepo = AuthRepositoryImpl()
+
     private var allQuestItems: MutableList<QuestData>? = null
     private var currentLevel = 0
+
     private val _questItems = MutableLiveData<MutableList<QuestData>>()
     val questItems: LiveData<MutableList<QuestData>> = _questItems
     private val _allUserSize = MutableLiveData<Long>()
     val allUserSize: LiveData<Long> = _allUserSize
+    private val _successKeywords = MutableLiveData<MutableList<String>>()
+    val successKeywords: LiveData<MutableList<String>> get() = _successKeywords
     val filterUseCase = QuestFilteringUseCase()
 
     init {
         getQuestItems(false)
         getAllUserSize()
+        getSuccessKeywords()
     }
 
     private fun getQuestItems(completeFilter: Boolean) {
         viewModelScope.launch {
-            _questItems.value = questStackRepositoryImpl.getAllItems().map {
+            _questItems.value = questStackRepo.getAllItems().map {
                 convertToQuestData(it)
             }.toMutableList()
             allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
@@ -67,7 +72,15 @@ class QuestViewModel : ViewModel() {
 
     private fun getAllUserSize() {
         viewModelScope.launch {
-            _allUserSize.value = userRepositoryImpl.getAllUserSize()
+            _allUserSize.value = userRepo.getAllUserSize()
+        }
+    }
+
+    private fun getSuccessKeywords() {
+        viewModelScope.launch {
+            val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isFailed.not() }
+            val successKeywords = successResults.map { it.quest }
+            _successKeywords.value = successKeywords.toMutableList()
         }
     }
 

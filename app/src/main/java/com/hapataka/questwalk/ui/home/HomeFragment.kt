@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -42,6 +43,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
@@ -86,6 +88,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 viewModel.time = 23
             }
             viewModel.checkCurrentTime()
+            LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
         }
     }
 
@@ -145,6 +148,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
             }
+            isLoading.observe(viewLifecycleOwner) {isLoading ->
+                if (isLoading) {
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
+                } else {
+                    //loading dialog dismiss
+                    val loadingFragment = parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
+                }
+            }
         }
 
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
@@ -164,7 +176,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun getItems() {
         viewModel.checkCurrentTime()
-        viewModel.getRandomKeyword()
+//        viewModel.getRandomKeyword()
     }
 
     private fun initBackground() {
