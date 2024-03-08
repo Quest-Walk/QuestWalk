@@ -135,7 +135,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                     PolylineOptions()
                         .clickable(true)
                         .add(
-                            LatLng(preLocation!!.first.toDouble()., preLocation!!.second.toDouble()),
+                            LatLng(preLocation!!.first.toDouble(), preLocation!!.second.toDouble()),
                             LatLng(location.first.toDouble(), location.second.toDouble())
                         )
                 )
