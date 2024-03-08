@@ -16,12 +16,14 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.convertTime
 import kotlinx.coroutines.launch
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
@@ -59,7 +61,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     private fun updateViewsWithUserInfo(userInfo: UserEntity) {
         val history = userInfo.histories
         val achieveCount = history.filterIsInstance<AchievementEntity>().size
-        val successResultCount = history.filterIsInstance<ResultEntity>().filter { !it.isFailed }.size.toString()
+        val successResultCount = history.filterIsInstance<ResultEntity>().filterNot { !it.isFailed }.size.toString()
+        val time = userInfo.totalTime.toLongOrNull()
 
         with(binding) {
             tvPlayerName.text = userInfo.nickName
@@ -67,12 +70,16 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             tvDistanceValue.text = userInfo.totalDistance.toString() + " Km"
             tvAchieveCouunt.text = "$achieveCount 개"
             tvSolveQuestValue.text ="$successResultCount 개"
-            tvTimeValue.text = userInfo.totalTime
             tvCalorie.text = (userInfo.totalStep * 0.06f).toString() + " kcal"
 
             when (userInfo.characterId) {
                  1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
                 else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
+            }
+            tvTimeValue.text = if (time == null) {
+                "00시간 00분"
+            } else {
+                time.convertTime()
             }
         }
     }
@@ -89,6 +96,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun initDropOut() {
         binding.btnDropOut.setOnClickListener {
+            Log.i(TAG, "탈퇴")
             myInfoViewModel.leaveCurrentUser {
                 navController.navigate(R.id.action_frag_my_info_to_frag_login)
                 navGraph.setStartDestination(R.id.frag_home)

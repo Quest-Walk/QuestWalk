@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 class QuestDetailRecyclerViewDecoration : RecyclerView.ItemDecoration() {
-
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
@@ -18,7 +17,6 @@ class QuestDetailRecyclerViewDecoration : RecyclerView.ItemDecoration() {
         val horizontalMargin = pxToDp(8, view)
 
         outRect.set(horizontalMargin, topMargin, horizontalMargin, 0)
-
     }
 
     private fun pxToDp(dp: Int, view: View): Int {
