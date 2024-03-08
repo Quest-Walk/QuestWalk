@@ -86,7 +86,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            if (result.questImg != null) {
+            if (result.isFailed.not()) {
                 ivQuestImage.load(result.questImg)
             } else {
                 ivQuestImage.load(R.drawable.image_fail)
