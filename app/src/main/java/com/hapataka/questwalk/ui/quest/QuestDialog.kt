@@ -2,17 +2,24 @@ package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.databinding.DialogQuestBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
 
-class QuestDialog(private val keyWord: String): DialogFragment() {
+class QuestDialog(
+    private val keyWord: String,
+    private val successKeywords: MutableList<String>,
+    private val callback: (String) -> Unit
+): DialogFragment() {
     private val binding by lazy { DialogQuestBinding.inflate(layoutInflater) }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val homeViewModel: HomeViewModel by activityViewModels()
@@ -39,9 +46,12 @@ class QuestDialog(private val keyWord: String): DialogFragment() {
                 dismiss()
             }
             btnConfirm.setOnClickListener {
-                // keyword 변경 로직
-                homeViewModel.setKeyword(keyWord)
-                navHost.popBackStack()
+                if (successKeywords.contains(keyWord)) {
+                    callback("이미 완료한 키워드입니다 다른 키워드를 선택해주세요")
+                } else {
+                    homeViewModel.setKeyword(keyWord)
+                    navHost.popBackStack()
+                }
                 dismiss()
             }
         }

@@ -35,7 +35,7 @@
 
                 <TextView
                     android:id="@+id/tvAdvTimeLabel"
-                    style="@style/pixel_body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -43,15 +43,14 @@
 
                 <TextView
                     android:id="@+id/tvAdvTime"
-                    style="@style/pixel_head"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234시간 5분"
-                    android:textSize="24dp" />
+                    tools:text="1234시간 5분"/>
 
                 <TextView
                     android:id="@+id/tvAdvDistanceLabel"
-                    style="@style/pixel_body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -59,15 +58,14 @@
 
                 <TextView
                     android:id="@+id/tvAdvDistance"
-                    style="@style/pixel_head"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234 km"
-                    android:textSize="24dp" />
+                    android:text="1234 km"/>
 
                 <TextView
                     android:id="@+id/tvTotalStepsLabel"
-                    style="@style/pixel_body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -80,11 +78,10 @@
 
                     <TextView
                         android:id="@+id/tvTotalSteps"
-                        style="@style/pixel_head"
+                        style="@style/pixel_body_big"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1,234,567 걸음"
-                        android:textSize="24dp" />
+                        tools:text="1,234,567 걸음"/>
 
                     <TextView
                         android:id="@+id/tvCalories"
@@ -92,7 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="23,254 kcal" />
+                        tools:text="23,254 kcal" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -103,7 +100,7 @@
 
                     <TextView
                         android:id="@+id/tvQuestKeyword"
-                        style="@style/pixel_head"
+                        style="@style/sans_body_big"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="[퀘스트 키워드]"
@@ -144,7 +141,6 @@
                         android:background="@drawable/bg_quest_image"
                         android:clipToOutline="true"
                         android:scaleType="fitXY"
-                        android:visibility="invisible"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -157,7 +153,6 @@
                         android:background="@drawable/bg_quest_image"
                         android:clipToOutline="true"
                         android:scaleType="fitXY"
-                        android:visibility="invisible"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintEnd_toStartOf="@id/iv_image_3"
                         app:layout_constraintStart_toEndOf="@id/iv_image_1"
@@ -171,7 +166,6 @@
                         android:background="@drawable/bg_quest_image"
                         android:clipToOutline="true"
                         android:scaleType="fitXY"
-                        android:visibility="invisible"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintEnd_toStartOf="@id/iv_image_4"
                         app:layout_constraintStart_toEndOf="@id/iv_image_2"
@@ -185,7 +179,6 @@
                         android:background="@drawable/bg_quest_image"
                         android:clipToOutline="true"
                         android:scaleType="fitXY"
-                        android:visibility="invisible"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/iv_image_1"

@@ -51,10 +51,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         bindingWidgets()
     }
 
-    /**
-     *  Camera Permission 등록
-     */
-
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),

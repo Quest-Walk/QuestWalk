@@ -63,8 +63,10 @@ class QuestDetailFragment : Fragment() {
 
         questDetailAdapter = QuestDetailAdapter {
             val bundle = Bundle().apply {
-                putParcelable("SuccessItem",it)
-                putDouble("CompleteRate",completeRate)
+//                putParcelable("SuccessItem",it)
+//                putDouble("CompleteRate",completeRate)
+                putString("userId",it.userId)
+                putString("keyword",item?.keyWord)
             }
             navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
         }

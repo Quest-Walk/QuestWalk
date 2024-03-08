@@ -11,6 +11,7 @@ import com.hapataka.questwalk.ui.login.LoginViewModel
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.MyInfoViewModel
 import com.hapataka.questwalk.ui.record.RecordViewModel
+import com.hapataka.questwalk.ui.result.ResultViewModel
 
 class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -35,9 +36,15 @@ class ViewModelFactory : ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(RecordViewModel::class.java)) {
             return RecordViewModel(authRepo, userRepo) as T
         }
+
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             return HomeViewModel(authRepo, userRepo, imageRepo, questRepo) as T
         }
+
+        if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
+            return ResultViewModel(userRepo, questRepo) as T
+        }
+
         throw IllegalArgumentException("unknown view model")
     }
 }

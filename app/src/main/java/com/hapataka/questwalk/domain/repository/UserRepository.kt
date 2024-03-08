@@ -11,4 +11,5 @@ interface UserRepository {
     suspend fun getAchieveHistory(userId: String): MutableList<HistoryEntity.AchievementEntity>
     suspend fun getResultHistory(userId: String): MutableList<HistoryEntity.ResultEntity>
     suspend fun getUserHistory(userId: String): MutableList<HistoryEntity>
+    suspend fun deleteUserData(userId: String)
 }
