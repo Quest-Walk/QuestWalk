@@ -11,7 +11,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -62,9 +64,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             //캡쳐 성공시 CaptureFragment 이동
             navController.navigate(R.id.action_frag_camera_to_frag_capture)
         }
-        cameraViewModel.isSucceed.observe(viewLifecycleOwner){isSucceed ->
-            if(isSucceed == null) return@observe
-            if(!isSucceed){
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            if (isSucceed == null) return@observe
+            if (!isSucceed) {
                 cameraViewModel.deleteBitmapByFile()
             }
         }
@@ -72,16 +74,54 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     private fun bindingWidgets() {
         with(binding) {
-            ibCapture.setOnClickListener {
-                capturePhoto()
+            ibCapture.apply {
+                setOnClickListener {
+                    capturePhoto()
+                }
+                setOnTouchListener(
+                    imageButtonSetOnTouchListener(
+                        this,
+                        R.drawable.ico_camera_capture_on,
+                        R.drawable.ico_camera_capture
+                    )
+                )
             }
             ibFlash.setOnClickListener {
                 toggleFlash()
             }
-            ibBackBtn.setOnClickListener {
-                navController.popBackStack()
+            ibBackBtn.apply {
+                setOnClickListener {
+                    navController.popBackStack()
+                }
+                setOnTouchListener(
+                    imageButtonSetOnTouchListener(
+                        this,
+                        R.drawable.ico_camera_back_on,
+                        R.drawable.ico_camera_back
+                    )
+                )
             }
             tvCameraQuest.text = homeViewModel.currentKeyword.value
+        }
+    }
+
+    private fun imageButtonSetOnTouchListener(
+        imageButton: ImageButton,
+        actionDownRes: Int,
+        actionUpRes: Int,
+    ): View.OnTouchListener {
+        return View.OnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    imageButton.setImageResource(actionDownRes)
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    imageButton.setImageResource(actionUpRes)
+                    v.performClick()
+                }
+            }
+            true
         }
     }
 
