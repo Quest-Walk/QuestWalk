@@ -115,6 +115,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
         cameraProviderFuture.addListener(
             setCamera(cameraProvider),
             ContextCompat.getMainExecutor(requireContext())
@@ -154,12 +155,14 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         val characteristics = cameraManager.getCameraCharacteristics(cameraId)
         val configurations =
             characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+
         return configurations?.getOutputSizes(ImageFormat.JPEG)
             ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
     }
 
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
+
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(requireContext()),
             imageCaptureCallback()
@@ -171,6 +174,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             override fun onCaptureSuccess(image: ImageProxy) {
                 val buffer = image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining())
+
                 buffer.get(bytes)
                 val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 

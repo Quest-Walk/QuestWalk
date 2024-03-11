@@ -11,7 +11,6 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -84,16 +83,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         initBackPressedCallback()
         checkPermission()
         setLocationClient()
-
-        binding.btnWheather.setOnClickListener {
-            if (viewModel.isNight.value!!) {
-                viewModel.time = 11
-            } else {
-                viewModel.time = 23
-            }
-            viewModel.checkCurrentTime()
-            LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
-        }
     }
 
     private fun checkPermission() {
@@ -200,9 +189,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             btnMyPage.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
-//            btnWheather.setOnClickListener {
-//                // TODO : wheatherFragment 이동
-//            }
+            btnWheather.setOnClickListener {
+                "준비중이에요".showToast()
+            }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
             }
