@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.ui.quest.adapter
+package com.hapataka.questwalk.ui.questdetail.adapter
 
 import android.graphics.Rect
 import android.view.View
