@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 
 class MyInfoViewModel(
@@ -32,7 +34,7 @@ class MyInfoViewModel(
         }
     }
 
-    fun leaveCurrentUser(callback: () -> Unit) {
+    fun deleteCurrentUser(callback: () -> Unit) {
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
 
@@ -43,6 +45,7 @@ class MyInfoViewModel(
                     callback()
                     return@deleteCurrentUser
                 } else {
+                    Log.i(TAG, "exeption: ${task.exception}")
                     _snackbarMsg.value = "잠시후 다시 시도해주세요"
                     return@deleteCurrentUser
                 }
@@ -82,10 +85,6 @@ class MyInfoViewModel(
                 onError(e.message ?: "사용자 정보 저장 중 오류가 발생했습니다.")
             }
         }
-    }
-
-    fun moveToResult(callback: () -> Unit) {
-
     }
 
     fun getUserCharacterNum(onResult: (Int?) -> Unit) {

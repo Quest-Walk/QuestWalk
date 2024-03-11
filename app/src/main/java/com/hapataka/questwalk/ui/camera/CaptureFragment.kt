@@ -33,7 +33,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
 
     private lateinit var progressDialog: ProgressDialog
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initCapturedImage()
@@ -43,7 +42,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         initDebug()
         with(binding) {
             btnAttach.setOnClickListener {
-
                 if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
                     keyword = etKeywordDebug.text.toString()
                     etKeywordDebug.clearFocus()

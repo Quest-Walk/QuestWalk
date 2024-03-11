@@ -51,13 +51,11 @@ class HomeViewModel(
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
 
-    var time = 12
+    var time = LocalTime.now().hour
 
     init {
         getRandomKeyword()
     }
-
-
 
     fun checkCurrentTime() {
         when (time) {

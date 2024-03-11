@@ -48,9 +48,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:src="@drawable/ico_my_page" />
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_my_info" />
 
         <TextView
             android:id="@+id/tv_my_page"
@@ -75,9 +76,10 @@
         app:layout_constraintTop_toTopOf="@id/btn_my_page">
 
         <ImageView
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:src="@drawable/ico_weather" />
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_question_mark" />
 
         <TextView
             android:id="@+id/tv_weather"
@@ -85,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="날씨확인"
+            android:text="준비중"
             android:textColor="@color/white" />
 
     </LinearLayout>
@@ -102,9 +104,10 @@
         app:layout_constraintTop_toTopOf="@id/btn_my_page">
 
         <ImageView
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:src="@drawable/ico_history" />
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_record" />
 
         <TextView
             android:id="@+id/tv_history"
