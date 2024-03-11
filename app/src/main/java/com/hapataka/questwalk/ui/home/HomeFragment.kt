@@ -42,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.quest.QuestDialog
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
@@ -133,9 +134,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 toggleViews(it)
                 toggleLocation(it)
             }
-            isEnabledButton.observe(viewLifecycleOwner) {
-                binding.btnToggleQuestState.isEnabled = it
-            }
+//            isEnabledButton.observe(viewLifecycleOwner) {
+//                binding.btnToggleQuestState.isEnabled = it
+//            }
             durationTime.observe(viewLifecycleOwner) {
 //                binding.btnToggleQuestState.isEnabled = it !in 1L..20L
                 binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
@@ -155,12 +156,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
             }
-            isLoading.observe(viewLifecycleOwner) {isLoading ->
+            isLoading.observe(viewLifecycleOwner) { isLoading ->
                 if (isLoading) {
                     LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
                 } else {
-                    //loading dialog dismiss
-                    val loadingFragment = parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    val loadingFragment =
+                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
                     loadingFragment?.dismiss()
                 }
             }
@@ -217,17 +218,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay {uid, keyword, registerAt ->
-                val bundle = Bundle().apply {
-                    putString(USER_ID,uid)
-                    putString(QUEST_KEYWORD,keyword)
-                    putString(REGISTER_TIME, registerAt)
-                }
-                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-                finishLocationClient()
+            val currentTime = binding.tvQuestTime.text.toString().substring(3).toLong()
+            val toggleQuestState = binding.btnToggleQuestState.text
+            if (currentTime in 0L..15L && toggleQuestState == "포기하기") {
+                showHomeDialog()
+            } else {
+                viewModel.toggleIsPlay { uid, keyword, registerAt ->
+                    val bundle = Bundle().apply {
+                        putString(USER_ID, uid)
+                        putString(QUEST_KEYWORD, keyword)
+                        putString(REGISTER_TIME, registerAt)
+                    }
+                    navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
+                    finishLocationClient()
 //                viewModel.updateUserInfo()
+                }
             }
         }
+    }
+
+    private fun showHomeDialog() {
+        val dialog = HomeDialog {
+            // viewmodelr의 isplay를 Toggle
+            viewModel.toggleIsPlay()
+        }
+        dialog.show(parentFragmentManager, "HomeDialog")
     }
 
     private fun toggleViews(isPlay: Boolean) {
@@ -239,6 +254,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 btnToggleQuestState.text = "포기하기"
                 setBackgroundWidget(btnToggleQuestState, R.color.red)
                 startBackgroundAnim()
+                btnQuestChange.isEnabled = false
             } else {
                 ibCamera.gone()
                 llPlayingContents.gone()
@@ -246,6 +262,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 btnToggleQuestState.text = "모험 시작하기"
                 setBackgroundWidget(btnToggleQuestState, R.color.button)
                 endBackgroundAnim()
+                btnQuestChange.isEnabled = true
             }
         }
     }

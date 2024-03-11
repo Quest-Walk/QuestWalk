@@ -81,6 +81,15 @@ class HomeViewModel(
         _currentKeyword.value = keyword
     }
 
+    fun toggleIsPlay() {
+        _isPlay.value = isPlay.value?.not()
+        toggleTimer()
+        _totalDistance.value = 0f
+        _totalStep.value = 0
+        locationHistory.clear()
+        prevLocation = null
+    }
+
     fun toggleIsPlay(callBack: (String, String?, String) -> Unit) {
         _isPlay.value = isPlay.value?.not()
         toggleTimer()
