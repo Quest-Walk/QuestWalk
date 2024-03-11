@@ -15,6 +15,8 @@ import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.Header
 import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
+import com.hapataka.questwalk.util.extentions.gone
+import com.hapataka.questwalk.util.extentions.visible
 
 const val HEADER_TYPE = 0
 const val RESULT_TYPE = 1
@@ -43,6 +45,12 @@ class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = 
         val isSuccess = binding.ivSuccess
 
         fun bind(item: ResultItem) {
+            if (item.isFail) {
+                thumbnail.load(R.drawable.image_empty)
+                isSuccess.gone()
+                return
+            }
+            isSuccess.visible()
             thumbnail.load(item.thumbnail)
         }
     }

@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,9 +35,12 @@ class MyInfoViewModel(
 
     fun leaveCurrentUser(callback: () -> Unit) {
         viewModelScope.launch {
+            val uid = authRepo.getCurrentUserUid()
+
             authRepo.deleteCurrentUser { task ->
                 if (task.isSuccessful) {
                     _snackbarMsg.value = "탈퇴 완료"
+                    deleteUserData(uid)
                     callback()
                     return@deleteCurrentUser
                 } else {
@@ -46,6 +50,13 @@ class MyInfoViewModel(
             }
         }
     }
+
+    private fun deleteUserData(uid: String) {
+        viewModelScope.launch {
+            userRepo.deleteUserData(uid)
+        }
+    }
+
     fun getCurrentUserId(onResult: (String) -> Unit) {
         viewModelScope.launch {
             val userId = authRepo.getCurrentUserUid()
@@ -53,7 +64,14 @@ class MyInfoViewModel(
         }
     }
 
-    fun setUserInfo(userId: String, characterNum: Int, nickName: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+
+    fun setUserInfo(
+        userId: String,
+        characterNum: Int,
+        nickName: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         if (userId.isEmpty()) {
             onError("사용자가 로그인하지 않았습니다.")
             return
@@ -66,6 +84,10 @@ class MyInfoViewModel(
                 onError(e.message ?: "사용자 정보 저장 중 오류가 발생했습니다.")
             }
         }
+    }
+
+    fun moveToResult(callback: () -> Unit) {
+
     }
 
     fun getUserCharacterNum(onResult: (Int?) -> Unit) {

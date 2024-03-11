@@ -23,4 +23,10 @@ class MainViewModel(
             _currentUserId.value = authRepo.getCurrentUserUid()
         }
     }
+
+    fun moveToResult(callback: (string: String) -> Unit) {
+        viewModelScope.launch {
+            callback(authRepo.getCurrentUserUid())
+        }
+    }
 }

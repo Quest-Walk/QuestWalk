@@ -17,10 +17,9 @@ class QuestListAdapter(
     val onClickMoreText: (QuestData, Long) -> Unit,
     val onClickView: (String) -> Unit
 ) : ListAdapter<QuestData, QuestListAdapter.QuestViewHolder>(diffUtil) {
-    private var allUser = 0L
+    private var allUser = 1L
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-
         return QuestViewHolder(ItemQuestBinding.inflate(layoutInflater, parent, false))
     }
 
@@ -38,12 +37,20 @@ class QuestListAdapter(
         )
 
         fun bind(item: QuestData) {
-            val completeRate = round((item.successItems.size.toDouble() / allUser) * 100)
-
-            imageList.forEach { it.load(R.drawable.image_empty) }
+            if (allUser == 0L) {
+                binding.tvSolvePercent.text = "로딩중"
+            }
+            val completeRate = if (item.successItems.isNotEmpty()) {
+                round((item.successItems.size.toDouble() / allUser) * 100)
+            } else {
+                0.0
+            }
 
             binding.tvKeyword.text = item.keyWord
-            binding.tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
+            binding.tvSolvePercent.text = "해결 인원$completeRate%"
+
+
+            imageList.forEach { it.load(R.drawable.image_empty) }
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl) {
                     crossfade(true)
@@ -51,6 +58,7 @@ class QuestListAdapter(
             }
 
             binding.tvMore.setOnClickListener {
+                if (item.successItems.isEmpty()) return@setOnClickListener
                 onClickMoreText(item, allUser)
             }
 

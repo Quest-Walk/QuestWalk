@@ -30,13 +30,15 @@ class RecordViewModel(
             histories.forEach { entity ->
                 when (entity) {
                     is ResultEntity -> {
-                        currentItems += ResultItem(entity.questImg, entity.isFailed.not())
+                        currentItems += ResultItem(entity.quest, entity.questImg, entity.isFailed.not(), entity.registerAt)
                     }
 
                     is AchievementEntity -> {
                         currentItems += achieveResource.filterIsInstance<AchieveItem>()
                             .filter { it.achieveId == entity.achievementId }
                     }
+
+                    else -> throw IllegalArgumentException("unknown entity")
                 }
             }
             _recordItems.value = currentItems

@@ -114,7 +114,7 @@
 
     <fragment
         android:id="@+id/frag_result"
-        android:name="com.hapataka.questwalk.ResultFragment"
+        android:name="com.hapataka.questwalk.ui.result.ResultFragment"
         android:label="frag_result"
         tools:layout="@layout/fragment_result" />
 

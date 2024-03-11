@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -41,8 +42,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
@@ -87,6 +93,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 viewModel.time = 23
             }
             viewModel.checkCurrentTime()
+            LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
         }
     }
 
@@ -129,7 +136,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 toggleLocation(it)
             }
             durationTime.observe(viewLifecycleOwner) {
-                binding.tvQuestTime.text = it.convertTime()
+                binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
             }
             isNight.observe(viewLifecycleOwner) { night ->
                 if (night) {
@@ -145,6 +152,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
+            }
+            isLoading.observe(viewLifecycleOwner) {isLoading ->
+                if (isLoading) {
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
+                } else {
+                    //loading dialog dismiss
+                    val loadingFragment = parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
+                }
             }
         }
 
@@ -165,7 +181,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun getItems() {
         viewModel.checkCurrentTime()
-        viewModel.getRandomKeyword()
+//        viewModel.getRandomKeyword()
     }
 
     private fun initBackground() {
@@ -199,8 +215,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay {
-                navController.navigate(R.id.action_frag_home_to_frag_result)
+            viewModel.toggleIsPlay {uid, keyword, registerAt ->
+                val bundle = Bundle().apply {
+                    putString(USER_ID,uid)
+                    putString(QUEST_KEYWORD,keyword)
+                    putString(REGISTER_TIME, registerAt)
+                }
+                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
                 finishLocationClient()
 //                viewModel.updateUserInfo()
             }
