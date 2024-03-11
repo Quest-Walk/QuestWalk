@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -41,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
@@ -141,12 +143,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = "%.1f km".format(it)
             }
-            isLoading.observe(viewLifecycleOwner) {isLoading ->
+            isLoading.observe(viewLifecycleOwner) { isLoading ->
                 if (isLoading) {
                     LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
                 } else {
                     //loading dialog dismiss
-                    val loadingFragment = parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    val loadingFragment =
+                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
                     loadingFragment?.dismiss()
                 }
             }
@@ -203,10 +206,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            viewModel.toggleIsPlay {uid, keyword, registerAt ->
+            viewModel.toggleIsPlay { uid, keyword, registerAt ->
                 val bundle = Bundle().apply {
-                    putString(USER_ID,uid)
-                    putString(QUEST_KEYWORD,keyword)
+                    putString(USER_ID, uid)
+                    putString(QUEST_KEYWORD, keyword)
                     putString(REGISTER_TIME, registerAt)
                 }
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
@@ -333,14 +336,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             return
         }
         sensorManager.registerListener(sensorListener, stepSensor, SensorManager.SENSOR_DELAY_UI)
+
+        Log.d(TAG, "setpSensor: ${sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)}")
     }
 
-    private val sensorListener by lazy { makeSensorListener() }
+    private val sensorListener by lazy {
+        object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent?) {
+                Log.i(TAG, "event: $event")
+                val sensor = event!!.sensor
+
+                if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
+                    viewModel.updateStep()
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+    }
+
     private val stepSensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) }
 
     private fun makeSensorListener(): SensorEventListener {
         return object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
+                Log.i(TAG, "event: $event")
                 val sensor = event!!.sensor
 
                 if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
