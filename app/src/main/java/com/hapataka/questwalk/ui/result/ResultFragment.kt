@@ -135,13 +135,15 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         var preLocation: Pair<Float, Float>? = null
         val resultLati = result.locations?.map { it.first } ?: listOf()
         val resultLongi = result.locations?.map { it.second } ?: listOf()
-        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
-            LatLngBounds(
-                LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
-                LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
-            ), 100
-        )
-        p0.animateCamera(cameraUpdate)
+        if (resultLati.any() && resultLongi.any()){
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
+                LatLngBounds(
+                    LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
+                    LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
+                ), 100
+            )
+            p0.animateCamera(cameraUpdate)
+        }
 
         for (location in resultLati.zip(resultLongi)) {
             Log.d(TAG + "위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
