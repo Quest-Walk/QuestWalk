@@ -4,17 +4,21 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.InputType
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
+import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
@@ -26,8 +30,13 @@ import com.hapataka.questwalk.util.extentions.showErrMsg
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
     private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private var isPassWordVisible : Boolean = false
     private var isCanClick = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.slide_right)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +47,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         initEditText()
         initSignUpButton()
         initCloseButton()
-        showPassWord()
+        initPwVisibilityButton()
     }
 
     private fun initEditText() {
@@ -60,6 +69,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                 val pw = etSignUpPw.text.toString()
                 val pwCheck = etSignUpCheckPw.text.toString()
 
+
                 if (checkEmailValidity(emailId)) {
                     etSignUpId.requestFocus()
                     isCanClick = true
@@ -80,7 +90,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
             Handler(Looper.getMainLooper()).postDelayed({
                 isCanClick = true
-            },1000)
+            },1500)
         }
     }
 
@@ -128,41 +138,68 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private fun moveHomeWithLogin(id: String, pw: String) {
 
         viewModel.logByEmailAndPw(id, pw,
-            { navigateToOnBoarding() }, { Log.d("로그디", "에러") })
+            { navigateToOnBoarding() }, { ("오류가 발생해 로그인을 할 수 없습니다.").showSnackbar(requireView()) })
 
     }
 
     private fun navigateToOnBoarding() {
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
+        exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
         navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
         navGraph.setStartDestination(R.id.frag_on_boarding)
         navController.graph = navGraph
-
     }
 
+    private fun initPwVisibilityButton() {
+        binding.ivShowPassWord.toggleVisibility(binding.etSignUpPw)
+        binding.ivShowPassWordCheck.toggleVisibility(binding.etSignUpCheckPw)
+    }
 
+    private fun ImageView.toggleVisibility(editText: EditText) {
+        val passwod = PasswordTransformationMethod.getInstance()
+        val hide = HideReturnsTransformationMethod.getInstance()
 
+        setOnClickListener {
+            with(editText) {
+                if (transformationMethod == passwod) {
+                    load(R.drawable.ic_pw_show_enable)
+                    transformationMethod =
+                        HideReturnsTransformationMethod.getInstance()
+                    setSelection(text.length)
+                    return@setOnClickListener
+                }
 
-    private fun showPassWord() {
-        binding.ivShowPassWord.setOnClickListener {
-            changeState()
-
-            if (isPassWordVisible) {
-                binding.etSignUpPw.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                binding.ivShowPassWord.setImageResource(R.drawable.ic_invisible)
-            }else {
-                binding.etSignUpPw.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                binding.ivShowPassWord.setImageResource(R.drawable.ic_visibility)
+                if (transformationMethod == hide) {
+                    load(R.drawable.ic_pw_show_disable)
+                    transformationMethod =
+                        PasswordTransformationMethod.getInstance()
+                    setSelection(text.length)
+                    return@setOnClickListener
+                }
             }
-            binding.etSignUpPw.setSelection(binding.etSignUpPw.text.length)
         }
-    }
 
-    private fun changeState() {
-        isPassWordVisible = !isPassWordVisible
-    }
 
+
+//    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
+//        icon.setOnTouchListener { v, event ->
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    editText.transformationMethod =
+//                        HideReturnsTransformationMethod.getInstance()
+//                    editText.setSelection(editText.text.length)
+//                }
+//
+//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                    editText.transformationMethod =
+//                        PasswordTransformationMethod.getInstance()
+//                    editText.setSelection(editText.text.length)
+//                }
+//            }
+//            true
+//        }
+    }
 
     private fun hideKeyBoard() {
         val imm =

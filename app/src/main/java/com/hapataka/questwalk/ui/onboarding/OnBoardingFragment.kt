@@ -1,41 +1,37 @@
 package com.hapataka.questwalk.ui.onboarding
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
-import kotlinx.coroutines.launch
+import com.hapataka.questwalk.util.BaseFragment
 
 
-class OnBoardingFragment : Fragment() {
-    private var _binding : FragmentOnBoardingBinding? = null
-
-    private val binding get() = _binding!!
+class OnBoardingFragment :
+    BaseFragment<FragmentOnBoardingBinding>(FragmentOnBoardingBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val viewModel : OnBoardingViewModel by viewModels { OnBoardingViewModelFactory(UserRepositoryImpl(), AuthRepositoryImpl()) }
     private var characterNum = 1
+    private val viewModel: OnBoardingViewModel by viewModels {
+        OnBoardingViewModelFactory(
+            UserRepositoryImpl(),
+            AuthRepositoryImpl()
+        )
+    }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentOnBoardingBinding.inflate(inflater,container,false)
-        return binding.root
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,8 +44,7 @@ class OnBoardingFragment : Fragment() {
         goMain()
     }
 
-
-    private fun changeProfile(){
+    private fun changeProfile() {
         binding.ivProfileImage.setOnClickListener {
             val dialogFragment = ChooseCharacterDialog().apply {
                 listener = object : OnCharacterSelectedListener {
@@ -63,10 +58,10 @@ class OnBoardingFragment : Fragment() {
         }
     }
 
-
-
     private fun goMain() {
         binding.btnComplete.setOnClickListener {
+            hideKeyBoard()
+
             val nickName = binding.etNickname.text.toString()
 
             if (nickName.isEmpty()) {
@@ -74,11 +69,14 @@ class OnBoardingFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.getCurrentUserId{ userId ->
+            viewModel.getCurrentUserId { userId ->
                 if (userId.isNotEmpty()) {
-                    viewModel.setUserInfo(userId , characterNum , nickName,
-                        { navigateGoHome() } , onError = { error-> error.showSnackbar(requireView())} )
-                }else {
+                    viewModel.setUserInfo(userId,
+                        characterNum,
+                        nickName,
+                        { navigateGoHome() },
+                        onError = { error -> error.showSnackbar(requireView()) })
+                } else {
                     ("로그인 상태를 확인할 수 없습니다.").showSnackbar(requireView())
                 }
             }
@@ -87,7 +85,6 @@ class OnBoardingFragment : Fragment() {
 //                val userId = authRepo.getCurrentUserUid()
 //                userRepo.setUserInfo(userId,characterNum,nickName)
 //            }
-
         }
     }
 
@@ -99,10 +96,9 @@ class OnBoardingFragment : Fragment() {
         navController.graph = navGraph
     }
 
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
+    private fun hideKeyBoard() {
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
-
 }
