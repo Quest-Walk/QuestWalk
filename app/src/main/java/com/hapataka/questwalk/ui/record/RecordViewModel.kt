@@ -30,7 +30,7 @@ class RecordViewModel(
             histories.forEach { entity ->
                 when (entity) {
                     is ResultEntity -> {
-                        currentItems += ResultItem(entity.quest, entity.questImg, entity.isFailed.not(), entity.registerAt)
+                        currentItems += ResultItem(entity.quest, entity.questImg, entity.isFailed, entity.registerAt)
                     }
 
                     is AchievementEntity -> {

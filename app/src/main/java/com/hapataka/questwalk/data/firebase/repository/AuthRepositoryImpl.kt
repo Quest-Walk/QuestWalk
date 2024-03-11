@@ -35,8 +35,12 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun deleteCurrentUser(
         callback: (Task<Void>) -> Unit
     ) {
-        auth.currentUser?.delete()
-            ?.addOnCompleteListener { task -> callback(task) }
+        val user = auth.currentUser
+
+        user?.let {
+            it.delete()
+                .addOnCompleteListener { task -> callback(task) }
+        }
     }
 
     override suspend fun getCurrentUserUid(): String = auth.currentUser?.uid ?: ""

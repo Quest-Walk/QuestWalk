@@ -61,7 +61,7 @@
                     style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234 km"/>
+                    tools:text="1234 km"/>
 
                 <TextView
                     android:id="@+id/tvTotalStepsLabel"
@@ -127,7 +127,8 @@
                     android:layout_marginTop="30dp"
                     android:background="@drawable/bg_quest_image"
                     android:clipToOutline="true"
-                    android:scaleType="fitXY" />
+                    android:src="@drawable/image_empty"
+                    android:scaleType="centerCrop" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

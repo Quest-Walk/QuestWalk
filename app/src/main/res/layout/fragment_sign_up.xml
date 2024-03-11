@@ -14,19 +14,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/btn_close"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:layout_marginEnd="12dp"
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
-                android:id="@+id/btn_close"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_close"
-                app:tint="@color/black" />
+                app:tint="#4B4B4B" />
 
         </LinearLayout>
 
@@ -124,40 +123,26 @@
         app:layout_constraintStart_toStartOf="@id/et_sign_up_id"
         app:layout_constraintTop_toBottomOf="@id/tv_explain_pw" />
 
-    <!--        <TextView-->
-    <!--            android:id="@+id/tv_error_msg"-->
-    <!--            style="@style/small"-->
-    <!--            android:layout_width="0dp"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_marginTop="8dp"-->
-    <!--            android:textColor="@color/red"-->
-    <!--            app:layout_constraintEnd_toEndOf="@id/btn_goToPassWord"-->
-    <!--            app:layout_constraintStart_toStartOf="@id/btn_goToPassWord"-->
-    <!--            app:layout_constraintTop_toBottomOf="@id/btn_goToPassWord"-->
-    <!--            tools:text="rkskekfkakqkek" />-->
-
 
     <ImageView
         android:id="@+id/iv_showPassWord"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_visibility"
+        android:src="@drawable/ic_pw_show_disable"
         app:layout_constraintBottom_toBottomOf="@id/et_sign_up_pw"
         app:layout_constraintEnd_toEndOf="@id/et_sign_up_pw"
-        app:layout_constraintTop_toTopOf="@id/et_sign_up_pw"
-        app:tint="#d5d5d5" />
+        app:layout_constraintTop_toTopOf="@id/et_sign_up_pw" />
 
+    <ImageView
+        android:id="@+id/iv_showPassWordCheck"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_pw_show_disable"
+        app:layout_constraintBottom_toBottomOf="@id/et_sign_up_check_pw"
+        app:layout_constraintEnd_toEndOf="@id/et_sign_up_check_pw"
+        app:layout_constraintTop_toTopOf="@id/et_sign_up_check_pw" />
 
-    <!--    <ImageView-->
-    <!--        android:id="@+id/iv_showPassWordCheck"-->
-    <!--        android:layout_width="24dp"-->
-    <!--        android:layout_height="24dp"-->
-    <!--        android:layout_marginStart="10dp"-->
-    <!--        android:src="@drawable/ic_visibility"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@id/et_signUpPassWordCheck"-->
-    <!--        app:layout_constraintStart_toEndOf="@id/et_signUpPassWordCheck"-->
-    <!--        app:layout_constraintTop_toTopOf="@id/et_signUpPassWordCheck" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

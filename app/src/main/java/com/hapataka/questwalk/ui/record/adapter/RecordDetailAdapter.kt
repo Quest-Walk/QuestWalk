@@ -42,15 +42,15 @@ class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = 
 
     inner class ResultViewHolder(binding: ItemRecordResultBinding) : ViewHolder(binding.root) {
         val thumbnail = binding.ivThumbnail
-        val isSuccess = binding.ivSuccess
+        val ivSuccess = binding.ivSuccess
 
         fun bind(item: ResultItem) {
             if (item.isFail) {
                 thumbnail.load(R.drawable.image_empty)
-                isSuccess.gone()
+                ivSuccess.gone()
                 return
             }
-            isSuccess.visible()
+            ivSuccess.visible()
             thumbnail.load(item.thumbnail)
         }
     }
