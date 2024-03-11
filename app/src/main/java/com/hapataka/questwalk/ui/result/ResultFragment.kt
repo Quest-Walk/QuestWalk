@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.result
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.viewModels
 import coil.load
@@ -22,6 +23,7 @@ import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+
 
 const val USER_ID = "user_id"
 const val QUEST_KEYWORD = "quest_keyword"
@@ -123,6 +125,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     override fun onMapReady(p0: GoogleMap) {
         Log.i(TAG, "map ready")
         googleMap = p0
+        p0.uiSettings.isZoomControlsEnabled=true
         MapsInitializer.initialize(this.requireContext())
 //        updateLocation(googleMap, result)
     }

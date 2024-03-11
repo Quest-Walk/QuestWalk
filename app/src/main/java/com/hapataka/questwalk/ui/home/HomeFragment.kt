@@ -215,14 +215,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
             viewModel.toggleIsPlay {uid, keyword, registerAt ->
-                val bundle = Bundle().apply {
-                    putString(USER_ID,uid)
-                    putString(QUEST_KEYWORD,keyword)
-                    putString(REGISTER_TIME, registerAt)
-                }
-                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-                finishLocationClient()
+                if(keyword.isNullOrEmpty().not()) {
+                    Log.d("test", "yes keyword")
+                    val bundle = Bundle().apply {
+                        putString(USER_ID, uid)
+                        putString(QUEST_KEYWORD, keyword)
+                        putString(REGISTER_TIME, registerAt)
+                    }
+                    navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
+                    finishLocationClient()
 //                viewModel.updateUserInfo()
+                }
+                else{
+                    Log.d("test", "no keyword")
+                    Toast.makeText(requireContext(), "no keyword", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

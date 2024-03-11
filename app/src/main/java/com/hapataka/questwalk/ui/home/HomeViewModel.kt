@@ -70,7 +70,7 @@ class HomeViewModel(
             viewModelScope.launch {
                 val remainingKeyword = filteringUseCase().map { it.keyWord }
 
-                _currentKeyword.value = remainingKeyword.random()
+                _currentKeyword.value = remainingKeyword.randomOrNull()
 //            }
         }
     }
@@ -80,54 +80,59 @@ class HomeViewModel(
     }
 
     fun toggleIsPlay(callBack: (String, String?, String) -> Unit) {
-        _isPlay.value = isPlay.value?.not()
-        toggleTimer()
+        if (currentKeyword.value.isNullOrEmpty().not()){
+            _isPlay.value = isPlay.value?.not()
+            toggleTimer()
 
-        if (!isPlay.value!!) {
-            viewModelScope.launch {
-                _isLoading.value = true
-                val uid = authRepo.getCurrentUserUid()
-                val registerAt = LocalTime.now().toString()
-                if (imageUri != null) {
-                    val remoteUri = imageRepo.setImage(imageUri!!, uid)
-                    Log.i(TAG, "quest: ${questLocation}")
-                    val result = HistoryEntity.ResultEntity(
-                        registerAt,
-                        currentKeyword.value ?: "",
-                        durationTime.value ?: 0,
-                        totalDistance.value ?: 0f,
-                        totalStep.value ?: 0,
-                        false,
-                        locationHistory,
-                        questLocation,
-                        remoteUri.toString()
-                    )
+            if (!isPlay.value!!) {
+                viewModelScope.launch {
+                    _isLoading.value = true
+                    val uid = authRepo.getCurrentUserUid()
+                    val registerAt = LocalTime.now().toString()
+                    if (imageUri != null) {
+                        val remoteUri = imageRepo.setImage(imageUri!!, uid)
+                        Log.i(TAG, "quest: ${questLocation}")
+                        val result = HistoryEntity.ResultEntity(
+                            registerAt,
+                            currentKeyword.value ?: "",
+                            durationTime.value ?: 0,
+                            totalDistance.value ?: 0f,
+                            totalStep.value ?: 0,
+                            false,
+                            locationHistory,
+                            questLocation,
+                            remoteUri.toString()
+                        )
 
-                    userRepo.updateUserInfo(uid, result)
-                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
-                    getRandomKeyword()
-                } else {
-                    val result = HistoryEntity.ResultEntity(
-                        registerAt,
-                        currentKeyword.value ?: "",
-                        durationTime.value ?: 0,
-                        totalDistance.value ?: 0f,
-                        totalStep.value ?: 0,
-                        true,
-                        locationHistory
-                    )
+                        userRepo.updateUserInfo(uid, result)
+                        questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
+                        getRandomKeyword()
+                    } else {
+                        val result = HistoryEntity.ResultEntity(
+                            registerAt,
+                            currentKeyword.value ?: "",
+                            durationTime.value ?: 0,
+                            totalDistance.value ?: 0f,
+                            totalStep.value ?: 0,
+                            true,
+                            locationHistory
+                        )
 
-                    userRepo.updateUserInfo(uid, result)
+                        userRepo.updateUserInfo(uid, result)
+                    }
+                    _totalDistance.value = 0f
+                    _totalStep.value = 0
+                    locationHistory.clear()
+                    prevLocation = null
+                    imageUri = null
+                    questLocation = null
+                    _isLoading.value = false
+                    callBack(uid, currentKeyword.value ?: "", registerAt)
                 }
-                _totalDistance.value = 0f
-                _totalStep.value = 0
-                locationHistory.clear()
-                prevLocation = null
-                imageUri = null
-                questLocation = null
-                _isLoading.value = false
-                callBack(uid, currentKeyword.value ?: "", registerAt)
             }
+        }
+        else{
+            callBack("uid", currentKeyword.value ?: "", "registerAt")
         }
     }
 
