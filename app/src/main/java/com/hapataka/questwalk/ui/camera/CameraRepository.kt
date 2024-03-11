@@ -28,6 +28,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         var height = image.height
 
         val bitmapRatio = width.toFloat() / height.toFloat()
+
         if (bitmapRatio > 1) {
             width = maxSize
             height = (width / bitmapRatio).toInt()
@@ -49,8 +50,10 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         val canvas = Canvas(grayscaleBitmap)
         val paint = Paint()
         val colorMatrix = ColorMatrix()
+
         colorMatrix.setSaturation(0f)
         val filter = ColorMatrixColorFilter(colorMatrix)
+
         paint.colorFilter = filter
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
@@ -61,6 +64,4 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
         file?.delete()
     }
-
-
 }

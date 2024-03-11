@@ -1,6 +1,8 @@
 package com.hapataka.questwalk.ui.record
 
+import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -8,6 +10,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentRecordItemBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
@@ -22,7 +26,7 @@ import com.hapataka.questwalk.util.ViewModelFactory
 
 const val TAG = "item_test"
 
-class RecordItemFragment(val items: List<RecordItem>) :
+class RecordItemFragment(private val items: List<RecordItem>) :
     BaseFragment<FragmentRecordItemBinding>(FragmentRecordItemBinding::inflate) {
     private val recordDetailAdapter by lazy { RecordDetailAdapter(requireContext()) }
     private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
@@ -40,6 +44,9 @@ class RecordItemFragment(val items: List<RecordItem>) :
             adapter = recordDetailAdapter
             setSpanSizeLookup()
             layoutManager = gridLayoutManager
+            if (itemDecorationCount < 1) {
+                addItemDecoration(itemDeco)
+            }
         }
         recordDetailAdapter.submitList(items)
     }
@@ -68,7 +75,6 @@ class RecordItemFragment(val items: List<RecordItem>) :
                 }
 
                 if (item is RecordItem.ResultItem) {
-
                     mainViewModel.moveToResult { uid ->
                         val bundle = Bundle().apply {
                             putString(USER_ID, uid)
@@ -81,6 +87,39 @@ class RecordItemFragment(val items: List<RecordItem>) :
                 }
             }
         }.also { recordDetailAdapter.itemClick = it }
+    }
+
+    private val itemDeco = object : ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            super.getItemOffsets(outRect, view, parent, state)
+
+            val viewParam = view.layoutParams as GridLayoutManager.LayoutParams
+            Log.d(TAG + "RecordFragment", "view: ${view}")
+
+            if (viewParam.spanSize == 1) {
+                outRect.bottom = 20.dpToPx()
+            }
+
+            when (viewParam.spanIndex) {
+                0 -> {
+                    outRect.right = 8.dpToPx()
+                }
+
+                1 -> {
+                    outRect.right = 8.dpToPx()
+                    outRect.left = 8.dpToPx()
+                }
+
+                2 -> {
+                    outRect.left = 8.dpToPx()
+                }
+            }
+        }
     }
 
     fun <T : Number> T.dpToPx(): T {

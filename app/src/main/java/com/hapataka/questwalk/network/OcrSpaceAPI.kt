@@ -10,7 +10,6 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 
 interface OcrSpaceAPI {
-
     companion object {
         private const val OCR_SPACE_API_KEY = "K89093548288957"
         private const val FILE_TYPE = "JPG"

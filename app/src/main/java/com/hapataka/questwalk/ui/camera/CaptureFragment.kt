@@ -42,7 +42,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         initDebug()
         with(binding) {
             btnAttach.setOnClickListener {
-
                 if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
                     keyword = etKeywordDebug.text.toString()
                     etKeywordDebug.clearFocus()

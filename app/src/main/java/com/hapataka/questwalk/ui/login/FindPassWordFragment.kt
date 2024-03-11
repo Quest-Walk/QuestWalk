@@ -3,38 +3,29 @@ package com.example.firebasetestapp
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentFindPassWordBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
+import com.hapataka.questwalk.util.BaseFragment
 
 
-class FindPassWordFragment : Fragment() {
-
-    private var _binding : FragmentFindPassWordBinding? = null
-    private val binding get() = _binding!!
+class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentFindPassWordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var emailId = ""
 
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentFindPassWordBinding.inflate(inflater,container,false)
-        return binding.root
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_bottom)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,11 +96,4 @@ class FindPassWordFragment : Fragment() {
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
-
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
 }
