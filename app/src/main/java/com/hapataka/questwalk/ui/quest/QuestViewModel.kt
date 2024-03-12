@@ -86,7 +86,7 @@ class QuestViewModel : ViewModel() {
 
     private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
-            QuestData.SuccessItem(it.userId, it.imageUrl)
+            QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)
         }
         return QuestData(
             keyWord = questStackEntity.keyWord,

@@ -8,7 +8,7 @@ sealed class HistoryEntity(open val registerAt: String = "") {
         val quest: String = "",
         val time: Long = 0,
         val distance: Float = 0f,
-        val step: Int = 0,
+        val step: Long = 0,
         @JvmField
         val isFailed: Boolean = false,
         val locations: List<Pair<Float,Float>>?,

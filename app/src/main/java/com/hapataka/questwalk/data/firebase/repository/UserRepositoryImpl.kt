@@ -130,7 +130,7 @@ class UserRepositoryImpl : UserRepository {
                 get("quest").toString(),
                 get("time").toString().toLong(),
                 get("distance").toString().toFloat(),
-                get("step").toString().toInt(),
+                get("step").toString().toLong(),
                 get("isFailed") as Boolean,
                 convertLocationHistories(get("locations") as? List<Map<String, Any>>),
                 convertLocation(get("questLocation") as? Map<String, Any>),

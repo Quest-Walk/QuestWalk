@@ -134,7 +134,7 @@
 
     <fragment
         android:id="@+id/frag_quest_detail"
-        android:name="com.hapataka.questwalk.ui.quest.QuestDetailFragment"
+        android:name="com.hapataka.questwalk.ui.questdetail.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail">
         <action

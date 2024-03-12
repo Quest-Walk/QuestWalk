@@ -30,17 +30,19 @@ class HomeViewModel(
     private var _isPlay = MutableLiveData(false)
     private var _durationTime = MutableLiveData<Long>(0)
     private var _isNight = MutableLiveData(false)
-    private var _totalStep = MutableLiveData<Int>()
+    private var _totalStep = MutableLiveData<Long>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _isLoading = MutableLiveData<Boolean>(false)
+    private var _isEnabledButton = MutableLiveData<Boolean>(true)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
     val durationTime: LiveData<Long> get() = _durationTime
     val isNight: LiveData<Boolean> get() = _isNight
-    val totalStep: LiveData<Int> get() = _totalStep
+    val totalStep: LiveData<Long> get() = _totalStep
     val totalDistance: LiveData<Float> get() = _totalDistance
     val isLoading: LiveData<Boolean> get() = _isLoading
+    val isEnabledButton: LiveData<Boolean> get() = _isEnabledButton
 
     private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
@@ -77,16 +79,25 @@ class HomeViewModel(
         _currentKeyword.value = keyword
     }
 
+    fun toggleIsPlay() {
+        _isPlay.value = isPlay.value?.not()
+        toggleTimer()
+        _totalDistance.value = 0f
+        _totalStep.value = 0
+        locationHistory.clear()
+        prevLocation = null
+    }
+
     fun toggleIsPlay(callBack: (String, String?, String) -> Unit) {
         _isPlay.value = isPlay.value?.not()
         toggleTimer()
 
         if (!isPlay.value!!) {
             viewModelScope.launch {
-                _isLoading.value = true
                 val uid = authRepo.getCurrentUserUid()
                 val registerAt = LocalTime.now().toString()
                 if (imageUri != null) {
+                    _isLoading.value = true
                     val remoteUri = imageRepo.setImage(imageUri!!, uid)
                     Log.i(TAG, "quest: ${questLocation}")
                     val result = HistoryEntity.ResultEntity(
@@ -102,7 +113,7 @@ class HomeViewModel(
                     )
 
                     userRepo.updateUserInfo(uid, result)
-                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString())
+                    questRepo.updateQuest(currentKeyword.value!!, uid, remoteUri.toString(), registerAt)
                     getRandomKeyword()
                 } else {
                     val result = HistoryEntity.ResultEntity(
@@ -136,6 +147,7 @@ class HomeViewModel(
 
                 while (true) {
                     var currentTime = durationTime.value!!
+                    _isEnabledButton.value = currentTime !in 0L..20L
 
                     delay(1000L)
                     _durationTime.value = currentTime + 1
@@ -187,21 +199,4 @@ class HomeViewModel(
     fun setQuestSuccessLocation() {
         questLocation = locationHistory.last()
     }
-
-//    private fun requestUserInfo(): HistoryEntity.ResultEntity {
-//        return HistoryEntity.ResultEntity(
-//            quest = _currentKeyword.value ?: "",
-//            time = _durationTime.value?.convertTime() ?: "",
-//            distance = _totalDistance.value ?: 0F,
-//            step = _totalStep.value ?: 0,
-//            latitueds = locationHistory.map { it.latitude.toFloat() },
-//            longitudes = locationHistory.map { it.longitude.toFloat() },
-//            questLatitued = questLocation?.latitude?.toFloat() ?: 0F,
-//            questLongitude = questLocation?.longitude?.toFloat() ?: 0F,
-//            registerAt = "20240307",
-//            isFailed = imagePath.value == null,
-//            questImg = "$imgDownloadUrl"
-//        )
-//    }
-
 }
