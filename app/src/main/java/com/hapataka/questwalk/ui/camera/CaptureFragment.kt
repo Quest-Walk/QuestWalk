@@ -49,6 +49,8 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                     keyword = homeViewModel.currentKeyword.value ?: ""
                 }
                 hideKeyboard()
+
+                cameraViewModel.setCroppedBitmap(ivCapturedImage.croppedImage)
                 cameraViewModel.postCapturedImageWithMLKit(keyword)
 
             }
@@ -57,6 +59,15 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             }
             btnResult.setOnClickListener {
                 navController.popBackStack()
+            }
+
+            ibCropBtn.apply{
+                setOnClickListener {
+                    cameraViewModel.clickedCropImageButton()
+                    val isCropped = cameraViewModel.isCropped
+//                    ivCapturedImage.setFixedAspectRatio(isCropped)
+                    ivCapturedImage.isShowCropOverlay = isCropped
+                }
             }
             ivCapturedImage.setOnLongClickListener {
                 cameraViewModel.setDebug()
@@ -97,6 +108,12 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     }
 
     private fun initCapturedImage() {
+
+        binding.ivCapturedImage.apply{
+//            setFixedAspectRatio(cameraViewModel.isCropped)
+            isShowCropOverlay = cameraViewModel.isCropped
+        }
+
         bitmap = cameraViewModel.bitmap.value
         Log.i(TAG, "capture bitmap: $bitmap")
         binding.ivCapturedImage.setImageBitmap(bitmap)
@@ -124,6 +141,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             }
 
         }
+
 
         getContext = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
