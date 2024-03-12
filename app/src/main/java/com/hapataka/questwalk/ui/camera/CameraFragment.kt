@@ -1,27 +1,21 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.Manifest
-import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.util.Size
+import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -32,7 +26,6 @@ import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Runnable
 
 
 @AndroidEntryPoint
@@ -41,16 +34,26 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val homeViewModel: HomeViewModel by activityViewModels()
 
+    private var isComingFromSettings = false
+
     // 카메라 관련 변수
-    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraHandler: CameraHandler
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        checkPermissions()
+        cameraHandler = CameraHandler(requireContext(), this, binding.pvPreview)
+        checkPermission()
         setObserver()
         bindingWidgets()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isComingFromSettings) {
+            checkPermission()
+            isComingFromSettings = false
+        }
     }
 
     /**
@@ -76,7 +79,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         with(binding) {
             ibCapture.apply {
                 setOnClickListener {
-                    capturePhoto()
+                    cameraHandler.capturePhoto(imageCaptureCallback())
                 }
                 setOnTouchListener(
                     imageButtonSetOnTouchListener(
@@ -87,7 +90,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 )
             }
             ibFlash.setOnClickListener {
-                toggleFlash()
+                cameraHandler.toggleFlash(cameraViewModel.toggleFlash())
             }
             ibBackBtn.apply {
                 setOnClickListener {
@@ -135,74 +138,50 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             ::handlePermissionResult
         )
 
-    private fun checkPermissions() {
-        if (
+    private fun checkPermission() {
+        when {
             ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            startCamera()
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                cameraHandler.initCamera()
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+                    .setAction("확인") {
+                        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                    .show()
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         }
     }
 
     private fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
-            startCamera()
+            cameraHandler.initCamera()
         } else {
-            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT).show()
-            navController.popBackStack()
-        }
-    }
-
-
-    /**
-     *  카메라 기능
-     */
-
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-        cameraProviderFuture.addListener(
-            setCamera(cameraProvider),
-            ContextCompat.getMainExecutor(requireContext())
-        )
-    }
-
-    private fun setCamera(cameraProvider: ProcessCameraProvider): Runnable = Runnable {
-        val preview = Preview.Builder()
-            .build()
-            .also { mPreview ->
-                mPreview.setSurfaceProvider(
-                    binding.pvPreview.surfaceProvider
-                )
+            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                checkPermission()
+            } else {
+                Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
+                    .setAction("권한 설정") {
+                        isComingFromSettings = true
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", requireActivity().packageName, null)
+                        }
+                        startActivity(intent)
+                    }
+                    .show()
+//                navController.popBackStack()
             }
-
-        imageCapture = ImageCapture.Builder()
-            .build()
-
-        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-        try {
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture
-            )
-        } catch (e: Exception) {
-            Log.d("CameraX", "startCamera Fail", e)
         }
     }
-    //실패 했을떄, imageUri 이 null 으로 반환 해야 한다.
 
-    private fun capturePhoto() {
-        val imageCapture = imageCapture ?: return
-        imageCapture.takePicture(
-            ContextCompat.getMainExecutor(requireContext()),
-            imageCaptureCallback()
-        )
-    }
 
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
@@ -217,12 +196,5 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 image.close()
             }
         }
-    }
-
-
-    //사진 촬영 할때 만 나옴
-    private fun toggleFlash() {
-        val flashMode = cameraViewModel.toggleFlash()
-        imageCapture?.flashMode = flashMode
     }
 }

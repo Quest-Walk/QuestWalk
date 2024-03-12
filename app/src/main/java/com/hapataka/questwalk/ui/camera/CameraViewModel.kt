@@ -111,8 +111,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image :InputImage
-        image = if(isCropped){
+        val image :InputImage = if(isCropped){
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else{
             InputImage.fromBitmap(bitmap.value!!, 0)
