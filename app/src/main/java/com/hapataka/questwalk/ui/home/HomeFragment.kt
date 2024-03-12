@@ -247,6 +247,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun startBackgroundAnim() {
+//        val charId = viewModel.charNum.value ?: 1
+//        val movingCharacter = when(charId) {
+//            1->R.drawable.character_move_01
+//            else -> R.drawable.character_move_01
+//        }
         val imageLoader = ImageLoader.Builder(requireContext())
             .components {
                 if (SDK_INT >= 28) {
@@ -258,6 +263,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             .build()
         val requestCharacter = ImageRequest.Builder(requireContext())
             .data(R.drawable.character_move_01)
+            //.data(movingCharacter)
             .target(binding.ivChrImage)
             .build()
 
@@ -273,7 +279,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun endBackgroundAnim() {
+//        val charId = viewModel.charNum.value ?: 1
+//        val character = when(charId) {
+//            1 -> R.drawable.character_01
+//            else -> R.drawable.character_01
+//        }
+
         with(binding) {
+//            ivChrImage.load(character)
             ivChrImage.load(R.drawable.character_01)
             ivBgLayer1.clearAnimation()
             ivBgLayer2.clearAnimation()
@@ -394,11 +407,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
 //        private fun getUserNum() {
-//        viewModel.charNum.observe(viewLifecycleOwner) {
-//            when(it) {
-//                1 -> binding.ivChrImage.setImageResource(R.drawable.character_01)
-//                else -> binding.ivChrImage.setImageResource(R.drawable.character_01)
+//        viewModel.charNum.observe(viewLifecycleOwner) {charID ->
+//            val characterNum = when(charID) {
+//                1 -> R.drawable.character_01
+//                else -> R.drawable.character_01
+//
 //            }
+//            binding.ivChrImage.setImageResource(characterNum)
 //        }
 //    }
 
