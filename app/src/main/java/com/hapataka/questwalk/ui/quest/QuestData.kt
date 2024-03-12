@@ -13,6 +13,7 @@ data class QuestData(
     @Parcelize
     data class SuccessItem(
         val userId: String = "",
-        val imageUrl: String = ""
-    ) : Parcelable
+        val imageUrl: String = "",
+        val registerAt: String = ""
+    ): Parcelable
 }
