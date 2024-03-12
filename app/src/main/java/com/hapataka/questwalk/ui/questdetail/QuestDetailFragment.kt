@@ -19,7 +19,7 @@ import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
-    private lateinit var questDetailAdapter: QuestDetailAdapter
+    private val questDetailAdapter by lazy { QuestDetailAdapter() }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var completeRate: Double = 0.0
     private var item: QuestData? = null
@@ -64,16 +64,6 @@ class QuestDetailFragment : Fragment() {
         }
 
         binding.revQuestDetail.addItemDecoration(QuestDetailRecyclerViewDecoration())
-
-        questDetailAdapter = QuestDetailAdapter {
-            val bundle = Bundle().apply {
-                putString(USER_ID,it.userId)
-                putString(QUEST_KEYWORD, item?.keyWord)
-                putString(REGISTER_TIME, it.registerAt)
-            }
-            navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
-        }
-
         binding.revQuestDetail.adapter = questDetailAdapter
         questDetailAdapter.submitList(item?.successItems?.reversed())
     }
