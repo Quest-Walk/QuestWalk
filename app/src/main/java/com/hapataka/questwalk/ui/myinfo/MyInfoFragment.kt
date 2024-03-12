@@ -70,7 +70,6 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             tvSolveQuestValue.text = "$successResultCount 개"
             tvCalorie.text = userInfo.totalStep.convertKcal()
 
-
             when (userInfo.characterId) {
                 1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
                 else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)

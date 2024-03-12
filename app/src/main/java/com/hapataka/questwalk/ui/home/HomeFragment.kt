@@ -2,7 +2,6 @@ package com.hapataka.questwalk.ui.home
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -10,7 +9,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.animation.Animation
@@ -20,7 +18,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -34,14 +31,11 @@ import coil.load
 import coil.request.ImageRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
@@ -59,11 +53,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
+    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-
 
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -86,7 +80,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         initQuestButton()
         initBackPressedCallback()
         checkPermission()
-        setLocationClient()
+//        setLocationClient()
     }
 
     private fun checkPermission() {
@@ -223,7 +217,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                         putString(REGISTER_TIME, registerAt)
                     }
                     navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-                    finishLocationClient()
+//                    finishLocationClient()
 //                viewModel.updateUserInfo()
                 }
             }
@@ -261,7 +255,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun toggleLocation(isPlay: Boolean) {
         if (isPlay) {
-            updateLocation()
+//            updateLocation()
+            mainViewModel.location()
             initStepSensor()
         } else {
             sensorManager.unregisterListener(sensorListener, stepSensor)
@@ -405,45 +400,54 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun updateLocation() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
+//    private fun setLocationClient() {
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
+//    }
 
-        locationCallback = object : LocationCallback() {
-            //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
-            override fun onLocationResult(locationResult: LocationResult) {
-                viewModel.updateLocation(locationResult)
-            }
-        }
-        requestLocationClient(locationRequest)
-    }
+//    private fun updateLocation() {
+//        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
+//
+//        locationCallback = object : LocationCallback() {
+//            //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
+//            override fun onLocationResult(locationResult: LocationResult) {
+//                viewModel.updateLocation(locationResult)
+//            }
+//        }
+//        requestLocationClient(locationRequest)
+//    }
 
-    private fun setLocationClient() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
-    }
+//    private fun finishLocationClient() {
+//        fusedLocationClient.removeLocationUpdates(locationCallback)
+//    }
 
-    private fun finishLocationClient() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
-
-    private fun requestLocationClient(locationRequest: LocationRequest) {
-        //권한 처리
-        if (ActivityCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.myLooper()!!
-        )
-    }
+//    private fun requestLocationClient(locationRequest: LocationRequest) {
+//        //권한 처리
+//        if (ActivityCompat.checkSelfPermission(
+//                this.requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                this.requireContext(),
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            return
+//        }
+//
+//        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
+//
+//        locationCallback = object : LocationCallback() {
+//            //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
+//            override fun onLocationResult(locationResult: LocationResult) {
+//                viewModel.updateLocation(locationResult)
+//            }
+//        }
+//
+//        fusedLocationClient.requestLocationUpdates(
+//            locationRequest,
+//            locationCallback,
+//            Looper.myLooper()!!
+//        )
+//    }
 
 //        private fun getUserNum() {
 //        viewModel.charNum.observe(viewLifecycleOwner) {charID ->

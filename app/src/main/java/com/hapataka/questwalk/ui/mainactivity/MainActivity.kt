@@ -18,10 +18,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        initStartDestination()
+        setStartDestination()
     }
 
-    private fun initStartDestination() {
+    private fun setStartDestination() {
         val navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         val navController = navHost.navController
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
