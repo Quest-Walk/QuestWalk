@@ -2,6 +2,8 @@ package com.hapataka.questwalk.ui.signup
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
@@ -28,6 +30,7 @@ import com.hapataka.questwalk.util.extentions.showErrMsg
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
     private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var isCanClick = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,25 +61,36 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private fun initSignUpButton() {
         with(binding) {
             btnSignUp.setOnClickListener {
+                hideKeyBoard()
+                if (!isCanClick) return@setOnClickListener
+                isCanClick = false
+
                 val emailId = etSignUpId.text.toString()
                 val pw = etSignUpPw.text.toString()
                 val pwCheck = etSignUpCheckPw.text.toString()
 
 
-
                 if (checkEmailValidity(emailId)) {
                     etSignUpId.requestFocus()
+                    isCanClick = true
                     return@setOnClickListener
                 }
 
                 if (checkPwValidity(pw, pwCheck)) {
                     etSignUpPw.requestFocus()
+                    isCanClick = true
                     return@setOnClickListener
                 }
+
                 viewModel.registerByEmailAndPw(emailId, pw,
                     { moveHomeWithLogin(emailId, pw) },
-                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView()) })
+                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView())
+                    isCanClick = true })
             }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                isCanClick = true
+            },1500)
         }
     }
 
@@ -89,7 +103,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
     private fun initCloseButton() {
         binding.btnClose.setOnClickListener {
-            exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_left)
             navController.popBackStack()
         }
     }
@@ -125,22 +138,8 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private fun moveHomeWithLogin(id: String, pw: String) {
 
         viewModel.logByEmailAndPw(id, pw,
-            { navigateToOnBoarding() }, { Log.d("로그디", "에러") })
+            { navigateToOnBoarding() }, { ("오류가 발생해 로그인을 할 수 없습니다.").showSnackbar(requireView()) })
 
-//        lifecycleScope.launch {
-//            authRepo.loginByEmailAndPw(id, pw) { task ->
-//                if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-//
-//                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
-////                    navGraph.setStartDestination(R.id.frag_home)
-//                    navGraph.setStartDestination(R.id.frag_on_boarding)
-//                    navController.graph = navGraph
-//                    return@loginByEmailAndPw
-//                }
-//                Log.e("로그디", "에러남")
-//            }
-//        }
     }
 
     private fun navigateToOnBoarding() {
@@ -180,20 +179,22 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                 }
             }
         }
-//        setOnTouchListener { _, event ->
+
+
+
+//    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
+//        icon.setOnTouchListener { v, event ->
 //            when (event.action) {
 //                MotionEvent.ACTION_DOWN -> {
 //                    editText.transformationMethod =
 //                        HideReturnsTransformationMethod.getInstance()
 //                    editText.setSelection(editText.text.length)
-//                    load(R.drawable.ic_pw_show_enable)
 //                }
 //
 //                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
 //                    editText.transformationMethod =
 //                        PasswordTransformationMethod.getInstance()
 //                    editText.setSelection(editText.text.length)
-//                    this.load(R.drawable.ic_pw_show_disable)
 //                }
 //            }
 //            true

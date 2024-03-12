@@ -60,14 +60,16 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         val successResultCount =
             history.filterIsInstance<ResultEntity>().filterNot { it.isFailed }.size.toString()
         val time = userInfo.totalTime.toLongOrNull()
+        val defaultNickName = "닉네임을 설정해 주세요"
 
         with(binding) {
-            tvPlayerName.text = userInfo.nickName
+            tvPlayerName.text = if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
             tvStepValue.text = userInfo.totalStep.toString() + " 걸음"
             tvDistanceValue.text = userInfo.totalDistance.convertKm()
             tvAchieveCouunt.text = "$achieveCount 개"
             tvSolveQuestValue.text = "$successResultCount 개"
             tvCalorie.text = userInfo.totalStep.convertKcal()
+
 
             when (userInfo.characterId) {
                 1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)

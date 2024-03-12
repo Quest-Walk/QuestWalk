@@ -66,6 +66,7 @@ class MyInfoViewModel(
         }
     }
 
+
     fun setUserInfo(
         userId: String,
         characterNum: Int,

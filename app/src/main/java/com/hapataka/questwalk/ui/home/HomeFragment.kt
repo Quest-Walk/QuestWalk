@@ -64,6 +64,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
+
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
@@ -268,6 +269,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun startBackgroundAnim() {
+//        val charId = viewModel.charNum.value ?: 1
+//        val movingCharacter = when(charId) {
+//            1->R.drawable.character_move_01
+//            else -> R.drawable.character_move_01
+//        }
         val imageLoader = ImageLoader.Builder(requireContext())
             .components {
                 if (SDK_INT >= 28) {
@@ -278,6 +284,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             .build()
         val requestCharacter = ImageRequest.Builder(requireContext())
+            //.data(movingCharacter)
             .data(R.drawable.character_move_01)
             .target(binding.ivChrImage)
             .build()
@@ -294,7 +301,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun endBackgroundAnim() {
+//        val charId = viewModel.charNum.value ?: 1
+//        val character = when(charId) {
+//            1 -> R.drawable.character_01
+//            else -> R.drawable.character_01
+//        }
+
         with(binding) {
+//            ivChrImage.load(character)
             ivChrImage.load(R.drawable.character_01)
             ivBgLayer1.clearAnimation()
             ivBgLayer2.clearAnimation()
@@ -430,6 +444,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             Looper.myLooper()!!
         )
     }
+
+//        private fun getUserNum() {
+//        viewModel.charNum.observe(viewLifecycleOwner) {charID ->
+//            val characterNum = when(charID) {
+//                1 -> R.drawable.character_01
+//                else -> R.drawable.character_01
+//            }
+//            binding.ivChrImage.setImageResource(characterNum)
+//        }
+//    }
 
     private fun String.showToast() {
         Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()

@@ -5,7 +5,6 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-//    id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
 
@@ -104,4 +103,8 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.1")
     implementation("androidx.camera:camera-view:1.3.1")
     implementation("androidx.camera:camera-extensions:1.3.1")
+
+    //Image Cropper
+    implementation("com.vanniktech:android-image-cropper:4.3.3")
+
 }

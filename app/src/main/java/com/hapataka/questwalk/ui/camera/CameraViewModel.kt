@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.Log
+import androidx.camera.core.ImageCapture
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,13 +16,13 @@ import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import info.debatty.java.stringsimilarity.RatcliffObershelp
+import java.io.File
+import javax.inject.Inject
+import info.debatty.java.stringsimilarity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
-import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
@@ -34,13 +35,44 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     // 카메라 Hardware 정보
     private var rotation: Float = 0F
-
+    private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     // 해당 imageFile 경로
     var file: File? = null
 
-    private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(false)
+    // Crop event
+
+    var isCropped = false
+    private var croppedBitmap: Bitmap? = null
+
+
+    private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(true)
     val isDebug: LiveData<Boolean> get() = _isDebug
+
+    fun clickedCropImageButton() {
+        isCropped = !isCropped
+    }
+
+    /**
+     *  Camera 처리 부분
+     */
+    fun toggleFlash(): Int {
+        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
+            ImageCapture.FLASH_MODE_ON
+        } else {
+            ImageCapture.FLASH_MODE_OFF
+        }
+        return flashMode
+    }
+
+    fun setCameraCharacteristics(rotate: Float) {
+        rotation = rotate
+    }
+
+    /**
+     *  Bitmap 파일 처리 부분
+     */
+
     fun setBitmap(bitmap: Bitmap) {
         //전처리 과정을 마치고 포스트??
 
@@ -51,35 +83,46 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _bitmap.postValue(postBitmap)
     }
 
+    fun setCroppedBitmap(bitmap: Bitmap?){
+        croppedBitmap = bitmap
+    }
+
     fun initBitmap() {
         _bitmap.value = null
         file = null
         resultListByMLKit.clear()
     }
 
-    fun setCameraCharacteristics(rotate: Float) {
-        rotation = rotate
+    fun deleteBitmapByFile() {
+        repository.deleteBitmap()
     }
 
 
-
     /**
-     *  google MLKit 이용
+     *  Ocr 처리(google MLKit 이용)
      */
 
     val isLoading = MutableLiveData(false)
     fun postCapturedImageWithMLKit(keyword: String) {
+
         viewModelScope.launch {
             processImage(keyword)
         }
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image = InputImage.fromBitmap(bitmap.value!!, 0)
+        val image :InputImage
+        image = if(isCropped){
+            InputImage.fromBitmap(croppedBitmap!!, 0)
+        } else{
+            InputImage.fromBitmap(bitmap.value!!, 0)
+        }
+
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-        file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
+
         try {
             isLoading.postValue(true)
+
             val result = recognizer.process(image).await()
 
             for (block in result.textBlocks) {
@@ -100,16 +143,29 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
+
+        var isValidated = false
         val similarityObj = RatcliffObershelp()
+
         resultListByMLKit.forEach { element: Element ->
             val word = element.text
             Log.d("ocrResult", word)
-            if (word.contains(keyword)) return true
-            else if (similarityObj.similarity(word, keyword) >= 0.6) return true
+            if (word.contains(keyword)) {
+                isValidated = true
+                return@forEach
+            } else if (similarityObj.similarity(word, keyword) >= 0.6) {
+                isValidated = true
+                return@forEach
+            }
             Log.d("ocrResult", similarityObj.similarity(word, keyword).toString())
         }
-
-        return false
+        if (isValidated) {
+            file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
+        } else {
+            file = null
+            repository.deleteBitmap()
+        }
+        return isValidated
     }
 
     fun failedImageDrawWithCanvasByMLKit(keyword: String) {
@@ -143,14 +199,16 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isSucceed.value = null
     }
 
+
     /**
      *  Debug
      */
-    fun setDebug(){
+    fun setDebug() {
         _isDebug.value = !_isDebug.value!!
     }
-    fun setBitmapByGallery(bitmap: Bitmap){
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
+
+    fun setBitmapByGallery(bitmap: Bitmap) {
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
     }
 }

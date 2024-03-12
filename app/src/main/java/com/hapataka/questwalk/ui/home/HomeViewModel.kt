@@ -34,6 +34,7 @@ class HomeViewModel(
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _isLoading = MutableLiveData<Boolean>(false)
     private var _isEnabledButton = MutableLiveData<Boolean>(true)
+    private var _charNum = MutableLiveData<Int>()
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val isPlay: LiveData<Boolean> get() = _isPlay
@@ -43,6 +44,8 @@ class HomeViewModel(
     val totalDistance: LiveData<Float> get() = _totalDistance
     val isLoading: LiveData<Boolean> get() = _isLoading
     val isEnabledButton: LiveData<Boolean> get() = _isEnabledButton
+
+    val charNum : LiveData<Int> get() = _charNum
 
     private var prevLocation: Location? = null
     private val filteringUseCase = QuestFilteringUseCase()
@@ -199,4 +202,15 @@ class HomeViewModel(
     fun setQuestSuccessLocation() {
         questLocation = locationHistory.last()
     }
+
+    private fun getUserCharNum() {
+        viewModelScope.launch {
+            val userId = authRepo.getCurrentUserUid()
+
+            val userInfo = userRepo.getInfo(userId)
+            _charNum.value = userInfo.characterId
+        }
+
+    }
+
 }

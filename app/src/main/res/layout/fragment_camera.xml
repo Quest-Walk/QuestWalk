@@ -10,20 +10,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/ib_back_btn"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/transparent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_camera_upper"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:elevation="1dp"
-            android:rotation="180"
-            android:scaleX="1"
-            android:scaleY="1"
-            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/ib_back_btn"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:elevation="1dp"
+                android:rotation="0"
+                android:src="@drawable/ico_camera_back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/tv_camera_quest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:elevation="1dp"
+                android:text="quest_keyword"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ib_flash"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/ib_flash"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitXY"
+                android:src="@drawable/ico_camera_flash"
+                app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
+                app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
+                app:layout_constraintTop_toTopOf="@+id/ib_back_btn"
+                app:tint="@color/white" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
             android:id="@+id/ib_capture"
@@ -33,24 +67,9 @@
             android:background="@android:color/transparent"
             android:elevation="1dp"
             android:src="@drawable/ico_camera_capture"
-            android:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_camera_quest"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:elevation="1dp"
-            android:text="quest_keyword"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ib_flash"
-            app:layout_constraintTop_toTopOf="@+id/ib_back_btn" />
 
         <androidx.camera.view.PreviewView
             android:id="@+id/pv_preview"
@@ -64,18 +83,6 @@
             app:layout_constraintTop_toTopOf="parent" >
 
         </androidx.camera.view.PreviewView>
-
-        <ImageButton
-            android:id="@+id/ib_flash"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@android:color/transparent"
-            android:scaleType="fitXY"
-            android:src="@drawable/ico_camera_flash"
-            app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
-            app:layout_constraintStart_toEndOf="@+id/ib_back_btn"
-            app:layout_constraintTop_toTopOf="@+id/ib_back_btn"
-            app:tint="@color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

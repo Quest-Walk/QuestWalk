@@ -12,14 +12,15 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class CameraRepository @Inject constructor(@ApplicationContext private val context: Context) {
+    private var file: File? = null
     fun saveBitmap(bitmap: Bitmap, filename: String): File {
-        val file = File(context.filesDir, filename)
+        file = File(context.filesDir, filename)
         val fos = FileOutputStream(file)
 
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
         fos.close()
 
-        return file
+        return file as File
     }
 
     fun resizedBitmap(image: Bitmap, maxSize: Int): Bitmap {
@@ -35,7 +36,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
             height = maxSize
             width = (height * bitmapRatio).toInt()
         }
-        return Bitmap.createScaledBitmap(image,width,height,true)
+        return Bitmap.createScaledBitmap(image, width, height, true)
     }
 
     fun toGrayScaleBitmap(bitmap: Bitmap): Bitmap {
@@ -61,5 +62,6 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 
     fun deleteBitmap() {
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
+        file?.delete()
     }
 }

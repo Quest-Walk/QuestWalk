@@ -11,7 +11,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -37,10 +39,10 @@ import kotlinx.coroutines.Runnable
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
-    private val homeViewModel : HomeViewModel by activityViewModels()
+    private val homeViewModel: HomeViewModel by activityViewModels()
+
     // 카메라 관련 변수
     private var imageCapture: ImageCapture? = null
-    private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,6 +52,82 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         setObserver()
         bindingWidgets()
     }
+
+    /**
+     *  Observer 및 ViewBinding
+     */
+
+    private fun setObserver() {
+
+        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            //캡쳐 성공시 CaptureFragment 이동
+            navController.navigate(R.id.action_frag_camera_to_frag_capture)
+        }
+        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
+            if (isSucceed == null) return@observe
+            if (!isSucceed) {
+                cameraViewModel.deleteBitmapByFile()
+            }
+        }
+    }
+
+    private fun bindingWidgets() {
+        with(binding) {
+            ibCapture.apply {
+                setOnClickListener {
+                    capturePhoto()
+                }
+                setOnTouchListener(
+                    imageButtonSetOnTouchListener(
+                        this,
+                        R.drawable.ico_camera_capture_on,
+                        R.drawable.ico_camera_capture
+                    )
+                )
+            }
+            ibFlash.setOnClickListener {
+                toggleFlash()
+            }
+            ibBackBtn.apply {
+                setOnClickListener {
+                    navController.popBackStack()
+                }
+                setOnTouchListener(
+                    imageButtonSetOnTouchListener(
+                        this,
+                        R.drawable.ico_camera_back_on,
+                        R.drawable.ico_camera_back
+                    )
+                )
+            }
+            tvCameraQuest.text = homeViewModel.currentKeyword.value
+        }
+    }
+
+    private fun imageButtonSetOnTouchListener(
+        imageButton: ImageButton,
+        actionDownRes: Int,
+        actionUpRes: Int,
+    ): View.OnTouchListener {
+        return View.OnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    imageButton.setImageResource(actionDownRes)
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    imageButton.setImageResource(actionUpRes)
+                    v.performClick()
+                }
+            }
+            true
+        }
+    }
+
+    /**
+     *  Camera Permission 등록
+     */
 
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
@@ -79,34 +157,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    /**
-     *  Observer 및 ViewBinding
-     */
-
-    private fun setObserver() {
-
-        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-            //캡쳐 성공시 CaptureFragment 이동
-            navController.navigate(R.id.action_frag_camera_to_frag_capture)
-        }
-    }
-
-    private fun bindingWidgets() {
-        with(binding) {
-            ibCapture.setOnClickListener {
-                capturePhoto()
-            }
-            ibFlash.setOnClickListener {
-                toggleFlash()
-            }
-            ibBackBtn.setOnClickListener {
-                navController.popBackStack()
-            }
-            tvCameraQuest.text = homeViewModel.currentKeyword.value
-        }
-    }
-
 
     /**
      *  카메라 기능
@@ -115,7 +165,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
         cameraProviderFuture.addListener(
             setCamera(cameraProvider),
             ContextCompat.getMainExecutor(requireContext())
@@ -132,7 +181,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
 
         imageCapture = ImageCapture.Builder()
-            .setTargetResolution(getLargestSize())
             .build()
 
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -148,21 +196,8 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     }
     //실패 했을떄, imageUri 이 null 으로 반환 해야 한다.
 
-    private fun getLargestSize(): Size {
-        val cameraManager =
-            requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val cameraId = cameraManager.cameraIdList[0] // 사용할 카메라 ID를 선택
-        val characteristics = cameraManager.getCameraCharacteristics(cameraId)
-        val configurations =
-            characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-
-        return configurations?.getOutputSizes(ImageFormat.JPEG)
-            ?.maxByOrNull { it.height * it.width } ?: Size(4000, 4000)
-    }
-
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
-
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(requireContext()),
             imageCaptureCallback()
@@ -174,7 +209,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             override fun onCaptureSuccess(image: ImageProxy) {
                 val buffer = image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining())
-
                 buffer.get(bytes)
                 val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
@@ -186,13 +220,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     }
 
 
+    //사진 촬영 할때 만 나옴
     private fun toggleFlash() {
-
-        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-            ImageCapture.FLASH_MODE_ON
-        } else {
-            ImageCapture.FLASH_MODE_OFF
-        }
+        val flashMode = cameraViewModel.toggleFlash()
         imageCapture?.flashMode = flashMode
     }
 }
