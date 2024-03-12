@@ -22,6 +22,10 @@ import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.DETAIL_TIME
+import com.hapataka.questwalk.util.extentions.convertKcal
+import com.hapataka.questwalk.util.extentions.convertKm
+import com.hapataka.questwalk.util.extentions.convertTime
 
 const val USER_ID = "user_id"
 const val QUEST_KEYWORD = "quest_keyword"
@@ -64,7 +68,6 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun setObserver() {
         with(viewModel) {
             resultItem.observe(viewLifecycleOwner) {
-                Log.i(TAG, "observ result: ${it}")
                 if (::googleMap.isInitialized) {
                     MapsInitializer.initialize(requireContext())
                     updateLocation(googleMap, it)
@@ -76,30 +79,23 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                 initImageViews(it)
             }
             completeRate.observe(viewLifecycleOwner) {
-                binding.tvCompleteRate.text = "$it"
+                binding.tvCompleteRate.text = "해결 인원 $it%"
             }
         }
     }
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            if (result.questImg != null) {
-                Log.d("ResultFragment:","Image Not Null!!!!!")
+            if (result.isFailed.not()) {
                 ivQuestImage.load(result.questImg)
-                tvAdvTime.text = result.time.toString()
-                tvAdvDistance.text = "${result.distance}"
-                tvTotalSteps.text = "${result.step}"
-                tvCalories.text = "Zero"
-                tvQuestKeyword.text = result.quest
             } else {
-                Log.d("ResultFragment:","Image Null!!!!!")
                 ivQuestImage.load(R.drawable.image_fail)
-                tvAdvTime.text = result.time.toString()
-                tvAdvDistance.text = "${result.distance}"
-                tvTotalSteps.text = "${result.step}"
-                tvCalories.text = "Zero"
-                tvQuestKeyword.text = result.quest
             }
+            tvAdvTime.text = result.time.convertTime(DETAIL_TIME)
+            tvAdvDistance.text = result.distance.convertKm()
+            tvTotalSteps.text = result.step.toString() + "걸음"
+            tvCalories.text = result.step.convertKcal()
+            tvQuestKeyword.text = result.quest
         }
     }
 

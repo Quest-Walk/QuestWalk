@@ -32,7 +32,6 @@ class ResultViewModel(
             _resultItem.value = userResults.find {
                 it.quest == keyword && it.registerAt == registerAt
             }
-            Log.d(TAG, "viewModel Result\n${resultItem.value}")
         }
     }
 

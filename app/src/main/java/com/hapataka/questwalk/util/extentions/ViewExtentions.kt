@@ -5,6 +5,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import com.hapataka.questwalk.R
+import kotlin.math.round
 
 const val SIMPLE_TIME = 0
 const val DETAIL_TIME = 1
@@ -57,4 +58,14 @@ fun Long.convertTime(code: Int): String {
 
         else -> throw IllegalArgumentException("Unknown code type")
     }
+}
+
+fun Int.convertKcal(): String {
+    val kcal = round(this * 0.06f)
+    return kcal.toString() + "Kcal"
+}
+
+fun Float.convertKm(): String {
+    val km = this / 1000.0f
+    return km.toString() + "Km"
 }
