@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.View.FOCUSABLE
 import androidx.fragment.app.viewModels
 import coil.load
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -119,6 +120,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     override fun onMapReady(p0: GoogleMap) {
         Log.i(TAG, "map ready")
         googleMap = p0
+        p0.uiSettings.isZoomControlsEnabled=true
         MapsInitializer.initialize(this.requireContext())
 //        updateLocation(googleMap, result)
     }
