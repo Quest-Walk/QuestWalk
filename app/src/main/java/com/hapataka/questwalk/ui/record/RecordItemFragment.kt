@@ -2,7 +2,6 @@ package com.hapataka.questwalk.ui.record
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -31,7 +30,7 @@ class RecordItemFragment(private val items: List<RecordItem>) :
     private val recordDetailAdapter by lazy { RecordDetailAdapter(requireContext()) }
     private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
     private val navController by lazy { (parentFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).findNavController() }
-    private val mainViewModel by activityViewModels<MainViewModel> { ViewModelFactory() }
+    private val mainViewModel by activityViewModels<MainViewModel> { ViewModelFactory(requireContext()) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,7 +98,6 @@ class RecordItemFragment(private val items: List<RecordItem>) :
             super.getItemOffsets(outRect, view, parent, state)
 
             val viewParam = view.layoutParams as GridLayoutManager.LayoutParams
-            Log.d(TAG + "RecordFragment", "view: ${view}")
 
             if (viewParam.spanSize == 1) {
                 outRect.bottom = 20.dpToPx()

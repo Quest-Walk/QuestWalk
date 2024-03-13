@@ -7,7 +7,6 @@ interface AuthRepository {
     suspend fun registerByEmailAndPw(email: String, pw: String, callback: (Task<AuthResult>) -> Unit)
     suspend fun loginByEmailAndPw(email: String, pw: String, callback: (Task<AuthResult>) -> Unit)
     suspend fun deleteCurrentUser(callback: (Task<Void>) -> Unit)
-
     suspend fun logout()
     suspend fun getCurrentUserUid(): String
 }

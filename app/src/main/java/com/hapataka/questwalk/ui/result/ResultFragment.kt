@@ -45,8 +45,6 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             keyword = it.getString(QUEST_KEYWORD)
             registerAt = it.getString(REGISTER_TIME)
         }
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

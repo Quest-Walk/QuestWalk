@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.ui.result
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +11,6 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.MapRepository
 import com.hapataka.questwalk.ui.quest.QuestData
-import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 import kotlin.math.round
 

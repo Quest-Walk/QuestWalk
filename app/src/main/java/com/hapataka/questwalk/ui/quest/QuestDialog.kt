@@ -2,18 +2,16 @@ package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.databinding.DialogQuestBinding
-import com.hapataka.questwalk.ui.home.HomeViewModel
+import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class QuestDialog(
     private val keyWord: String,
@@ -22,7 +20,7 @@ class QuestDialog(
 ): DialogFragment() {
     private val binding by lazy { DialogQuestBinding.inflate(layoutInflater) }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,9 +45,9 @@ class QuestDialog(
             }
             btnConfirm.setOnClickListener {
                 if (successKeywords.contains(keyWord)) {
-                    callback("이미 완료한 키워드입니다 다른 키워드를 선택해주세요")
+                    mainViewModel.setSnackBarMsg("이미 완료한 키워드입니다 다른 키워드를 선택해주세요")
                 } else {
-                    homeViewModel.setKeyword(keyWord)
+                    mainViewModel.setSelectKeyword(keyWord)
                     navHost.popBackStack()
                 }
                 dismiss()
@@ -59,8 +57,10 @@ class QuestDialog(
 
     private fun getDeviceSize() {
         val displayMetrics = DisplayMetrics()
+
         requireActivity().windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         val dialogWidth = (displayMetrics.widthPixels * 0.9f).toInt()
+
         dialog?.window?.apply {
             setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
             isCancelable = false

@@ -14,10 +14,10 @@ android {
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
-        targetSdk = 33
         minSdk = 26
-        versionCode = 2
-        versionName = "1.1"
+        targetSdk = 34
+        versionCode = 5
+        versionName = "1.13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
