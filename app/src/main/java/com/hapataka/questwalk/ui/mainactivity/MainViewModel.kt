@@ -43,7 +43,7 @@ class MainViewModel(
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _totalStep = MutableLiveData<Long>()
     private var _snackBarMsg = MutableLiveData<String>()
-    private var _isLoading = MutableLiveData<Boolean>()
+    private var _isLoading = MutableLiveData<Boolean>(false)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
@@ -97,6 +97,9 @@ class MainViewModel(
         if (playState == QUEST_STOP) {
             _playState.value = QUEST_START
         } else {
+            if (playState == QUEST_SUCCESS) {
+                _isLoading.value = true
+            }
             setResultHistory(callback)
             _playState.value = QUEST_STOP
         }
@@ -160,7 +163,6 @@ class MainViewModel(
             if (isFail.not()) {
                 val keyword = currentKeyword.value ?: ""
 
-                _isLoading.value = true
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)
