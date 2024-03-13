@@ -89,8 +89,6 @@
             android:id="@+id/cl_crop_layout"
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
             android:background="#4DFFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

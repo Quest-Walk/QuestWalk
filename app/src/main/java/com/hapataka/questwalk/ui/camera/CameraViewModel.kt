@@ -1,12 +1,15 @@
 package com.hapataka.questwalk.ui.camera
 
+
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.Log
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,7 +37,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
     // 카메라 Hardware 정보
-    private var rotation: Float = 0F
     private var flashMode = ImageCapture.FLASH_MODE_OFF
 
     // 해당 imageFile 경로
@@ -44,7 +46,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     var isCropped = false
     private var croppedBitmap: Bitmap? = null
-
+    private var drawBoxOnBitmap: Bitmap? = null
 
     private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(true)
     val isDebug: LiveData<Boolean> get() = _isDebug
@@ -65,30 +67,70 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         return flashMode
     }
 
-    fun setCameraCharacteristics(rotate: Float) {
-        rotation = rotate
-    }
 
     /**
      *  Bitmap 파일 처리 부분
      */
 
-    fun setBitmap(bitmap: Bitmap) {
-        //전처리 과정을 마치고 포스트??
+    fun imageProxyToBitmap(image: ImageProxy) {
 
-        val matrix = Matrix()
-        matrix.postRotate(rotation)
-        val postBitmap =
-            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        _bitmap.postValue(postBitmap)
+        val buffer = image.planes[0].buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        var bitmap: Bitmap? = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        val rotation = image.imageInfo.rotationDegrees.toFloat()
+        bitmap = rotateBitmap(bitmap, rotation)
+        setBitmap(bitmap)
+
     }
 
-    fun setCroppedBitmap(bitmap: Bitmap?) {
+    private fun setBitmap(bitmap: Bitmap?) {
+        if (bitmap == null) return
+        _bitmap.value = bitmap
+        croppedBitmap = cropBitmap(bitmap, 50)
+        drawBoxOnBitmap = drawBoxOnBitmap(bitmap, 50)
+    }
+
+
+    private fun cropBitmap(bitmap: Bitmap?, dp: Int): Bitmap? {
+        if (bitmap == null) return null
+        val offsetPx = repository.dpToPx(dp).toInt()
+
+        val x = 0
+        val y = (bitmap.height / 2) - offsetPx
+
+        val width = bitmap.width
+        val height = 2 * offsetPx
+
+        return Bitmap.createBitmap(bitmap, x, y, width, height)
+    }
+
+
+    private fun rotateBitmap(bitmap: Bitmap?, rotation: Float): Bitmap? {
         val matrix = Matrix()
         matrix.postRotate(rotation)
         val postBitmap =
-            Bitmap.createBitmap(bitmap!!, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        croppedBitmap = postBitmap
+            bitmap?.let { Bitmap.createBitmap(it, 0, 0, bitmap.width, bitmap.height, matrix, true) }
+        return postBitmap
+    }
+
+    private fun drawBoxOnBitmap(bitmap: Bitmap?, dp: Int): Bitmap? {
+        if (bitmap == null) return null
+        val drawBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(drawBitmap)
+        val paint = Paint().apply {
+            color = Color.RED
+            style = Paint.Style.STROKE
+            strokeWidth = 5f
+        }
+        val offsetPx = repository.dpToPx(dp)
+
+        val left = 0f
+        val top =  (drawBitmap.height/2) - offsetPx
+        val right = drawBitmap.width.toFloat()
+        val bottom =(drawBitmap.height/2) + offsetPx
+        canvas.drawRect(left, top, right, bottom, paint)
+        return drawBitmap
     }
 
     fun initBitmap() {
@@ -101,9 +143,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         repository.deleteBitmap()
     }
 
-    fun getCroppedBitmap(): Bitmap? {
-        return croppedBitmap
-    }
+    fun getCroppedBitmap() = croppedBitmap
+    fun getDrawBoxOnBitmap() = drawBoxOnBitmap
 
 
     /**

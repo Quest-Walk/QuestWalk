@@ -65,7 +65,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 setOnClickListener {
                     cameraViewModel.clickedCropImageButton()
                     val isCropped = cameraViewModel.isCropped
-//                    ivCapturedImage.setFixedAspectRatio(isCropped)
                     ivCapturedImage.isShowCropOverlay = isCropped
                 }
             }
@@ -110,11 +109,10 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     private fun initCapturedImage() {
 
         binding.ivCapturedImage.apply{
-//            setFixedAspectRatio(cameraViewModel.isCropped)
             isShowCropOverlay = cameraViewModel.isCropped
         }
 
-        bitmap = cameraViewModel.bitmap.value
+        bitmap = cameraViewModel.getDrawBoxOnBitmap()
         Log.i(TAG, "capture bitmap: $bitmap")
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
