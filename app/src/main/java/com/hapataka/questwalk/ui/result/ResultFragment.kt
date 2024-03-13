@@ -117,7 +117,6 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     }
 
     override fun onMapReady(p0: GoogleMap) {
-        Log.i(TAG, "map ready")
         googleMap = p0
         MapsInitializer.initialize(this.requireContext())
 //        updateLocation(googleMap, result)

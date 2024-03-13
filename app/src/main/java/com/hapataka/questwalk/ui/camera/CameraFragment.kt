@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
@@ -85,6 +86,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     }
                     .show()
             }
+
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
                     .setAction("확인") {
@@ -92,6 +94,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     }
                     .show()
             }
+
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
                 Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
                     .setAction("확인") {
@@ -99,6 +102,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     }
                     .show()
             }
+
             else -> {
                 Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
                     .setAction("권한 설정") {
@@ -152,36 +156,35 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initViews() {
         with(binding) {
-            ibCapture.apply {
+            btnCapture.apply {
                 setOnClickListener {
                     capturePhoto()
                 }
-                setOnTouchListener(
-                    imageButtonSetOnTouchListener(
-                        this,
-                        R.drawable.ico_camera_capture_on,
-                        R.drawable.ico_camera_capture
-                    )
-                )
+                setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        this.load(R.drawable.btn_capture_click)
+                        return@setOnTouchListener true
+                    }
+
+                    if (event.action == MotionEvent.ACTION_UP) {
+                        this.load(R.drawable.btn_capture)
+                        return@setOnTouchListener true
+                    }
+
+                    return@setOnTouchListener true
+                }
+
             }
-            ibFlash.setOnClickListener {
+            btnFlash.setOnClickListener {
                 toggleFlash()
             }
-            ibBackBtn.apply {
-                setOnClickListener {
-                    navController.popBackStack()
-                }
-                setOnTouchListener(
-                    imageButtonSetOnTouchListener(
-                        this,
-                        R.drawable.ico_camera_back_on,
-                        R.drawable.ico_camera_back
-                    )
-                )
+            btnBack.setOnClickListener {
+                navController.popBackStack()
             }
-            tvCameraQuest.text = homeViewModel.currentKeyword.value
+//            tvCameraQuest.text = homeViewModel.currentKeyword.value
         }
     }
 
@@ -257,7 +260,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-                mainViewModel.setCaptureImage(image)
+                mainViewModel.setCaptureImage(image) {
+                    navController.popBackStack()
+                }
                 image.close()
             }
         }
