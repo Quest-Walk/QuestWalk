@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -70,6 +71,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
+    private lateinit var stepSensorPermission: ActivityResultLauncher<Array<String>>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,6 +113,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+
+        stepSensorPermission = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACTIVITY_RECOGNITION, false) -> {
+                    // Precise location access granted.
+                }
+
+                else -> {
+                    // No location access granted.
+                }
+            }
+        }
+
+        //권한 요청
+        stepSensorPermission.launch(
+            arrayOf(
+                Manifest.permission.ACTIVITY_RECOGNITION
             )
         )
     }
@@ -376,6 +399,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         return object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 val sensor = event!!.sensor
+                Log.d("sensor", "step detect")
 
                 if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
                     viewModel.updateStep()
