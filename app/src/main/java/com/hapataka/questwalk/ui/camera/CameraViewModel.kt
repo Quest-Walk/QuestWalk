@@ -95,7 +95,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private fun cropBitmap(bitmap: Bitmap?, dp: Int): Bitmap? {
         if (bitmap == null) return null
         val offsetPx = repository.dpToPx(dp).toInt()
-
         val x = 0
         val y = (bitmap.height / 2) - offsetPx
 
@@ -126,9 +125,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val offsetPx = repository.dpToPx(dp)
 
         val left = 0f
-        val top =  (drawBitmap.height/2) - offsetPx
+        val top = (drawBitmap.height / 2) - offsetPx
         val right = drawBitmap.width.toFloat()
-        val bottom =(drawBitmap.height/2) + offsetPx
+        val bottom = (drawBitmap.height / 2) + offsetPx
         canvas.drawRect(left, top, right, bottom, paint)
         return drawBitmap
     }
@@ -255,8 +254,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isDebug.value = !_isDebug.value!!
     }
 
-    fun setBitmapByGallery(bitmap: Bitmap) {
+    fun setBitmapByGallery(bitmap: Bitmap?) {
+        if (bitmap == null) return
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
+        drawBoxOnBitmap = drawBoxOnBitmap(mutableBitmap, 50)
+        croppedBitmap = cropBitmap(mutableBitmap,50)
+
     }
 }

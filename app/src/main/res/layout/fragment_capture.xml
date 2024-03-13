@@ -10,10 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.canhub.cropper.CropImageView
+        <ImageView
             android:id="@+id/iv_captured_image"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:cropScaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@+id/cl_check_ocr"
@@ -21,10 +22,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_cropped_image"
-            app:srcCompat="@drawable/ic_dummy1">
+            app:srcCompat="@drawable/ic_dummy1"/>
 
-
-        </com.canhub.cropper.CropImageView>
 
         <ImageButton
             android:id="@+id/ib_back_btn"
