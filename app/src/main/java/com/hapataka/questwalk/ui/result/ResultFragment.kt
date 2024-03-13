@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.result
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.viewModels
 import coil.load
@@ -26,6 +27,7 @@ import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
+
 
 const val USER_ID = "user_id"
 const val QUEST_KEYWORD = "quest_keyword"
@@ -119,6 +121,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     override fun onMapReady(p0: GoogleMap) {
         Log.i(TAG, "map ready")
         googleMap = p0
+        p0.uiSettings.isZoomControlsEnabled=true
         MapsInitializer.initialize(this.requireContext())
 //        updateLocation(googleMap, result)
     }
@@ -128,13 +131,15 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         var preLocation: Pair<Float, Float>? = null
         val resultLati = result.locations?.map { it.first } ?: listOf()
         val resultLongi = result.locations?.map { it.second } ?: listOf()
-        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
-            LatLngBounds(
-                LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
-                LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
-            ), 100
-        )
-        p0.animateCamera(cameraUpdate)
+        if (resultLati.any() && resultLongi.any()){
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
+                LatLngBounds(
+                    LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
+                    LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
+                ), 100
+            )
+            p0.animateCamera(cameraUpdate)
+        }
 
         for (location in resultLati.zip(resultLongi)) {
             Log.d(TAG + "위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
