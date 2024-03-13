@@ -124,7 +124,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                         putString(REGISTER_TIME, currentTime)
                     }
                 }
-                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
+                navController.navigate(R.id.action_frag_home_to_frag_result, bundle )
             }
         }
     }
