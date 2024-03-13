@@ -33,6 +33,9 @@ import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
 import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
@@ -113,7 +116,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
             mainViewModel.togglePlay {
-                navController.navigate(R.id.action_frag_home_to_frag_result)
+                val bundle = Bundle()
+                mainViewModel.moveToResult { uid, currentTime ->
+                    bundle.apply {
+                        putString(USER_ID, uid)
+                        putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+                        putString(REGISTER_TIME, currentTime)
+                    }
+                }
+                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
             }
         }
     }
@@ -132,22 +143,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             totalStep.observe(viewLifecycleOwner) { step ->
                 binding.tvQuestPlaying.text = "${step}걸음"
             }
-
-            isLoading.observe(viewLifecycleOwner) { isLoading ->
-                if (isLoading) {
-                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
-                } else {
-                    val loadingFragment =
-                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
-                    loadingFragment?.dismiss()
-                }
-            }
         }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
             }
-            playState.observe(viewLifecycleOwner) {state ->
+            playState.observe(viewLifecycleOwner) { state ->
                 toggleViews(state)
                 Log.i(TAG, "playstate: $state")
 //                toggleLocation(it)
@@ -157,6 +158,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = it.convertKm()
+            }
+            isLoading.observe(viewLifecycleOwner) { isLoading ->
+                if (isLoading) {
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
+                } else {
+                    val loadingFragment =
+                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
+                }
             }
         }
     }
