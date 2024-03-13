@@ -6,6 +6,8 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
+import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
+import com.hapataka.questwalk.domain.repository.MapRepository
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
@@ -20,6 +22,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
         val questRepo = QuestStackRepositoryImpl()
         val achieveRepo = AuthRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
+        val mapRepo = GoogleMapRepositoryImpl()
 
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(authRepo, userRepo, questRepo, achieveRepo) as T
@@ -42,7 +45,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
-            return ResultViewModel(userRepo, questRepo) as T
+            return ResultViewModel(userRepo, questRepo, mapRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")

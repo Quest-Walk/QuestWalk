@@ -2,7 +2,6 @@ package com.hapataka.questwalk.ui.result
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import coil.load
@@ -13,13 +12,14 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.quest.QuestData
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
@@ -31,14 +31,12 @@ const val USER_ID = "user_id"
 const val QUEST_KEYWORD = "quest_keyword"
 const val REGISTER_TIME = "register_time"
 
-class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate),
-    OnMapReadyCallback {
+class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate){
     private val viewModel: ResultViewModel by viewModels { ViewModelFactory() }
     private var userId: String? = null
     private var keyword: String? = null
     private var registerAt: String? = null
-    private lateinit var googleMap: GoogleMap
-//    private lateinit var result: HistoryEntity.ResultEntity
+    private val mapRepo by lazy { GoogleMapRepositoryImpl() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +46,13 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             registerAt = it.getString(REGISTER_TIME)
         }
 
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.fragMap.onCreate(savedInstanceState)
-        binding.fragMap.getMapAsync(this)
+        binding.fragMap.getMapAsync(mapRepo)
 
         getInfo()
         setObserver()
@@ -68,12 +67,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun setObserver() {
         with(viewModel) {
             resultItem.observe(viewLifecycleOwner) {
-                if (::googleMap.isInitialized) {
-                    MapsInitializer.initialize(requireContext())
-                    updateLocation(googleMap, it)
-                }
                 initViews(it)
-                viewModel.getQuestByKeyword(it.quest)
             }
             questItem.observe(viewLifecycleOwner) {
                 initImageViews(it)
@@ -113,51 +107,6 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             imageList[index].load(successItem.imageUrl) {
                 crossfade(true)
             }
-        }
-    }
-
-    override fun onMapReady(p0: GoogleMap) {
-        Log.i(TAG, "map ready")
-        googleMap = p0
-        MapsInitializer.initialize(this.requireContext())
-//        updateLocation(googleMap, result)
-    }
-
-    private fun updateLocation(p0: GoogleMap, result: HistoryEntity.ResultEntity) {
-        Log.d("check", result.toString())
-        var preLocation: Pair<Float, Float>? = null
-        val resultLati = result.locations?.map { it.first } ?: listOf()
-        val resultLongi = result.locations?.map { it.second } ?: listOf()
-        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
-            LatLngBounds(
-                LatLng(resultLati.minOf { it }.toDouble(), resultLongi.minOf { it }.toDouble()),
-                LatLng(resultLati.maxOf { it }.toDouble(), resultLongi.maxOf { it }.toDouble()),
-            ), 100
-        )
-        p0.animateCamera(cameraUpdate)
-
-        for (location in resultLati.zip(resultLongi)) {
-            Log.d(TAG + "위치정보", "위도: ${location.first.toDouble()} 경도: ${location.second.toDouble()}")
-            if (preLocation != null) {
-                Log.d(
-                    TAG + "check",
-                    "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}"
-                )
-                var polyline = p0.addPolyline(
-                    PolylineOptions()
-                        .clickable(true)
-                        .add(
-                            LatLng(preLocation!!.first.toDouble(), preLocation!!.second.toDouble()),
-                            LatLng(location.first.toDouble(), location.second.toDouble())
-                        )
-                )
-                polyline.width = 15.0F
-                polyline.color = Color.rgb(122, 94, 200)
-                polyline.jointType = JointType.ROUND
-                polyline.startCap = RoundCap()
-                polyline.endCap = RoundCap()
-            }
-            preLocation = location
         }
     }
 }
