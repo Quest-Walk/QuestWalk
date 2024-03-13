@@ -25,9 +25,13 @@ class MainViewModel(
 ) : ViewModel() {
     private var _currentUserId = MutableLiveData<String>()
     private var _imageBitmap = MutableLiveData<Bitmap>()
-    private var resultElement: List<String> = listOf()
+    private var _isPlay = MutableLiveData(false)
+    val isPlay: LiveData<Boolean> get() = _isPlay
     val currentUserId: LiveData<String> get() = _currentUserId
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
+
+    private var resultElement: List<String> = listOf()
+
 
     fun moveToResult(callback: (string: String) -> Unit) {
         viewModelScope.launch {
@@ -111,7 +115,6 @@ class MainViewModel(
 //        _bitmap.value = tempBitmap
 //        initIsSucceed()
 //    }
-
 
 
 }

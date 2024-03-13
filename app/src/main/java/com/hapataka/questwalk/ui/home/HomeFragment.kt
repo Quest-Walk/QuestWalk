@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.ui.home
 
-import android.Manifest
 import android.content.Context
 import android.content.res.ColorStateList
 import android.hardware.Sensor
@@ -16,8 +15,6 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -29,8 +26,6 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
@@ -52,6 +47,9 @@ import com.hapataka.questwalk.util.extentions.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+const val STOP_POSITION = 0
+const val ANIM_POSITION = 1
+
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
@@ -63,53 +61,38 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
+//    private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-        setObserver()
-        getItems()
+        initViews()
+        setup()
     }
 
-    private fun initView() {
+    override fun onResume() {
+        super.onResume()
+        viewModel.checkCurrentTime()
+    }
+
+    private fun initViews() {
         initBackground()
         initNaviButtons()
         initQuestButton()
+//        checkPermission()
+    }
+
+    private fun setup() {
+        setObserver()
         initBackPressedCallback()
-        checkPermission()
-//        setLocationClient()
     }
 
-    private fun checkPermission() {
-        locationPermission = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            when {
-                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    // Precise location access granted.
-                }
-
-                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    // Only approximate location access granted.
-                }
-
-                else -> {
-                    // No location access granted.
-                }
-            }
+    private fun initBackground() {
+        with(binding) {
+            ivBgLayer1.load(R.drawable.background_day_layer1)
+            setBackgroundPosition(STOP_POSITION)
         }
-
-        //권한 요청
-        locationPermission.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        )
     }
+
 
 
     private fun setObserver() {
@@ -121,11 +104,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 toggleViews(it)
                 toggleLocation(it)
             }
-//            isEnabledButton.observe(viewLifecycleOwner) {
-//                binding.btnToggleQuestState.isEnabled = it
-//            }
             durationTime.observe(viewLifecycleOwner) {
-//                binding.btnToggleQuestState.isEnabled = it !in 1L..20L
                 binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
             }
             isNight.observe(viewLifecycleOwner) { night ->
@@ -169,20 +148,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun getItems() {
-        viewModel.checkCurrentTime()
-//        viewModel.getRandomKeyword()
-    }
-
-    private fun initBackground() {
-        with(binding) {
-            ivBgLayer1.load(R.drawable.background_day_layer1)
-            ivBgLayer1.translationX = 2115f
-            ivBgLayer2.translationX = -2800f
-            ivBgLayer3.translationX = 2115f
-        }
-    }
-
     private fun initNaviButtons() {
         with(binding) {
             btnRecord.setOnClickListener {
@@ -205,11 +170,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            val currentTime = binding.tvQuestTime.text.toString().substring(3).toLong()
-            val toggleQuestState = binding.btnToggleQuestState.text
-            if (currentTime in 0L..15L && toggleQuestState == "포기하기") {
-                showHomeDialog()
-            } else {
+//            val toggleQuestState = binding.btnToggleQuestState.text
+//            if (currentTime in 0L..15L && toggleQuestState == "포기하기") {
+//                showHomeDialog()
+//            } else {
                 viewModel.toggleIsPlay { uid, keyword, registerAt ->
                     val bundle = Bundle().apply {
                         putString(USER_ID, uid)
@@ -219,7 +183,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
 //                    finishLocationClient()
 //                viewModel.updateUserInfo()
-                }
+//                }
             }
         }
     }
@@ -285,10 +249,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             .build()
 
         imageLoader.enqueue(requestCharacter)
+        setBackgroundPosition(ANIM_POSITION)
         with(binding) {
-            ivBgLayer1.translationX = 0f
-            ivBgLayer2.translationX = 0f
-            ivBgLayer3.translationX = 0f
             ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
             ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
             ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
@@ -308,6 +270,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             ivBgLayer1.clearAnimation()
             ivBgLayer2.clearAnimation()
             ivBgLayer3.clearAnimation()
+            setBackgroundPosition(STOP_POSITION)
             ivBgLayer1.translationX = 2115f
             ivBgLayer2.translationX = -2800f
             ivBgLayer3.translationX = 2115f
@@ -400,66 +363,58 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-//    private fun setLocationClient() {
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
-//    }
-
-//    private fun updateLocation() {
-//        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
-//
-//        locationCallback = object : LocationCallback() {
-//            //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
-//            override fun onLocationResult(locationResult: LocationResult) {
-//                viewModel.updateLocation(locationResult)
-//            }
-//        }
-//        requestLocationClient(locationRequest)
-//    }
-
-//    private fun finishLocationClient() {
-//        fusedLocationClient.removeLocationUpdates(locationCallback)
-//    }
-
-//    private fun requestLocationClient(locationRequest: LocationRequest) {
-//        //권한 처리
-//        if (ActivityCompat.checkSelfPermission(
-//                this.requireContext(),
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                this.requireContext(),
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            return
-//        }
-//
-//        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
-//
-//        locationCallback = object : LocationCallback() {
-//            //1초에 한번씩 변경된 위치 정보가 onLocationResult 으로 전달된다.
-//            override fun onLocationResult(locationResult: LocationResult) {
-//                viewModel.updateLocation(locationResult)
-//            }
-//        }
-//
-//        fusedLocationClient.requestLocationUpdates(
-//            locationRequest,
-//            locationCallback,
-//            Looper.myLooper()!!
-//        )
-//    }
-
-//        private fun getUserNum() {
-//        viewModel.charNum.observe(viewLifecycleOwner) {charID ->
-//            val characterNum = when(charID) {
-//                1 -> R.drawable.character_01
-//                else -> R.drawable.character_01
-//            }
-//            binding.ivChrImage.setImageResource(characterNum)
-//        }
-//    }
-
     private fun String.showToast() {
         Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()
     }
+
+    private fun setBackgroundPosition(positionState: Int) {
+        with(binding) {
+            when(positionState) {
+                STOP_POSITION ->{
+                    ivBgLayer1.translationX = 2115f
+                    ivBgLayer2.translationX = -2800f
+                    ivBgLayer3.translationX = 2115f
+                }
+                ANIM_POSITION -> {
+                    ivBgLayer1.translationX = 0f
+                    ivBgLayer2.translationX = 0f
+                    ivBgLayer3.translationX = 0f
+                }
+            }
+        }
+    }
+
+
+
+
+
+    //    private fun checkPermission() {
+//        locationPermission = registerForActivityResult(
+//            ActivityResultContracts.RequestMultiplePermissions()
+//        ) { permissions ->
+//            when {
+//                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+//                    // Precise location access granted.
+//                }
+//
+//                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+//                    // Only approximate location access granted.
+//                }
+//
+//                else -> {
+//                    // No location access granted.
+//                }
+//            }
+//        }
+//
+//        //권한 요청
+//        locationPermission.launch(
+//            arrayOf(
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            )
+//        )
+//    }
+
+
 }

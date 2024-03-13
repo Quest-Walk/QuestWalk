@@ -28,7 +28,7 @@ class HomeViewModel(
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     private var _isPlay = MutableLiveData(false)
-    private var _durationTime = MutableLiveData<Long>(0)
+    private var _durationTime = MutableLiveData<Long>(-1)
     private var _isNight = MutableLiveData(false)
     private var _totalStep = MutableLiveData<Long>()
     private var _totalDistance = MutableLiveData<Float>(0.0F)
@@ -54,13 +54,15 @@ class HomeViewModel(
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
 
-    var time = LocalTime.now().hour
+    private var time = -1
 
     init {
         getRandomKeyword()
     }
 
     fun checkCurrentTime() {
+        time = LocalTime.now().hour
+
         when (time) {
             in 7..18 -> _isNight.value = false
             else -> _isNight.value = true

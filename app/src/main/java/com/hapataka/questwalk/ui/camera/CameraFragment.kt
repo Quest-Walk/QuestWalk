@@ -77,23 +77,60 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             return
         }
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
-                .setAction("확인") {
-                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-                .show()
-        } else {
-            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
-                .setAction("권한 설정") {
-                    isComingFromSettings = true
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", requireActivity().packageName, null)
+        when {
+            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+                    .setAction("확인") {
+                        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
-                    startActivity(intent)
-                }
-                .show()
+                    .show()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+                    .setAction("확인") {
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                    .show()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
+                Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+                    .setAction("확인") {
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
+                    .setAction("권한 설정") {
+                        isComingFromSettings = true
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", requireActivity().packageName, null)
+                        }
+                        startActivity(intent)
+                    }
+                    .show()
+            }
+
         }
+//        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+//            Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+//                .setAction("확인") {
+//                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+//                }
+//                .show()
+//        } else {
+//            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
+//                .setAction("권한 설정") {
+//                    isComingFromSettings = true
+//                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+//                        data = Uri.fromParts("package", requireActivity().packageName, null)
+//                    }
+//                    startActivity(intent)
+//                }
+//                .show()
+//        }
+//
+
     }
 
     private fun setObserver() {

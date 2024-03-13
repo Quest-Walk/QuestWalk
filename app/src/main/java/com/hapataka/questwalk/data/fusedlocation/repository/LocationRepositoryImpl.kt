@@ -19,6 +19,7 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
     }
     private lateinit var locationCallback: LocationCallback
     private var prevLocation: Location? = null
+
     @SuppressLint("MissingPermission")
     override fun startRequest(callback: (LocationEntity) -> Unit) {
         object : LocationCallback() {
