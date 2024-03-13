@@ -12,7 +12,7 @@ sealed class HistoryEntity(open val registerAt: String = "") {
         @JvmField
         val isFailed: Boolean = false,
         val locations: List<Pair<Float,Float>>?,
-        val questLocation: Pair<Float, Float>? = null,
+        val questLocation: Pair<Float,Float>? = null,
         val questImg: String? = null,
         val type: String = RESULT_TYPE
     ) : HistoryEntity(registerAt)

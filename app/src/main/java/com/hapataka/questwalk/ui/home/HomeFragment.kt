@@ -26,15 +26,13 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
-import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.mainactivity.QUEST_START
+import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
+import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
 import com.hapataka.questwalk.ui.record.TAG
-import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
-import com.hapataka.questwalk.ui.result.REGISTER_TIME
-import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
@@ -53,7 +51,6 @@ const val ANIM_POSITION = 1
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
-    private val cameraViewModel: CameraViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
 
@@ -93,61 +90,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-
-
-    private fun setObserver() {
-        with(viewModel) {
-            currentKeyword.observe(viewLifecycleOwner) {
-                binding.tvQuestKeyword.text = it
-            }
-            isPlay.observe(viewLifecycleOwner) {
-                toggleViews(it)
-                toggleLocation(it)
-            }
-            durationTime.observe(viewLifecycleOwner) {
-                binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
-            }
-            isNight.observe(viewLifecycleOwner) { night ->
-                if (night) {
-                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
-                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
-                } else {
-                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
-                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
-                }
-            }
-            totalStep.observe(viewLifecycleOwner) { step ->
-                binding.tvQuestPlaying.text = "${step}걸음"
-            }
-            totalDistance.observe(viewLifecycleOwner) {
-                binding.tvQuestDistance.text = it.convertKm()
-            }
-            isLoading.observe(viewLifecycleOwner) { isLoading ->
-                if (isLoading) {
-                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
-                } else {
-                    val loadingFragment =
-                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
-                    loadingFragment?.dismiss()
-                }
-            }
-        }
-
-        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            if (isSucceed == null) return@observe
-            if (isSucceed) {
-                Snackbar.make(requireView(), "퀘스트 성공!", Snackbar.LENGTH_SHORT).show()
-
-                cameraViewModel.initIsSucceed()
-                with(binding) {
-                    setBackgroundWidget(btnToggleQuestState, R.color.green)
-                    btnToggleQuestState.text = "완료하기"
-                }
-                viewModel.setQuestSuccessLocation()
-            }
-        }
-    }
-
     private fun initNaviButtons() {
         with(binding) {
             btnRecord.setOnClickListener {
@@ -170,20 +112,51 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-//            val toggleQuestState = binding.btnToggleQuestState.text
-//            if (currentTime in 0L..15L && toggleQuestState == "포기하기") {
-//                showHomeDialog()
-//            } else {
-                viewModel.toggleIsPlay { uid, keyword, registerAt ->
-                    val bundle = Bundle().apply {
-                        putString(USER_ID, uid)
-                        putString(QUEST_KEYWORD, keyword)
-                        putString(REGISTER_TIME, registerAt)
-                    }
-                    navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-//                    finishLocationClient()
-//                viewModel.updateUserInfo()
-//                }
+            mainViewModel.togglePlay {
+                navController.navigate(R.id.action_frag_home_to_frag_result)
+            }
+        }
+    }
+
+    private fun setObserver() {
+        with(viewModel) {
+            isNight.observe(viewLifecycleOwner) { night ->
+                if (night) {
+                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
+                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
+                } else {
+                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
+                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
+                }
+            }
+            totalStep.observe(viewLifecycleOwner) { step ->
+                binding.tvQuestPlaying.text = "${step}걸음"
+            }
+
+            isLoading.observe(viewLifecycleOwner) { isLoading ->
+                if (isLoading) {
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
+                } else {
+                    val loadingFragment =
+                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
+                }
+            }
+        }
+        with(mainViewModel) {
+            currentKeyword.observe(viewLifecycleOwner) {
+                binding.tvQuestKeyword.text = it
+            }
+            playState.observe(viewLifecycleOwner) {state ->
+                toggleViews(state)
+                Log.i(TAG, "playstate: $state")
+//                toggleLocation(it)
+            }
+            durationTime.observe(viewLifecycleOwner) {
+                binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
+            }
+            totalDistance.observe(viewLifecycleOwner) {
+                binding.tvQuestDistance.text = it.convertKm()
             }
         }
     }
@@ -195,17 +168,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         dialog.show(parentFragmentManager, "HomeDialog")
     }
 
-    private fun toggleViews(isPlay: Boolean) {
+    private fun toggleViews(isPlay: Int) {
         with(binding) {
-            if (isPlay) {
-                ibCamera.visible()
-                llPlayingContents.visible()
-                tvQuestChange.invisible()
-                btnToggleQuestState.text = "포기하기"
-                setBackgroundWidget(btnToggleQuestState, R.color.red)
-                startBackgroundAnim()
-                btnQuestChange.isEnabled = false
-            } else {
+            if (isPlay == QUEST_STOP) {
                 ibCamera.gone()
                 llPlayingContents.gone()
                 tvQuestChange.visible()
@@ -213,6 +178,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 setBackgroundWidget(btnToggleQuestState, R.color.button)
                 endBackgroundAnim()
                 btnQuestChange.isEnabled = true
+                return
+            }
+
+            if (isPlay == QUEST_START) {
+                ibCamera.visible()
+                llPlayingContents.visible()
+                tvQuestChange.invisible()
+                btnToggleQuestState.text = "포기하기"
+                setBackgroundWidget(btnToggleQuestState, R.color.red)
+                startBackgroundAnim()
+                btnQuestChange.isEnabled = false
+                return
+            }
+
+            if (isPlay == QUEST_SUCCESS) {
+                ibCamera.visible()
+                llPlayingContents.visible()
+                tvQuestChange.invisible()
+                btnToggleQuestState.text = "완료하기"
+                setBackgroundWidget(btnToggleQuestState, R.color.green)
+                startBackgroundAnim()
+                btnQuestChange.isEnabled = false
+                mainViewModel.setSnackBarMsg("퀘스트 성공!")
+                return
             }
         }
     }
@@ -220,7 +209,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private fun toggleLocation(isPlay: Boolean) {
         if (isPlay) {
 //            updateLocation()
-            mainViewModel.location()
             initStepSensor()
         } else {
             sensorManager.unregisterListener(sensorListener, stepSensor)
@@ -334,7 +322,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val sensorListener by lazy {
         object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
-                Log.i(TAG, "event: $event")
                 val sensor = event!!.sensor
 
                 if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
@@ -369,12 +356,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun setBackgroundPosition(positionState: Int) {
         with(binding) {
-            when(positionState) {
-                STOP_POSITION ->{
+            when (positionState) {
+                STOP_POSITION -> {
                     ivBgLayer1.translationX = 2115f
                     ivBgLayer2.translationX = -2800f
                     ivBgLayer3.translationX = 2115f
                 }
+
                 ANIM_POSITION -> {
                     ivBgLayer1.translationX = 0f
                     ivBgLayer2.translationX = 0f
@@ -383,9 +371,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
         }
     }
-
-
-
 
 
     //    private fun checkPermission() {
@@ -415,6 +400,4 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 //            )
 //        )
 //    }
-
-
 }

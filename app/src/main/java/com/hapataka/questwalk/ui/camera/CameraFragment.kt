@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
@@ -28,10 +29,11 @@ import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
-import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Runnable
 
@@ -41,7 +43,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
-    private val homeViewModel: HomeViewModel by activityViewModels()
     private var imageCapture: ImageCapture? = null
     private var isComingFromSettings = false
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
@@ -77,111 +78,66 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             return
         }
 
-        when {
-            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
-                    .setAction("확인") {
-                        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
+                .setAction("확인") {
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
+                .show()
+        } else {
+            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
+                .setAction("권한 설정") {
+                    isComingFromSettings = true
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", requireActivity().packageName, null)
                     }
-                    .show()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
-                    .setAction("확인") {
-                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    }
-                    .show()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-                Snackbar.make(requireView(), "위치정보 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
-                    .setAction("확인") {
-                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    }
-                    .show()
-            }
-            else -> {
-                Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
-                    .setAction("권한 설정") {
-                        isComingFromSettings = true
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", requireActivity().packageName, null)
-                        }
-                        startActivity(intent)
-                    }
-                    .show()
-            }
-
+                    startActivity(intent)
+                }
+                .show()
         }
-//        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-//            Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
-//                .setAction("확인") {
-//                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-//                }
-//                .show()
-//        } else {
-//            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
-//                .setAction("권한 설정") {
-//                    isComingFromSettings = true
-//                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-//                        data = Uri.fromParts("package", requireActivity().packageName, null)
-//                    }
-//                    startActivity(intent)
-//                }
-//                .show()
-//        }
-//
+
 
     }
 
     private fun setObserver() {
-        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-            //캡쳐 성공시 CaptureFragment 이동
-            navController.navigate(R.id.action_frag_camera_to_frag_capture)
-        }
-        cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            if (isSucceed == null) return@observe
-            if (!isSucceed) {
-                cameraViewModel.deleteBitmapByFile()
-            }
-        }
         with(mainViewModel) {
             imageBitmap.observe(viewLifecycleOwner) {
-                binding.ivTest.load(it)
+                Log.d(TAG, "bitmap: $it")
+                with(binding.ivCapturedImage) {
+                    load(it)
+                    visible()
+                }
             }
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initViews() {
         with(binding) {
-            ibCapture.apply {
+            btnCapture.apply {
                 setOnClickListener {
                     capturePhoto()
                 }
-                setOnTouchListener(
-                    imageButtonSetOnTouchListener(
-                        this,
-                        R.drawable.ico_camera_capture_on,
-                        R.drawable.ico_camera_capture
-                    )
-                )
+                setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        this.load(R.drawable.btn_capture_click)
+                        return@setOnTouchListener false
+                    }
+
+                    if (event.action == MotionEvent.ACTION_UP) {
+                        this.load(R.drawable.btn_capture)
+                        return@setOnTouchListener false
+                    }
+                    return@setOnTouchListener false
+                }
             }
-            ibFlash.setOnClickListener {
+            btnFlash.setOnClickListener {
                 toggleFlash()
             }
-            ibBackBtn.apply {
-                setOnClickListener {
-                    navController.popBackStack()
-                }
-                setOnTouchListener(
-                    imageButtonSetOnTouchListener(
-                        this,
-                        R.drawable.ico_camera_back_on,
-                        R.drawable.ico_camera_back
-                    )
-                )
+            btnBack.setOnClickListener {
+                navController.popBackStack()
             }
-            tvCameraQuest.text = homeViewModel.currentKeyword.value
+//            tvCameraQuest.text = homeViewModel.currentKeyword.value
         }
     }
 
@@ -257,7 +213,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-                mainViewModel.setCaptureImage(image)
+                mainViewModel.setCaptureImage(image) {
+                    navController.popBackStack()
+                }
                 image.close()
             }
         }

@@ -1,7 +1,6 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -17,7 +16,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private lateinit var questListAdapter: QuestListAdapter
     private val questViewModel: QuestViewModel by viewModels()
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private var successKeywords: MutableList<String> = mutableListOf()
+    private var keywords: MutableList<String> = mutableListOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,25 +25,27 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     }
 
     private fun setObserve() {
-        questViewModel.questItems.observe(viewLifecycleOwner) {
-            questListAdapter.submitList(it)
-        }
-        questViewModel.allUserSize.observe(viewLifecycleOwner) {
-            questListAdapter.setAllUser(it)
-        }
-        questViewModel.successKeywords.observe(viewLifecycleOwner) {
-            successKeywords = it
+        with(questViewModel) {
+            questItems.observe(viewLifecycleOwner) {
+                questListAdapter.submitList(it)
+            }
+            allUserSize.observe(viewLifecycleOwner) {
+                questListAdapter.setAllUser(it)
+            }
+            successKeywords.observe(viewLifecycleOwner) {
+                keywords = it
+            }
         }
     }
 
     private fun initViews() {
-        initArrowBack()
+        initBackButton()
         initSpinner()
         initCompleteButton()
         initQuestRecyclerView()
     }
 
-    private fun initArrowBack() {
+    private fun initBackButton() {
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
         }
@@ -80,7 +81,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             },
 
             onClickView =  {keyWord ->
-                val dialog = QuestDialog(keyWord, successKeywords) {
+                val dialog = QuestDialog(keyWord, keywords) {
                     Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
                 }
 

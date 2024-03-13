@@ -3,6 +3,7 @@ package com.hapataka.questwalk.util
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
@@ -10,6 +11,7 @@ import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
+import com.hapataka.questwalk.ui.mainactivity.ImageUtil
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.MyInfoViewModel
 import com.hapataka.questwalk.ui.record.RecordViewModel
@@ -17,8 +19,10 @@ import com.hapataka.questwalk.ui.result.ResultViewModel
 
 class ViewModelFactory() : ViewModelProvider.Factory {
     private lateinit var locationRepo: LocationRepositoryImpl
+    private lateinit var imageUtil: ImageUtil
     constructor(context: Context) : this() {
         this.locationRepo = LocationRepositoryImpl(context)
+        this.imageUtil = ImageUtil(context)
     }
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val authRepo = AuthRepositoryImpl()
@@ -26,10 +30,11 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val questRepo = QuestStackRepositoryImpl()
         val achieveRepo = AuthRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
+        val ocrRepo = OcrRepositoryImpl()
 
 
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(authRepo, userRepo, questRepo, achieveRepo, locationRepo) as T
+            return MainViewModel(authRepo, userRepo, questRepo, achieveRepo, imageRepo, ocrRepo, locationRepo, imageUtil) as T
         }
 
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
