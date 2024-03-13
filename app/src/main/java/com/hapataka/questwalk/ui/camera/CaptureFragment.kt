@@ -41,6 +41,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         setObserver()
         initDebug()
         with(binding) {
+            ivCroppedImage.setImageBitmap(cameraViewModel.getCroppedBitmap())
             btnAttach.setOnClickListener {
                 if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
                     keyword = etKeywordDebug.text.toString()
@@ -50,7 +51,6 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 }
                 hideKeyboard()
 
-                cameraViewModel.setCroppedBitmap(ivCapturedImage.croppedImage)
                 cameraViewModel.postCapturedImageWithMLKit(keyword)
 
             }
