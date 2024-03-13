@@ -6,6 +6,8 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -21,7 +23,7 @@ class CameraHandler(
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var cameraProvider: ProcessCameraProvider
-
+    private lateinit var cameraController: CameraController
 
     fun initCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -30,6 +32,8 @@ class CameraHandler(
             setCamera(cameraProvider),
             ContextCompat.getMainExecutor(context)
         )
+        cameraController = LifecycleCameraController(context)
+        preview.controller = cameraController
     }
 
     private fun setCamera(cameraProvider: ProcessCameraProvider): Runnable = Runnable {
@@ -61,7 +65,7 @@ class CameraHandler(
         )
     }
 
-    fun toggleFlash(flashMode : Int){
+    fun toggleFlash(flashMode: Int) {
         imageCapture?.flashMode = flashMode
     }
 }
