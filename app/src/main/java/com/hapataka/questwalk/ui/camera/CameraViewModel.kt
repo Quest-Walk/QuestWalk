@@ -83,8 +83,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _bitmap.postValue(postBitmap)
     }
 
-    fun setCroppedBitmap(bitmap: Bitmap?){
-        croppedBitmap = bitmap
+    fun setCroppedBitmap(bitmap: Bitmap?) {
+        val matrix = Matrix()
+        matrix.postRotate(rotation)
+        val postBitmap =
+            Bitmap.createBitmap(bitmap!!, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        croppedBitmap = postBitmap
     }
 
     fun initBitmap() {
@@ -95,6 +99,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun deleteBitmapByFile() {
         repository.deleteBitmap()
+    }
+
+    fun getCroppedBitmap(): Bitmap? {
+        return croppedBitmap
     }
 
 
@@ -111,9 +119,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image :InputImage = if(isCropped){
+        val image: InputImage = if (isCropped) {
             InputImage.fromBitmap(croppedBitmap!!, 0)
-        } else{
+        } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
         }
 

@@ -1,9 +1,14 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -190,11 +195,62 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 val bytes = ByteArray(buffer.remaining())
                 buffer.get(bytes)
                 val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
+                val copyBitmap = drawBoxOnBitmap(bitmap,context!!)
+                val croppedBitmap = cropBitmap(bitmap,context!!)
                 cameraViewModel.setCameraCharacteristics(image.imageInfo.rotationDegrees.toFloat())
-                cameraViewModel.setBitmap(bitmap)
+                cameraViewModel.setBitmap(copyBitmap)
+                cameraViewModel.setCroppedBitmap(croppedBitmap)
                 image.close()
+                //
             }
         }
     }
+
+    private fun dpToPx(dp: Int, context: Context): Float =
+        dp * context.resources.displayMetrics.density
+
+    fun drawBoxOnBitmap(capturedBitmap: Bitmap, context: Context): Bitmap {
+        val newBitmap = capturedBitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(newBitmap)
+        val paint = Paint().apply {
+            color = Color.RED // 박스의 색상 설정
+            style = Paint.Style.STROKE // 박스를 채우지 않고 테두리만 그림
+            strokeWidth = 5f // 박스 테두리의 두께
+        }
+
+        // 비트맵의 가로, 세로 크기
+        val bitmapWidth = newBitmap.width
+        val bitmapHeight = newBitmap.height
+
+        // ±100dp를 px 단위로 변환
+        val dp = 50
+        val offsetPx = dpToPx(dp, context)
+
+        // 박스의 좌상단, 우하단 좌표 계산
+        val left = (bitmapWidth / 2) - offsetPx
+        val right = (bitmapWidth / 2) + offsetPx
+        val top = 0f // 세로는 비트맵을 꽉 채우므로 0에서 시작
+        val bottom = bitmapHeight.toFloat() // 세로는 비트맵 끝까지
+
+        // 비트맵 위에 박스 그리기
+        canvas.drawRect(left, top, right, bottom, paint)
+
+        return newBitmap
+    }
+    fun cropBitmap(capturedBitmap: Bitmap, context: Context): Bitmap {
+        // ±100dp를 px 단위로 변환
+        val offsetPx = dpToPx(50, context).toInt()
+
+        // 크롭할 영역의 좌상단 좌표 계산
+        val x = (capturedBitmap.width / 2) - offsetPx
+        val y = 0 // 세로는 비트맵을 꽉 채우므로 0에서 시작
+
+        // 크롭할 영역의 가로, 세로 크기
+        val width = 2 * offsetPx // 가로 ±100dp
+        val height = capturedBitmap.height // 세로는 비트맵 끝까지
+
+        // 지정한 영역에 해당하는 새로운 비트맵 생성
+        return Bitmap.createBitmap(capturedBitmap, x, y, width, height)
+    }
+
 }
