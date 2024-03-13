@@ -186,6 +186,11 @@ class HomeViewModel(
             if (prevLocation != null) prevLocation!! else currentLocation
         )
 
+        if (prevLocation == null) {
+            prevLocation=currentLocation
+            locationHistory += Pair(currentLocation.latitude.toFloat(), currentLocation.longitude.toFloat())
+        }
+
         prevLocation = currentLocation
 
         if (currentLocation.hasAccuracy().not()) {
@@ -193,6 +198,10 @@ class HomeViewModel(
         }
 
         if (currentLocation.accuracy > 30) {
+            return
+        }
+
+        if(currentLocation.accuracy*1.5 >= moveDistance){
             return
         }
         _totalDistance.value = currentDistance + if (moveDistance < 1f) 0f else moveDistance

@@ -12,9 +12,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.R
@@ -147,13 +149,26 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
             if (preLocation != null) {
                 Log.d(
                     TAG + "check",
-                    "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation?.first?.toDouble()} ${preLocation?.second?.toDouble()}"
+                    "${location.first.toDouble()} ${location.second.toDouble()} ${preLocation.first.toDouble()} ${preLocation.second.toDouble()}"
                 )
-                var polyline = p0.addPolyline(
+                val polyline = p0.addPolyline(
                     PolylineOptions()
-                        .clickable(true)
                         .add(
-                            LatLng(preLocation!!.first.toDouble(), preLocation!!.second.toDouble()),
+                            LatLng(preLocation.first.toDouble(), preLocation.second.toDouble()),
+                            LatLng(location.first.toDouble(), location.second.toDouble())
+                        )
+                )
+                polyline.width = 15.0F
+                polyline.color = Color.rgb(122, 94, 200)
+                polyline.jointType = JointType.ROUND
+                polyline.startCap = RoundCap()
+                polyline.endCap = RoundCap()
+            }
+            else{
+                val polyline = p0.addPolyline(
+                    PolylineOptions()
+                        .add(
+                            LatLng(location.first.toDouble()+0.000001, location.second.toDouble()+0.000001),
                             LatLng(location.first.toDouble(), location.second.toDouble())
                         )
                 )
