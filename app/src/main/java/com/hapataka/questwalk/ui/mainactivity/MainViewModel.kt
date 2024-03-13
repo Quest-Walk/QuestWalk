@@ -43,6 +43,7 @@ class MainViewModel(
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _totalStep = MutableLiveData<Long>()
     private var _snackBarMsg = MutableLiveData<String>()
+    private var _isLoading = MutableLiveData<Boolean>()
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
@@ -51,18 +52,20 @@ class MainViewModel(
     val totalDistance: LiveData<Float> get() = _totalDistance
     val totalStep: LiveData<Long> get() = _totalStep
     val snackBarMsg: LiveData<String> get() = _snackBarMsg
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     private var timer: Job? = null
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
+    private var currentTime: String = ""
 
     init {
         setRandomKeyword()
     }
 
-    fun moveToResult(callback: (string: String) -> Unit) {
+    fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
         viewModelScope.launch {
-            callback(authRepo.getCurrentUserUid())
+            callback(authRepo.getCurrentUserUid(), currentTime)
         }
     }
 
@@ -135,7 +138,7 @@ class MainViewModel(
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
             val isFail = playState.value != QUEST_SUCCESS
-            val currentTime = LocalDateTime.now().toString()
+            currentTime = LocalDateTime.now().toString()
             val localImage = imageUtil.getImageUri()
             val imageUri = if (playState.value == QUEST_SUCCESS) {
                 imageRepo.setImage(localImage, uid).toString()
@@ -157,12 +160,14 @@ class MainViewModel(
             if (isFail.not()) {
                 val keyword = currentKeyword.value ?: ""
 
+                _isLoading.value = true
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)
             _totalDistance.value = 0f
             _durationTime.value = -1
             _totalStep.value = 1
+            _isLoading.value = false
             setRandomKeyword()
             callback()
         }

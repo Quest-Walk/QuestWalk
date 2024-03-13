@@ -150,9 +150,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
         }
         with(mainViewModel) {
-            imageBitmap.observe(viewLifecycleOwner) {
-                binding.ivTest.load(it)
-            }
+//            imageBitmap.observe(viewLifecycleOwner) {
+//                binding.ivTest.load(it)
+//            }
         }
     }
 
