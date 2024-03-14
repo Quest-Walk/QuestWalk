@@ -7,12 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
-import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.repository.AchieveStackRepository
 import com.hapataka.questwalk.domain.repository.AuthRepository
@@ -67,7 +61,7 @@ class MainViewModel(
     private var currentTime: String = ""
 
     init {
-        setRandomKeyword()
+//        setRandomKeyword()
     }
 
     fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
@@ -78,8 +72,6 @@ class MainViewModel(
 
     fun setCaptureImage(image: ImageProxy, navigateCallback: () -> Unit, imageCallback: (Bitmap) -> Unit) {
         val bitmapImage = imageUtil.setCaptureImage(image)
-
-        Log.i(TAG, "bitmap: $bitmapImage ${System.currentTimeMillis()}")
 
         imageCallback(bitmapImage)
         getTextFromOCR(bitmapImage, navigateCallback)
@@ -189,7 +181,7 @@ class MainViewModel(
         _totalDistance.value = currentDistance + distance
     }
 
-    private fun setRandomKeyword() {
+    fun setRandomKeyword() {
         viewModelScope.launch {
             val remainingKeyword = QuestFilteringUseCase().invoke().map { it.keyWord }
 

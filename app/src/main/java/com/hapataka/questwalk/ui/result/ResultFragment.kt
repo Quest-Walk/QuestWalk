@@ -1,20 +1,9 @@
 package com.hapataka.questwalk.ui.result
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import coil.load
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.gms.maps.model.RoundCap
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentResultBinding
@@ -49,11 +38,16 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fragMap.onCreate(savedInstanceState)
-        binding.fragMap.getMapAsync(mapRepo)
 
+
+        initMapView(savedInstanceState)
         getInfo()
         setObserver()
+    }
+
+    private fun initMapView(bundle: Bundle?) {
+        binding.fragMap.onCreate(bundle)
+        binding.fragMap.getMapAsync(mapRepo)
     }
 
     private fun getInfo() {
@@ -66,6 +60,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         with(viewModel) {
             resultItem.observe(viewLifecycleOwner) {
                 initViews(it)
+                mapRepo.drawPath(it)
             }
             questItem.observe(viewLifecycleOwner) {
                 initImageViews(it)

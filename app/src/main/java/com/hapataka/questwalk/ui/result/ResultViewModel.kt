@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
@@ -16,7 +15,7 @@ import kotlin.math.round
 class ResultViewModel(
     private val userRepo: UserRepository,
     private val questRepo: QuestStackRepository,
-    private val mapRepo: GoogleMapRepositoryImpl
+//    private val mapRepo: GoogleMapRepositoryImpl
 ) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
@@ -33,7 +32,7 @@ class ResultViewModel(
                 it.quest == keyword && it.registerAt == registerAt
             }
             getQuestByKeyword(keyword)
-            mapRepo.drawPath(_resultItem.value!!)
+//            mapRepo.drawPath(_resultItem.value!!)
         }
     }
 
