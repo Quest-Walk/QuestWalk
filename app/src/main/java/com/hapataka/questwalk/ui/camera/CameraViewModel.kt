@@ -94,7 +94,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun cropBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
-        val offsetPx = bitmap.height/16
+        val offsetPx = bitmap.height/12
         val x = 0
         val y = (bitmap.height / 2) - offsetPx
 
@@ -122,7 +122,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             style = Paint.Style.STROKE
             strokeWidth = 5f
         }
-        val offsetPx : Float = bitmap.height/16f
+        val offsetPx : Float = bitmap.height/12f
 
         val left = 0f
         val top = (drawBitmap.height / 2) - offsetPx
