@@ -74,7 +74,7 @@ class RecordItemFragment(private val items: List<RecordItem>) :
                 }
 
                 if (item is RecordItem.ResultItem) {
-                    mainViewModel.moveToResult { uid ->
+                    mainViewModel.moveToResult { uid, _ ->
                         val bundle = Bundle().apply {
                             putString(USER_ID, uid)
                             putString(QUEST_KEYWORD, item.keyword)

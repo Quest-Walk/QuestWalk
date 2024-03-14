@@ -1,20 +1,25 @@
 package com.hapataka.questwalk.data.firebase.repository
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import com.hapataka.questwalk.domain.entity.QuestStackEntity.*
+import com.hapataka.questwalk.domain.entity.QuestStackEntity.SuccessItem
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.time.LocalTime
 
 class QuestStackRepositoryImpl : QuestStackRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val questCollection by lazy { remoteDb.collection("quest") }
 
-    override suspend fun updateQuest(keyword: String, userId: String, imageUrl: String, registerAt: String) {
+    override suspend fun updateQuest(
+        keyword: String,
+        userId: String,
+        imageUrl: String,
+        registerAt: String
+    ) {
         withContext(Dispatchers.IO) {
             var currentItem = getItemByKeyword(keyword)
 
@@ -36,9 +41,15 @@ class QuestStackRepositoryImpl : QuestStackRepository {
         withContext(Dispatchers.IO) {
             val results = mutableListOf<QuestStackEntity>()
             val allItems = questCollection.get().await().documents
+            val levelList = intArrayOf(1, 2, 3)
+            var differ = levelList.map {
+                async {
+                    questCollection.whereEqualTo("level", it).get().await()
+                }
+            }
 
-            allItems.forEach { document ->
-                results += document.toObject(QuestStackEntity::class.java)!!
+            differ.awaitAll().forEach {
+                results += it.toObjects(QuestStackEntity::class.java)
             }
             return@withContext results
         }

@@ -8,41 +8,30 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationResult
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
-import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.ImageRepository
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.TAG
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 class HomeViewModel(
-    private val authRepo: AuthRepositoryImpl,
-    private val userRepo: UserRepositoryImpl,
-    private val imageRepo: ImageRepositoryImpl,
-    private val questRepo: QuestStackRepositoryImpl
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository,
+    private val imageRepo: ImageRepository,
+    private val questRepo: QuestStackRepository
 ) : ViewModel() {
-    private var _isPlay = MutableLiveData(false)
     private var _isNight = MutableLiveData(false)
-    private var _isLoading = MutableLiveData<Boolean>(false)
-    private var _isEnabledButton = MutableLiveData<Boolean>(true)
     private var _charNum = MutableLiveData<Int>()
-    val isPlay: LiveData<Boolean> get() = _isPlay
 
 
     val isNight: LiveData<Boolean> get() = _isNight
     private var _totalStep = MutableLiveData<Long>()
     val totalStep: LiveData<Long> get() = _totalStep
-    val isLoading: LiveData<Boolean> get() = _isLoading
-    val isEnabledButton: LiveData<Boolean> get() = _isEnabledButton
 
-    val charNum : LiveData<Int> get() = _charNum
 
     private var prevLocation: Location? = null
-    private val filteringUseCase = QuestFilteringUseCase()
-    private var timer: Job? = null
 
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
@@ -78,7 +67,6 @@ class HomeViewModel(
 //    }
 
     fun toggleIsPlay() {
-        _isPlay.value = isPlay.value?.not()
 //        toggleTimer()
 //        _totalDistance.value = 0f
         _totalStep.value = 0
@@ -87,7 +75,6 @@ class HomeViewModel(
     }
 
     fun toggleIsPlay(callBack: (String, String?, String) -> Unit) {
-        _isPlay.value = isPlay.value?.not()
 //        toggleTimer()
 
 //        if (!isPlay.value!!) {
@@ -157,15 +144,15 @@ class HomeViewModel(
 //    }
 
     fun updateStep() {
-        Log.i(TAG, "update step")
-        if (isPlay.value!!) {
-            val currentStep = totalStep.value ?: 0
-
-            _totalStep.value = currentStep + 1
-            Log.i(TAG, "step: ${totalStep.value}")
-        } else {
-            _totalStep.value = 0
-        }
+//        Log.i(TAG, "update step")
+//        if (isPlay.value!!) {
+//            val currentStep = totalStep.value ?: 0
+//
+//            _totalStep.value = currentStep + 1
+//            Log.i(TAG, "step: ${totalStep.value}")
+//        } else {
+//            _totalStep.value = 0
+//        }
     }
 
     private var imageUri: Uri? = null

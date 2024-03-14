@@ -14,6 +14,13 @@ import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.domain.repository.AchieveStackRepository
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.ImageRepository
+import com.hapataka.questwalk.domain.repository.LocationRepository
+import com.hapataka.questwalk.domain.repository.OcrRepository
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.ui.record.TAG
 import info.debatty.java.stringsimilarity.RatcliffObershelp
@@ -27,13 +34,13 @@ const val QUEST_START = 1
 const val QUEST_SUCCESS = 2
 
 class MainViewModel(
-    private val authRepo: AuthRepositoryImpl,
-    private val userRepo: UserRepositoryImpl,
-    private val questRepo: QuestStackRepositoryImpl,
-    private val achieveRepo: AuthRepositoryImpl,
-    private val imageRepo: ImageRepositoryImpl,
-    private val ocrRepo: OcrRepositoryImpl,
-    private val locationRepo: LocationRepositoryImpl,
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository,
+    private val questRepo: QuestStackRepository,
+    private val achieveRepo: AchieveStackRepository,
+    private val imageRepo: ImageRepository,
+    private val ocrRepo: OcrRepository,
+    private val locationRepo: LocationRepository,
     private val imageUtil: ImageUtil
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
@@ -43,6 +50,7 @@ class MainViewModel(
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _totalStep = MutableLiveData<Long>()
     private var _snackBarMsg = MutableLiveData<String>()
+    private var _isLoading = MutableLiveData<Boolean>()
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
@@ -51,26 +59,30 @@ class MainViewModel(
     val totalDistance: LiveData<Float> get() = _totalDistance
     val totalStep: LiveData<Long> get() = _totalStep
     val snackBarMsg: LiveData<String> get() = _snackBarMsg
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     private var timer: Job? = null
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
+    private var currentTime: String = ""
 
     init {
         setRandomKeyword()
     }
 
-    fun moveToResult(callback: (string: String) -> Unit) {
+    fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
         viewModelScope.launch {
-            callback(authRepo.getCurrentUserUid())
+            callback(authRepo.getCurrentUserUid(), currentTime)
         }
     }
 
-    fun setCaptureImage(image: ImageProxy, callback: () -> Unit) {
+    fun setCaptureImage(image: ImageProxy, navigateCallback: () -> Unit, imageCallback: (Bitmap) -> Unit) {
         val bitmapImage = imageUtil.setCaptureImage(image)
 
-        _imageBitmap.value = bitmapImage
-        getTextFromOCR(bitmapImage, callback)
+        Log.i(TAG, "bitmap: $bitmapImage ${System.currentTimeMillis()}")
+
+        imageCallback(bitmapImage)
+        getTextFromOCR(bitmapImage, navigateCallback)
     }
 
     private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {
@@ -136,7 +148,7 @@ class MainViewModel(
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
             val isFail = playState.value != QUEST_SUCCESS
-            val currentTime = LocalDateTime.now().toString()
+            currentTime = LocalDateTime.now().toString()
             val localImage = imageUtil.getImageUri()
             val imageUri = if (playState.value == QUEST_SUCCESS) {
                 imageRepo.setImage(localImage, uid).toString()
@@ -158,12 +170,14 @@ class MainViewModel(
             if (isFail.not()) {
                 val keyword = currentKeyword.value ?: ""
 
+                _isLoading.value = true
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)
             _totalDistance.value = 0f
             _durationTime.value = -1
             _totalStep.value = 1
+            _isLoading.value = false
             setRandomKeyword()
             callback()
         }

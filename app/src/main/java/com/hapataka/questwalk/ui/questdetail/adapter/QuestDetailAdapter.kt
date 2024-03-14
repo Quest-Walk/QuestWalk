@@ -9,9 +9,7 @@ import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 
-class QuestDetailAdapter(
-    private val onClick: (QuestData.SuccessItem) -> Unit
-): ListAdapter<QuestData.SuccessItem, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
+class QuestDetailAdapter(): ListAdapter<QuestData.SuccessItem, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestDetailViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -26,9 +24,7 @@ class QuestDetailAdapter(
         fun bind(item: QuestData.SuccessItem) {
             with(binding.ivQuest) {
                 load(item.imageUrl)
-                setOnClickListener { onClick(item) }
             }
-
         }
     }
 

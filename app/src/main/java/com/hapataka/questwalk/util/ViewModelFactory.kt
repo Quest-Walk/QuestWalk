@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
+import com.hapataka.questwalk.data.firebase.repository.AchieveStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
+import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
+import com.hapataka.questwalk.domain.repository.MapRepository
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
@@ -28,8 +31,9 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val authRepo = AuthRepositoryImpl()
         val userRepo = UserRepositoryImpl()
         val questRepo = QuestStackRepositoryImpl()
-        val achieveRepo = AuthRepositoryImpl()
+        val achieveRepo = AchieveStackRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
+        val mapRepo = GoogleMapRepositoryImpl()
         val ocrRepo = OcrRepositoryImpl()
 
 
@@ -54,7 +58,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
-            return ResultViewModel(userRepo, questRepo) as T
+            return ResultViewModel(userRepo, questRepo, mapRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")

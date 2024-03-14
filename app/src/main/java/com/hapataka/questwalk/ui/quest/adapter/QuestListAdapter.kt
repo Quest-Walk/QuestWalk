@@ -49,11 +49,26 @@ class QuestListAdapter(
             binding.tvKeyword.text = item.keyWord
             binding.tvSolvePercent.text = "해결 인원$completeRate%"
 
-
             imageList.forEach { it.load(R.drawable.image_empty) }
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl) {
                     crossfade(true)
+                    placeholder(R.drawable.image_empty)
+//                    var startTime: Long = 0
+//                    var endTime: Long = 0
+//
+//                    listener(
+//                        onStart = {
+//                            startTime = System.currentTimeMillis()
+//                            Log.i(TAG, "start: ${startTime}")
+//                        },
+//                        onSuccess = { _, _ ->
+//                            endTime = System.currentTimeMillis()
+//                            Log.i(TAG, "end: ${endTime}")
+//                            Log.e(TAG, "duration: ${endTime - startTime}")
+//                        }
+//                    )
+//                    memoryCacheKey(successItem.imageUrl)
                 }
             }
 
@@ -67,7 +82,6 @@ class QuestListAdapter(
             }
         }
     }
-
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<QuestData>() {
@@ -91,6 +105,4 @@ class QuestListAdapter(
             else imageList[i].visibility = View.INVISIBLE
         }
     }
-
-
 }

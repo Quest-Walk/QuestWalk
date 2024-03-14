@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.media.MediaActionSound
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -33,6 +33,7 @@ import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Runnable
@@ -95,8 +96,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 }
                 .show()
         }
-
-
     }
 
     private fun setObserver() {
@@ -108,29 +107,16 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     visible()
                 }
             }
+
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initViews() {
+        initCaptureButton()
+        binding.ivCapturedImage.gone()
         with(binding) {
-            btnCapture.apply {
-                setOnClickListener {
-                    capturePhoto()
-                }
-                setOnTouchListener { _, event ->
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        this.load(R.drawable.btn_capture_click)
-                        return@setOnTouchListener false
-                    }
 
-                    if (event.action == MotionEvent.ACTION_UP) {
-                        this.load(R.drawable.btn_capture)
-                        return@setOnTouchListener false
-                    }
-                    return@setOnTouchListener false
-                }
-            }
             btnFlash.setOnClickListener {
                 toggleFlash()
             }
@@ -141,26 +127,29 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    private fun imageButtonSetOnTouchListener(
-        imageButton: ImageButton,
-        actionDownRes: Int,
-        actionUpRes: Int,
-    ): View.OnTouchListener {
-        return View.OnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    imageButton.setImageResource(actionDownRes)
+    private fun initCaptureButton() {
+        val mediaActionSound = MediaActionSound()
+
+        binding.btnCapture.apply {
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    this.load(R.drawable.btn_capture_click)
+                    mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
+                    capturePhoto()
+
+                    return@setOnTouchListener true
                 }
 
-                MotionEvent.ACTION_UP -> {
-                    imageButton.setImageResource(actionUpRes)
-                    v.performClick()
+                if (event.action == MotionEvent.ACTION_UP) {
+                    this.load(R.drawable.btn_capture)
+                    return@setOnTouchListener true
                 }
+
+                return@setOnTouchListener true
             }
-            true
         }
-    }
 
+    }
 
     /**
      *  카메라 기능
@@ -213,8 +202,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-                mainViewModel.setCaptureImage(image) {
-                    navController.popBackStack()
+
+                mainViewModel.setCaptureImage(
+                    image,
+                    { navController.popBackStack() },
+                ) {
+                    with(binding.ivCapturedImage) {
+                        load(it)
+                        visible()
+                    }
                 }
                 image.close()
             }
