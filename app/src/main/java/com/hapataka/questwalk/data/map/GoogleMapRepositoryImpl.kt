@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.google.android.gms.maps.model.StrokeStyle
@@ -17,46 +18,40 @@ import com.google.android.gms.maps.model.StyleSpan
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.repository.MapRepository
 
-class GoogleMapRepositoryImpl: MapRepository, OnMapReadyCallback {
+class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
     private lateinit var locationList: MutableList<LatLng>
 
     override fun drawPath(result: HistoryEntity.ResultEntity) {
-        Log.d("drawPath Call:","drawPath")
-        // 위도 경도 받고
         locationList = result.locations?.map {
             LatLng(it.first.toDouble(), it.second.toDouble())
         }?.toMutableList() ?: mutableListOf()
 
-        val tAnimator = ValueAnimator.ofInt(0, locationList.size-2)
-        tAnimator.duration = 5000
-        val frameDistance = result.distance
-        tAnimator.addUpdateListener {
-            // animate here
-                tAnimator ->
-            val frame = tAnimator.animatedValue as Int
-            val polyline = googleMap?.addPolyline(
-                PolylineOptions()
-                    .add(
-                        LatLng(locationList[frame].latitude.toDouble(), locationList[frame].longitude.toDouble()),
-                        LatLng(locationList[frame+1].latitude.toDouble(), locationList[frame+1].longitude.toDouble())
+        val tAnimator = ValueAnimator.ofInt(0, if (locationList.size < 2) 0 else locationList.size - 2 ).apply {
+            duration = 5000
+            addUpdateListener { tAnimator ->
+                val frame = tAnimator.animatedValue as Int
+                val nextFrameValue = if (locationList.size < 2) {
+                    LatLng(locationList[frame].latitude + 0.000001, locationList[frame].longitude + 0.000001)
+                } else {
+                    LatLng(locationList[frame + 1].latitude, locationList[frame + 1].longitude)
+                }
+
+                val polyline = googleMap?.addPolyline(
+                    PolylineOptions().add(
+                        LatLng(locationList[frame].latitude, locationList[frame].longitude),
+                        nextFrameValue
                     )
-                    .addSpan(
-                        StyleSpan(
-                            StrokeStyle.gradientBuilder(
-                                Color.HSVToColor(floatArrayOf(360F*frame/(locationList.size-1), 1F, 1F)),
-                                Color.HSVToColor(floatArrayOf(360F*(frame+1)/(locationList.size-1), 1F, 1F))
-                            ).build()
-                        )
-                    )
-            )
-            polyline?.width = 15.0F
-//            polyline.color = Color.rgb(122, 94, 200)
-            polyline?.jointType = JointType.ROUND
-            polyline?.startCap = RoundCap()
-            polyline?.endCap = RoundCap()
+                )
+
+                polyline?.width = 15.0F
+                polyline?.color = Color.rgb(122, 94, 200)
+                polyline?.jointType = JointType.ROUND
+                polyline?.startCap = RoundCap()
+                polyline?.endCap = RoundCap()
+            }
         }
-        tAnimator.startDelay=3000
+        tAnimator.startDelay = 3000
         tAnimator.start()
 
         addMarker(result)
@@ -64,7 +59,6 @@ class GoogleMapRepositoryImpl: MapRepository, OnMapReadyCallback {
     }
 
     private fun addMarker(result: HistoryEntity.ResultEntity) {
-        // questLocation 받고
         val questLatitude = result.questLocation?.first?.toDouble() ?: 0.0
         val questLongitude = result.questLocation?.second?.toDouble() ?: 0.0
 
@@ -76,17 +70,14 @@ class GoogleMapRepositoryImpl: MapRepository, OnMapReadyCallback {
     }
 
     private fun controlCamera() {
-        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
-            LatLngBounds(
-                LatLng(locationList.minOf { it.latitude }, locationList.minOf { it.longitude }),
-                LatLng(locationList.maxOf { it.latitude }, locationList.maxOf { it.longitude }),
-            ), 100
-        )
-        googleMap?.animateCamera(cameraUpdate)
+        val bounds = LatLngBounds.Builder().apply {
+            locationList.forEach { include(it) }
+        }.build()
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,100))
     }
 
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
-        p0.uiSettings.isZoomControlsEnabled=true
+        p0.uiSettings.isZoomControlsEnabled = true
     }
 }
