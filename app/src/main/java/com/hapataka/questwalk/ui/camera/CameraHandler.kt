@@ -2,6 +2,9 @@ package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
 import android.util.Log
+import android.view.ScaleGestureDetector
+import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -24,6 +27,11 @@ class CameraHandler(
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraController: CameraController
+
+    private var cameraControl : CameraControl? = null
+    private var cameraInfo :  CameraInfo? = null
+    private lateinit var scaleGestureDetector: ScaleGestureDetector
+
 
     fun initCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -49,11 +57,29 @@ class CameraHandler(
 
         try {
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
+            val camera = cameraProvider.bindToLifecycle(
                 viewLifecycleOwner, cameraSelector, preview, imageCapture
             )
+            cameraControl = camera.cameraControl
+            cameraInfo = camera.cameraInfo
+            setZoomInZoomOut()
         } catch (e: Exception) {
             Log.d("CameraX", "initCamera Fail", e)
+        }
+    }
+
+    private fun setZoomInZoomOut() {
+        scaleGestureDetector = ScaleGestureDetector(context,object :ScaleGestureDetector.SimpleOnScaleGestureListener(){
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val currentZoom = cameraInfo?.zoomState?.value?.zoomRatio ?: 1.5f
+                val delta = detector.scaleFactor
+                cameraControl?.setZoomRatio(currentZoom * delta)
+                return true
+            }
+        })
+        preview.setOnTouchListener { _, event ->
+            scaleGestureDetector.onTouchEvent(event)
+            true
         }
     }
 

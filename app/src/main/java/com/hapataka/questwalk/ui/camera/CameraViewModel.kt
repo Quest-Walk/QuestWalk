@@ -87,8 +87,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private fun setBitmap(bitmap: Bitmap?) {
         if (bitmap == null) return
         _bitmap.value = bitmap
-        croppedBitmap = cropBitmap(bitmap, 50)
-        drawBoxOnBitmap = drawBoxOnBitmap(bitmap, 50)
+        croppedBitmap = cropBitmap(bitmap, 90)
+        drawBoxOnBitmap = drawBoxOnBitmap(bitmap, 90)
     }
 
 
