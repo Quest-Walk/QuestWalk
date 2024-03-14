@@ -44,7 +44,7 @@ class MainViewModel(
     private var _totalDistance = MutableLiveData<Float>(0.0F)
     private var _totalStep = MutableLiveData<Long>()
     private var _snackBarMsg = MutableLiveData<String>()
-    private var _isLoading = MutableLiveData<Boolean>()
+    private var _isLoading = MutableLiveData<Boolean>(false)
 
     val currentKeyword: LiveData<String> get() = _currentKeyword
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
@@ -60,17 +60,17 @@ class MainViewModel(
     private var questLocation: Pair<Float, Float>? = null
     private var currentTime: String = ""
 
-    init {
-//        setRandomKeyword()
-    }
-
     fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
         viewModelScope.launch {
             callback(authRepo.getCurrentUserUid(), currentTime)
         }
     }
 
-    fun setCaptureImage(image: ImageProxy, navigateCallback: () -> Unit, imageCallback: (Bitmap) -> Unit) {
+    fun setCaptureImage(
+        image: ImageProxy,
+        navigateCallback: () -> Unit,
+        imageCallback: (Bitmap) -> Unit
+    ) {
         val bitmapImage = imageUtil.setCaptureImage(image)
 
         imageCallback(bitmapImage)
@@ -100,6 +100,10 @@ class MainViewModel(
             _playState.value = QUEST_START
         } else {
             setResultHistory(callback)
+
+            if (playState == QUEST_SUCCESS) {
+                _isLoading.value = true
+            }
             _playState.value = QUEST_STOP
         }
         initPlayInfo()
@@ -108,6 +112,7 @@ class MainViewModel(
     private fun initPlayInfo() {
         setTimer()
         setLocationClient()
+        setStepCounter()
     }
 
     private fun setTimer() {
@@ -128,12 +133,26 @@ class MainViewModel(
     private fun setLocationClient() {
         if (playState.value != QUEST_STOP) {
             locationRepo.startRequest {
+                Log.d(TAG, "location Entity: $it")
                 setDistance(it.distance)
                 locationHistory += it.location
             }
         } else {
             locationRepo.finishRequest()
         }
+    }
+
+    private fun setStepCounter() {
+        if (playState.value == QUEST_STOP){
+            _totalStep.value = 0
+        }
+    }
+
+    fun countUpStep() {
+        val currentStep = totalStep.value ?: 0
+
+        _totalStep.value = currentStep + 1
+        return
     }
 
     private fun setResultHistory(callback: () -> Unit) {
@@ -162,7 +181,6 @@ class MainViewModel(
             if (isFail.not()) {
                 val keyword = currentKeyword.value ?: ""
 
-                _isLoading.value = true
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)

@@ -51,35 +51,37 @@
 
                 <TextView
                     android:id="@+id/tv_title"
-                    style="@style/snas_head"
+                    style="@style/sans_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="56dp"
                     android:text="내 정보"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_player_character"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="52dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/character_01"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
                 <TextView
                     android:id="@+id/tv_player_name"
                     style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
+                    android:textColor="@color/main_purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_title"
-                    tools:text="모험가 158427" />
-
-                <ImageView
-                    android:id="@+id/iv_player_character"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/character_01"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_player_name" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_player_character"
+                    tools:text="모험가 1527" />
 
                 <TextView
                     android:id="@+id/tv_title_time"
@@ -89,7 +91,7 @@
                     android:layout_marginTop="30dp"
                     android:text="@string/play_time"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_player_character" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_player_name" />
 
                 <TextView
                     android:id="@+id/tv_time_value"
@@ -217,8 +219,8 @@
                     android:paddingVertical="8dp"
                     android:text="로그아웃"
                     android:textColor="@color/white"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ll_quest_content_1" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

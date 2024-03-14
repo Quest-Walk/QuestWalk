@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -37,7 +36,6 @@ import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
@@ -146,15 +144,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     binding.ivBgLayer3.load(R.drawable.background_day_layer3)
                 }
             }
-            totalStep.observe(viewLifecycleOwner) { step ->
-                binding.tvQuestPlaying.text = "${step}걸음"
-            }
+
         }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
             }
-
             playState.observe(viewLifecycleOwner) { state ->
                 updateWithState(state)
             }
@@ -163,6 +158,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = it.convertKm()
+            }
+            totalStep.observe(viewLifecycleOwner) { step ->
+                binding.tvQuestPlaying.text = "${step}걸음"
             }
             isLoading.observe(viewLifecycleOwner) { isLoading ->
                 if (isLoading) {
@@ -178,7 +176,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun showHomeDialog() {
         val dialog = HomeDialog {
-            viewModel.toggleIsPlay()
+//            viewModel.toggleIsPlay()
         }
         dialog.show(parentFragmentManager, "HomeDialog")
     }
@@ -346,8 +344,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 val sensor = event!!.sensor
 
                 if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-                    Log.d(TAG, "step sensor")
-//                    viewModel.updateStep()
+                    mainViewModel.countUpStep()
                 }
             }
 
