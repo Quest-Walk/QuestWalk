@@ -120,7 +120,7 @@
             android:src="@drawable/ico_camera_capture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_back_btn" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_back" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

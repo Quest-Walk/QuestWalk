@@ -36,12 +36,20 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
+    companion object {
+        private var TO_HOME_FRAG = "homefragment"
+        private var TO_CAPT_FRAG = "capturefragment"
+    }
+
+
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
     private val cameraViewModel: CameraViewModel by activityViewModels()
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
+
+    private var toFrag = TO_HOME_FRAG
 
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
@@ -57,6 +65,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         setObserver()
         initViews()
     }
+
     override fun onResume() {
         super.onResume()
         if (isComingFromSettings) {
@@ -113,6 +122,13 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
 
         }
+        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            if (toFrag == TO_CAPT_FRAG) {
+                navController.navigate(R.id.action_frag_camera_to_frag_capture)
+            }
+        }
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -127,7 +143,11 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             btnBack.setOnClickListener {
                 navController.popBackStack()
             }
-//            tvCameraQuest.text = homeViewModel.currentKeyword.value
+            tvCameraQuest.text = mainViewModel.currentKeyword.value
+            tvCameraQuest.setOnClickListener {
+                cameraHandler.capturePhoto(imageCaptureCallback())
+                toFrag = TO_CAPT_FRAG
+            }
         }
     }
 
@@ -135,21 +155,20 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         val mediaActionSound = MediaActionSound()
 
         binding.btnCapture.apply {
-            setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    this.load(R.drawable.btn_capture_click)
-                    mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
-                    capturePhoto()
+            setOnTouchListener { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        this.load(R.drawable.btn_capture_click)
+                        mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
+                        cameraHandler.capturePhoto(imageCaptureCallback())
+                    }
 
-                    return@setOnTouchListener true
+                    MotionEvent.ACTION_UP -> {
+                        this.load(R.drawable.btn_capture)
+                        v.performClick()
+                    }
                 }
-
-                if (event.action == MotionEvent.ACTION_UP) {
-                    this.load(R.drawable.btn_capture)
-                    return@setOnTouchListener true
-                }
-
-                return@setOnTouchListener true
+                true
             }
         }
 
@@ -160,14 +179,17 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
 
-                cameraViewModel.imageProxyToBitmap(image)
-                mainViewModel.setCaptureImage(
-                    image,
-                    { navController.popBackStack() },
-                ) {
-                    with(binding.ivCapturedImage) {
-                        load(it)
-                        visible()
+                if (toFrag == TO_CAPT_FRAG) {
+                    cameraViewModel.imageProxyToBitmap(image)
+                } else {
+                    mainViewModel.setCaptureImage(
+                        image,
+                        { navController.popBackStack() },
+                    ) {
+                        with(binding.ivCapturedImage) {
+                            load(it)
+                            visible()
+                        }
                     }
                 }
                 image.close()
@@ -175,4 +197,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
         }
     }
+
+
 }

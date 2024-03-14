@@ -50,21 +50,6 @@
         </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/tv_camera_quest"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:elevation="1dp"
-            android:text="quest_keyword"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_flash"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
@@ -87,7 +72,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </androidx.camera.view.PreviewView>
 
     <ImageView
         android:id="@+id/iv_captured_image"
@@ -96,5 +83,32 @@
         android:elevation="5dp"
         android:scaleType="centerCrop"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_camera_quest"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:fontFamily="@font/ramche"
+        android:text="quest_keyword"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/cl_crop_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_crop_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#578F8F8F"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.1667"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

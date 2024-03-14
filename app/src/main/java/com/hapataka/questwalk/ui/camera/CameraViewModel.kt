@@ -245,7 +245,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isSucceed.value = null
     }
 
-
     /**
      *  Debug
      */
