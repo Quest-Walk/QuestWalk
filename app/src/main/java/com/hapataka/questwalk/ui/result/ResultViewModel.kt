@@ -1,22 +1,22 @@
 package com.hapataka.questwalk.ui.result
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
+import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.quest.QuestData
-import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 import kotlin.math.round
 
 class ResultViewModel(
-    private val userRepo: UserRepositoryImpl,
-    private val questRepo: QuestStackRepositoryImpl
+    private val userRepo: UserRepository,
+    private val questRepo: QuestStackRepository,
+    private val mapRepo: GoogleMapRepositoryImpl
 ) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
@@ -32,10 +32,12 @@ class ResultViewModel(
             _resultItem.value = userResults.find {
                 it.quest == keyword && it.registerAt == registerAt
             }
+            getQuestByKeyword(keyword)
+            mapRepo.drawPath(_resultItem.value!!)
         }
     }
 
-    fun getQuestByKeyword(keyWord: String) {
+    private fun getQuestByKeyword(keyWord: String) {
         viewModelScope.launch {
             val allUser = userRepo.getAllUserSize()
             val questItem = convertToQuestData(questRepo.getItemByKeyword(keyWord))

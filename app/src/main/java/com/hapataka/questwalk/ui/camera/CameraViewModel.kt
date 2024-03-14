@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.camera
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.Log
 import androidx.camera.core.ImageCapture
@@ -16,13 +15,13 @@ import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
-import javax.inject.Inject
-import info.debatty.java.stringsimilarity.*
+import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.File
+import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
@@ -73,15 +72,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
      *  Bitmap 파일 처리 부분
      */
 
-    fun setBitmap(bitmap: Bitmap) {
-        //전처리 과정을 마치고 포스트??
-
-        val matrix = Matrix()
-        matrix.postRotate(rotation)
-        val postBitmap =
-            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        _bitmap.postValue(postBitmap)
-    }
 
     fun setCroppedBitmap(bitmap: Bitmap?){
         croppedBitmap = bitmap
@@ -143,7 +133,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
-
         var isValidated = false
         val similarityObj = RatcliffObershelp()
 
