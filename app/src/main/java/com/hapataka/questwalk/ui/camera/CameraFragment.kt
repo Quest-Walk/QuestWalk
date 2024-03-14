@@ -107,6 +107,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
+
     private fun imageButtonSetOnTouchListener(
         imageButton: ImageButton,
         actionDownRes: Int,
