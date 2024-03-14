@@ -1,9 +1,9 @@
 package com.hapataka.questwalk.ui.login
 
 import androidx.lifecycle.ViewModel
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.domain.repository.AuthRepository
 
-class LoginViewModel(private val authRepo: AuthRepositoryImpl) : ViewModel() {
+class LoginViewModel(private val authRepo: AuthRepository) : ViewModel() {
 
 
 

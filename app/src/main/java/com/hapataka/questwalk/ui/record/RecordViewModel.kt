@@ -4,19 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.resource.Achievements
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
 import kotlinx.coroutines.launch
 
 class RecordViewModel(
-    private val authRepo: AuthRepositoryImpl,
-    private val userRepo: UserRepositoryImpl
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository
 ) : ViewModel() {
     private var _recordItems = MutableLiveData<List<RecordItem>>()
     val recordItems: LiveData<List<RecordItem>> get() = _recordItems

@@ -19,13 +19,13 @@ import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
-import javax.inject.Inject
-import info.debatty.java.stringsimilarity.*
+import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.File
+import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
@@ -190,7 +190,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
-
         var isValidated = false
         val similarityObj = RatcliffObershelp()
 

@@ -26,7 +26,7 @@
 
 
         <ImageButton
-            android:id="@+id/ib_back_btn"
+            android:id="@+id/btn_back"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:background="@android:color/transparent"
@@ -45,9 +45,9 @@
             android:scaleX="0.5"
             android:scaleY="0.5"
             android:src="@drawable/ico_camera_crop"
-            app:layout_constraintBottom_toBottomOf="@+id/ib_back_btn"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/ib_back_btn"
+            app:layout_constraintTop_toTopOf="@+id/btn_back"
             app:tint="@color/black" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

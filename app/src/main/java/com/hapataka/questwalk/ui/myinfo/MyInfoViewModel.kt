@@ -5,15 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 
 class MyInfoViewModel(
-    private val authRepo: AuthRepositoryImpl,
-    private val userRepo: UserRepositoryImpl
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository
 ) : ViewModel() {
     private var _userInfo = MutableLiveData<UserEntity>()
     val userInfo: LiveData<UserEntity> get() = _userInfo
