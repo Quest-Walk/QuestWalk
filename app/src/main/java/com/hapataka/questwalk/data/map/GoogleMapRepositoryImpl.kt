@@ -15,7 +15,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.repository.MapRepository
 
 class GoogleMapRepositoryImpl: MapRepository, OnMapReadyCallback {
-//    private var googleMap: GoogleMap? = null
+    private var googleMap: GoogleMap? = null
     private lateinit var locationList: MutableList<LatLng>
 
     override fun drawPath(result: HistoryEntity.ResultEntity) {
@@ -63,9 +63,5 @@ class GoogleMapRepositoryImpl: MapRepository, OnMapReadyCallback {
 
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
-    }
-
-    companion object {
-        private var googleMap: GoogleMap? = null
     }
 }

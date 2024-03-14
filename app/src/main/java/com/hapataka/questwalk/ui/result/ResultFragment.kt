@@ -49,11 +49,15 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fragMap.onCreate(savedInstanceState)
-        binding.fragMap.getMapAsync(mapRepo)
 
+        initMapView(savedInstanceState)
         getInfo()
         setObserver()
+    }
+
+    private fun initMapView(bundle: Bundle?) {
+        binding.fragMap.onCreate(bundle)
+        binding.fragMap.getMapAsync(mapRepo)
     }
 
     private fun getInfo() {
@@ -66,6 +70,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         with(viewModel) {
             resultItem.observe(viewLifecycleOwner) {
                 initViews(it)
+                mapRepo.drawPath(it)
             }
             questItem.observe(viewLifecycleOwner) {
                 initImageViews(it)

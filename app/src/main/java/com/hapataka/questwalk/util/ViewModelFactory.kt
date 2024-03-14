@@ -57,7 +57,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
-            return ResultViewModel(userRepo, questRepo, mapRepo) as T
+            return ResultViewModel(userRepo, questRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")

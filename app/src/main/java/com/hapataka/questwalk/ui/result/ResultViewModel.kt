@@ -17,7 +17,7 @@ import kotlin.math.round
 class ResultViewModel(
     private val userRepo: UserRepositoryImpl,
     private val questRepo: QuestStackRepositoryImpl,
-    private val mapRepo: GoogleMapRepositoryImpl
+//    private val mapRepo: GoogleMapRepositoryImpl
 ) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
@@ -34,7 +34,7 @@ class ResultViewModel(
                 it.quest == keyword && it.registerAt == registerAt
             }
             getQuestByKeyword(keyword)
-            mapRepo.drawPath(_resultItem.value!!)
+//            mapRepo.drawPath(_resultItem.value!!)
         }
     }
 
