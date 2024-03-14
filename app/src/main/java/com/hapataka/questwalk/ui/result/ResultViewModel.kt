@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import com.hapataka.questwalk.domain.repository.MapRepository
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.quest.QuestData
 import kotlinx.coroutines.launch
 import kotlin.math.round

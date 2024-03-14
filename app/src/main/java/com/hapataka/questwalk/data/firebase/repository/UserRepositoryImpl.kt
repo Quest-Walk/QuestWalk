@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.data.firebase.repository
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.ACHIEVE_TYPE
 import com.hapataka.questwalk.domain.entity.HistoryEntity
@@ -8,6 +9,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepository
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -25,6 +27,7 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun updateUserInfo(userId: String, result: HistoryEntity) {
         withContext(Dispatchers.IO) {
+            Log.i(TAG, "update user info")
             val currentDocument = userCollection.document(userId)
             var currentInfo = getInfo(userId)
 

@@ -14,6 +14,13 @@ import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.domain.repository.AchieveStackRepository
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.ImageRepository
+import com.hapataka.questwalk.domain.repository.LocationRepository
+import com.hapataka.questwalk.domain.repository.OcrRepository
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.ui.record.TAG
 import info.debatty.java.stringsimilarity.RatcliffObershelp
@@ -27,13 +34,13 @@ const val QUEST_START = 1
 const val QUEST_SUCCESS = 2
 
 class MainViewModel(
-    private val authRepo: AuthRepositoryImpl,
-    private val userRepo: UserRepositoryImpl,
-    private val questRepo: QuestStackRepositoryImpl,
-    private val achieveRepo: AuthRepositoryImpl,
-    private val imageRepo: ImageRepositoryImpl,
-    private val ocrRepo: OcrRepositoryImpl,
-    private val locationRepo: LocationRepositoryImpl,
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository,
+    private val questRepo: QuestStackRepository,
+    private val achieveRepo: AchieveStackRepository,
+    private val imageRepo: ImageRepository,
+    private val ocrRepo: OcrRepository,
+    private val locationRepo: LocationRepository,
     private val imageUtil: ImageUtil
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
@@ -69,10 +76,13 @@ class MainViewModel(
         }
     }
 
-    fun setCaptureImage(image: ImageProxy, callback: () -> Unit) {
+    fun setCaptureImage(image: ImageProxy, navigateCallback: () -> Unit, imageCallback: (Bitmap) -> Unit) {
         val bitmapImage = imageUtil.setCaptureImage(image)
 
-        getTextFromOCR(bitmapImage, callback)
+        Log.i(TAG, "bitmap: $bitmapImage ${System.currentTimeMillis()}")
+
+        imageCallback(bitmapImage)
+        getTextFromOCR(bitmapImage, navigateCallback)
     }
 
     private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {

@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.util.Log
 import androidx.camera.core.ImageProxy
-import com.hapataka.questwalk.ui.record.TAG
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+
 class ImageUtil(val context: Context) {
     private var file: File? = null
     fun setCaptureImage(image: ImageProxy): Bitmap {
@@ -25,13 +27,15 @@ class ImageUtil(val context: Context) {
         val postBitmap =
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-        saveImage(postBitmap, "resultImage.png")
-
+        GlobalScope.launch {
+            saveImage(postBitmap)
+            this.cancel()
+        }
         return postBitmap
     }
 
-    private fun saveImage(bitmap: Bitmap, filename: String) {
-        file = File(context.filesDir, filename)
+    private fun saveImage(bitmap: Bitmap) {
+        file = File(context.filesDir, "resultImage.png")
         val fos = FileOutputStream(file)
 
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
@@ -39,7 +43,6 @@ class ImageUtil(val context: Context) {
     }
 
     fun getImageUri(): Uri {
-        Log.i(TAG, "path: ${file?.path}")
         return Uri.parse("file://${file?.path}")
     }
 

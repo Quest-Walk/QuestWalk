@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
+import com.hapataka.questwalk.data.firebase.repository.AchieveStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
@@ -30,7 +31,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val authRepo = AuthRepositoryImpl()
         val userRepo = UserRepositoryImpl()
         val questRepo = QuestStackRepositoryImpl()
-        val achieveRepo = AuthRepositoryImpl()
+        val achieveRepo = AchieveStackRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
         val mapRepo = GoogleMapRepositoryImpl()
         val ocrRepo = OcrRepositoryImpl()

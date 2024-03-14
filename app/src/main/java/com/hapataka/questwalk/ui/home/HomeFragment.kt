@@ -148,6 +148,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
             }
+
             playState.observe(viewLifecycleOwner) { state ->
                 toggleViews(state)
                 Log.i(TAG, "playstate: $state")
@@ -203,7 +204,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
 
             if (isPlay == QUEST_SUCCESS) {
-                ibCamera.visible()
+                ibCamera.gone()
                 llPlayingContents.visible()
                 tvQuestChange.invisible()
                 btnToggleQuestState.text = "완료하기"

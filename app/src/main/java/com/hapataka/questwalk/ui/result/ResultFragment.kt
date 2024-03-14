@@ -84,7 +84,11 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
             if (result.isFailed.not()) {
-                ivQuestImage.load(result.questImg)
+                ivQuestImage.load(result.questImg) {
+                    placeholder(R.drawable.image_empty)
+                    crossfade(true)
+                    memoryCacheKey(result.questImg)
+                }
             } else {
                 ivQuestImage.load(R.drawable.image_fail)
             }
@@ -109,6 +113,8 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         questItem.successItems.reversed().take(4).forEachIndexed { index, successItem ->
             imageList[index].load(successItem.imageUrl) {
                 crossfade(true)
+                placeholder(R.drawable.image_empty)
+                memoryCacheKey(successItem.imageUrl)
             }
         }
     }
