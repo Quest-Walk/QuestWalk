@@ -51,7 +51,7 @@
 
             <ImageView
                 android:id="@+id/iv_cropped_image"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/ico_camera_capture"
@@ -61,7 +61,7 @@
 
             <ImageView
                 android:id="@+id/iv_captured_image"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"

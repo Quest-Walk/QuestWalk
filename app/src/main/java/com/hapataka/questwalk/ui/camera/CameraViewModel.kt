@@ -148,6 +148,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private fun preProcessImage(bitmap: Bitmap?): Bitmap?{
         var resultImage = bitmap
         resultImage = repository.toGrayScaleBitmap(resultImage)
+        resultImage = repository.contractBitmap(resultImage,1.5f)
         return resultImage
     }
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
