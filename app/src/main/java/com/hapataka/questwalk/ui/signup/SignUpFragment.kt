@@ -2,53 +2,40 @@ package com.hapataka.questwalk.ui.signup
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
-import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
+import android.widget.TextView
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
+import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.record.TAG
-import kotlinx.coroutines.launch
-class SignUpFragment : Fragment() {
-    private var _binding: FragmentSignUpBinding? = null
-    private val binding get() = _binding!!
-    private val authRepo by lazy { AuthRepositoryImpl() }
-    private val viewModel: SignUpViewModel by viewModels()
-    private var isUiPassWord = false
-    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private var emailId = ""
-    private val passwordViews by lazy {
-        listOf(
-            binding.etSignUpPassWord,
-            binding.etSignUpPassWordCheck,
-            binding.btnGoToJoin,
-            binding.ivShowPassWord,
-            binding.ivShowPassWordCheck
-        )
-    }
+import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.extentions.showErrMsg
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentSignUpBinding.inflate(inflater, container, false)
-        return binding.root
+class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
+    private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
+    private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var isCanClick = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.slide_right)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,170 +44,167 @@ class SignUpFragment : Fragment() {
     }
 
     private fun initView() {
-        initGoToPasswordButton()
-        initJoinButton()
-        initPrevButton()
-        showPasswordVisibility(binding.ivShowPassWord, binding.etSignUpPassWord)
-        showPasswordVisibility(binding.ivShowPassWordCheck, binding.etSignUpPassWordCheck)
+        initEditText()
+        initSignUpButton()
+        initCloseButton()
+        initPwVisibilityButton()
     }
 
-//    fun TextView.showError(msg: String) {
-//        val animShake = AnimationUtils.loadAnimation(requireContext(), R.anim.shake_error)
-//
-//        text = msg
-//        startAnimation(animShake)
-//    }
-
-    private fun initGoToPasswordButton() {
+    private fun initEditText() {
         with(binding) {
-            btnGoToPassWord.setOnClickListener {
-                emailId = etSignUpId.text.toString()
+            etSignUpId.resetMsg(tvExplainId, "아이디는 이메일 형식으로 입력해 주세요.")
+            etSignUpPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
+            etSignUpCheckPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
+        }
+    }
+
+    private fun initSignUpButton() {
+        with(binding) {
+            btnSignUp.setOnClickListener {
                 hideKeyBoard()
+                if (!isCanClick) return@setOnClickListener
+                isCanClick = false
+
+                val emailId = etSignUpId.text.toString()
+                val pw = etSignUpPw.text.toString()
+                val pwCheck = etSignUpCheckPw.text.toString()
+
 
                 if (checkEmailValidity(emailId)) {
+                    etSignUpId.requestFocus()
+                    isCanClick = true
                     return@setOnClickListener
                 }
-                changePassWordUi()
+
+                if (checkPwValidity(pw, pwCheck)) {
+                    etSignUpPw.requestFocus()
+                    isCanClick = true
+                    return@setOnClickListener
+                }
+
+                viewModel.registerByEmailAndPw(emailId, pw,
+                    { moveHomeWithLogin(emailId, pw) },
+                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView())
+                    isCanClick = true })
             }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                isCanClick = true
+            },1500)
+        }
+    }
+
+    private fun EditText.resetMsg(textView: TextView, msg: String) {
+        doAfterTextChanged {
+            textView.text = msg
+            textView.setTextColor(resources.getColor(R.color.main_purple))
+        }
+    }
+
+    private fun initCloseButton() {
+        binding.btnClose.setOnClickListener {
+            navController.popBackStack()
         }
     }
 
     private fun checkEmailValidity(id: String): Boolean {
-        if (emailId.isEmpty()) {
-            ("이메일 주소를 입력해주세요.").showSnackbar(requireView())
+        Log.d(TAG, "id: $id")
+
+        if (id.isEmpty()) {
+            binding.tvExplainId.showErrMsg("이메일 주소를 입력해주세요.", requireContext())
             return true
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(emailId).matches()) {
-            ("이메일 형식이 올바르지 않습니다.").showSnackbar(requireView())
+        if (!Patterns.EMAIL_ADDRESS.matcher(id).matches()) {
+            binding.tvExplainId.showErrMsg("이메일 형식이 올바르지 않습니다.", requireContext())
             return true
         }
         return false
     }
 
-    private fun initJoinButton() {
-        with(binding) {
-            btnGoToJoin.setOnClickListener {
-                val password = etSignUpPassWord.text.toString()
-                val passwordCheck = etSignUpPassWordCheck.text.toString()
-                hideKeyBoard()
-
-                if (password != passwordCheck) {
-                    ("비밀번호가 일치하지 않습니다.").showSnackbar(requireView())
-                    return@setOnClickListener
-                }
-                if (password.length < 6) {
-                    ("비밀번호는 6자리 이상으로 설정해 주세요.").showSnackbar(requireView())
-                    return@setOnClickListener
-                }
-
-
-                lifecycleScope.launch {
-                    authRepo.registerByEmailAndPw(emailId, password) { task ->
-                        if (task.isSuccessful) {
-                            moveHomeWithLogin(emailId, password)
-                            return@registerByEmailAndPw
-                        }
-                        ("이미 가입된 아이디입니다.").showSnackbar(requireView())
-                    }
-                }
-            }
+    private fun checkPwValidity(pw: String, pwCheck: String): Boolean {
+        if (pw != pwCheck) {
+            binding.tvExplainPw.showErrMsg("비밀번호가 일치하지 않습니다.", requireContext())
+            return true
         }
+
+        if (pw.length < 6) {
+            binding.tvExplainPw.showErrMsg("비밀번호는 6자리 이상으로 설정해 주세요.", requireContext())
+            return true
+        }
+        return false
     }
 
     private fun moveHomeWithLogin(id: String, pw: String) {
-        lifecycleScope.launch {
-            authRepo.loginByEmailAndPw(id, pw) { task ->
-                if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
-                    navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
-//                    navGraph.setStartDestination(R.id.frag_on_boarding)
-//                    navController.graph = navGraph
-                    return@loginByEmailAndPw
-                }
-                Log.e(TAG, "에러남")
-            }
-        }
+        viewModel.logByEmailAndPw(id, pw,
+            { navigateToOnBoarding() }, { ("오류가 발생해 로그인을 할 수 없습니다.").showSnackbar(requireView()) })
+
     }
 
-//    private fun moveHomeWithLogin(id: String, pw: String) {
-//        lifecycleScope.launch {
-//            authRepo.loginByEmailAndPw(id, pw) { task ->
-//                if (task.isSuccessful) {
-//                    val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-//
-//                    navController.navigate(R.id.action_frag_sign_up_to_frag_home)
-//                    navGraph.setStartDestination(R.id.frag_home)
-//                    navController.graph = navGraph
-//                    return@loginByEmailAndPw
-//                }
-//                Log.e(TAG, "에러남")
-//            }
-//        }
-//    }
+    private fun navigateToOnBoarding() {
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
-    private fun initPrevButton() {
-        binding.btnBack.setOnClickListener {
-            if (isUiPassWord) {
-                changeIdUi()
-                return@setOnClickListener
-            }
-            navController.popBackStack()
-        }
+        exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+        navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
+        navGraph.setStartDestination(R.id.frag_on_boarding)
+        navController.graph = navGraph
     }
 
-
-
-    private fun changePassWordUi() {
-        binding.apply {
-            tvId.text = "비밀번호"
-            tvExplain.text = "비밀번호는 6글자 이상 입력해 주세요"
-            etSignUpId.isVisible = false
-            btnGoToPassWord.visibility = View.INVISIBLE
-        }
-        passwordViews.forEach { it.isVisible = true }
-        isUiPassWord = true
+    private fun initPwVisibilityButton() {
+        binding.ivShowPassWord.toggleVisibility(binding.etSignUpPw)
+        binding.ivShowPassWordCheck.toggleVisibility(binding.etSignUpCheckPw)
     }
 
-    private fun changeIdUi() {
-        binding.apply {
-            tvId.text = "아이디"
-            tvExplain.text = "아이디는 이메일 형식으로 입력해 주세요"
-            etSignUpId.isVisible = true
-            btnGoToPassWord.isVisible = true
-        }
-        passwordViews.forEach { it.isVisible = false }
-        isUiPassWord = false
-    }
+    private fun ImageView.toggleVisibility(editText: EditText) {
+        val passwod = PasswordTransformationMethod.getInstance()
+        val hide = HideReturnsTransformationMethod.getInstance()
 
-    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
-        icon.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    editText.transformationMethod =
+        setOnClickListener {
+            with(editText) {
+                if (transformationMethod == passwod) {
+                    load(R.drawable.ic_pw_show_enable)
+                    transformationMethod =
                         HideReturnsTransformationMethod.getInstance()
-                    editText.setSelection(editText.text.length)
+                    setSelection(text.length)
+                    return@setOnClickListener
                 }
 
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    editText.transformationMethod =
+                if (transformationMethod == hide) {
+                    load(R.drawable.ic_pw_show_disable)
+                    transformationMethod =
                         PasswordTransformationMethod.getInstance()
-                    editText.setSelection(editText.text.length)
+                    setSelection(text.length)
+                    return@setOnClickListener
                 }
             }
-            true
         }
+
+
+
+//    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
+//        icon.setOnTouchListener { v, event ->
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    editText.transformationMethod =
+//                        HideReturnsTransformationMethod.getInstance()
+//                    editText.setSelection(editText.text.length)
+//                }
+//
+//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                    editText.transformationMethod =
+//                        PasswordTransformationMethod.getInstance()
+//                    editText.setSelection(editText.text.length)
+//                }
+//            }
+//            true
+//        }
     }
 
     private fun hideKeyBoard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 }
 

@@ -3,6 +3,7 @@ package com.hapataka.questwalk.di
 import android.content.Context
 import com.hapataka.questwalk.camerafragment.CameraRepository
 import com.hapataka.questwalk.data.remote.retrofit.WeatherService
+import com.hapataka.questwalk.ui.camera.CameraRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +18,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
-
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {

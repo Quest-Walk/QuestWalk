@@ -1,28 +1,51 @@
 package com.hapataka.questwalk.ui.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import kotlin.random.Random
+import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.ImageRepository
+import com.hapataka.questwalk.domain.repository.QuestStackRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
+import kotlinx.coroutines.launch
+import java.time.LocalTime
 
-class HomeViewModel : ViewModel() {
-    private val questStackRepositoryImpl = QuestStackRepositoryImpl()
-    private var questKeyword: String? = null
-    private var imgPath: String? = null
+class HomeViewModel(
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository,
+    private val imageRepo: ImageRepository,
+    private val questRepo: QuestStackRepository
+) : ViewModel() {
+    private var _isNight = MutableLiveData(false)
+    private var _charNum = MutableLiveData<Int>()
 
-    var isPlay: Boolean = false
 
-    suspend fun getQuestWithRepository() {
-        val items =
-            questStackRepositoryImpl.getAllItems()
-        val size = items.size
-        val idx = Random.nextInt(size)
-        questKeyword = items[idx].keyWord
+    val isNight: LiveData<Boolean> get() = _isNight
+    private var _totalStep = MutableLiveData<Long>()
+    val totalStep: LiveData<Long> get() = _totalStep
+
+    private var time = -1
+
+    fun checkCurrentTime() {
+        time = LocalTime.now().hour
+
+        when (time) {
+            in 7..18 -> _isNight.value = false
+            else -> _isNight.value = true
+        }
     }
 
-    fun getKeyword() = questKeyword
 
 
-    fun setImagePath(uri: String) {
-        imgPath = uri
+    private fun getUserCharNum() {
+        viewModelScope.launch {
+            val userId = authRepo.getCurrentUserUid()
+
+            val userInfo = userRepo.getInfo(userId)
+            _charNum.value = userInfo.characterId
+        }
+
     }
+
 }

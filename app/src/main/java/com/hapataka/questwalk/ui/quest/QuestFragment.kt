@@ -1,55 +1,57 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
-import com.hapataka.questwalk.ui.quest.adapter.QuestAdapter
+import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
+import com.hapataka.questwalk.util.BaseFragment
 
-class QuestFragment : Fragment() {
-    private val binding: FragmentQuestBinding by lazy { FragmentQuestBinding.inflate(layoutInflater) }
-    private lateinit var questAdapter: QuestAdapter
+class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::inflate) {
+    private lateinit var questListAdapter: QuestListAdapter
     private val questViewModel: QuestViewModel by viewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
-    }
+    private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private var keywords: MutableList<String> = mutableListOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataObserve()
+        setObserve()
         initViews()
     }
 
-    private fun dataObserve() {
-        questViewModel.questItems.observe(viewLifecycleOwner) {
-            questAdapter.submitList(it)
+    private fun setObserve() {
+        with(questViewModel) {
+            questItems.observe(viewLifecycleOwner) {
+                questListAdapter.submitList(it)
+            }
+            allUserSize.observe(viewLifecycleOwner) {
+                questListAdapter.setAllUser(it)
+            }
+            successKeywords.observe(viewLifecycleOwner) {
+                keywords = it
+            }
         }
     }
 
     private fun initViews() {
+        initBackButton()
         initSpinner()
         initCompleteButton()
         initQuestRecyclerView()
     }
 
+    private fun initBackButton() {
+        binding.ivArrowBack.setOnClickListener {
+            navHost.popBackStack()
+        }
+    }
+
     private fun initSpinner() {
-        Log.d("QuestFragment:","QuestFragment: initSpinner")
         binding.spinnerLevel.selectItemByIndex(0)
         binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
             questViewModel.filterLevel(Index)
@@ -69,18 +71,23 @@ class QuestFragment : Fragment() {
     }
 
     private fun initQuestRecyclerView() {
-        val navHost = (parentFragment as NavHostFragment).findNavController()
-        val bundle = Bundle()
+        questListAdapter = QuestListAdapter(
+            onClickMoreText = {questData, allUser ->
+                val bundle = Bundle().apply {
+                    putParcelable("item", questData)
+                    putLong("allUser", allUser)
+                }
+                navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
+            },
 
-        binding.ivArrowBack.setOnClickListener {
-            navHost.popBackStack()
-        }
-        questAdapter = QuestAdapter {item ->
-            bundle.apply {
-                putParcelable("item", item)
+            onClickView =  {keyWord ->
+                val dialog = QuestDialog(keyWord, keywords) {
+                    Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
+                }
+
+                dialog.show(parentFragmentManager, "QuestDialog")
             }
-            navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
-        }
-        binding.revQuest.adapter = questAdapter
+        )
+        binding.revQuest.adapter = questListAdapter
     }
 }

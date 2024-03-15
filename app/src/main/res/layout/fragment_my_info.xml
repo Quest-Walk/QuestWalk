@@ -23,7 +23,6 @@
                 android:id="@+id/btn_back"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:layout_marginStart="20dp"
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -33,26 +32,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:scaleType="centerCrop"
-                    android:tint="@color/button"
-                    android:src="@drawable/btn_back" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/btn_logout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="20dp"
-                android:gravity="center"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    style="@style/body_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:text="로그아웃"
-                    android:textColor="@color/button" />
+                    android:src="@drawable/btn_back"
+                    app:tint="@color/button" />
 
             </LinearLayout>
 
@@ -64,17 +45,18 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="12dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
                 android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/tv_title"
-                    style="@style/head"
+                    style="@style/sans_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="56dp"
                     android:text="내 정보"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,27 +64,28 @@
                     android:id="@+id/iv_player_character"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="52dp"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/dummy_character"
+                    android:src="@drawable/character_01"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
                 <TextView
                     android:id="@+id/tv_player_name"
-                    style="@style/body_default"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
+                    android:textColor="@color/main_purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iv_player_character"
-                    tools:text="모험가 158427" />
+                    tools:text="모험가 1527" />
 
                 <TextView
                     android:id="@+id/tv_title_time"
-                    style="@style/body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -112,7 +95,7 @@
 
                 <TextView
                     android:id="@+id/tv_time_value"
-                    style="@style/body_big"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -122,7 +105,7 @@
 
                 <TextView
                     android:id="@+id/tv_title_distance"
-                    style="@style/body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -132,7 +115,7 @@
 
                 <TextView
                     android:id="@+id/tv_distance_value"
-                    style="@style/body_big"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -142,7 +125,7 @@
 
                 <TextView
                     android:id="@+id/tv_title_step"
-                    style="@style/body_default"
+                    style="@style/sans_body_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -152,7 +135,7 @@
 
                 <TextView
                     android:id="@+id/tv_step_value"
-                    style="@style/body_big"
+                    style="@style/pixel_body_big"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -162,7 +145,7 @@
 
                 <TextView
                     android:id="@+id/tv_calorie"
-                    style="@style/small"
+                    style="@style/pixel_body_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -183,14 +166,14 @@
 
                     <TextView
                         android:id="@+id/tv_title_solve_quest"
-                        style="@style/body_default"
+                        style="@style/sans_body_default"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="해결한 퀘스트" />
 
                     <TextView
                         android:id="@+id/tv_solve_quest_value"
-                        style="@style/body_big"
+                        style="@style/pixel_body_big"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -202,21 +185,21 @@
                     android:id="@+id/ll_quest_content_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="32dp"
                     android:orientation="vertical"
                     app:layout_constraintStart_toEndOf="@id/ll_quest_content_1"
                     app:layout_constraintTop_toTopOf="@id/ll_quest_content_1">
 
                     <TextView
                         android:id="@+id/tv_title_achieve"
-                        style="@style/body_default"
+                        style="@style/sans_body_default"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="달성한 업적" />
 
                     <TextView
                         android:id="@+id/tv_achieve_couunt"
-                        style="@style/body_big"
+                        style="@style/pixel_body_big"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -225,17 +208,44 @@
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_drop_out"
-                    style="@style/body_default"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_logout"
+                    style="@style/pixel_body_big"
+                    android:layout_width="280dp"
+                    android:layout_height="40dp"
                     android:layout_marginTop="40dp"
                     android:background="@drawable/background_drop_out_button"
+                    android:backgroundTint="@color/main_purple"
                     android:gravity="center"
                     android:paddingVertical="8dp"
-                    android:text="탈퇴하기"
+                    android:text="로그아웃"
                     android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ll_quest_content_1" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/btn_drop_out"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="@id/btn_logout"
+                    app:layout_constraintStart_toStartOf="@id/btn_logout"
+                    app:layout_constraintTop_toBottomOf="@id/btn_logout">
+
+                    <TextView
+                        style="@style/sans_body_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingVertical="8dp"
+                        android:text="탈퇴하기"
+                        android:textColor="@color/red"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
                     android:layout_width="match_parent"

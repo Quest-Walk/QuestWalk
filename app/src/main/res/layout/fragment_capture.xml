@@ -1,36 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".camerafragment.CaptureFragment">
+    tools:context=".ui.camera.CaptureFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/gray">
 
         <ImageView
             android:id="@+id/iv_captured_image"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintDimensionRatio="960:1280"
+            android:layout_marginBottom="16dp"
+            app:cropScaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@+id/cl_check_ocr"
+            app:layout_constraintDimensionRatio=""
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_back_btn"
+            app:layout_constraintTop_toBottomOf="@+id/iv_cropped_image"
             app:srcCompat="@drawable/ic_dummy1" />
 
+
         <ImageButton
-            android:id="@+id/ib_back_btn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black"
+            android:id="@+id/btn_back"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:background="@android:color/transparent"
             android:rotation="180"
-            android:src="@android:drawable/ic_delete" />
+            android:src="@android:drawable/ic_delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <ImageButton
+            android:id="@+id/ib_crop_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:src="@drawable/ico_camera_crop"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_back"
+            app:tint="@color/black" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_check_ocr"
@@ -38,8 +57,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_captured_image">
+            app:layout_constraintStart_toStartOf="parent">
 
             <Button
                 android:id="@+id/btn_attach"
@@ -47,18 +65,31 @@
                 android:layout_height="wrap_content"
                 android:text="결과 보기"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/et_keyword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/et_keyword_debug"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:ems="10"
                 android:hint="Keyword 를 입력"
                 android:inputType="text"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_attach"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_load_image_debug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="불러오기"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -72,15 +103,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_captured_image">
 
-            <TextView
-                android:id="@+id/tv_result"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_result"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <Button
                 android:id="@+id/btn_result"
                 android:layout_width="wrap_content"
@@ -88,8 +110,18 @@
                 android:text="다시 찍기"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/iv_cropped_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ico_camera_capture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_back" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

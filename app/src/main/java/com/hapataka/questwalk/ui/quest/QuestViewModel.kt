@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.ui.quest
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,25 +8,34 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import kotlinx.coroutines.Job
+import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import kotlinx.coroutines.launch
 
 class QuestViewModel : ViewModel() {
-    private val questStackRepositoryImpl = QuestStackRepositoryImpl()
-    private val userRepositoryImpl = UserRepositoryImpl()
-    private val authRepositoryImpl = AuthRepositoryImpl()
-    private var allQuestItems : MutableList<QuestData>? = null
+    private val questStackRepo = QuestStackRepositoryImpl()
+    private val userRepo = UserRepositoryImpl()
+    private val authRepo = AuthRepositoryImpl()
+
+    private var allQuestItems: MutableList<QuestData>? = null
     private var currentLevel = 0
+
     private val _questItems = MutableLiveData<MutableList<QuestData>>()
     val questItems: LiveData<MutableList<QuestData>> = _questItems
+    private val _allUserSize = MutableLiveData<Long>()
+    val allUserSize: LiveData<Long> = _allUserSize
+    private val _successKeywords = MutableLiveData<MutableList<String>>()
+    val successKeywords: LiveData<MutableList<String>> get() = _successKeywords
+    val filterUseCase = QuestFilteringUseCase()
 
     init {
         getQuestItems(false)
+        getAllUserSize()
+        getSuccessKeywords()
     }
 
     private fun getQuestItems(completeFilter: Boolean) {
         viewModelScope.launch {
-            _questItems.value = questStackRepositoryImpl.getAllItems().map {
+            _questItems.value = questStackRepo.getAllItems().map {
                 convertToQuestData(it)
             }.toMutableList()
             allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
@@ -48,24 +56,37 @@ class QuestViewModel : ViewModel() {
     fun filterComplete(isChecked: Boolean) {
         if (isChecked) {
             viewModelScope.launch {
-                val uid = authRepositoryImpl.getCurrentUserUid()
-//                val testUid = "8fEEPVnXYjPMyXIeoWTxelYc9qo1"
-                val completeKeywords = userRepositoryImpl.getResultHistory(uid).map { it.quest }
+                val filterList = mutableListOf<QuestData>()
 
-                val filterList = allQuestItems?.filter { !completeKeywords.contains(it.keyWord) }
+                filterUseCase().forEach {
+                    filterList += convertToQuestData(it)
+                }
                 allQuestItems = filterList?.toMutableList()
                 filterLevel(currentLevel)
-                
+
             }
         } else {
             getQuestItems(true)
-//            filterLevel(currentLevel)
         }
     }
 
-    private fun convertToQuestData(questStackEntity: QuestStackEntity):QuestData {
+    private fun getAllUserSize() {
+        viewModelScope.launch {
+            _allUserSize.value = userRepo.getAllUserSize()
+        }
+    }
+
+    private fun getSuccessKeywords() {
+        viewModelScope.launch {
+            val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isFailed.not() }
+            val successKeywords = successResults.map { it.quest }
+            _successKeywords.value = successKeywords.toMutableList()
+        }
+    }
+
+    private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
-            QuestData.SuccessItem(it.userId, it.imageUrl)
+            QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)
         }
         return QuestData(
             keyWord = questStackEntity.keyWord,

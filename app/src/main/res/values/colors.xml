@@ -7,4 +7,6 @@
     <color name="button">#1A6FFF</color>
     <color name="gray">#FF808080</color>
     <color name="yellow">#FFFF00</color>
+    <color name="text_box">#f5f5f5</color>
+    <color name="main_purple">#7A5EC8</color>
 </resources>
