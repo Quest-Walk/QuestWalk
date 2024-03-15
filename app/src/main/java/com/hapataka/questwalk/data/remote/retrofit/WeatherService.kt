@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.data.remote.retrofit
 
-import com.example.weatherex.dto.WeatherResponse
+import com.hapataka.questwalk.data.remote.dto.weather.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 

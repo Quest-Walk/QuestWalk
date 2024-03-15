@@ -12,6 +12,7 @@ class GetWeatherUseCase (
     private val weatherRepository: WeatherRepository
 ) {
     suspend operator fun invoke(): List<WeatherEntity> {
+        // TODO: 현재 위.경도를 받아오도록 수정  
         val convertXy = convertToXY(37.21407702184533, 127.04263109183239)
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(

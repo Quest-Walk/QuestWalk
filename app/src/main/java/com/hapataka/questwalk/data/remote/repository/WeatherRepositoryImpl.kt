@@ -1,16 +1,14 @@
 package com.hapataka.questwalk.data.remote.repository
 
 import android.util.Log
-import com.example.weatherex.dto.Item
-import com.hapataka.questwalk.data.remote.retrofit.WeatherApi
-import com.hapataka.questwalk.data.remote.retrofit.WeatherService
+import com.hapataka.questwalk.data.remote.dto.weather.Item
+import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.WeatherRepository
-import javax.inject.Inject
 
 class WeatherRepositoryImpl (
 ) : WeatherRepository {
-    private val weatherService = WeatherApi.weatherApi
+    private val weatherService = RetrofitClient.weatherApi
 
     override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {
         Log.d("WeatherRepositoryImpl:","WeatherRepositoryImpl: $quries")
