@@ -9,9 +9,8 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
-import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
-import com.hapataka.questwalk.domain.repository.MapRepository
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
+import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
 import com.hapataka.questwalk.ui.mainactivity.ImageUtil
@@ -58,7 +57,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
-            return ResultViewModel(userRepo, questRepo, mapRepo) as T
+            return ResultViewModel(userRepo, questRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")

@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.home
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -8,13 +9,15 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -29,10 +32,10 @@ import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
@@ -56,13 +59,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-//    private lateinit var locationPermission: ActivityResultLauncher<Array<String>>
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mainViewModel.setRandomKeyword()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -78,10 +82,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         initBackground()
         initNaviButtons()
         initQuestButton()
-//        checkPermission()
     }
 
     private fun setup() {
+        checkPermissions()
         setObserver()
         initBackPressedCallback()
     }
@@ -140,25 +144,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     binding.ivBgLayer3.load(R.drawable.background_day_layer3)
                 }
             }
-            totalStep.observe(viewLifecycleOwner) { step ->
-                binding.tvQuestPlaying.text = "${step}걸음"
-            }
+
         }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
             }
-
             playState.observe(viewLifecycleOwner) { state ->
-                toggleViews(state)
-                Log.i(TAG, "playstate: $state")
-//                toggleLocation(it)
+                updateWithState(state)
             }
             durationTime.observe(viewLifecycleOwner) {
                 binding.tvQuestTime.text = it.convertTime(SIMPLE_TIME)
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = it.convertKm()
+            }
+            totalStep.observe(viewLifecycleOwner) { step ->
+                binding.tvQuestPlaying.text = "${step}걸음"
             }
             isLoading.observe(viewLifecycleOwner) { isLoading ->
                 if (isLoading) {
@@ -174,14 +176,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun showHomeDialog() {
         val dialog = HomeDialog {
-            viewModel.toggleIsPlay()
+//            viewModel.toggleIsPlay()
         }
         dialog.show(parentFragmentManager, "HomeDialog")
     }
 
-    private fun toggleViews(isPlay: Int) {
+    private fun updateWithState(playState: Int) {
+        updateViews(playState)
+        toggleStepSensor(playState)
+    }
+
+    private fun updateViews(playState: Int) {
         with(binding) {
-            if (isPlay == QUEST_STOP) {
+            if (playState == QUEST_STOP) {
                 ibCamera.gone()
                 llPlayingContents.gone()
                 tvQuestChange.visible()
@@ -192,7 +199,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 return
             }
 
-            if (isPlay == QUEST_START) {
+            if (playState == QUEST_START) {
                 ibCamera.visible()
                 llPlayingContents.visible()
                 tvQuestChange.invisible()
@@ -203,7 +210,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 return
             }
 
-            if (isPlay == QUEST_SUCCESS) {
+            if (playState == QUEST_SUCCESS) {
                 ibCamera.gone()
                 llPlayingContents.visible()
                 tvQuestChange.invisible()
@@ -217,12 +224,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun toggleLocation(isPlay: Boolean) {
-        if (isPlay) {
-//            updateLocation()
+    private fun toggleStepSensor(playState: Int) {
+        if (playState == QUEST_START) {
             initStepSensor()
-        } else {
+            return
+        }
+
+        if (playState == QUEST_STOP){
             sensorManager.unregisterListener(sensorListener, stepSensor)
+            return
         }
     }
 
@@ -326,8 +336,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             return
         }
         sensorManager.registerListener(sensorListener, stepSensor, SensorManager.SENSOR_DELAY_UI)
-
-        Log.d(TAG, "setpSensor: ${sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)}")
     }
 
     private val sensorListener by lazy {
@@ -336,7 +344,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 val sensor = event!!.sensor
 
                 if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-                    viewModel.updateStep()
+                    mainViewModel.countUpStep()
                 }
             }
 
@@ -345,21 +353,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private val stepSensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) }
-
-    private fun makeSensorListener(): SensorEventListener {
-        return object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                Log.i(TAG, "event: $event")
-                val sensor = event!!.sensor
-
-                if (sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-                    viewModel.updateStep()
-                }
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-        }
-    }
 
     private fun String.showToast() {
         Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()
@@ -383,32 +376,70 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
+    private fun checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            checkCamera()
+            checkLocation()
+        }
+    }
 
-    //    private fun checkPermission() {
-//        locationPermission = registerForActivityResult(
-//            ActivityResultContracts.RequestMultiplePermissions()
-//        ) { permissions ->
-//            when {
-//                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-//                    // Precise location access granted.
-//                }
-//
-//                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-//                    // Only approximate location access granted.
-//                }
-//
-//                else -> {
-//                    // No location access granted.
-//                }
-//            }
-//        }
-//
-//        //권한 요청
-//        locationPermission.launch(
-//            arrayOf(
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            )
-//        )
-//    }
+
+    private fun checkCamera() {
+        permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted.not()) {
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
+                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                    return@registerForActivityResult
+                }
+                showDialog(
+                    "Quest Keyword를 사용하려면\n카메라 권한이 필요합니다.",
+                ) {
+                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                }
+            }
+        }
+
+        permissionLauncher.launch(android.Manifest.permission.CAMERA)
+    }
+
+    private fun checkLocation() {
+        permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted.not()) {
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    return@registerForActivityResult
+                }
+
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    return@registerForActivityResult
+                }
+
+                showDialog(
+                    "Quest Keyword를 사용하려면\n위치 권한이 필요합니다.",
+                ) {
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                }
+            }
+        }
+
+        permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
+    private fun showDialog(msg: String, callback: () -> Unit) {
+        val dialog = PermissionDialog(msg, callback)
+
+        dialog.show(parentFragmentManager, "permissionDialog")
+    }
 }
