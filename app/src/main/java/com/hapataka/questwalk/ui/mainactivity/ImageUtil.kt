@@ -28,23 +28,21 @@ class ImageUtil(val context: Context) {
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
         GlobalScope.launch {
-            saveImage(postBitmap)
+            saveImage()
             this.cancel()
         }
         return postBitmap
     }
 
-    private fun saveImage(bitmap: Bitmap) {
+    private fun saveImage() {
         file = File(context.filesDir, "resultImage.png")
         val fos = FileOutputStream(file)
 
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
         fos.close()
     }
 
     fun getImageUri(): Uri {
         return Uri.parse("file://${file?.path}")
     }
-
 }
 
