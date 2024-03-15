@@ -39,7 +39,8 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         return Bitmap.createScaledBitmap(image, width, height, true)
     }
 
-    fun toGrayScaleBitmap(bitmap: Bitmap): Bitmap {
+    fun toGrayScaleBitmap(bitmap: Bitmap?): Bitmap? {
+        if(bitmap == null) return null
         val width: Int = bitmap.width
         val height: Int = bitmap.height
 
@@ -65,6 +66,4 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         file?.delete()
     }
 
-    fun dpToPx(dp: Int): Float =
-        dp * context.resources.displayMetrics.density
 }

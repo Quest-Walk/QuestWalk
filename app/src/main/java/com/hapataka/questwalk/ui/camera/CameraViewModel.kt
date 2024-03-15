@@ -39,7 +39,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     var file: File? = null
     // Crop event
 
-    var isCropped = false
+    var isCropped = true
     private var croppedBitmap: Bitmap? = null
     private var drawBoxOnBitmap: Bitmap? = null
 
@@ -98,12 +98,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
         return Bitmap.createBitmap(bitmap, x, y, croppedSize*2, croppedSize*2)
     }
-
-    /**
-     *  1. 중앙의 기준 으로 앱의 전체 세로 화면(긴 화면)에 맞춰서 scale
-     *  2. 중앙 기준으로 해당 Layout 벗어나느부분을 crop
-     */
-
     private fun rotateBitmap(bitmap: Bitmap?, rotation: Float): Bitmap? {
         val matrix = Matrix()
         matrix.postRotate(rotation)
@@ -151,9 +145,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         }
     }
 
+    private fun preProcessImage(bitmap: Bitmap?): Bitmap?{
+        var resultImage = bitmap
+        resultImage = repository.toGrayScaleBitmap(resultImage)
+        return resultImage
+    }
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image: InputImage
         image = if (isCropped) {
+            croppedBitmap = preProcessImage(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
@@ -170,6 +170,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 for (line in block.lines) {
                     for (element in line.elements) {
                         resultListByMLKit.add(element)
+                        Log.d("ocrResult", element.text)
                     }
                 }
             }
@@ -190,15 +191,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
         resultListByMLKit.forEach { element: Element ->
             val word = element.text
-            Log.d("ocrResult", word)
+            Log.d("ocrResult", word+"!")
             if (word.contains(keyword)) {
                 isValidated = true
                 return@forEach
-            } else if (similarityObj.similarity(word, keyword) >= 0.6) {
+            } else if (similarityObj.similarity(word, keyword) >= 0.3) {
                 isValidated = true
                 return@forEach
             }
-            Log.d("ocrResult", similarityObj.similarity(word, keyword).toString())
+            Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())
         }
         if (isValidated) {
             file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
@@ -251,6 +252,16 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     fun setBitmapByGallery(bitmap: Bitmap) {
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
+        if(bitmap.width<=bitmap.height) {
+            croppedSize = (bitmap.width * 0.4).toInt()
+        }else{
+            croppedSize = (bitmap.height * 0.4).toInt()
+        }
+        x = bitmap.width/2 - croppedSize
+        y = bitmap.height/2 - croppedSize
+//        if(y<0) y = -y
+        croppedBitmap = cropBitmap(mutableBitmap)
+        drawBoxOnBitmap = drawBoxOnBitmap(mutableBitmap)
     }
 
 }
