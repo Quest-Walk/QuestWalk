@@ -6,4 +6,5 @@ interface LocationRepository {
     fun startRequest(callback: (LocationEntity) -> Unit)
     fun finishRequest ()
 
+    suspend fun getCurrent(): Pair<Float, Float>
 }

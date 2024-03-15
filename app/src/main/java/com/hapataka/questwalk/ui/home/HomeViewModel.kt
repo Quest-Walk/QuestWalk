@@ -20,7 +20,6 @@ class HomeViewModel(
     private var _isNight = MutableLiveData(false)
     private var _charNum = MutableLiveData<Int>()
 
-
     val isNight: LiveData<Boolean> get() = _isNight
     private var _totalStep = MutableLiveData<Long>()
     val totalStep: LiveData<Long> get() = _totalStep
@@ -36,8 +35,6 @@ class HomeViewModel(
         }
     }
 
-
-
     private fun getUserCharNum() {
         viewModelScope.launch {
             val userId = authRepo.getCurrentUserUid()
@@ -45,7 +42,6 @@ class HomeViewModel(
             val userInfo = userRepo.getInfo(userId)
             _charNum.value = userInfo.characterId
         }
-
     }
 
 }

@@ -46,7 +46,7 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getAllUserSize(): Long = withContext(Dispatchers.IO) {
         val documents = userCollection.get().await()
 
-        return@withContext documents.size().toLong()
+        documents.size().toLong()
     }
 
     override suspend fun getInfo(userId: String): UserEntity = withContext(Dispatchers.IO) {

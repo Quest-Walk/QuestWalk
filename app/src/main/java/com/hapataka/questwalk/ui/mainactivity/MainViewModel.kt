@@ -231,6 +231,14 @@ class MainViewModel(
         _snackBarMsg.value = msg
     }
 
+    fun getLocation() {
+        viewModelScope.launch {
+            val location = locationRepo.getCurrent()
+            Log.d(TAG, "location: ${location}")
+        }
+
+    }
+
 //    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
 //        val tempBitmap = _bitmap.value ?: return
 //        val canvas = Canvas(tempBitmap)
