@@ -76,7 +76,6 @@ class MainViewModel(
         imageCallback(bitmapImage)
         getTextFromOCR(bitmapImage, navigateCallback)
     }
-
     private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {
         viewModelScope.launch {
             val element = ocrRepo.getWordFromImage(image)

@@ -15,12 +15,7 @@ import java.io.FileOutputStream
 class ImageUtil(val context: Context) {
     private var file: File? = null
     fun setCaptureImage(image: ImageProxy): Bitmap {
-        val buffer = image.planes[0].buffer
-        val bytes = ByteArray(buffer.remaining())
-
-        buffer.get(bytes)
-
-        var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        val bitmap = image.toBitmap()
         val matrix = Matrix()
 
         matrix.postRotate(image.imageInfo.rotationDegrees.toFloat())
