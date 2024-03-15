@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.Log
-import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +26,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
+
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
@@ -36,12 +36,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
-    // 카메라 Hardware 정보
-    private var flashMode = ImageCapture.FLASH_MODE_OFF
-
-    // 해당 imageFile 경로
     var file: File? = null
-
     // Crop event
 
     var isCropped = false
@@ -271,4 +266,5 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
     }
+
 }
