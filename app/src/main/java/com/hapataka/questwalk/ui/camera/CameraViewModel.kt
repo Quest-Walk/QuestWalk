@@ -56,7 +56,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var croppedSize = 0
     private var x = 0
     private var y = 0
-    fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy) {
+    fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy,sizeRate : Double) {
 
         val imageWidth = inputImage.height // 1392
         val imageHeight = inputImage.width // 1856
@@ -66,7 +66,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val ratio = appHeight / imageHeight.toDouble()
 
         //3.getCropWidth
-        croppedSize = ((appWidth * 0.4)/ratio).toInt()
+        croppedSize = ((appWidth * sizeRate/2)/ratio).toInt()
 
         //4.getX
         x = (imageWidth/2.0- croppedSize).toInt()
