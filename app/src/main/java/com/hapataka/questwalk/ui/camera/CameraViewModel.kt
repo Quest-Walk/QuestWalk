@@ -2,7 +2,7 @@ package com.hapataka.questwalk.ui.camera
 
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
@@ -56,31 +56,44 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     /**
-     *  Camera 처리 부분
-     */
-
-//    fun toggleFlash(): Int {
-//        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-//            ImageCapture.FLASH_MODE_ON
-//        } else {
-//            ImageCapture.FLASH_MODE_OFF
-//        }
-//        return flashMode
-//    }
-
-
-    /**
      *  Bitmap 파일 처리 부분
      */
+    var croppedWidth: Double = 0.0
+    var croppedSize = 0.0
+    var x = 0
+    var y = 0
+    fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy) {
+//        val appWidth = binding.pvPreview.width // 1080
+//        val appHeight = binding.pvPreview.height // 2203
+
+        val imageWidth = inputImage.height // 1392
+        val imageHeight = inputImage.width // 1856
+
+        //1. getRatio 세로 길이가 더 긴 상황 이므로
+        val ratio = appHeight / imageHeight.toDouble()
+
+        //2. scaled_Image
+        val scaledImageWidth = ratio * imageWidth
+        val scaledImageHeight = ratio * imageHeight
+
+        //3.getCropWidth
+        croppedWidth = ((scaledImageWidth - appWidth) / 2)
+        croppedWidth = croppedWidth/ratio
+        croppedSize = (appWidth * 0.4)/ratio
+
+        //4.getX
+        x = (croppedWidth + croppedSize/4).toInt()
+        y = (imageHeight/2 - croppedSize).toInt()
+
+        return
+
+    }
 
     fun imageProxyToBitmap(image: ImageProxy) {
 
-        val buffer = image.planes[0].buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer.get(bytes)
-        var bitmap: Bitmap? = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        var bitmap = image.toBitmap()
         val rotation = image.imageInfo.rotationDegrees.toFloat()
-        bitmap = rotateBitmap(bitmap, rotation)
+        bitmap = rotateBitmap(bitmap, rotation)!!
         setBitmap(bitmap)
 
     }
@@ -95,16 +108,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun cropBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
-        val offsetPx = bitmap.height/12
-        val x = 0
-        val y = (bitmap.height / 2) - offsetPx
+        val size = (bitmap.width * 0.8).toInt()
 
-        val width = bitmap.width
-        val height = 2 * offsetPx
-
-        return Bitmap.createBitmap(bitmap, x, y, width, height)
+        return Bitmap.createBitmap(bitmap, 0, 0, size, size)
     }
 
+    /**
+     *  1. 중앙의 기준 으로 앱의 전체 세로 화면(긴 화면)에 맞춰서 scale
+     *  2. 중앙 기준으로 해당 Layout 벗어나느부분을 crop
+     */
 
     private fun rotateBitmap(bitmap: Bitmap?, rotation: Float): Bitmap? {
         val matrix = Matrix()
@@ -123,13 +135,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             style = Paint.Style.STROKE
             strokeWidth = 5f
         }
-        val offsetPx : Float = bitmap.height/12f
+        val offsetPx: Float = bitmap.height / 12f
 
-        val left = 0f
-        val top = (drawBitmap.height / 2) - offsetPx
-        val right = drawBitmap.width.toFloat()
-        val bottom = (drawBitmap.height / 2) + offsetPx
-        canvas.drawRect(left, top, right, bottom, paint)
+        val size = (bitmap.width * 0.8).toFloat()
+        val x = (bitmap.width * 0.1).toFloat()
+        val y = ((bitmap.height / 2f) - (size / 2f))
+        canvas.drawRect(x, y, x + size, y + size, paint)
         return drawBitmap
     }
 
@@ -160,7 +171,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image: InputImage = if (isCropped) {
+        val image: InputImage
+        image = if (isCropped) {
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
@@ -191,6 +203,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
+
         var isValidated = false
         val similarityObj = RatcliffObershelp()
 
@@ -246,6 +259,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isSucceed.value = null
     }
 
+
     /**
      *  Debug
      */
@@ -253,12 +267,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isDebug.value = !_isDebug.value!!
     }
 
-    fun setBitmapByGallery(bitmap: Bitmap?) {
-        if (bitmap == null) return
+    fun setBitmapByGallery(bitmap: Bitmap) {
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
-        drawBoxOnBitmap = drawBoxOnBitmap(mutableBitmap)
-        croppedBitmap = cropBitmap(mutableBitmap)
-
     }
 }

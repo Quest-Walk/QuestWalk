@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/gray">
 
         <ImageView
             android:id="@+id/iv_captured_image"
@@ -22,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_cropped_image"
-            app:srcCompat="@drawable/ic_dummy1"/>
+            app:srcCompat="@drawable/ic_dummy1" />
 
 
         <ImageButton
