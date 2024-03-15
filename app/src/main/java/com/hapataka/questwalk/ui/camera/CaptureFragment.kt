@@ -97,6 +97,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             }
         }
         cameraViewModel.bitmap.observe(viewLifecycleOwner){
+
             initCapturedImage()
         }
 

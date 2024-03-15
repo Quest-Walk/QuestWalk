@@ -123,6 +123,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _bitmap.value = null
         file = null
         resultListByMLKit.clear()
+        _isSucceed.value = null
     }
 
     fun deleteBitmapByFile() {
