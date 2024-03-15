@@ -60,7 +60,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         val successResultCount =
             history.filterIsInstance<ResultEntity>().filterNot { it.isFailed }.size.toString()
         val time = userInfo.totalTime.toLongOrNull()
-        val defaultNickName = "닉네임을 설정해 주세요"
+        val defaultNickName = "이름없는 모험가"
 
         with(binding) {
             tvPlayerName.text = if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
