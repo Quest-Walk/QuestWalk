@@ -76,6 +76,7 @@ class MainViewModel(
         imageCallback(bitmapImage)
         getTextFromOCR(bitmapImage, navigateCallback)
     }
+
     private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {
         viewModelScope.launch {
             val element = ocrRepo.getWordFromImage(image)
@@ -92,11 +93,14 @@ class MainViewModel(
         }
     }
 
-    fun togglePlay(callback: () -> Unit) {
+    fun togglePlay(callback: (String, String) -> Unit) {
         val playState = playState.value ?: 0
 
         if (playState == QUEST_STOP) {
             _playState.value = QUEST_START
+            viewModelScope.launch {
+                locationHistory += locationRepo.getCurrent()
+            }
         } else {
             setResultHistory(callback)
 
@@ -142,7 +146,7 @@ class MainViewModel(
     }
 
     private fun setStepCounter() {
-        if (playState.value == QUEST_STOP){
+        if (playState.value == QUEST_STOP) {
             _totalStep.value = 0
         }
     }
@@ -154,7 +158,7 @@ class MainViewModel(
         return
     }
 
-    private fun setResultHistory(callback: () -> Unit) {
+    private fun setResultHistory(navigateResult: (String, String) -> Unit) {
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
             val isFail = playState.value != QUEST_SUCCESS
@@ -183,12 +187,14 @@ class MainViewModel(
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)
+            moveToResult {uid, registerAt ->
+                navigateResult(uid, registerAt)
+            }
             _totalDistance.value = 0f
             _durationTime.value = -1
             _totalStep.value = 1
             _isLoading.value = false
             setRandomKeyword()
-            callback()
         }
     }
 

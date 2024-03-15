@@ -120,14 +120,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            mainViewModel.togglePlay {
-                val bundle = Bundle()
-                mainViewModel.moveToResult { uid, currentTime ->
-                    bundle.apply {
-                        putString(USER_ID, uid)
-                        putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
-                        putString(REGISTER_TIME, currentTime)
-                    }
+            mainViewModel.togglePlay {uid, registerAt ->
+                val bundle = Bundle().apply {
+                    putString(USER_ID, uid)
+                    putString(REGISTER_TIME, registerAt)
+                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
                 }
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
             }

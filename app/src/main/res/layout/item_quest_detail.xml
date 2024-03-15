@@ -8,6 +8,7 @@
         android:id="@+id/iv_quest"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:transitionName="pair_image"
         app:layout_constraintDimensionRatio="1:1"
         android:background="@drawable/bg_quest_image"
         android:clipToOutline="true"
