@@ -11,12 +11,13 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapterDecoration
+import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WeatherFragment : Fragment() {
     private val binding by lazy { FragmentWeatherBinding.inflate(layoutInflater) }
-    private val weatherViewModel: WeatherViewModel by viewModels()
+    private val weatherViewModel: WeatherViewModel by viewModels {ViewModelFactory()}
     private val weatherAdapter by lazy { WeatherAdapter() }
 
     override fun onCreateView(

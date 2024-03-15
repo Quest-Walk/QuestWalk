@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-class GetWeatherUseCase @Inject constructor(
+class GetWeatherUseCase (
     private val weatherRepository: WeatherRepository
 ) {
     suspend operator fun invoke(): List<WeatherEntity> {

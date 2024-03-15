@@ -2,14 +2,15 @@ package com.hapataka.questwalk.data.remote.repository
 
 import android.util.Log
 import com.example.weatherex.dto.Item
+import com.hapataka.questwalk.data.remote.retrofit.WeatherApi
 import com.hapataka.questwalk.data.remote.retrofit.WeatherService
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.WeatherRepository
 import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor(
-    private val weatherService: WeatherService
+class WeatherRepositoryImpl (
 ) : WeatherRepository {
+    private val weatherService = WeatherApi.weatherApi
 
     override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {
         Log.d("WeatherRepositoryImpl:","WeatherRepositoryImpl: $quries")
@@ -44,7 +45,6 @@ class WeatherRepositoryImpl @Inject constructor(
         }
         return weatherEntityList
     }
-
 }
 
 // PTY 강수 형태 (초단기) 없음(0), 비(1), 비/눈(2), 눈(3), 빗방울(5), 빗방울눈날림(6), 눈날림(7)

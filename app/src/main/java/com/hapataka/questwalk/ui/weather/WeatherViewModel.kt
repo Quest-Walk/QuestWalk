@@ -11,8 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class WeatherViewModel @Inject constructor(
+class WeatherViewModel (
     private val getWeatherUseCase: GetWeatherUseCase
 ): ViewModel()  {
     private val _weatherInfo = MutableLiveData<MutableList<WeatherData>>()

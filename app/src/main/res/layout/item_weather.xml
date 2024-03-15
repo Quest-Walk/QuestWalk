@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/tv_time"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="13시"
@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/tv_tmp"
-        style="@style/body_default"
+        style="@style/pixel_body_default"
         android:layout_marginTop="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
