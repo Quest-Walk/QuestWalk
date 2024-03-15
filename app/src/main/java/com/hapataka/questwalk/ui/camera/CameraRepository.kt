@@ -64,4 +64,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
         file?.delete()
     }
+
+    fun dpToPx(dp: Int): Float =
+        dp * context.resources.displayMetrics.density
 }
