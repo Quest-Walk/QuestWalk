@@ -15,9 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
-import com.hapataka.questwalk.ui.home.HomeViewModel
+import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 
@@ -26,7 +25,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
     private val cameraViewModel: CameraViewModel by activityViewModels()
-    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private var bitmap: Bitmap? = null
     private var keyword: String = ""
@@ -41,20 +40,20 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         setObserver()
         initDebug()
         with(binding) {
+            ivCroppedImage.setImageBitmap(cameraViewModel.getCroppedBitmap())
             btnAttach.setOnClickListener {
                 if (cameraViewModel.isDebug.value == true && etKeywordDebug.text.isNotBlank()) {
                     keyword = etKeywordDebug.text.toString()
                     etKeywordDebug.clearFocus()
                 } else {
-                    keyword = homeViewModel.currentKeyword.value ?: ""
+                    keyword = mainViewModel.currentKeyword.value ?: ""
                 }
                 hideKeyboard()
 
-                cameraViewModel.setCroppedBitmap(ivCapturedImage.croppedImage)
                 cameraViewModel.postCapturedImageWithMLKit(keyword)
 
             }
-            ibBackBtn.setOnClickListener {
+            btnBack.setOnClickListener {
                 navController.popBackStack()
             }
             btnResult.setOnClickListener {
@@ -64,9 +63,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             ibCropBtn.apply{
                 setOnClickListener {
                     cameraViewModel.clickedCropImageButton()
-                    val isCropped = cameraViewModel.isCropped
-//                    ivCapturedImage.setFixedAspectRatio(isCropped)
-                    ivCapturedImage.isShowCropOverlay = isCropped
+                    Snackbar.make(requireView(),"isCropped : ${cameraViewModel.isCropped}",Snackbar.LENGTH_SHORT).show()
                 }
             }
             ivCapturedImage.setOnLongClickListener {
@@ -87,9 +84,10 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
 
             if (isSucceed) {
                 if (cameraViewModel.file != null) {
-                    homeViewModel.setImageBitmap(cameraViewModel.file!!.path)
+                    Snackbar.make(requireView(),cameraViewModel.file.toString(),Snackbar.LENGTH_SHORT).show()
+//                    mainViewModel.setCaptureImage(cameraViewModel.file!!.path)
                 }
-                navController.popBackStack(R.id.frag_home, false)
+//                navController.popBackStack(R.id.frag_home, false)
             } else {
                 cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
                 binding.clCheckOcr.visibility = View.GONE
@@ -109,12 +107,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
 
     private fun initCapturedImage() {
 
-        binding.ivCapturedImage.apply{
-//            setFixedAspectRatio(cameraViewModel.isCropped)
-            isShowCropOverlay = cameraViewModel.isCropped
-        }
-
-        bitmap = cameraViewModel.bitmap.value
+        bitmap = cameraViewModel.getDrawBoxOnBitmap()
         Log.i(TAG, "capture bitmap: $bitmap")
         binding.ivCapturedImage.setImageBitmap(bitmap)
     }
@@ -148,6 +141,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 val inputStream = requireActivity().contentResolver.openInputStream(it)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 cameraViewModel.setBitmapByGallery(bitmap)
+                binding.ivCroppedImage.setImageBitmap(cameraViewModel.getCroppedBitmap())
                 initCapturedImage()
             }
         }

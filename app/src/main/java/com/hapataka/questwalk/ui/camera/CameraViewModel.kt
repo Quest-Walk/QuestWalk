@@ -1,12 +1,14 @@
 package com.hapataka.questwalk.ui.camera
 
+
 import android.graphics.Bitmap
+
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.Log
-import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,13 +18,14 @@ import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
-import javax.inject.Inject
-import info.debatty.java.stringsimilarity.*
+import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.File
+import javax.inject.Inject
+
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
@@ -33,18 +36,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
-    // 카메라 Hardware 정보
-    private var rotation: Float = 0F
-    private var flashMode = ImageCapture.FLASH_MODE_OFF
-
-    // 해당 imageFile 경로
     var file: File? = null
-
     // Crop event
 
     var isCropped = false
     private var croppedBitmap: Bitmap? = null
-
+    private var drawBoxOnBitmap: Bitmap? = null
 
     private var _isDebug: MutableLiveData<Boolean> = MutableLiveData(true)
     val isDebug: LiveData<Boolean> get() = _isDebug
@@ -54,37 +51,92 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     /**
-     *  Camera 처리 부분
+     *  Bitmap 파일 처리 부분
      */
-    fun toggleFlash(): Int {
-        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-            ImageCapture.FLASH_MODE_ON
-        } else {
-            ImageCapture.FLASH_MODE_OFF
-        }
-        return flashMode
+    var croppedWidth: Double = 0.0
+    var croppedSize = 0.0
+    var x = 0
+    var y = 0
+    fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy) {
+//        val appWidth = binding.pvPreview.width // 1080
+//        val appHeight = binding.pvPreview.height // 2203
+
+        val imageWidth = inputImage.height // 1392
+        val imageHeight = inputImage.width // 1856
+
+        //1. getRatio 세로 길이가 더 긴 상황 이므로
+        val ratio = appHeight / imageHeight.toDouble()
+
+        //2. scaled_Image
+        val scaledImageWidth = ratio * imageWidth
+        val scaledImageHeight = ratio * imageHeight
+
+        //3.getCropWidth
+        croppedWidth = ((scaledImageWidth - appWidth) / 2)
+        croppedWidth = croppedWidth/ratio
+        croppedSize = (appWidth * 0.4)/ratio
+
+        //4.getX
+        x = (croppedWidth + croppedSize/4).toInt()
+        y = (imageHeight/2 - croppedSize).toInt()
+
+        return
+
     }
 
-    fun setCameraCharacteristics(rotate: Float) {
-        rotation = rotate
+    fun imageProxyToBitmap(image: ImageProxy) {
+
+        var bitmap = image.toBitmap()
+        val rotation = image.imageInfo.rotationDegrees.toFloat()
+        bitmap = rotateBitmap(bitmap, rotation)!!
+        setBitmap(bitmap)
+
+    }
+
+    private fun setBitmap(bitmap: Bitmap?) {
+        if (bitmap == null) return
+        _bitmap.value = bitmap
+        croppedBitmap = cropBitmap(bitmap)
+        drawBoxOnBitmap = drawBoxOnBitmap(bitmap)
+    }
+
+
+    private fun cropBitmap(bitmap: Bitmap?): Bitmap? {
+        if (bitmap == null) return null
+        val size = (bitmap.width * 0.8).toInt()
+
+        return Bitmap.createBitmap(bitmap, 0, 0, size, size)
     }
 
     /**
-     *  Bitmap 파일 처리 부분
+     *  1. 중앙의 기준 으로 앱의 전체 세로 화면(긴 화면)에 맞춰서 scale
+     *  2. 중앙 기준으로 해당 Layout 벗어나느부분을 crop
      */
 
-    fun setBitmap(bitmap: Bitmap) {
-        //전처리 과정을 마치고 포스트??
-
+    private fun rotateBitmap(bitmap: Bitmap?, rotation: Float): Bitmap? {
         val matrix = Matrix()
         matrix.postRotate(rotation)
         val postBitmap =
-            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        _bitmap.postValue(postBitmap)
+            bitmap?.let { Bitmap.createBitmap(it, 0, 0, bitmap.width, bitmap.height, matrix, true) }
+        return postBitmap
     }
 
-    fun setCroppedBitmap(bitmap: Bitmap?){
-        croppedBitmap = bitmap
+    private fun drawBoxOnBitmap(bitmap: Bitmap?): Bitmap? {
+        if (bitmap == null) return null
+        val drawBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(drawBitmap)
+        val paint = Paint().apply {
+            color = Color.RED
+            style = Paint.Style.STROKE
+            strokeWidth = 5f
+        }
+        val offsetPx: Float = bitmap.height / 12f
+
+        val size = (bitmap.width * 0.8).toFloat()
+        val x = (bitmap.width * 0.1).toFloat()
+        val y = ((bitmap.height / 2f) - (size / 2f))
+        canvas.drawRect(x, y, x + size, y + size, paint)
+        return drawBitmap
     }
 
     fun initBitmap() {
@@ -96,6 +148,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     fun deleteBitmapByFile() {
         repository.deleteBitmap()
     }
+
+    fun getCroppedBitmap() = croppedBitmap
+    fun getDrawBoxOnBitmap() = drawBoxOnBitmap
 
 
     /**
@@ -111,10 +166,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     }
 
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image :InputImage
-        image = if(isCropped){
+        val image: InputImage
+        image = if (isCropped) {
             InputImage.fromBitmap(croppedBitmap!!, 0)
-        } else{
+        } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
         }
 
@@ -211,4 +266,5 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         _bitmap.value = mutableBitmap
     }
+
 }

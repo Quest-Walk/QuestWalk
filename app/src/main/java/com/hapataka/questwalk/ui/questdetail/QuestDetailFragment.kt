@@ -1,12 +1,17 @@
 package com.hapataka.questwalk.ui.questdetail
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.QuestData
@@ -19,6 +24,7 @@ import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
+//    private val questDetailAdapter by lazy { QuestDetailAdapter() }
     private lateinit var questDetailAdapter: QuestDetailAdapter
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var completeRate: Double = 0.0
@@ -62,19 +68,19 @@ class QuestDetailFragment : Fragment() {
         if (binding.revQuestDetail.itemDecorationCount != 0) {
             binding.revQuestDetail.removeItemDecorationAt(0)
         }
-
-        binding.revQuestDetail.addItemDecoration(QuestDetailRecyclerViewDecoration())
-
-        questDetailAdapter = QuestDetailAdapter {
+        questDetailAdapter = QuestDetailAdapter {uri, imageView ->
             val bundle = Bundle().apply {
-                putString(USER_ID,it.userId)
-                putString(QUEST_KEYWORD, item?.keyWord)
-                putString(REGISTER_TIME, it.registerAt)
+                putString("imageUri",uri)
             }
-            navHost.navigate(R.id.action_frag_quest_detail_to_frag_result, bundle)
+
+            navHost.navigate(R.id.action_frag_quest_detail_to_dialog_full_image, bundle)
+        }.apply {
+            submitList(item?.successItems?.reversed())
         }
 
-        binding.revQuestDetail.adapter = questDetailAdapter
-        questDetailAdapter.submitList(item?.successItems?.reversed())
+        with(binding.revQuestDetail) {
+            addItemDecoration(QuestDetailRecyclerViewDecoration())
+            adapter = questDetailAdapter
+        }
     }
 }

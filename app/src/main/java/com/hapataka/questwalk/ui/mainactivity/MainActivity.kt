@@ -1,12 +1,19 @@
 package com.hapataka.questwalk.ui.mainactivity
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
+import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -14,18 +21,24 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val authRepo by lazy { AuthRepositoryImpl() }
+    private val navHost by lazy { supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment }
+    val navController by lazy { navHost.navController }
+    private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
+    private val mainViewModel: MainViewModel by viewModels { ViewModelFactory(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        initStartDestination()
+        setStartDestination()
+        setObserver()
     }
 
-    private fun initStartDestination() {
-        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
-        val navController = navHost.navController
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-
+private fun setObserver() {
+    mainViewModel.snackBarMsg.observe(this) {
+        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+    }
+}
+    private fun setStartDestination() {
         lifecycleScope.launch {
             val currentUser = authRepo.getCurrentUserUid()
 

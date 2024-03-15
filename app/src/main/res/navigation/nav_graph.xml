@@ -140,6 +140,9 @@
         <action
             android:id="@+id/action_frag_quest_detail_to_frag_result"
             app:destination="@id/frag_result" />
+        <action
+            android:id="@+id/action_frag_quest_detail_to_dialog_full_image"
+            app:destination="@id/dialog_full_image" />
     </fragment>
 
     <fragment
@@ -147,5 +150,11 @@
         android:name="com.example.firebasetestapp.FindPassWordFragment"
         android:label="FindPassWordFragment"
         tools:layout="@layout/fragment_find_pass_word" />
+
+    <dialog
+        android:id="@+id/dialog_full_image"
+        android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
+        android:label="dialog_full_image" />
+
 
 </navigation>
