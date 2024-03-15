@@ -2,10 +2,12 @@ package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
 import android.util.Log
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -16,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.Runnable
+import java.util.concurrent.TimeUnit
 
 class CameraHandler(
     private val context: Context,
@@ -79,10 +82,24 @@ class CameraHandler(
                 return true
             }
         })
+
         preview.setOnTouchListener { _, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN ->{
+                    focusOn(event.x,event.y)
+                }
+            }
             scaleGestureDetector.onTouchEvent(event)
             true
         }
+    }
+
+    private fun focusOn(x:Float,y:Float) {
+        val factory = preview.meteringPointFactory
+        val point = factory.createPoint(x,y)
+        val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+            .setAutoCancelDuration(5, TimeUnit.SECONDS).build()
+        cameraControl?.startFocusAndMetering(action)
     }
 
     fun capturePhoto(imageCaptureCallback: ImageCapture.OnImageCapturedCallback) {
