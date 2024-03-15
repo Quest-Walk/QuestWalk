@@ -188,7 +188,6 @@ class MainViewModel(
             _totalStep.value = 1
             _isLoading.value = false
             setRandomKeyword()
-            callback()
         }
     }
 

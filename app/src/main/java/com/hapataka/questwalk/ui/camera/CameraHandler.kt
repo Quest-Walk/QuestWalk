@@ -30,12 +30,10 @@ class CameraHandler(
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraController: CameraController
-
     private var cameraControl : CameraControl? = null
     private var cameraInfo :  CameraInfo? = null
     private lateinit var scaleGestureDetector: ScaleGestureDetector
     private var flashMode = ImageCapture.FLASH_MODE_OFF
-
     var flashModeChanged: ((Int) -> Unit)? = null
 
     fun initCamera() {
@@ -82,7 +80,6 @@ class CameraHandler(
                 return true
             }
         })
-
         preview.setOnTouchListener { _, event ->
             when(event.action) {
                 MotionEvent.ACTION_DOWN ->{
@@ -90,6 +87,7 @@ class CameraHandler(
                 }
             }
             scaleGestureDetector.onTouchEvent(event)
+
             true
         }
     }
@@ -113,7 +111,7 @@ class CameraHandler(
     fun toggleFlash() {
         flashMode = if (flashMode ==ImageCapture.FLASH_MODE_OFF){
             ImageCapture.FLASH_MODE_ON
-        } else{ ImageCapture.FLASH_MODE_OFF }
+        } else { ImageCapture.FLASH_MODE_OFF }
         imageCapture?.flashMode = flashMode
         flashModeChanged?.invoke(flashMode)
     }
