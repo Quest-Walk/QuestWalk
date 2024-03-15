@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
@@ -18,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class WeatherFragment : Fragment() {
     private val binding by lazy { FragmentWeatherBinding.inflate(layoutInflater) }
     private val weatherViewModel: WeatherViewModel by viewModels {ViewModelFactory()}
+    private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val weatherAdapter by lazy { WeatherAdapter() }
 
     override fun onCreateView(
@@ -31,6 +34,7 @@ class WeatherFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dataObserve()
         initRecyclerView()
+        initBackButton()
     }
 
     private fun dataObserve() {
@@ -44,6 +48,12 @@ class WeatherFragment : Fragment() {
         with(binding.revWeather) {
             adapter = weatherAdapter
             addItemDecoration(WeatherAdapterDecoration())
+        }
+    }
+
+    private fun initBackButton() {
+        binding.ivArrowBack.setOnClickListener {
+            navHost.popBackStack()
         }
     }
 }
