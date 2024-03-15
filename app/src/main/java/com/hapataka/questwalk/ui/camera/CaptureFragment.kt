@@ -86,14 +86,19 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 if (cameraViewModel.file != null) {
                     Snackbar.make(requireView(),cameraViewModel.file.toString(),Snackbar.LENGTH_SHORT).show()
 //                    mainViewModel.setCaptureImage(cameraViewModel.file!!.path)
+                    initCapturedImage()
                 }
 //                navController.popBackStack(R.id.frag_home, false)
             } else {
-                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
+//                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
                 binding.clCheckOcr.visibility = View.GONE
                 binding.clResultOcr.visibility = View.VISIBLE
                 cameraViewModel.initBitmap()
             }
+        }
+        cameraViewModel.bitmap.observe(viewLifecycleOwner){
+
+            initCapturedImage()
         }
 
     }
@@ -108,8 +113,9 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     private fun initCapturedImage() {
 
         bitmap = cameraViewModel.getDrawBoxOnBitmap()
-        Log.i(TAG, "capture bitmap: $bitmap")
         binding.ivCapturedImage.setImageBitmap(bitmap)
+        binding.ivCroppedImage.setImageBitmap(cameraViewModel.getCroppedBitmap())
+
     }
 
     override fun onStop() {
@@ -141,8 +147,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 val inputStream = requireActivity().contentResolver.openInputStream(it)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 cameraViewModel.setBitmapByGallery(bitmap)
-                binding.ivCroppedImage.setImageBitmap(cameraViewModel.getCroppedBitmap())
-                initCapturedImage()
+
             }
         }
         binding.btnLoadImageDebug.setOnClickListener {

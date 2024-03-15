@@ -194,7 +194,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             override fun onCaptureSuccess(image: ImageProxy) {
 
                 if (toFrag == TO_CAPT_FRAG) {
-                    cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image)
+                    cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
                     cameraViewModel.imageProxyToBitmap(image)
 
                 } else {
