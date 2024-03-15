@@ -54,7 +54,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
      *  Bitmap 파일 처리 부분
      */
     var croppedWidth: Double = 0.0
-    var croppedSize = 0.0
+    var croppedSize = 0
     var x = 0
     var y = 0
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy) {
@@ -74,11 +74,11 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         //3.getCropWidth
         croppedWidth = ((scaledImageWidth - appWidth) / 2)
         croppedWidth = croppedWidth/ratio
-        croppedSize = (appWidth * 0.4)/ratio
+        croppedSize = ((appWidth * 0.4)/ratio).toInt()
 
         //4.getX
         x = (croppedWidth + croppedSize/4).toInt()
-        y = (imageHeight/2 - croppedSize).toInt()
+        y = (imageHeight/2 - croppedSize)
 
         return
 
@@ -103,9 +103,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun cropBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
-        val size = (bitmap.width * 0.8).toInt()
 
-        return Bitmap.createBitmap(bitmap, 0, 0, size, size)
+        return Bitmap.createBitmap(bitmap, x, y, croppedSize*2, croppedSize*2)
     }
 
     /**
@@ -130,12 +129,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
             style = Paint.Style.STROKE
             strokeWidth = 5f
         }
-        val offsetPx: Float = bitmap.height / 12f
-
-        val size = (bitmap.width * 0.8).toFloat()
-        val x = (bitmap.width * 0.1).toFloat()
-        val y = ((bitmap.height / 2f) - (size / 2f))
-        canvas.drawRect(x, y, x + size, y + size, paint)
+        canvas.drawRect(x.toFloat(), y.toFloat(), x + 2*croppedSize.toFloat(), y + 2*croppedSize.toFloat(), paint)
         return drawBitmap
     }
 
