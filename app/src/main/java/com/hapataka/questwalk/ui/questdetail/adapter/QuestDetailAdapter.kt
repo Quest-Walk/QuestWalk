@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,7 @@ class QuestDetailAdapter(
             with(binding) {
                 ivQuest.load(item.imageUrl)
                 binding.root.setOnClickListener {
+                    ViewCompat.setTransitionName(ivQuest, "pair_image")
                     itemClick(item.imageUrl, ivQuest)
                 }
             }

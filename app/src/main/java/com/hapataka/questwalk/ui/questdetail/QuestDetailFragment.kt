@@ -71,7 +71,7 @@ class QuestDetailFragment : Fragment() {
                 putString("imageUri",uri)
             }
 
-            navHost.navigate(R.id.action_frag_quest_detail_to_dialog_full_image, bundle, null, extras)
+            navHost.navigate(R.id.action_frag_quest_detail_to_frag_full_image, bundle, null, extras)
         }.apply {
             submitList(item?.successItems?.reversed())
         }
