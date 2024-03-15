@@ -53,32 +53,24 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     /**
      *  Bitmap 파일 처리 부분
      */
-    var croppedWidth: Double = 0.0
-    var croppedSize = 0
-    var x = 0
-    var y = 0
+    private var croppedSize = 0
+    private var x = 0
+    private var y = 0
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy) {
-//        val appWidth = binding.pvPreview.width // 1080
-//        val appHeight = binding.pvPreview.height // 2203
 
         val imageWidth = inputImage.height // 1392
         val imageHeight = inputImage.width // 1856
 
         //1. getRatio 세로 길이가 더 긴 상황 이므로
+
         val ratio = appHeight / imageHeight.toDouble()
 
-        //2. scaled_Image
-        val scaledImageWidth = ratio * imageWidth
-        val scaledImageHeight = ratio * imageHeight
-
         //3.getCropWidth
-        croppedWidth = ((scaledImageWidth - appWidth) / 2)
-        croppedWidth = croppedWidth/ratio
         croppedSize = ((appWidth * 0.4)/ratio).toInt()
 
         //4.getX
-        x = (croppedWidth + croppedSize/4).toInt()
-        y = (imageHeight/2 - croppedSize)
+        x = (imageWidth/2.0- croppedSize).toInt()
+        y = (imageHeight/2.0 - croppedSize).toInt()
 
         return
 
