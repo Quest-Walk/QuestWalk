@@ -1,5 +1,8 @@
 package com.hapataka.questwalk.ui.questdetail
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,12 +69,11 @@ class QuestDetailFragment : Fragment() {
             binding.revQuestDetail.removeItemDecorationAt(0)
         }
         questDetailAdapter = QuestDetailAdapter {uri, imageView ->
-            val extras = FragmentNavigatorExtras(imageView to "pair_image")
             val bundle = Bundle().apply {
                 putString("imageUri",uri)
             }
 
-            navHost.navigate(R.id.action_frag_quest_detail_to_frag_full_image, bundle, null, extras)
+            navHost.navigate(R.id.action_frag_quest_detail_to_dialog_full_image, bundle)
         }.apply {
             submitList(item?.successItems?.reversed())
         }

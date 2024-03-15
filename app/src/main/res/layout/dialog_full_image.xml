@@ -8,11 +8,12 @@
         android:id="@+id/iv_quest"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@drawable/bg_quest_image"
+        android:clipToOutline="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:transitionName="pair_image"
-        android:adjustViewBounds="true" />
+        android:scaleType="fitXY" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,8 @@
 package com.hapataka.questwalk.ui.questdetail.adapter
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +16,8 @@ import com.hapataka.questwalk.databinding.ItemQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 
 class QuestDetailAdapter(
-    val itemClick: (uri:String, imageView: View) -> Unit
-): ListAdapter<QuestData.SuccessItem, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
+    val itemClick: (uri: String, imageView: View) -> Unit
+) : ListAdapter<QuestData.SuccessItem, QuestDetailAdapter.QuestDetailViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestDetailViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -25,30 +28,32 @@ class QuestDetailAdapter(
         holder.bind(getItem(position))
     }
 
-    inner class QuestDetailViewHolder(private val binding: ItemQuestDetailBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class QuestDetailViewHolder(private val binding: ItemQuestDetailBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(item: QuestData.SuccessItem) {
             with(binding) {
                 ivQuest.load(item.imageUrl)
                 binding.root.setOnClickListener {
-                    ViewCompat.setTransitionName(ivQuest, "pair_image")
                     itemClick(item.imageUrl, ivQuest)
                 }
             }
         }
     }
-
-
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<QuestData.SuccessItem>() {
-            override fun areItemsTheSame(oldItem: QuestData.SuccessItem, newItem: QuestData.SuccessItem): Boolean {
+            override fun areItemsTheSame(
+                oldItem: QuestData.SuccessItem,
+                newItem: QuestData.SuccessItem
+            ): Boolean {
                 return oldItem.userId == newItem.userId
             }
 
-            override fun areContentsTheSame(oldItem: QuestData.SuccessItem, newItem: QuestData.SuccessItem): Boolean {
+            override fun areContentsTheSame(
+                oldItem: QuestData.SuccessItem,
+                newItem: QuestData.SuccessItem
+            ): Boolean {
                 return oldItem == newItem
             }
         }
     }
-
-
 }
