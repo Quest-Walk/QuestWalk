@@ -58,14 +58,15 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     /**
      *  Camera 처리 부분
      */
-    fun toggleFlash(): Int {
-        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-            ImageCapture.FLASH_MODE_ON
-        } else {
-            ImageCapture.FLASH_MODE_OFF
-        }
-        return flashMode
-    }
+
+//    fun toggleFlash(): Int {
+//        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
+//            ImageCapture.FLASH_MODE_ON
+//        } else {
+//            ImageCapture.FLASH_MODE_OFF
+//        }
+//        return flashMode
+//    }
 
 
     /**

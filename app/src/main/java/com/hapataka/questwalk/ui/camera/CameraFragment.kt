@@ -133,13 +133,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initViews() {
+        flashImageSet()
         initCaptureButton()
         binding.ivCapturedImage.gone()
         with(binding) {
 
             btnFlash.setOnClickListener {
-                cameraHandler.toggleFlash(cameraViewModel.toggleFlash())
+                cameraHandler.toggleFlash()
             }
+
             btnBack.setOnClickListener {
                 navController.popBackStack()
             }
@@ -148,6 +150,17 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 cameraHandler.capturePhoto(imageCaptureCallback())
                 toFrag = TO_CAPT_FRAG
             }
+        }
+    }
+
+    private fun flashImageSet() {
+        cameraHandler.flashModeChanged = {flashMode ->
+            val flashIcon = if (flashMode == ImageCapture.FLASH_MODE_ON) {
+                R.drawable.btn_flash_on
+            } else{
+                R.drawable.btn_flash
+            }
+            binding.ivFlash.setImageResource(flashIcon)
         }
     }
 

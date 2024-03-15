@@ -31,7 +31,9 @@ class CameraHandler(
     private var cameraControl : CameraControl? = null
     private var cameraInfo :  CameraInfo? = null
     private lateinit var scaleGestureDetector: ScaleGestureDetector
+    private var flashMode = ImageCapture.FLASH_MODE_OFF
 
+    var flashModeChanged: ((Int) -> Unit)? = null
 
     fun initCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -91,7 +93,11 @@ class CameraHandler(
         )
     }
 
-    fun toggleFlash(flashMode: Int) {
+    fun toggleFlash() {
+        flashMode = if (flashMode ==ImageCapture.FLASH_MODE_OFF){
+            ImageCapture.FLASH_MODE_ON
+        } else{ ImageCapture.FLASH_MODE_OFF }
         imageCapture?.flashMode = flashMode
+        flashModeChanged?.invoke(flashMode)
     }
 }
