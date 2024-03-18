@@ -71,7 +71,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            if (result.isFailed.not()) {
+            if (result.isSuccess) {
                 ivQuestImage.load(result.questImg) {
                     placeholder(R.drawable.image_empty)
                     crossfade(true)

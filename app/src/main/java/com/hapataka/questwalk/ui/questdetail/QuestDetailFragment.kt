@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
@@ -15,6 +14,7 @@ import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailRecyclerViewDecoration
 import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.util.extentions.visible
 import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
@@ -64,20 +64,22 @@ class QuestDetailFragment : Fragment() {
             binding.revQuestDetail.removeItemDecorationAt(0)
         }
         questDetailAdapter = QuestDetailAdapter {uri, imageView ->
-            val extras = FragmentNavigatorExtras(imageView to "pair_image")
-            val bundle = Bundle().apply {
-                putString("imageUri",uri)
-            }
+//            val extras = FragmentNavigatorExtras(imageView to "pair_image")
+//            val bundle = Bundle().apply {
+//                putString("imageUri",uri)
+//            }
+            val fragment = FullImageFragment.newInstance(uri)
+
+            binding.addOnContainer.visible()
+            childFragmentManager.beginTransaction()
+                .replace(R.id.add_on_container, fragment)
+                .addSharedElement(imageView, "pair_image")
+                .addToBackStack("dialog")
+                .commit()
             Log.d(TAG, "enter: ${imageView.transitionName}")
 
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(0, 0, 0, 0)
-                .replace(R.id.nav_host, FullImageDialog())
-                .addToBackStack(null)
-                .commit()
 
-
-            navHost.navigate(R.id.action_frag_quest_detail_to_dialog_full_image, bundle, null, extras)
+//            navHost.navigate(R.id.action_frag_quest_detail_to_frag_full_image, bundle, null, extras)
         }.apply {
             submitList(item?.successItems?.reversed())
         }

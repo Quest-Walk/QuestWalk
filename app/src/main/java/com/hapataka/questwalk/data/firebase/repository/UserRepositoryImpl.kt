@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.entity.ACHIEVE_TYPE
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
@@ -93,11 +93,11 @@ class UserRepositoryImpl : UserRepository {
     }
 
 
-    override suspend fun getAchieveHistory(userId: String): MutableList<AchievementEntity> =
+    override suspend fun getAchieveHistory(userId: String): MutableList<AchieveResultEntity> =
         withContext(Dispatchers.IO) {
             val currentUserInfo = getInfo(userId)
 
-            return@withContext currentUserInfo.histories.filterIsInstance<AchievementEntity>() as MutableList<AchievementEntity>
+            return@withContext currentUserInfo.histories.filterIsInstance<AchieveResultEntity>() as MutableList<AchieveResultEntity>
         }
 
     override suspend fun getResultHistory(userId: String): MutableList<ResultEntity> =
@@ -134,7 +134,7 @@ class UserRepositoryImpl : UserRepository {
                 get("time").toString().toLong(),
                 get("distance").toString().toFloat(),
                 get("step").toString().toLong(),
-                get("isFailed") as Boolean,
+                get("isSuccess") as Boolean,
                 convertLocationHistories(get("locations") as? List<Map<String, Any>>),
                 convertLocation(get("questLocation") as? Map<String, Any>),
                 get("questImg").toString(),
@@ -165,9 +165,9 @@ class UserRepositoryImpl : UserRepository {
         return result
     }
 
-    private fun convertToAchieve(item: Map<String, Any>): AchievementEntity {
+    private fun convertToAchieve(item: Map<String, Any>): AchieveResultEntity {
         with(item) {
-            return AchievementEntity(
+            return AchieveResultEntity(
                 get("registerAt").toString(), get("achievementId").toString().toInt(), ACHIEVE_TYPE
             )
         }

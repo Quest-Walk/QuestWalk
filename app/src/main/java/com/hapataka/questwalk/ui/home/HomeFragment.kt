@@ -106,7 +106,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
             btnWheather.setOnClickListener {
-                mainViewModel.getLocation()
                 "준비중이에요".showToast()
             }
             ibCamera.setOnClickListener {

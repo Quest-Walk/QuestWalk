@@ -139,8 +139,8 @@
         tools:layout="@layout/fragment_quest_detail">
 
         <action
-            android:id="@+id/action_frag_quest_detail_to_dialog_full_image"
-            app:destination="@id/dialog_full_image" />
+            android:id="@+id/action_frag_quest_detail_to_frag_full_image"
+            app:destination="@id/frag_full_image" />
 
     </fragment>
 
@@ -150,10 +150,10 @@
         android:label="FindPassWordFragment"
         tools:layout="@layout/fragment_find_pass_word" />
 
-    <dialog
-        android:id="@+id/dialog_full_image"
-        android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
-        android:label="FullImageDialog"
-        tools:layout="@layout/dialog_full_image" />
+    <fragment
+        android:id="@+id/frag_full_image"
+        android:name="com.hapataka.questwalk.ui.questdetail.FullImageFragment"
+        android:label="frag_full_image"
+        tools:layout="@layout/dialog_full_image"/>
 
 </navigation>

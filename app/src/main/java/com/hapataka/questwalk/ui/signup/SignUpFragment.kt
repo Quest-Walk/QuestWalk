@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -20,15 +19,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import coil.load
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.showErrMsg
 
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
-    private val viewModel: SignUpViewModel by viewModels { SignUpViewModelFactory(AuthRepositoryImpl()) }
+    private val viewModel: SignUpViewModel by viewModels { ViewModelFactory(requireContext()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var isCanClick = true
 
@@ -108,8 +107,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     }
 
     private fun checkEmailValidity(id: String): Boolean {
-        Log.d(TAG, "id: $id")
-
         if (id.isEmpty()) {
             binding.tvExplainId.showErrMsg("이메일 주소를 입력해주세요.", requireContext())
             return true
@@ -136,10 +133,8 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     }
 
     private fun moveHomeWithLogin(id: String, pw: String) {
-
         viewModel.logByEmailAndPw(id, pw,
             { navigateToOnBoarding() }, { ("오류가 발생해 로그인을 할 수 없습니다.").showSnackbar(requireView()) })
-
     }
 
     private fun navigateToOnBoarding() {

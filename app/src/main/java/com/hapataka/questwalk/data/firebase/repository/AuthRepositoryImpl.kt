@@ -16,7 +16,6 @@ class AuthRepositoryImpl : AuthRepository {
     ) {
         auth.createUserWithEmailAndPassword(email, pw)
             .addOnCompleteListener { task -> callback(task) }
-
     }
 
     override suspend fun loginByEmailAndPw(
@@ -44,4 +43,6 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
     override suspend fun getCurrentUserUid(): String = auth.currentUser?.uid ?: ""
+
+    override suspend fun getCurrentUserEmail(): String = auth.currentUser?.email ?: ""
 }

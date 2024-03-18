@@ -18,12 +18,9 @@ class HomeViewModel(
     private val questRepo: QuestStackRepository
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
-    private var _charNum = MutableLiveData<Int>()
-
     val isNight: LiveData<Boolean> get() = _isNight
-    private var _totalStep = MutableLiveData<Long>()
-    val totalStep: LiveData<Long> get() = _totalStep
 
+    private var _charNum = MutableLiveData<Int>()
     private var time = -1
 
     fun checkCurrentTime() {

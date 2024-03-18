@@ -84,6 +84,7 @@ class MainViewModel(
             val checkFail = validationResponseByMLKit(keyword, element)
 
             if (checkFail) {
+                questLocation = locationRepo.getCurrent()
                 _playState.value = QUEST_SUCCESS
                 callback()
             } else {
@@ -96,20 +97,21 @@ class MainViewModel(
     fun togglePlay(callback: (String, String) -> Unit) {
         val playState = playState.value ?: 0
 
-        if (playState == QUEST_STOP) {
-            _playState.value = QUEST_START
-            viewModelScope.launch {
-                locationHistory += locationRepo.getCurrent()
+        viewModelScope.launch {
+            locationHistory += locationRepo.getCurrent()
+
+            if (playState == QUEST_STOP) {
+                _playState.value = QUEST_START
+            } else {
+                setResultHistory(callback)
+                _playState.value = QUEST_STOP
             }
-        } else {
-            setResultHistory(callback)
 
             if (playState == QUEST_SUCCESS) {
                 _isLoading.value = true
             }
-            _playState.value = QUEST_STOP
+            initPlayInfo()
         }
-        initPlayInfo()
     }
 
     private fun initPlayInfo() {
@@ -136,7 +138,6 @@ class MainViewModel(
     private fun setLocationClient() {
         if (playState.value != QUEST_STOP) {
             locationRepo.startRequest {
-                Log.d(TAG, "location Entity: $it")
                 setDistance(it.distance)
                 locationHistory += it.location
             }
@@ -160,11 +161,11 @@ class MainViewModel(
 
     private fun setResultHistory(navigateResult: (String, String) -> Unit) {
         viewModelScope.launch {
-            val uid = authRepo.getCurrentUserUid()
-            val isFail = playState.value != QUEST_SUCCESS
             currentTime = LocalDateTime.now().toString()
+            val uid = authRepo.getCurrentUserUid()
+            val isSuccess = playState.value == QUEST_SUCCESS
             val localImage = imageUtil.getImageUri()
-            val imageUri = if (playState.value == QUEST_SUCCESS) {
+            val imageUri = if (isSuccess) {
                 imageRepo.setImage(localImage, uid).toString()
             } else {
                 null
@@ -175,19 +176,19 @@ class MainViewModel(
                 durationTime.value ?: 0L,
                 totalDistance.value ?: 0f,
                 totalStep.value ?: 0L,
-                isFail,
+                isSuccess,
                 locationHistory,
                 questLocation,
                 imageUri,
             )
 
-            if (isFail.not()) {
+            if (isSuccess) {
                 val keyword = currentKeyword.value ?: ""
 
                 questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
             }
             userRepo.updateUserInfo(uid, result)
-            moveToResult {uid, registerAt ->
+            moveToResult { uid, registerAt ->
                 navigateResult(uid, registerAt)
             }
             _totalDistance.value = 0f
@@ -235,15 +236,6 @@ class MainViewModel(
     fun setSnackBarMsg(msg: String) {
         _snackBarMsg.value = msg
     }
-
-    fun getLocation() {
-        viewModelScope.launch {
-            val location = locationRepo.getCurrent()
-            Log.d(TAG, "location: ${location}")
-        }
-
-    }
-
 //    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
 //        val tempBitmap = _bitmap.value ?: return
 //        val canvas = Canvas(tempBitmap)
