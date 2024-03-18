@@ -45,13 +45,13 @@ class RecordDetailAdapter(val context: Context, var successAchieve: List<Int> = 
         val ivSuccess = binding.ivSuccess
 
         fun bind(item: ResultItem) {
-            if (item.isFail) {
-                thumbnail.load(R.drawable.image_empty)
-                ivSuccess.gone()
+            if (item.isSuccess) {
+                ivSuccess.visible()
+                thumbnail.load(item.thumbnail)
                 return
             }
-            ivSuccess.visible()
-            thumbnail.load(item.thumbnail)
+            ivSuccess.gone()
+            thumbnail.load(R.drawable.image_empty)
         }
     }
 

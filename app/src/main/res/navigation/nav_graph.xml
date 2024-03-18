@@ -21,7 +21,7 @@
         android:id="@+id/frag_record"
         android:name="com.hapataka.questwalk.ui.record.RecordFragment"
         android:label="frag_record"
-        tools:layout="@layout/fragment_record" >
+        tools:layout="@layout/fragment_record">
         <action
             android:id="@+id/action_frag_record_to_frag_result"
             app:destination="@id/frag_result" />
@@ -137,9 +137,7 @@
         android:name="com.hapataka.questwalk.ui.questdetail.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail">
-        <action
-            android:id="@+id/action_frag_quest_detail_to_frag_result"
-            app:destination="@id/frag_result" />
+
         <action
             android:id="@+id/action_frag_quest_detail_to_dialog_full_image"
             app:destination="@id/dialog_full_image" />
@@ -155,6 +153,5 @@
         android:id="@+id/dialog_full_image"
         android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
         android:label="dialog_full_image" />
-
 
 </navigation>

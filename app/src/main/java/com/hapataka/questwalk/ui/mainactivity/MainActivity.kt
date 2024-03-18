@@ -1,12 +1,8 @@
 package com.hapataka.questwalk.ui.mainactivity
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
@@ -51,4 +47,6 @@ private fun setObserver() {
             navController.graph = navGraph
         }
     }
+
+
 }

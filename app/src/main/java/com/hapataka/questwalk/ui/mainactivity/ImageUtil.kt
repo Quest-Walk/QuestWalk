@@ -23,16 +23,17 @@ class ImageUtil(val context: Context) {
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
         GlobalScope.launch {
-            saveImage()
+            saveImage(postBitmap)
             this.cancel()
         }
         return postBitmap
     }
 
-    private fun saveImage() {
-        file = File(context.filesDir, "resultImage.png")
+    private fun saveImage(bitmap: Bitmap) {
+        file = File(context.filesDir, "resultImage.jpg")
         val fos = FileOutputStream(file)
 
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
         fos.close()
     }
 

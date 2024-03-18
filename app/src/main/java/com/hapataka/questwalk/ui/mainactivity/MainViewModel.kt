@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.repository.AchieveStackRepository
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.ImageRepository
@@ -15,8 +16,10 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
+import com.hapataka.questwalk.domain.usecase.AchievementListener
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.util.UserInfo
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,21 +41,28 @@ class MainViewModel(
     private val imageUtil: ImageUtil
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
-    private var _imageBitmap = MutableLiveData<Bitmap>()
-    private var _playState = MutableLiveData(QUEST_STOP)
-    private var _durationTime = MutableLiveData<Long>(-1)
-    private var _totalDistance = MutableLiveData<Float>(0.0F)
-    private var _totalStep = MutableLiveData<Long>()
-    private var _snackBarMsg = MutableLiveData<String>()
-    private var _isLoading = MutableLiveData<Boolean>(false)
-
     val currentKeyword: LiveData<String> get() = _currentKeyword
+
+    private var _imageBitmap = MutableLiveData<Bitmap>()
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
+
+    private var _playState = MutableLiveData(QUEST_STOP)
     val playState: LiveData<Int> get() = _playState
+
+    private var _durationTime = MutableLiveData<Long>(-1)
     val durationTime: LiveData<Long> get() = _durationTime
+
+
+    private var _totalDistance = MutableLiveData<Float>(0.0F)
     val totalDistance: LiveData<Float> get() = _totalDistance
+
+    private var _totalStep = MutableLiveData<Long>()
     val totalStep: LiveData<Long> get() = _totalStep
+
+    private var _snackBarMsg = MutableLiveData<String>()
     val snackBarMsg: LiveData<String> get() = _snackBarMsg
+
+    private var _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     private var timer: Job? = null
@@ -62,7 +72,7 @@ class MainViewModel(
 
     fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
         viewModelScope.launch {
-            callback(authRepo.getCurrentUserUid(), currentTime)
+            callback(UserInfo.uid, currentTime)
         }
     }
 
@@ -76,6 +86,7 @@ class MainViewModel(
         imageCallback(bitmapImage)
         getTextFromOCR(bitmapImage, navigateCallback)
     }
+
     private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {
         viewModelScope.launch {
             val element = ocrRepo.getWordFromImage(image)
@@ -83,6 +94,7 @@ class MainViewModel(
             val checkFail = validationResponseByMLKit(keyword, element)
 
             if (checkFail) {
+                questLocation = locationRepo.getCurrent().location
                 _playState.value = QUEST_SUCCESS
                 callback()
             } else {
@@ -92,20 +104,27 @@ class MainViewModel(
         }
     }
 
-    fun togglePlay(callback: () -> Unit) {
+    fun togglePlay(callback: (String, String) -> Unit) {
         val playState = playState.value ?: 0
 
-        if (playState == QUEST_STOP) {
-            _playState.value = QUEST_START
-        } else {
-            setResultHistory(callback)
+        viewModelScope.launch {
+            val locationInfo = locationRepo.getCurrent()
+
+            locationHistory += locationInfo.location
+
+            if (playState == QUEST_STOP) {
+                _playState.value = QUEST_START
+            } else {
+                setResultHistory(callback)
+                _playState.value = QUEST_STOP
+                _totalDistance.value = locationInfo.distance
+            }
 
             if (playState == QUEST_SUCCESS) {
                 _isLoading.value = true
             }
-            _playState.value = QUEST_STOP
+            initPlayInfo()
         }
-        initPlayInfo()
     }
 
     private fun initPlayInfo() {
@@ -132,7 +151,6 @@ class MainViewModel(
     private fun setLocationClient() {
         if (playState.value != QUEST_STOP) {
             locationRepo.startRequest {
-                Log.d(TAG, "location Entity: $it")
                 setDistance(it.distance)
                 locationHistory += it.location
             }
@@ -142,7 +160,7 @@ class MainViewModel(
     }
 
     private fun setStepCounter() {
-        if (playState.value == QUEST_STOP){
+        if (playState.value == QUEST_STOP) {
             _totalStep.value = 0
         }
     }
@@ -154,47 +172,90 @@ class MainViewModel(
         return
     }
 
-    private fun setResultHistory(callback: () -> Unit) {
+    private fun setResultHistory(navigateResult: (String, String) -> Unit) {
         viewModelScope.launch {
-            val uid = authRepo.getCurrentUserUid()
-            val isFail = playState.value != QUEST_SUCCESS
-            currentTime = LocalDateTime.now().toString()
-            val localImage = imageUtil.getImageUri()
-            val imageUri = if (playState.value == QUEST_SUCCESS) {
-                imageRepo.setImage(localImage, uid).toString()
-            } else {
-                null
-            }
-            val result = HistoryEntity.ResultEntity(
-                currentTime,
-                currentKeyword.value ?: "",
-                durationTime.value ?: 0L,
-                totalDistance.value ?: 0f,
-                totalStep.value ?: 0L,
-                isFail,
-                locationHistory,
-                questLocation,
-                imageUri,
-            )
+            val result = makeResult()
 
-            if (isFail.not()) {
-                val keyword = currentKeyword.value ?: ""
-
-                questRepo.updateQuest(keyword, uid, imageUri!!, currentTime)
+            if (playState.value == QUEST_SUCCESS) {
+                updateQuestStack(result.questImg.toString())
             }
-            userRepo.updateUserInfo(uid, result)
-            _totalDistance.value = 0f
-            _durationTime.value = -1
-            _totalStep.value = 1
-            _isLoading.value = false
-            setRandomKeyword()
+            userRepo.updateUserInfo(UserInfo.uid, result)
+            moveToResult { uid, registerAt ->
+                navigateResult(uid, registerAt)
+            }
+            resetRecord()
+
+            val userInfo = userRepo.getInfo(UserInfo.uid)
+            val achieveId = AchievementListener(userInfo)
+
+            achieveId.forEach { id ->
+                val userAchieveResults =
+                    userInfo.histories.filterIsInstance<HistoryEntity.AchieveResultEntity>()
+
+                if (userAchieveResults.none() { it.achievementId == id }) {
+                    userRepo.updateUserInfo(
+                        UserInfo.uid,
+                        HistoryEntity.AchieveResultEntity(
+                            currentTime,
+                            id
+                        )
+                    )
+                    _snackBarMsg.value = "업적달성"
+                }
+            }
         }
     }
 
-    private fun setDistance(distance: Float) {
-        val currentDistance = totalDistance.value ?: 0f
+    private suspend fun makeResult(): ResultEntity {
+        currentTime = LocalDateTime.now().toString()
+        val isSuccess = playState.value == QUEST_SUCCESS
+        val localImage = imageUtil.getImageUri()
+        val imageUri = if (isSuccess) {
+            imageRepo.setImage(localImage, UserInfo.uid).toString()
+        } else {
+            null
+        }
 
-        _totalDistance.value = currentDistance + distance
+        return ResultEntity(
+            currentTime,
+            currentKeyword.value ?: "",
+            durationTime.value ?: 0L,
+            totalDistance.value ?: 0f,
+            totalStep.value ?: 0L,
+            isSuccess,
+            locationHistory,
+            questLocation,
+            imageUri,
+        )
+    }
+
+    private suspend fun updateQuestStack(uri: String) {
+        val keyword = currentKeyword.value ?: ""
+
+        questRepo.updateQuest(
+            keyword,
+            UserInfo.uid,
+            uri,
+            currentTime
+        )
+    }
+
+    private fun resetRecord() {
+        _totalDistance.value = 0f
+        _durationTime.value = -1
+        _totalStep.value = 1
+        _isLoading.value = false
+        setRandomKeyword()
+    }
+
+    private fun setDistance(distance: Float) {
+        if (distance > 30f) {
+            return
+        }
+        val currentDistance = totalDistance.value ?: 0f
+        val result = currentDistance + distance
+
+        _totalDistance.value = result
     }
 
     fun setRandomKeyword() {
@@ -228,7 +289,6 @@ class MainViewModel(
     fun setSnackBarMsg(msg: String) {
         _snackBarMsg.value = msg
     }
-
 //    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
 //        val tempBitmap = _bitmap.value ?: return
 //        val canvas = Canvas(tempBitmap)

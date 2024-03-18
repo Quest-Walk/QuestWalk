@@ -1,8 +1,6 @@
 package com.hapataka.questwalk.data.firebase.repository
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.hapataka.questwalk.domain.entity.AchieveStackEntity
 import com.hapataka.questwalk.domain.repository.AchieveStackRepository
 import kotlinx.coroutines.Dispatchers
@@ -11,21 +9,21 @@ import kotlinx.coroutines.withContext
 
 class AchieveStackRepositoryImpl : AchieveStackRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
-    private val achieveCollection by lazy { remoteDb.collection("AchieveItem") }
+    private val collection by lazy { remoteDb.collection("AchieveStack") }
 
     override suspend fun countUpAchieveStack(id: Int) {
         val currentItem = getAchieveStateById(id)
 
         currentItem.count++
-        achieveCollection.document("$id")
+        collection.document("$id")
             .set(currentItem)
     }
 
     override suspend fun getAchieveStateById(id: Int): AchieveStackEntity =
         withContext(Dispatchers.IO) {
-            val document = achieveCollection.document("$id")
+            val document = collection.document("$id")
             val achieveDocument = document.get().await()
 
-            return@withContext achieveDocument.toObject(AchieveStackEntity::class.java)!!
+            achieveDocument.toObject(AchieveStackEntity::class.java)!!
         }
 }

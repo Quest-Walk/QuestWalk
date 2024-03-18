@@ -11,6 +11,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class LocationRepositoryImpl(context: Context) : LocationRepository {
     private val client by lazy { LocationServices.getFusedLocationProviderClient(context) }
@@ -45,7 +48,10 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
 
                 callback(
                     LocationEntity(
-                        Pair(currentLocation.latitude.toFloat(), currentLocation.longitude.toFloat()),
+                        Pair(
+                            currentLocation.latitude.toFloat(),
+                            currentLocation.longitude.toFloat()
+                        ),
                         moveDistance
                     )
                 )
@@ -56,5 +62,22 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
 
     override fun finishRequest() {
         client.removeLocationUpdates(locationCallback)
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun getCurrent(): LocationEntity = withContext(Dispatchers.IO) {
+        val location = client.lastLocation.await()
+        val latitude = location.latitude.toFloat()
+        val longitude = location.longitude.toFloat()
+        val distance = location.distanceTo(
+            if (prevLocation != null) prevLocation!! else location
+        )
+
+
+        LocationEntity(
+            Pair(latitude, longitude),
+            distance
+        )
+
     }
 }

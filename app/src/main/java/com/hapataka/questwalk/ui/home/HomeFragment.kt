@@ -88,6 +88,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         checkPermissions()
         setObserver()
         initBackPressedCallback()
+        setUid()
     }
 
     private fun initBackground() {
@@ -119,14 +120,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            mainViewModel.togglePlay {
-                val bundle = Bundle()
-                mainViewModel.moveToResult { uid, currentTime ->
-                    bundle.apply {
-                        putString(USER_ID, uid)
-                        putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
-                        putString(REGISTER_TIME, currentTime)
-                    }
+            mainViewModel.togglePlay {uid, registerAt ->
+                val bundle = Bundle().apply {
+                    putString(USER_ID, uid)
+                    putString(REGISTER_TIME, registerAt)
+                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
                 }
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
             }
@@ -144,7 +142,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     binding.ivBgLayer3.load(R.drawable.background_day_layer3)
                 }
             }
-
         }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
@@ -176,9 +173,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun showHomeDialog() {
         val dialog = HomeDialog {
-//            viewModel.toggleIsPlay()
         }
         dialog.show(parentFragmentManager, "HomeDialog")
+    }
+
+    private fun setUid() {
+        lifecycleScope.launch {
+            viewModel.setUid()
+        }
     }
 
     private fun updateWithState(playState: Int) {

@@ -1,18 +1,26 @@
 package com.hapataka.questwalk.ui.signup
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.LocalRepository
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val autoRepo : AuthRepositoryImpl) : ViewModel(){
-    fun registerByEmailAndPw(email : String , pw : String, onSuccess : () -> Unit , onError : () -> Unit){
+class SignUpViewModel(
+    private val autoRepo: AuthRepository,
+    private val localRepo: LocalRepository
+) : ViewModel() {
+    fun registerByEmailAndPw(
+        email: String,
+        pw: String,
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
         viewModelScope.launch {
-            autoRepo.registerByEmailAndPw(email , pw){ task ->
-                if (task.isSuccessful){
+            autoRepo.registerByEmailAndPw(email, pw) { task ->
+                if (task.isSuccessful) {
                     onSuccess()
-                }else{
+                } else {
                     onError()
                 }
             }
@@ -20,26 +28,16 @@ class SignUpViewModel(private val autoRepo : AuthRepositoryImpl) : ViewModel(){
 
     }
 
-    fun logByEmailAndPw(email: String , pw: String , onSuccess : () -> Unit , onError : () -> Unit){
+    fun logByEmailAndPw(email: String, pw: String, onSuccess: () -> Unit, onError: () -> Unit) {
         viewModelScope.launch {
-            autoRepo.loginByEmailAndPw(email , pw){task ->
-                if (task.isSuccessful){
+            autoRepo.loginByEmailAndPw(email, pw) { task ->
+                if (task.isSuccessful) {
+                    localRepo.setUserId(email)
                     onSuccess()
-                }else{
+                } else {
                     onError()
                 }
             }
         }
-    }
-
-}
-
-
-class SignUpViewModelFactory(private val repo : AuthRepositoryImpl) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SignUpViewModel ::class.java)){
-            return SignUpViewModel(repo) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
