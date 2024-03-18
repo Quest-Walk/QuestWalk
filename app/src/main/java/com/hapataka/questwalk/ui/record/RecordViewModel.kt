@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.resource.Achievements
 import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
@@ -27,7 +26,6 @@ class RecordViewModel(
     private var _achieveItems = MutableLiveData<List<AchieveItem>> ()
     val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
 
-    private val achieveResource = Achievements.list.toList()
 
     fun getRecordItems() {
         viewModelScope.launch {

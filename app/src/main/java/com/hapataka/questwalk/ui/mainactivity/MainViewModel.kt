@@ -249,6 +249,9 @@ class MainViewModel(
     }
 
     private fun setDistance(distance: Float) {
+        if (distance > 30f) {
+            return
+        }
         val currentDistance = totalDistance.value ?: 0f
         val result = currentDistance + distance
 
