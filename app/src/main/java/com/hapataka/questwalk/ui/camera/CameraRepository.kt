@@ -7,6 +7,9 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -41,22 +44,11 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 
     fun toGrayScaleBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
-        val width: Int = bitmap.width
-        val height: Int = bitmap.height
-
-        val grayscaleBitmap = Bitmap.createBitmap(
-            width, height, Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(grayscaleBitmap)
-        val paint = Paint()
-        val colorMatrix = ColorMatrix()
-
-        colorMatrix.setSaturation(0f)
-        val filter = ColorMatrixColorFilter(colorMatrix)
-
-        paint.colorFilter = filter
-        canvas.drawBitmap(bitmap, 0f, 0f, paint)
-
+        val grayscaleBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
+        val mat = Mat()
+        Utils.bitmapToMat(grayscaleBitmap,mat)
+        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY)
+        Utils.matToBitmap(mat,grayscaleBitmap)
         return grayscaleBitmap
     }
 
