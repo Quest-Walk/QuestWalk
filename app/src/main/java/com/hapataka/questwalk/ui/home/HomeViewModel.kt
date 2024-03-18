@@ -8,6 +8,7 @@ import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
+import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
@@ -34,11 +35,12 @@ class HomeViewModel(
 
     private fun getUserCharNum() {
         viewModelScope.launch {
-            val userId = authRepo.getCurrentUserUid()
-
-            val userInfo = userRepo.getInfo(userId)
+            val userInfo = userRepo.getInfo(UserInfo.uid)
             _charNum.value = userInfo.characterId
         }
     }
 
+    suspend fun setUid() {
+        UserInfo.uid = authRepo.getCurrentUserUid()
+    }
 }

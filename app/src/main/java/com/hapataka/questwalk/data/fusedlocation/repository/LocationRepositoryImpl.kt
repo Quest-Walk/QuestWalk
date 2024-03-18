@@ -62,11 +62,19 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
     }
 
     @SuppressLint("MissingPermission")
-    override suspend fun getCurrent(): Pair<Float, Float> = withContext(Dispatchers.IO) {
+    override suspend fun getCurrent(): LocationEntity = withContext(Dispatchers.IO) {
         val location = client.lastLocation.await()
         val latitude = location.latitude.toFloat()
         val longitude = location.longitude.toFloat()
+        val distance = location.distanceTo(
+            if (prevLocation != null) prevLocation!! else location
+        )
 
-        Pair(latitude, longitude)
+
+        LocationEntity(
+            Pair(latitude, longitude),
+            distance
+        )
+
     }
 }
