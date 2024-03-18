@@ -422,12 +422,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
                     return@registerForActivityResult
                 }
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                    return@registerForActivityResult
+                }
 
                 showDialog(
                     "Quest Keyword를 사용하려면\n위치 권한이 필요합니다.",
                 ) {
                     permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
                     permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    permissionLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 }
             }
         }
