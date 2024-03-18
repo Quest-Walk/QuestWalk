@@ -1,5 +1,8 @@
 package com.hapataka.questwalk.ui.questdetail
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,7 +22,8 @@ import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
-//    private val questDetailAdapter by lazy { QuestDetailAdapter() }
+
+    //    private val questDetailAdapter by lazy { QuestDetailAdapter() }
     private lateinit var questDetailAdapter: QuestDetailAdapter
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var completeRate: Double = 0.0
@@ -48,14 +52,16 @@ class QuestDetailFragment : Fragment() {
     }
 
     private fun initViews() {
-        completeRate = round((item?.successItems?.size?.toDouble()?.div(allUser))?.times(100) ?: 0.0)
+        completeRate =
+            round((item?.successItems?.size?.toDouble()?.div(allUser))?.times(100) ?: 0.0)
 
-        binding.tvKeyword.text = item?.keyWord
-        binding.tvSolve.text = "이 퀘스트는 ${item?.successItems?.size}명이 해결했어요"
-        binding.tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
-
-        binding.ivArrowBack.setOnClickListener {
-            navHost.popBackStack()
+        with(binding) {
+            tvKeyword.text = item?.keyWord
+            tvSolve.text = "이 퀘스트는 ${item?.successItems?.size}명이 해결했어요"
+            tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
+            ivArrowBack.setOnClickListener {
+                navHost.popBackStack()
+            }
         }
     }
 
@@ -63,23 +69,12 @@ class QuestDetailFragment : Fragment() {
         if (binding.revQuestDetail.itemDecorationCount != 0) {
             binding.revQuestDetail.removeItemDecorationAt(0)
         }
-        questDetailAdapter = QuestDetailAdapter {uri, imageView ->
-//            val extras = FragmentNavigatorExtras(imageView to "pair_image")
-//            val bundle = Bundle().apply {
-//                putString("imageUri",uri)
-//            }
-            val fragment = FullImageFragment.newInstance(uri)
+        questDetailAdapter = QuestDetailAdapter { uri, imageView ->
+            val bundle = Bundle().apply {
+                putString("imageUri", uri)
+            }
 
-            binding.addOnContainer.visible()
-            childFragmentManager.beginTransaction()
-                .replace(R.id.add_on_container, fragment)
-                .addSharedElement(imageView, "pair_image")
-                .addToBackStack("dialog")
-                .commit()
-            Log.d(TAG, "enter: ${imageView.transitionName}")
-
-
-//            navHost.navigate(R.id.action_frag_quest_detail_to_frag_full_image, bundle, null, extras)
+            navHost.navigate(R.id.action_frag_quest_detail_to_dialog_full_image, bundle)
         }.apply {
             submitList(item?.successItems?.reversed())
         }

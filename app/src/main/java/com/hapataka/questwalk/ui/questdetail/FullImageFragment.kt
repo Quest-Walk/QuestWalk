@@ -12,7 +12,7 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogFullImageBinding
 
-class FullImageFragment: Fragment() {
+class FullImageFragment : Fragment() {
     private val binding by lazy { DialogFullImageBinding.inflate(layoutInflater) }
     private var imageUri: String? = null
 
@@ -27,7 +27,8 @@ class FullImageFragment: Fragment() {
             android.R.transition.move
         )
 
-        enterTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+        enterTransition =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = transitionAnimation
         sharedElementReturnTransition = transitionAnimation
     }
@@ -46,7 +47,6 @@ class FullImageFragment: Fragment() {
         initBackPressedCallback()
         getDeviceSize()
 
-
         binding.ivQuest.load(imageUri) {
             placeholder(R.drawable.image_empty)
         }
@@ -58,8 +58,8 @@ class FullImageFragment: Fragment() {
         requireActivity().windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         val dialogWidth = (displayMetrics.widthPixels * 0.8f).toInt()
         val dialogHeight = (displayMetrics.widthPixels * 0.8f).toInt()
-
         val layoutParams = binding.ivQuest.layoutParams
+
         layoutParams.width = dialogWidth
         layoutParams.height = dialogHeight
         binding.ivQuest.layoutParams = layoutParams

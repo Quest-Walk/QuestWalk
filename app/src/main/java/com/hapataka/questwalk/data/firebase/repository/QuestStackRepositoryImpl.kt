@@ -40,7 +40,6 @@ class QuestStackRepositoryImpl : QuestStackRepository {
     override suspend fun getAllItems(): List<QuestStackEntity> =
         withContext(Dispatchers.IO) {
             val results = mutableListOf<QuestStackEntity>()
-            val allItems = questCollection.get().await().documents
             val levelList = intArrayOf(1, 2, 3)
             var differ = levelList.map {
                 async {
