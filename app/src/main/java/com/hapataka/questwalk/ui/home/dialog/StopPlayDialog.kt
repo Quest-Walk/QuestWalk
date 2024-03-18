@@ -41,10 +41,10 @@ class StopPlayDialog(val distance: Float, val callback: () -> Unit) : DialogFrag
     }
 
     private fun initText() {
-        if (distance < 10f) {
-            binding.tvTitle.text = "지금 포기하면 이동한 거리가 너무 짧아서\n기록이 남지 않습니다.\n그래도 포기하시겠습니까?"
-        } else {
+        if (distance > 10f) {
             binding.tvTitle.text = "모험을 종료하고 지금까지의 기록을 저장할까요?"
+        } else {
+            binding.tvTitle.text = "지금 포기하면 이동한 거리가 너무 짧아서\n기록이 남지 않습니다.\n그래도 포기하시겠습니까?"
         }
     }
 
@@ -54,10 +54,11 @@ class StopPlayDialog(val distance: Float, val callback: () -> Unit) : DialogFrag
                 dismiss()
             }
             btnConfirm.setOnClickListener {
-                callback()
+                if (distance > 10f) {
+                    callback()
+                }
                 dismiss()
             }
         }
-
     }
 }

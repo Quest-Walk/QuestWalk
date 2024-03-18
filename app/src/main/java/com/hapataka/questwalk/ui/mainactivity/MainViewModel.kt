@@ -104,7 +104,10 @@ class MainViewModel(
         }
     }
 
-    fun togglePlay(callback: (String, String) -> Unit) {
+    fun togglePlay(
+        showDialog: (Float, () -> Unit) -> Unit,
+        callback: (String, String) -> Unit
+    ) {
         val playState = playState.value ?: 0
 
         viewModelScope.launch {
@@ -115,9 +118,13 @@ class MainViewModel(
             if (playState == QUEST_STOP) {
                 _playState.value = QUEST_START
             } else {
-                setResultHistory(callback)
-                _playState.value = QUEST_STOP
-                _totalDistance.value = locationInfo.distance
+                showDialog(
+                    totalDistance.value ?: 0f,
+                ) {
+                    setResultHistory(callback)
+                    _playState.value = QUEST_STOP
+                    _totalDistance.value = locationInfo.distance
+                }
             }
 
             if (playState == QUEST_SUCCESS) {
@@ -254,6 +261,8 @@ class MainViewModel(
         }
         val currentDistance = totalDistance.value ?: 0f
         val result = currentDistance + distance
+
+        Log.d(TAG, "distance: ${distance}")
 
         _totalDistance.value = result
     }

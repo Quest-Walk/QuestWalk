@@ -47,6 +47,4 @@ private fun setObserver() {
             navController.graph = navGraph
         }
     }
-
-
 }

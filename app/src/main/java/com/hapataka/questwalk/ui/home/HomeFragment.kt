@@ -31,6 +31,7 @@ import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
@@ -120,14 +121,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            mainViewModel.togglePlay {uid, registerAt ->
-                val bundle = Bundle().apply {
-                    putString(USER_ID, uid)
-                    putString(REGISTER_TIME, registerAt)
-                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+            mainViewModel.togglePlay (
+                {distance, callback ->
+                    showHomeDialog(distance, callback)
+                },
+                {uid, registerAt ->
+                    val bundle = Bundle().apply {
+                        putString(USER_ID, uid)
+                        putString(REGISTER_TIME, registerAt)
+                        putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+                    }
+                    navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
                 }
-                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-            }
+            )
         }
     }
 
@@ -171,9 +177,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun showHomeDialog() {
-        val dialog = HomeDialog {
+    private fun showHomeDialog(distance: Float, callback: () -> Unit) {
+        val dialog = StopPlayDialog(distance){
+            callback
         }
+
         dialog.show(parentFragmentManager, "HomeDialog")
     }
 
