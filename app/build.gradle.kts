@@ -104,7 +104,9 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.1")
     implementation("androidx.camera:camera-extensions:1.3.1")
 
-    //Image Cropper
-    implementation("com.vanniktech:android-image-cropper:4.3.3")
+    //openCV
+    implementation("com.quickbirdstudios:opencv:4.5.2")
+
+
 
 }
