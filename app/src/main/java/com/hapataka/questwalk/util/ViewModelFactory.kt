@@ -10,8 +10,9 @@ import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
-import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
+import com.hapataka.questwalk.data.remote.repository.DustRepositoryImpl
 import com.hapataka.questwalk.data.remote.repository.WeatherRepositoryImpl
+import com.hapataka.questwalk.domain.usecase.GetTmLocationUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
@@ -36,6 +37,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val achieveRepo = AchieveStackRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
         val weatherRepo = WeatherRepositoryImpl()
+        val dustRepo = DustRepositoryImpl()
         val ocrRepo = OcrRepositoryImpl()
 
 
@@ -64,7 +66,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
-            return WeatherViewModel(GetWeatherUseCase(weatherRepo)) as T
+            return WeatherViewModel(GetWeatherUseCase(weatherRepo), GetTmLocationUseCase(locationRepo, dustRepo), dustRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")
