@@ -2,13 +2,10 @@ package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.Paint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.opencv.android.Utils
 import org.opencv.core.Mat
+import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
@@ -26,53 +23,20 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         return file as File
     }
 
-    fun resizedBitmap(image: Bitmap, maxSize: Int): Bitmap {
-        var width = image.width
-        var height = image.height
-
-        val bitmapRatio = width.toFloat() / height.toFloat()
-
-        if (bitmapRatio > 1) {
-            width = maxSize
-            height = (width / bitmapRatio).toInt()
-        } else {
-            height = maxSize
-            width = (height * bitmapRatio).toInt()
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true)
-    }
-
-    fun toGrayScaleBitmap(bitmap: Bitmap?): Bitmap? {
-        if (bitmap == null) return null
-        val grayscaleBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
-        val mat = Mat()
-        Utils.bitmapToMat(grayscaleBitmap,mat)
-        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY)
-        Utils.matToBitmap(mat,grayscaleBitmap)
-        return grayscaleBitmap
-    }
-
     /**
-     * contract 1.0 변화 없음
-     * contract > 1.0  대비 증가 <1.0 대비 감소
-     * brightness -255 ~ 255
-     *
+     * clipLimit : 각 타일 Histogram 할때, 임계값 제한
+     * titlesGridSize : 이미지를 얼마나 많은 tile로 나눌것인지 결정
      */
-    fun contractBitmap(bitmap: Bitmap?, contract: Float, brightness: Float): Bitmap? {
+    fun contractBitmapWithCLAHE(bitmap: Bitmap?, clipLimit: Double, titlesGridSize: Double): Bitmap? {
         if (bitmap == null) return null
-        val contractBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
-        val cm = ColorMatrix(
-            floatArrayOf(
-                contract, 0f, 0f, 0f, brightness, //R
-                0f, contract, 0f, 0f, brightness, //G
-                0f, 0f, contract, 0f, brightness, //B
-                0f, 0f, 0f, 1f, 0f // A
-            )
-        )
-        val paint = Paint()
-        paint.colorFilter = ColorMatrixColorFilter(cm)
-        val canvas = Canvas(contractBitmap)
-        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+        val contractBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
+        val mat = Mat()
+        Utils.bitmapToMat(contractBitmap,mat)
+        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY)
+        Imgproc.createCLAHE(clipLimit,Size(titlesGridSize,titlesGridSize)).apply(mat,mat)
+//        Imgproc.threshold(mat,mat,127.0,255.0,Imgproc.THRESH_BINARY)
+//        Imgproc.GaussianBlur(mat,mat,Size(3.0,3.0),0.0)
+        Utils.matToBitmap(mat,contractBitmap)
 
         return contractBitmap
 
