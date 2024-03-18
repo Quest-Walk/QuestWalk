@@ -2,8 +2,11 @@ package com.hapataka.questwalk.data.fusedlocation.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -11,6 +14,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class LocationRepositoryImpl(context: Context) : LocationRepository {
     private val client by lazy { LocationServices.getFusedLocationProviderClient(context) }
@@ -19,6 +26,7 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
     }
     private lateinit var locationCallback: LocationCallback
     private var prevLocation: Location? = null
+    private val geocoder = Geocoder(context)
 
     @SuppressLint("MissingPermission")
     override fun startRequest(callback: (LocationEntity) -> Unit) {
@@ -53,5 +61,21 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
 
     override fun finishRequest() {
         client.removeLocationUpdates(locationCallback)
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun getAddress() = withContext(Dispatchers.IO) {
+        try {
+            val location = client.lastLocation.await() // 현재 위치를 가져오는 함수로 변경
+            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            if (!addressList.isNullOrEmpty()) {
+                addressList[0]
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }
