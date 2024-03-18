@@ -17,31 +17,23 @@ class WeatherRepositoryImpl (
     }
 
     private fun convertToWeatherEntity(items: List<Item>): MutableList<WeatherEntity> {
-        val weatherEntityList = mutableListOf<WeatherEntity>()
         val itemsGroup = items.groupBy { "${it.fcstDate}${it.fcstTime}" }
-        itemsGroup.forEach { (dateTime, items) ->
-            var sky = ""
-            var precipType = ""
-            var temp = ""
-            items.forEach {
-                when (it.category) {
-                    "SKY" -> { sky = it.fcstValue }
-                    "PTY" -> { precipType = it.fcstValue }
-                    "TMP" -> { temp = it.fcstValue }
-                }
-            }
-            weatherEntityList.add(
-                WeatherEntity(
-                    fcstDate = items[0].fcstDate,
-                    fcstTime = items[0].fcstTime,
-                    baseDate =  items[0].baseDate,
-                    sky = sky,
-                    precipType = precipType,
-                    temp = temp
-                )
+        val result =  itemsGroup.map { (dateTime, item) ->
+            val sky = item.first { it.category == "SKY" }.fcstValue
+            val pty = item.first { it.category == "PTY" }.fcstValue
+            val tmp = item.first { it.category == "TMP" }.fcstValue
+
+            WeatherEntity(
+                fcstDate = item[0].fcstDate,
+                fcstTime = item[0].fcstTime,
+                baseDate = item[0].baseDate,
+                sky = sky,
+                precipType = pty,
+                temp = tmp
             )
-        }
-        return weatherEntityList
+        }.toMutableList()
+        Log.d("WeatherRepository:","$result")
+        return result
     }
 }
 
