@@ -47,7 +47,6 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         val grayscaleBitmap = Bitmap.createBitmap(
             width, height, Bitmap.Config.ARGB_8888
         )
-
         val canvas = Canvas(grayscaleBitmap)
         val paint = Paint()
         val colorMatrix = ColorMatrix()
@@ -64,15 +63,17 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
     /**
      * contract 1.0 변화 없음
      * contract > 1.0  대비 증가 <1.0 대비 감소
+     * brightness -255 ~ 255
+     *
      */
-    fun contractBitmap(bitmap: Bitmap?, contract: Float): Bitmap? {
+    fun contractBitmap(bitmap: Bitmap?, contract: Float, brightness: Float): Bitmap? {
         if (bitmap == null) return null
         val contractBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
         val cm = ColorMatrix(
             floatArrayOf(
-                contract, 0f, 0f, 0f, 0f, //R
-                0f, contract, 0f, 0f, 0f, //G
-                0f, 0f, contract, 0f, 0f, //B
+                contract, 0f, 0f, 0f, brightness, //R
+                0f, contract, 0f, 0f, brightness, //G
+                0f, 0f, contract, 0f, brightness, //B
                 0f, 0f, 0f, 1f, 0f // A
             )
         )
@@ -84,6 +85,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         return contractBitmap
 
     }
+
 
     fun deleteBitmap() {
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
