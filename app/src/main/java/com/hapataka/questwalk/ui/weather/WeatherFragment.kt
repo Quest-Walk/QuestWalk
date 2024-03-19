@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBinding::inflate){
     private val weatherViewModel: WeatherViewModel by viewModels {ViewModelFactory(requireContext())}
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val weatherAdapter by lazy { WeatherAdapter() }
+    private val weatherAdapter by lazy { WeatherAdapter(requireContext()) }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,6 +40,11 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
             dustInfo.observe(viewLifecycleOwner) {
                 binding.tvMiseValue.text = "${it.pm10Value} ㎍/㎥"
                 binding.tvChomiseValue.text = "${it.pm25Value} ㎍/㎥"
+            }
+            weatherPreview.observe(viewLifecycleOwner) {
+                binding.tvMessage.text =
+                    "현재 온도는 ${it.currentTmp}도 이고, 하늘 상태는 ${it.sky} ${it.precipType}" +
+                            "미세먼지 상태는 ${it.miseState} 초미세 먼지 상태는 ${it.choMiseState} 오늘 여행에 참고하라구!!"
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.weather.adapter
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +13,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemWeatherBinding
 import com.hapataka.questwalk.ui.weather.WeatherData
 
-class WeatherAdapter: ListAdapter<WeatherData, WeatherAdapter.WeatherViewHolder>(diffUtil) {
+class WeatherAdapter(val context: Context): ListAdapter<WeatherData, WeatherAdapter.WeatherViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -26,9 +27,15 @@ class WeatherAdapter: ListAdapter<WeatherData, WeatherAdapter.WeatherViewHolder>
     inner class WeatherViewHolder(private val binding: ItemWeatherBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(item: WeatherData) {
             with(binding) {
-                tvTime.text = item.fcstTime.substring(0,2) + "시"
+                if (item.fcstTime == "0000") {
+                    tvTime.text = "내일"
+                    tvTime.setTextColor(context.getColor(R.color.main_purple))
+                } else {
+                    tvTime.text = item.fcstTime.substring(0,2) + "시"
+                    tvTime.setTextColor(context.getColor(R.color.black))
+                }
+
                 tvTmp.text = "${item.temp}도"
-                Log.d("WeatherAdapter","PTY:${item.precipType}, SKY:${item.sky}")
                 setPtyState(item.precipType.toInt(), item.sky.toInt())
             }
         }
@@ -51,13 +58,6 @@ class WeatherAdapter: ListAdapter<WeatherData, WeatherAdapter.WeatherViewHolder>
             }
         }
     }
-
-
-
-//     PTY 강수 형태 (초단기) 없음(0), 비(1), 비/눈(2), 눈(3), 빗방울(5), 빗방울눈날림(6), 눈날림(7)
-//             (단기) 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
-// SKY 하늘 상태 0~5 맑음 6~8 구름 많음 9~10 흐림
-// T1H 기온
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<WeatherData>() {
