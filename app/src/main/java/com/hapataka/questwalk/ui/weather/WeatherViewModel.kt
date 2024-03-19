@@ -25,13 +25,16 @@ class WeatherViewModel (
     private val _weatherInfo = MutableLiveData<MutableList<WeatherData>>()
     private val _dustInfo = MutableLiveData<DustEntity>()
     private val _weatherPreview = MutableLiveData<WeatherPreviewData>()
+    private val _isLoading = MutableLiveData<Boolean>()
     val weatherInfo: LiveData<MutableList<WeatherData>> get() = _weatherInfo
     val dustInfo: LiveData<DustEntity> get() = _dustInfo
     val weatherPreview: LiveData<WeatherPreviewData> get() = _weatherPreview
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
 
     init {
         viewModelScope.launch {
+            _isLoading.value = true
             val weatherDeferred = async { getWeatherInfo() }
             val dustDeferred = async { getDustInfo() }
             val list = mutableListOf(weatherDeferred, dustDeferred)
@@ -76,7 +79,7 @@ class WeatherViewModel (
             miseState = getMiseState(_dustInfo.value?.pm10Value ?: 0),
             choMiseState = getChoMiseState(_dustInfo.value?.pm25Value ?: 0)
         )
-        Log.d("WeatherViewwModel:","weatherPreview:${_weatherPreview.value}")
+        _isLoading.value = false
     }
 
     private fun convertWeatherData(weatherEntity: WeatherEntity): WeatherData {

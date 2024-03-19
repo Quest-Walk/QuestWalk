@@ -15,6 +15,7 @@ import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapterDecoration
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,6 +46,15 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
                 binding.tvMessage.text =
                     "현재 온도는 ${it.currentTmp}도 이고, 하늘 상태는 ${it.sky} ${it.precipType}" +
                             "미세먼지 상태는 ${it.miseState} 초미세 먼지 상태는 ${it.choMiseState} 오늘 여행에 참고하라구!!"
+            }
+            isLoading.observe(viewLifecycleOwner) {isLoading ->
+                if (isLoading) {
+                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
+                } else {
+                    val loadingFragment =
+                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                    loadingFragment?.dismiss()
+                }
             }
         }
     }
