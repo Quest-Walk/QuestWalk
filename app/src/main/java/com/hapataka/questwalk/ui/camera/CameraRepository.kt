@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
+import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
@@ -32,40 +33,48 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
     fun preProcessBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
         val contractBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        val originMat = Mat()
-        Utils.bitmapToMat(contractBitmap, originMat)
 
         val mat = Mat()
         Utils.bitmapToMat(contractBitmap, mat)
+        val resultMat = processBitmapWithMask(mat)
+        Utils.matToBitmap(resultMat, contractBitmap)
+
+        return contractBitmap
+
+    }
+    private fun processBitmapWithMask(src: Mat): Mat {
+        if (src.empty()) return Mat()
+        val processedImage = Mat()
+        val binary = Mat()
+        val mask = Mat()
+        val result = Mat()
+
+        // 이미지 처리 과정
+        val mat = src.clone()
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY)
+
         Imgproc.createCLAHE(100.0, Size(10.0, 10.0)).apply(mat, mat)
 
+
         Imgproc.GaussianBlur(mat, mat, Size(31.0, 31.0), 0.0)
-        //엣지 강화
-//        Imgproc.Laplacian(mat,mat,mat.depth(),31)
-//        Core.convertScaleAbs(mat,mat)
+
         val sobelX = Mat()
         val sobelY = Mat()
         Imgproc.Sobel(mat, sobelX, mat.depth(), 1, 0)
         Imgproc.Sobel(mat, sobelY, mat.depth(), 0, 1)
         Core.addWeighted(sobelX, 0.5, sobelY, 0.5, 2.0, mat)
 
-        //이진화
-        Imgproc.threshold(mat, mat, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
-//        Imgproc.adaptiveThreshold(mat, mat, 255.0, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-//            Imgproc.THRESH_BINARY, 11, 4.0)
+        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
 
-        //모폴리지 연산
-        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(7.0, 7.0))
+        // 흰색 부분만 처리하기 위한 마스크 생성
+        Core.bitwise_and(src, src, processedImage, binary)
 
-        Imgproc.morphologyEx(mat, mat, Imgproc.MORPH_OPEN, kernel)
+        // 검은색 부분은 원본 이미지 사용, 흰색 부분은 처리된 이미지 사용
+        Core.bitwise_not(binary, mask) // 흰색 부분을 제외한 나머지를 마스크로 생성
+        Core.bitwise_and(src, src, result, mask) // 원본에서 검은색 부분만 추출
+        Core.addWeighted(processedImage,3.0,result,1.0,0.0,result)
 
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGBA)
-        Core.bitwise_and(originMat, mat, mat)
-        Utils.matToBitmap(mat, contractBitmap)
-
-        return contractBitmap
-
+        return result
     }
 
     private fun findMinMaxBrightness(inputImage: Mat): Pair<Double, Double> {
