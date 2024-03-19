@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.opencv.android.Utils
 import org.opencv.core.Core
-import org.opencv.core.CvType
 import org.opencv.core.Mat
-import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
@@ -31,21 +29,16 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
      * clipLimit : 각 타일 Histogram 할때, 임계값 제한
      * titlesGridSize : 이미지를 얼마나 많은 tile로 나눌것인지 결정
      */
-    fun contractBitmapWithCLAHE(
-        bitmap: Bitmap?,
-        clipLimit: Double,
-        titlesGridSize: Double,
-    ): Bitmap? {
+    fun preProcessBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
         val contractBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val originMat = Mat()
-        Utils.bitmapToMat(contractBitmap,originMat)
+        Utils.bitmapToMat(contractBitmap, originMat)
+
         val mat = Mat()
         Utils.bitmapToMat(contractBitmap, mat)
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY)
-        Imgproc.createCLAHE(clipLimit, Size(titlesGridSize, titlesGridSize)).apply(mat, mat)
-
-
+        Imgproc.createCLAHE(100.0, Size(10.0, 10.0)).apply(mat, mat)
 
         Imgproc.GaussianBlur(mat, mat, Size(31.0, 31.0), 0.0)
         //엣지 강화
@@ -63,12 +56,12 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 //            Imgproc.THRESH_BINARY, 11, 4.0)
 
         //모폴리지 연산
-        val kernel= Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,Size(7.0,7.0))
+        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(7.0, 7.0))
 
-        Imgproc.morphologyEx(mat,mat, Imgproc.MORPH_OPEN, kernel)
+        Imgproc.morphologyEx(mat, mat, Imgproc.MORPH_OPEN, kernel)
 
-        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_GRAY2RGBA)
-        Core.bitwise_and(originMat,mat,mat)
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGBA)
+        Core.bitwise_and(originMat, mat, mat)
         Utils.matToBitmap(mat, contractBitmap)
 
         return contractBitmap

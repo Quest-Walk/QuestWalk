@@ -146,15 +146,11 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         }
     }
 
-    private fun preProcessImage(bitmap: Bitmap?): Bitmap?{
-        var resultImage = bitmap
-        resultImage = repository.contractBitmapWithCLAHE(resultImage,100.0,10.0)
-        return resultImage
-    }
+
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image: InputImage
         image = if (isCropped) {
-            croppedBitmap = preProcessImage(croppedBitmap)
+            croppedBitmap = repository.preProcessBitmap(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
