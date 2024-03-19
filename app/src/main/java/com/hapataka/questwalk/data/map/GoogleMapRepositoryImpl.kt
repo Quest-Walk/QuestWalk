@@ -28,7 +28,7 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
         }?.toMutableList() ?: mutableListOf()
 
         val tAnimator = ValueAnimator.ofInt(0, if (locationList.size < 2) 0 else locationList.size - 2 ).apply {
-            duration = 5000
+            duration = (locationList.size * 50).toLong()
             addUpdateListener { tAnimator ->
                 val frame = tAnimator.animatedValue as Int
                 val nextFrameValue = if (locationList.size < 2) {

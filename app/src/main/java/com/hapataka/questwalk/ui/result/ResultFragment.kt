@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.result
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
@@ -41,6 +42,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         initMapView(savedInstanceState)
         getInfo()
         setObserver()
+        initBackButton()
     }
 
     private fun initMapView(bundle: Bundle?) {
@@ -71,7 +73,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun initViews(result: HistoryEntity.ResultEntity) {
         with(binding) {
-            if (result.isFailed.not()) {
+            if (result.isSuccess) {
                 ivQuestImage.load(result.questImg) {
                     placeholder(R.drawable.image_empty)
                     crossfade(true)
@@ -104,6 +106,12 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                 placeholder(R.drawable.image_empty)
                 memoryCacheKey(successItem.imageUrl)
             }
+        }
+    }
+
+    private fun initBackButton() {
+        binding.btnBack.setOnClickListener {
+            parentFragment?.findNavController()?.popBackStack()
         }
     }
 }

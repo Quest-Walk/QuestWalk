@@ -9,4 +9,5 @@ interface AuthRepository {
     suspend fun deleteCurrentUser(callback: (Task<Void>) -> Unit)
     suspend fun logout()
     suspend fun getCurrentUserUid(): String
+    suspend fun getCurrentUserEmail(): String
 }

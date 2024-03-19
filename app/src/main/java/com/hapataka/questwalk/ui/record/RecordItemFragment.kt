@@ -81,7 +81,6 @@ class RecordItemFragment(private val items: List<RecordItem>) :
                             putString(REGISTER_TIME, item.registerAt)
                         }
                         navController.navigate(R.id.action_frag_record_to_frag_result, bundle)
-
                     }
                 }
             }
