@@ -2,6 +2,7 @@ package com.hapataka.questwalk.domain.usecase
 
 import android.util.Log
 import com.hapataka.questwalk.domain.entity.WeatherEntity
+import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.WeatherRepository
 import com.hapataka.questwalk.ui.weather.LatXLngY
 import java.time.LocalDateTime
@@ -9,11 +10,12 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class GetWeatherUseCase (
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val locationRepo: LocationRepository
 ) {
     suspend operator fun invoke(): List<WeatherEntity> {
-        // TODO: 현재 위.경도를 받아오도록 수정  
-        val convertXy = convertToXY(37.21407702184533, 127.04263109183239)
+        val currentLocation = locationRepo.getCurrent().location
+        val convertXy = convertToXY(currentLocation.first.toDouble(), currentLocation.second.toDouble())
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(
             "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",

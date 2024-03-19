@@ -79,7 +79,8 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
-            return WeatherViewModel(GetWeatherUseCase(weatherRepo), GetTmLocationUseCase(locationRepo, dustRepo), dustRepo) as T
+            return WeatherViewModel(GetWeatherUseCase(weatherRepo, locationRepo),
+                GetTmLocationUseCase(locationRepo, dustRepo), dustRepo) as T
         }
 
         throw IllegalArgumentException("unknown view model")
