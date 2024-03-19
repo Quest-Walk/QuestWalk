@@ -55,7 +55,7 @@
                 android:lineSpacingExtra="8dp"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="24dp"
-                android:text="오늘 온도는 180도, 비가 내리는군\n미세먼지는 깨끗하군\n\n오늘은 집에 있는게 나을수도 있겠어!"
+                tools:text="오늘 온도는 180도, 비가 내리는군\n미세먼지는 깨끗하군\n\n오늘은 집에 있는게 나을수도 있겠어!"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
