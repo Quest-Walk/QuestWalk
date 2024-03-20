@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
@@ -40,7 +39,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         private var TO_HOME_FRAG = "homefragment"
         private var TO_CAPT_FRAG = "capturefragment"
     }
-
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
@@ -114,13 +112,11 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun setObserver() {
         with(mainViewModel) {
             imageBitmap.observe(viewLifecycleOwner) {
-                Log.d(TAG, "bitmap: $it")
                 with(binding.ivCapturedImage) {
                     load(it)
                     visible()
                 }
             }
-
         }
         cameraViewModel.bitmap.observe(viewLifecycleOwner) {
             if (it == null) return@observe
@@ -129,7 +125,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 navController.navigate(R.id.action_frag_camera_to_frag_capture)
             }
         }
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -138,11 +133,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         initCaptureButton()
         binding.ivCapturedImage.gone()
         with(binding) {
-
             btnFlash.setOnClickListener {
                 cameraHandler.toggleFlash()
             }
-
             btnBack.setOnClickListener {
                 navController.popBackStack()
             }
@@ -176,7 +169,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                         mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
                         cameraHandler.capturePhoto(imageCaptureCallback())
                     }
-
                     MotionEvent.ACTION_UP -> {
                         this.load(R.drawable.btn_capture)
                         v.performClick()
@@ -191,7 +183,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-
                 if (toFrag == TO_CAPT_FRAG) {
                     cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
                     cameraViewModel.imageProxyToBitmap(image)
@@ -210,5 +201,4 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             }
         }
     }
-
 }

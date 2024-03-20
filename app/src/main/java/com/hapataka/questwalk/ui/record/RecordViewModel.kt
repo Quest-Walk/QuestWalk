@@ -13,6 +13,7 @@ import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
+import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.launch
 
 class RecordViewModel(
@@ -30,7 +31,7 @@ class RecordViewModel(
     fun getRecordItems() {
         viewModelScope.launch {
             var currentItems = mutableListOf<RecordItem>()
-            val histories =userRepo.getUserHistory(authRepo.getCurrentUserUid())
+            val histories =userRepo.getUserHistory(UserInfo.uid)
             val achieveItems = achieveItemRepo.getAchieveItem().map {entity ->
                 convertToRecordItem(entity, histories.filterIsInstance<AchieveResultEntity>())
             }

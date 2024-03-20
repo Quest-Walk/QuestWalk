@@ -41,6 +41,7 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 
     fun toGrayScaleBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
+
         val width: Int = bitmap.width
         val height: Int = bitmap.height
 
@@ -82,12 +83,10 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
         return contractBitmap
-
     }
 
     fun deleteBitmap() {
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제
         file?.delete()
     }
-
 }
