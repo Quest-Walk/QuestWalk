@@ -34,8 +34,9 @@ class QuestListAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: QuestData) {
-            Log.d("QuestListAdapter:","${item.allUser}")
-            Log.d("QuestListAdapter:","${item.successItems.size}")
+            Log.d("QuestListAdapter:","allUser:${item.allUser}")
+            Log.d("QuestListAdapter:","keyword:${item.keyWord}")
+            Log.d("QuestListAdapter:","successItem:${item.successItems.size}")
             val completeRate = if (item.allUser != 0L) {
                 (((item.successItems.size.toDouble() / item.allUser)*100) *10.0 ).roundToInt() / 10.0
             } else {
@@ -58,6 +59,8 @@ class QuestListAdapter(
                 tvSolvePercent.text = "$completeRate %"
                 tvKeyword.text = item.keyWord
                 ivLevel.load(leveImg)
+
+
 
                 ValueAnimator.ofInt(0, completeRate.toInt()).apply {
                     duration = 800

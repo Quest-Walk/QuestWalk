@@ -26,21 +26,22 @@ class QuestViewModel : ViewModel() {
 //    val allUserSize: LiveData<Long> = _allUserSize
     private val _successKeywords = MutableLiveData<MutableList<String>>()
     val successKeywords: LiveData<MutableList<String>> get() = _successKeywords
-    val filterUseCase = QuestFilteringUseCase()
+    val filterUseCase = QuestFilteringUseCase() // 완료 안된 퀘스트 반환
 
     init {
         getAllUserSize()
-        getQuestItems(false)
+        getQuestItems()
         getSuccessKeywords()
     }
 
-    private fun getQuestItems(completeFilter: Boolean) {
+
+    private fun getQuestItems() {
         viewModelScope.launch {
-            _questItems.value = questStackRepo.getAllItems().map {
+            val filterList = filterUseCase().map {
                 convertToQuestData(it)
-            }.toMutableList()
-            allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
-            if (completeFilter) filterLevel(currentLevel)
+            }
+            allQuestItems = filterList.toMutableList()
+            filterLevel(currentLevel)
         }
     }
 
@@ -57,16 +58,14 @@ class QuestViewModel : ViewModel() {
     fun filterComplete(isChecked: Boolean) {
         if (isChecked) {
             viewModelScope.launch {
-                val filterList = mutableListOf<QuestData>()
-
-                filterUseCase().forEach {
-                    filterList += convertToQuestData(it)
-                }
-                allQuestItems = filterList.toMutableList()
+                _questItems.value = questStackRepo.getAllItems().map {
+                    convertToQuestData(it)
+                }.toMutableList()
+                allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
                 filterLevel(currentLevel)
             }
         } else {
-            getQuestItems(true)
+            getQuestItems()
         }
     }
 
