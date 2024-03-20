@@ -109,6 +109,7 @@ class MainViewModel(
                 _playState.value = QUEST_SUCCESS
                 visibleImageCallback()
             } else {
+                // CropImage 를 다시 설정하여 해야함
                 _snackBarMsg.value = "키워드가 보이게 사진을 다시 찍어주세요"
                 invisibleImageCallback()
             }

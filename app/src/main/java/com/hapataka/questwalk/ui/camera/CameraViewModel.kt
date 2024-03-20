@@ -153,7 +153,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         }
 
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-
+        val canvas = Canvas(croppedBitmap!!)
+        val paint = Paint().apply {
+            color = Color.CYAN
+            style = Paint.Style.STROKE
+            strokeWidth = 10f
+        }
         try {
             isLoading.postValue(true)
 
@@ -167,6 +172,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 for (line in block.lines) {
                     for (element in line.elements) {
                         resultListByMLKit.add(element)
+                        canvas.drawRect(element.boundingBox!!,paint)
                         Log.d("ocrResult", element.text)
                     }
                 }
