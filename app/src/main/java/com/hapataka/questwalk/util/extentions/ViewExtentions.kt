@@ -68,6 +68,10 @@ fun Long.convertKcal(): String {
 
 fun Float.convertKm(): String {
     val df = DecimalFormat("#.##")
+    if (this < 1000f) {
+        val meter = this.toInt()
+        return "${meter}m"
+    }
     val km = this / 1000.0f
-    return df.format(km) + "Km"
+    return df.format(km) + "km"
 }

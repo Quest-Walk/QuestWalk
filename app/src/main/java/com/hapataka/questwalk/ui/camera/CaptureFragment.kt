@@ -133,7 +133,7 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             if (isDebug) {
                 binding.etKeywordDebug.visibility = View.VISIBLE
                 binding.btnLoadImageDebug.visibility = View.VISIBLE
-                Snackbar.make(requireView(), "Debug Mode!", Snackbar.LENGTH_SHORT).show()
+//                Snackbar.make(requireView(), "Debug Mode!", Snackbar.LENGTH_SHORT).show()
             } else {
                 binding.etKeywordDebug.visibility = View.GONE
                 binding.btnLoadImageDebug.visibility = View.GONE

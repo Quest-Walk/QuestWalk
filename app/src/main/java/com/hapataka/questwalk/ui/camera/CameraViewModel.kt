@@ -146,16 +146,11 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         }
     }
 
-    private fun preProcessImage(bitmap: Bitmap?): Bitmap?{
-        var resultImage = bitmap
-        resultImage = repository.toGrayScaleBitmap(resultImage)
-        resultImage = repository.contractBitmap(resultImage,1.5f)
-        return resultImage
-    }
+
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image: InputImage
         image = if (isCropped) {
-            croppedBitmap = preProcessImage(croppedBitmap)
+            croppedBitmap = repository.preProcessBitmap(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
@@ -166,8 +161,12 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         try {
             isLoading.postValue(true)
 
+            Log.d("ocrResult","------------")
             val result = recognizer.process(image).await()
 
+            if(result.textBlocks.isEmpty()){
+                Log.d("ocrResult","값이 없음")
+            }
             for (block in result.textBlocks) {
                 for (line in block.lines) {
                     for (element in line.elements) {
@@ -176,6 +175,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                     }
                 }
             }
+
+            Log.d("ocrResult","------------")
             isLoading.postValue(false)
 
             _isSucceed.postValue(validationResponseByMLKit(keyword))
@@ -193,12 +194,16 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
         resultListByMLKit.forEach { element: Element ->
             val word = element.text
-            Log.d("ocrResult", word+"!")
+            Log.d("ocrResultSimilar", word+":")
             if (word.contains(keyword)) {
                 isValidated = true
+                Log.d("ocrResultSimilar", "@(포함)"
+                        + similarityObj.similarity(word, keyword).toString()+"@")
                 return@forEach
             } else if (similarityObj.similarity(word, keyword) >= 0.3) {
                 isValidated = true
+                Log.d("ocrResultSimilar", "@(비슷함)"
+                        + similarityObj.similarity(word, keyword).toString()+"@")
                 return@forEach
             }
             Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())

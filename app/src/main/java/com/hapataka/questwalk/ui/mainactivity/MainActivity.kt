@@ -1,12 +1,8 @@
 package com.hapataka.questwalk.ui.mainactivity
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
@@ -16,6 +12,8 @@ import com.hapataka.questwalk.databinding.ActivityMainBinding
 import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.opencv.android.OpenCVLoader
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -31,13 +29,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setStartDestination()
         setObserver()
+        initOpenCv()
     }
 
-private fun setObserver() {
-    mainViewModel.snackBarMsg.observe(this) {
-        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+    private fun setObserver() {
+        mainViewModel.snackBarMsg.observe(this) {
+            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+        }
     }
-}
+
     private fun setStartDestination() {
         lifecycleScope.launch {
             val currentUser = authRepo.getCurrentUserUid()
@@ -51,4 +51,7 @@ private fun setObserver() {
             navController.graph = navGraph
         }
     }
+ private fun initOpenCv(){
+     OpenCVLoader.initDebug()
+ }
 }

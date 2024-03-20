@@ -39,8 +39,13 @@ class RecordFragment : Fragment() {
     }
 
     private fun setObserver() {
-        viewModel.recordItems.observe(viewLifecycleOwner) {
-            initViewPager(it)
+        with(viewModel) {
+            recordItems.observe(viewLifecycleOwner) {items ->
+                initViewPager(items)
+            }
+            achieveItems.observe(viewLifecycleOwner) {
+                recordItemAdapter.achieveItems = it
+            }
         }
     }
 

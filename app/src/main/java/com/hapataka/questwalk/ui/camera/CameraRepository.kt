@@ -2,14 +2,17 @@ package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.Paint
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.opencv.android.Utils
+import org.opencv.core.Core
+import org.opencv.core.Mat
+import org.opencv.core.Scalar
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+
 
 class CameraRepository @Inject constructor(@ApplicationContext private val context: Context) {
     private var file: File? = null
@@ -23,67 +26,82 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         return file as File
     }
 
-    fun resizedBitmap(image: Bitmap, maxSize: Int): Bitmap {
-        var width = image.width
-        var height = image.height
-
-        val bitmapRatio = width.toFloat() / height.toFloat()
-
-        if (bitmapRatio > 1) {
-            width = maxSize
-            height = (width / bitmapRatio).toInt()
-        } else {
-            height = maxSize
-            width = (height * bitmapRatio).toInt()
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true)
-    }
-
-    fun toGrayScaleBitmap(bitmap: Bitmap?): Bitmap? {
-        if (bitmap == null) return null
-        val width: Int = bitmap.width
-        val height: Int = bitmap.height
-
-        val grayscaleBitmap = Bitmap.createBitmap(
-            width, height, Bitmap.Config.ARGB_8888
-        )
-
-        val canvas = Canvas(grayscaleBitmap)
-        val paint = Paint()
-        val colorMatrix = ColorMatrix()
-
-        colorMatrix.setSaturation(0f)
-        val filter = ColorMatrixColorFilter(colorMatrix)
-
-        paint.colorFilter = filter
-        canvas.drawBitmap(bitmap, 0f, 0f, paint)
-
-        return grayscaleBitmap
-    }
-
     /**
-     * contract 1.0 변화 없음
-     * contract > 1.0  대비 증가 <1.0 대비 감소
+     * clipLimit : 각 타일 Histogram 할때, 임계값 제한
+     * titlesGridSize : 이미지를 얼마나 많은 tile로 나눌것인지 결정
      */
-    fun contractBitmap(bitmap: Bitmap?, contract: Float): Bitmap? {
+    fun preProcessBitmap(bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
-        val contractBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
-        val cm = ColorMatrix(
-            floatArrayOf(
-                contract, 0f, 0f, 0f, 0f, //R
-                0f, contract, 0f, 0f, 0f, //G
-                0f, 0f, contract, 0f, 0f, //B
-                0f, 0f, 0f, 1f, 0f // A
-            )
-        )
-        val paint = Paint()
-        paint.colorFilter = ColorMatrixColorFilter(cm)
-        val canvas = Canvas(contractBitmap)
-        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+        val contractBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+
+        val mat = Mat()
+        Utils.bitmapToMat(contractBitmap, mat)
+        val resultMat = processBitmapWithMask(mat)
+        Utils.matToBitmap(resultMat, contractBitmap)
 
         return contractBitmap
 
     }
+    private fun processBitmapWithMask(src: Mat): Mat {
+        if (src.empty()) return Mat()
+        val processedImage = Mat()
+        val binary = Mat()
+        val mask = Mat()
+        val result = Mat()
+        val resultBitmap = mutableListOf<Bitmap>()
+        var bitmap = Bitmap.createBitmap(src.width(),src.height(),Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(src,bitmap)
+        resultBitmap.add(bitmap)
+        // 이미지 처리 과정
+        val mat = src.clone()
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY)
+
+        Imgproc.createCLAHE(100.0, Size(10.0, 10.0)).apply(mat, mat)
+
+
+        Imgproc.GaussianBlur(mat, mat, Size(31.0, 31.0), 0.0)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, bitmap)
+        resultBitmap.add(bitmap)
+
+        val sobelX = Mat()
+        val sobelY = Mat()
+        Imgproc.Sobel(mat, sobelX, mat.depth(), 1, 0)
+        Imgproc.Sobel(mat, sobelY, mat.depth(), 0, 1)
+        Core.addWeighted(sobelX, 0.5, sobelY, 0.5, 2.0, mat)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, bitmap)
+        resultBitmap.add(bitmap)
+
+        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(binary, bitmap)
+        resultBitmap.add(bitmap)
+
+        // 흰색 부분만 처리하기 위한 마스크 생성
+        Core.bitwise_and(src, src, processedImage, binary)
+
+        // 검은색 부분은 원본 이미지 사용, 흰색 부분은 처리된 이미지 사용
+        Core.bitwise_not(binary, mask) // 흰색 부분을 제외한 나머지를 마스크로 생성
+        Core.bitwise_and(src, src, result, mask) // 원본에서 검은색 부분만 추출
+        Core.addWeighted(processedImage,1.5,result,0.01,0.0,result)
+
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(result, bitmap)
+        resultBitmap.add(bitmap)
+
+//        Imgproc.cvtColor(result, result, Imgproc.COLOR_RGB2GRAY)
+//        Imgproc.createCLAHE(100.0, Size(10.0, 10.0)).apply(result, result)
+
+        return result
+    }
+
+    private fun findMinMaxBrightness(inputImage: Mat): Pair<Double, Double> {
+
+        val result = Core.minMaxLoc(inputImage)
+        return Pair(result.minVal, result.maxVal)
+    }
+
 
     fun deleteBitmap() {
         // TODO : 이미지 처리 후 내부 저장소 에 이미지 삭제

@@ -7,10 +7,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
-import com.hapataka.questwalk.domain.entity.HistoryEntity.AchievementEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
+import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.NickNameChangeDialog
@@ -23,7 +24,7 @@ import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
-    private val viewModel by viewModels<MyInfoViewModel> { ViewModelFactory() }
+    private val viewModel by viewModels<MyInfoViewModel> { ViewModelFactory(requireContext()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
@@ -56,9 +57,9 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun updateViewsWithUserInfo(userInfo: UserEntity) {
         val history = userInfo.histories
-        val achieveCount = history.filterIsInstance<AchievementEntity>().size
+        val achieveCount = history.filterIsInstance<AchieveResultEntity>().size
         val successResultCount =
-            history.filterIsInstance<ResultEntity>().filterNot { it.isFailed }.size.toString()
+            history.filterIsInstance<ResultEntity>().filterNot { it.isSuccess }.size.toString()
         val time = userInfo.totalTime.toLongOrNull()
         val defaultNickName = "이름없는 모험가"
 
@@ -90,11 +91,15 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun initDropOut() {
         binding.btnDropOut.setOnClickListener {
-            viewModel.deleteCurrentUser {
-                navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                navGraph.setStartDestination(R.id.frag_home)
-                navController.graph = navGraph
+            val dialog = DropOutDialog{ pw ->
+                viewModel.deleteCurrentUser(pw) {
+                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
+                    navGraph.setStartDestination(R.id.frag_home)
+                    navController.graph = navGraph
+                }
             }
+
+            dialog.show(parentFragmentManager, "DropOutDialog")
         }
     }
 
