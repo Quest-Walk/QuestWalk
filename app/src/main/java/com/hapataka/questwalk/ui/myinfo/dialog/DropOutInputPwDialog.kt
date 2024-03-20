@@ -32,7 +32,7 @@ class DropOutInputPwDialog(val dropOut: (String) -> Unit): DialogFragment() {
         }
         val width = displayMetrics.widthPixels
         val height = displayMetrics.heightPixels
-        val dialogWidth = (width * 0.75).toInt()
+        val dialogWidth = (width * 0.85).toInt()
         val dialogHeight = (height * 0.3).toInt()
 
         dialog?.window?.setLayout(dialogWidth, dialogHeight)

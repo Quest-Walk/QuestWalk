@@ -1,10 +1,6 @@
 package com.hapataka.questwalk.ui.questdetail
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +12,6 @@ import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailRecyclerViewDecoration
-import com.hapataka.questwalk.ui.record.TAG
-import com.hapataka.questwalk.util.extentions.visible
 import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
@@ -80,7 +74,7 @@ class QuestDetailFragment : Fragment() {
         }
 
         with(binding.revQuestDetail) {
-            addItemDecoration(QuestDetailRecyclerViewDecoration())
+            addItemDecoration(QuestDetailRecyclerViewDecoration(requireContext()))
             adapter = questDetailAdapter
         }
     }
