@@ -48,7 +48,10 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         val binary = Mat()
         val mask = Mat()
         val result = Mat()
-
+        val resultBitmap = mutableListOf<Bitmap>()
+        var bitmap = Bitmap.createBitmap(src.width(),src.height(),Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(src,bitmap)
+        resultBitmap.add(bitmap)
         // 이미지 처리 과정
         val mat = src.clone()
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY)
@@ -57,14 +60,23 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
 
 
         Imgproc.GaussianBlur(mat, mat, Size(31.0, 31.0), 0.0)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, bitmap)
+        resultBitmap.add(bitmap)
 
         val sobelX = Mat()
         val sobelY = Mat()
         Imgproc.Sobel(mat, sobelX, mat.depth(), 1, 0)
         Imgproc.Sobel(mat, sobelY, mat.depth(), 0, 1)
         Core.addWeighted(sobelX, 0.5, sobelY, 0.5, 2.0, mat)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, bitmap)
+        resultBitmap.add(bitmap)
 
         Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(binary, bitmap)
+        resultBitmap.add(bitmap)
 
         // 흰색 부분만 처리하기 위한 마스크 생성
         Core.bitwise_and(src, src, processedImage, binary)
@@ -72,7 +84,14 @@ class CameraRepository @Inject constructor(@ApplicationContext private val conte
         // 검은색 부분은 원본 이미지 사용, 흰색 부분은 처리된 이미지 사용
         Core.bitwise_not(binary, mask) // 흰색 부분을 제외한 나머지를 마스크로 생성
         Core.bitwise_and(src, src, result, mask) // 원본에서 검은색 부분만 추출
-        Core.addWeighted(processedImage,3.0,result,1.0,0.0,result)
+        Core.addWeighted(processedImage,1.5,result,0.01,0.0,result)
+
+        bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(result, bitmap)
+        resultBitmap.add(bitmap)
+
+//        Imgproc.cvtColor(result, result, Imgproc.COLOR_RGB2GRAY)
+//        Imgproc.createCLAHE(100.0, Size(10.0, 10.0)).apply(result, result)
 
         return result
     }
