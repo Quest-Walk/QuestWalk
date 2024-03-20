@@ -7,6 +7,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -17,7 +18,9 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -28,10 +31,16 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     private val userRepo by lazy { UserRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
+    private val viewModel: LoginViewModel by viewModels { ViewModelFactory(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUserId()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,6 +62,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
 
     private fun setup() {
         initBackPressedCallback()
+        setObserver()
     }
 
     private fun initLoginButton() {
@@ -84,6 +94,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
                 if (task.isSuccessful) {
                     val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
+                    viewModel.setUserId(id)
                     navController.navigate(R.id.action_frag_login_to_frag_home)
                     navGraph.setStartDestination(R.id.frag_home)
                     navController.graph = navGraph
@@ -146,11 +157,20 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
             requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
+
+    private fun setObserver() {
+        viewModel.userId.observe(viewLifecycleOwner) {id ->
+            Log.d(TAG, "observe: ${id}")
+            binding.etLoginId.setText(id)
+        }
+    }
 }
 
 fun String.showSnackbar(view: View) {
     Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
 }
+
+
 
 
 // 실패코드 참고용입니당

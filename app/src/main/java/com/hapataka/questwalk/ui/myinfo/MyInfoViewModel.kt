@@ -7,13 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 
 class MyInfoViewModel(
     private val authRepo: AuthRepository,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val localRepo: LocalRepository
 ) : ViewModel() {
     private var _userInfo = MutableLiveData<UserEntity>()
     val userInfo: LiveData<UserEntity> get() = _userInfo
@@ -34,10 +36,13 @@ class MyInfoViewModel(
         }
     }
 
-    fun deleteCurrentUser(callback: () -> Unit) {
+    fun deleteCurrentUser(pw: String, callback: () -> Unit) {
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
 
+            Log.i(TAG, "id: ${authRepo.getCurrentUserEmail()}")
+
+            getLoginInfo(pw)
             authRepo.deleteCurrentUser { task ->
                 if (task.isSuccessful) {
                     _snackbarMsg.value = "탈퇴 완료"
@@ -50,6 +55,13 @@ class MyInfoViewModel(
                     return@deleteCurrentUser
                 }
             }
+        }
+    }
+
+    private suspend fun getLoginInfo(pw: String) {
+        val id = authRepo.getCurrentUserEmail()
+
+        authRepo.loginByEmailAndPw(id, pw) {
         }
     }
 
