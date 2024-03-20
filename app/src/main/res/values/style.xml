@@ -19,6 +19,11 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="pixel_body_big_bold" parent="ramche">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="pixel_body_default" parent="ramche">
         <item name="android:textSize">16sp</item>
     </style>

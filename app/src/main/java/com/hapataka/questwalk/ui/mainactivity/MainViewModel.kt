@@ -1,7 +1,6 @@
 package com.hapataka.questwalk.ui.mainactivity
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,7 +17,6 @@ import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.domain.usecase.AchievementListener
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.UserInfo
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Job
@@ -65,6 +63,9 @@ class MainViewModel(
     private var _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private var _isStop = MutableLiveData<Boolean>()
+    val isStop: LiveData<Boolean> get() = _isStop
+
     private var timer: Job? = null
     private var locationHistory = mutableListOf<Pair<Float, Float>>()
     private var questLocation: Pair<Float, Float>? = null
@@ -79,32 +80,42 @@ class MainViewModel(
     fun setCaptureImage(
         image: ImageProxy,
         navigateCallback: () -> Unit,
-        imageCallback: (Bitmap) -> Unit
+        visibleImageCallback: (Bitmap) -> Unit,
+        invisibleImageCallback: () -> Unit,
     ) {
+        _isLoading.value = true
+
         val bitmapImage = imageUtil.setCaptureImage(image)
 
-        imageCallback(bitmapImage)
-        getTextFromOCR(bitmapImage, navigateCallback)
+        visibleImageCallback(bitmapImage)
+        getTextFromOCR(bitmapImage, navigateCallback, invisibleImageCallback)
     }
 
-    private fun getTextFromOCR(image: Bitmap, callback: () -> Unit) {
+    private fun getTextFromOCR(
+        image: Bitmap,
+        visibleImageCallback: () -> Unit,
+        invisibleImageCallback: () -> Unit
+    ) {
         viewModelScope.launch {
             val element = ocrRepo.getWordFromImage(image)
             val keyword = currentKeyword.value ?: ""
             val checkFail = validationResponseByMLKit(keyword, element)
 
+            delay(1500L)
+            _isLoading.value = false
+
             if (checkFail) {
                 questLocation = locationRepo.getCurrent().location
                 _playState.value = QUEST_SUCCESS
-                callback()
+                visibleImageCallback()
             } else {
-                // TODO: 실패상황처리
-                Log.e(TAG, "실패함")
+                _snackBarMsg.value = "키워드가 보이게 사진을 다시 찍어주세요"
+                invisibleImageCallback()
             }
         }
     }
 
-    fun togglePlay(callback: (String, String) -> Unit) {
+    fun togglePlay() {
         val playState = playState.value ?: 0
 
         viewModelScope.launch {
@@ -114,17 +125,38 @@ class MainViewModel(
 
             if (playState == QUEST_STOP) {
                 _playState.value = QUEST_START
+                initPlayInfo()
             } else {
-                setResultHistory(callback)
-                _playState.value = QUEST_STOP
-                _totalDistance.value = locationInfo.distance
+                _isStop.value = true
             }
+        }
+    }
 
-            if (playState == QUEST_SUCCESS) {
-                _isLoading.value = true
+    fun stopPlay(callback: (String, String) -> Unit) {
+        viewModelScope.launch {
+            val distance = totalDistance.value ?: 0f
+            val playState = playState.value ?: 0
+
+            if (distance > 10f) {
+                val locationInfo = locationRepo.getCurrent()
+
+                locationHistory += locationInfo.location
+                _totalDistance.value = _totalDistance.value?.plus(locationInfo.distance)
+                setResultHistory(callback)
+
+                if (playState == QUEST_SUCCESS) {
+                    _isLoading.value = true
+                    setRandomKeyword()
+                }
             }
+            _playState.value = QUEST_STOP
+            _isStop.value = false
             initPlayInfo()
         }
+    }
+
+    fun resumePlay() {
+        _isStop.value = false
     }
 
     private fun initPlayInfo() {
@@ -183,6 +215,7 @@ class MainViewModel(
             moveToResult { uid, registerAt ->
                 navigateResult(uid, registerAt)
             }
+            _isLoading.value = false
             resetRecord()
 
             val userInfo = userRepo.getInfo(UserInfo.uid)
@@ -243,9 +276,8 @@ class MainViewModel(
     private fun resetRecord() {
         _totalDistance.value = 0f
         _durationTime.value = -1
-        _totalStep.value = 1
-        _isLoading.value = false
-        setRandomKeyword()
+        _totalStep.value = 0
+        _isStop.value = false
     }
 
     private fun setDistance(distance: Float) {
@@ -289,29 +321,4 @@ class MainViewModel(
     fun setSnackBarMsg(msg: String) {
         _snackBarMsg.value = msg
     }
-//    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
-//        val tempBitmap = _bitmap.value ?: return
-//        val canvas = Canvas(tempBitmap)
-//        val paint = Paint().apply {
-//            color = Color.RED
-//            style = Paint.Style.STROKE
-//            strokeWidth = 4f
-//        }
-//        val similarityObj = RatcliffObershelp()
-//        val keywordPaint = Paint().apply {
-//            color = Color.BLUE
-//            style = Paint.Style.STROKE
-//            strokeWidth = 4f
-//        }
-//        resultListByMLKit.forEach { element ->
-//            val word = element.text
-//            if (similarityObj.similarity(word, keyword) >= 0.2)
-//                canvas.drawRect(element.boundingBox!!, keywordPaint)
-//            else
-//                canvas.drawRect(element.boundingBox!!, paint)
-//        }
-//
-//        _bitmap.value = tempBitmap
-//        initIsSucceed()
-//    }
 }

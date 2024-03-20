@@ -52,7 +52,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     }
 
     private fun initSpinner() {
-        binding.spinnerLevel.selectItemByIndex(0)
+//        binding.spinnerLevel.selectItemByIndex(0)
         binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
             questViewModel.filterLevel(Index)
         }

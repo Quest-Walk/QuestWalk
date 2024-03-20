@@ -38,7 +38,7 @@ class QuestListAdapter(
 
         fun bind(item: QuestData) {
             if (allUser == 0L) {
-                binding.tvSolvePercent.text = "로딩중"
+//                binding.tvSolvePercent.text = "로딩중"
             }
             val completeRate = if (item.successItems.isNotEmpty()) {
                 round((item.successItems.size.toDouble() / allUser) * 100)
@@ -47,7 +47,7 @@ class QuestListAdapter(
             }
 
             binding.tvKeyword.text = item.keyWord
-            binding.tvSolvePercent.text = "해결 인원$completeRate%"
+//            binding.tvSolvePercent.text = "해결 인원$completeRate%"
 
             imageList.forEach { it.load(R.drawable.image_empty) }
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->

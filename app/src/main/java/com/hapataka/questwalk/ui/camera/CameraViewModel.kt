@@ -26,7 +26,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-
 @HiltViewModel
 class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
@@ -57,12 +56,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var x = 0
     private var y = 0
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy,sizeRate : Double) {
-
         val imageWidth = inputImage.height // 1392
         val imageHeight = inputImage.width // 1856
-
         //1. getRatio 세로 길이가 더 긴 상황 이므로
-
         val ratio = appHeight / imageHeight.toDouble()
 
         //3.getCropWidth
