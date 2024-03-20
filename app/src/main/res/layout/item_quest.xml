@@ -37,7 +37,7 @@
             tools:src="@drawable/ic_lv_01" />
 
         <TextView
-            android:id="@+id/tv_select"
+            android:id="@+id/btn_select"
             style="@style/sans_body_small"
             android:layout_width="50dp"
             android:layout_height="25dp"
@@ -46,11 +46,11 @@
             android:gravity="center"
             android:text="선택하기"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_more"
-            app:layout_constraintTop_toTopOf="@id/tv_more" />
+            app:layout_constraintEnd_toStartOf="@id/btn_more"
+            app:layout_constraintTop_toTopOf="@id/btn_more" />
 
         <TextView
-            android:id="@+id/tv_more"
+            android:id="@+id/btn_more"
             style="@style/sans_body_small"
             android:layout_width="50dp"
             android:layout_height="25dp"

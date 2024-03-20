@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -29,9 +30,9 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             questItems.observe(viewLifecycleOwner) {
                 questListAdapter.submitList(it)
             }
-            allUserSize.observe(viewLifecycleOwner) {
-                questListAdapter.setAllUser(it)
-            }
+//            allUserSize.observe(viewLifecycleOwner) {
+//                questListAdapter.setAllUser(it)
+//            }
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
             }

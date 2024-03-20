@@ -16,20 +16,21 @@ class QuestViewModel : ViewModel() {
     private val userRepo = UserRepositoryImpl()
     private val authRepo = AuthRepositoryImpl()
 
+    private var allUser: Long = 0
     private var allQuestItems: MutableList<QuestData>? = null
     private var currentLevel = 0
 
     private val _questItems = MutableLiveData<MutableList<QuestData>>()
     val questItems: LiveData<MutableList<QuestData>> = _questItems
-    private val _allUserSize = MutableLiveData<Long>()
-    val allUserSize: LiveData<Long> = _allUserSize
+//    private val _allUserSize = MutableLiveData<Long>()
+//    val allUserSize: LiveData<Long> = _allUserSize
     private val _successKeywords = MutableLiveData<MutableList<String>>()
     val successKeywords: LiveData<MutableList<String>> get() = _successKeywords
     val filterUseCase = QuestFilteringUseCase()
 
     init {
-        getQuestItems(false)
         getAllUserSize()
+        getQuestItems(false)
         getSuccessKeywords()
     }
 
@@ -61,9 +62,8 @@ class QuestViewModel : ViewModel() {
                 filterUseCase().forEach {
                     filterList += convertToQuestData(it)
                 }
-                allQuestItems = filterList?.toMutableList()
+                allQuestItems = filterList.toMutableList()
                 filterLevel(currentLevel)
-
             }
         } else {
             getQuestItems(true)
@@ -72,7 +72,7 @@ class QuestViewModel : ViewModel() {
 
     private fun getAllUserSize() {
         viewModelScope.launch {
-            _allUserSize.value = userRepo.getAllUserSize()
+            allUser = userRepo.getAllUserSize()
         }
     }
 
@@ -91,7 +91,8 @@ class QuestViewModel : ViewModel() {
         return QuestData(
             keyWord = questStackEntity.keyWord,
             level = questStackEntity.level,
-            successItems = resultItems
+            successItems = resultItems,
+            allUser = allUser
         )
     }
 }
