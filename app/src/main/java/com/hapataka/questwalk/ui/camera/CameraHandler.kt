@@ -55,6 +55,7 @@ class CameraHandler(
                     preview.surfaceProvider
                 )
             }
+
         imageCapture = ImageCapture.Builder().build()
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -65,13 +66,16 @@ class CameraHandler(
             )
             cameraControl = camera.cameraControl
             cameraInfo = camera.cameraInfo
-            setZoomInZoomOut()
+            handleZoomAndTap()
+
         } catch (e: Exception) {
             Log.d("CameraX", "initCamera Fail", e)
         }
     }
+    //
 
-    private fun setZoomInZoomOut() {
+
+    private fun handleZoomAndTap() {
         scaleGestureDetector = ScaleGestureDetector(context,object :ScaleGestureDetector.SimpleOnScaleGestureListener(){
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val currentZoom = cameraInfo?.zoomState?.value?.zoomRatio ?: 1.5f
@@ -80,11 +84,10 @@ class CameraHandler(
                 return true
             }
         })
+
         preview.setOnTouchListener { _, event ->
-            when(event.action) {
-                MotionEvent.ACTION_DOWN ->{
-                    focusOn(event.x,event.y)
-                }
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                handleTapPoint(event.x, event.y)
             }
             scaleGestureDetector.onTouchEvent(event)
 
@@ -92,11 +95,15 @@ class CameraHandler(
         }
     }
 
-    private fun focusOn(x:Float,y:Float) {
+    private fun handleTapPoint(x:Float,y:Float) {
         val factory = preview.meteringPointFactory
         val point = factory.createPoint(x,y)
-        val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+        val action = FocusMeteringAction.Builder(point,
+            FocusMeteringAction.FLAG_AF
+                    or FocusMeteringAction.FLAG_AE
+                    or FocusMeteringAction.FLAG_AWB)
             .setAutoCancelDuration(5, TimeUnit.SECONDS).build()
+
         cameraControl?.startFocusAndMetering(action)
     }
 
