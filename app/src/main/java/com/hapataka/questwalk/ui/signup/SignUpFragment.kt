@@ -114,7 +114,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(id).matches()) {
-            binding.tvExplainId.showErrMsg("이메일 형식이 올바르지 않습니다.", requireContext())
+            binding.tvExplainId.showErrMsg("아이디는 이메일 형식으로 입력해주세요.", requireContext())
             return true
         }
         return false

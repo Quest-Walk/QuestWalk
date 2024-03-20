@@ -188,7 +188,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     }
 
-
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
@@ -196,20 +195,18 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 if (toFrag == TO_CAPT_FRAG) {
                     cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
                     cameraViewModel.imageProxyToBitmap(image)
-
                 } else {
                     mainViewModel.setCaptureImage(
                         image,
                         { navController.popBackStack() },
-                    ) {
-                        with(binding.ivCapturedImage) {
-                            load(it)
-                            visible()
-                        }
-                    }
+                        {
+                            binding.ivCapturedImage.load(it)
+                            binding.ivCapturedImage.visible()
+                        },
+                        {binding.ivCapturedImage.gone()}
+                    )
                 }
                 image.close()
-
             }
         }
     }

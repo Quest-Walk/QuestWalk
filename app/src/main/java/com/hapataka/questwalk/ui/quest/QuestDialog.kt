@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogQuestBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.ViewModelFactory
@@ -33,7 +34,8 @@ class QuestDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getDeviceSize()
+//        getDeviceSize()
+        setDialogSize()
         initButtons()
         binding.tvKeyword.text = keyWord
     }
@@ -65,5 +67,18 @@ class QuestDialog(
             setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
             isCancelable = false
         }
+    }
+
+    private fun setDialogSize() {
+        val displayMetrics = DisplayMetrics().also {
+            (requireActivity().windowManager.defaultDisplay).getMetrics(it)
+        }
+        val width = displayMetrics.widthPixels
+        val height = displayMetrics.heightPixels
+        val dialogWidth = (width * 0.75).toInt()
+        val dialogHeight = (height * 0.25).toInt()
+
+        dialog?.window?.setLayout(dialogWidth, dialogHeight)
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
     }
 }
