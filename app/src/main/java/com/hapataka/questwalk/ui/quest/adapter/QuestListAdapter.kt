@@ -37,38 +37,13 @@ class QuestListAdapter(
         )
 
         fun bind(item: QuestData) {
-            if (allUser == 0L) {
-//                binding.tvSolvePercent.text = "로딩중"
-            }
-            val completeRate = if (item.successItems.isNotEmpty()) {
-                round((item.successItems.size.toDouble() / allUser) * 100)
-            } else {
-                0.0
-            }
-
             binding.tvKeyword.text = item.keyWord
-//            binding.tvSolvePercent.text = "해결 인원$completeRate%"
 
             imageList.forEach { it.load(R.drawable.image_empty) }
             item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
                 imageList[index].load(successItem.imageUrl) {
                     crossfade(true)
                     placeholder(R.drawable.image_empty)
-//                    var startTime: Long = 0
-//                    var endTime: Long = 0
-//
-//                    listener(
-//                        onStart = {
-//                            startTime = System.currentTimeMillis()
-//                            Log.i(TAG, "start: ${startTime}")
-//                        },
-//                        onSuccess = { _, _ ->
-//                            endTime = System.currentTimeMillis()
-//                            Log.i(TAG, "end: ${endTime}")
-//                            Log.e(TAG, "duration: ${endTime - startTime}")
-//                        }
-//                    )
-//                    memoryCacheKey(successItem.imageUrl)
                 }
             }
 
@@ -97,12 +72,5 @@ class QuestListAdapter(
 
     fun setAllUser(allUser: Long) {
         this.allUser = allUser
-    }
-
-    private fun setImageView(questCnt: Int, imageList: List<ImageView>) {
-        for (i in imageList.indices) {
-            if (i < questCnt) imageList[i].visibility = View.VISIBLE
-            else imageList[i].visibility = View.INVISIBLE
-        }
     }
 }

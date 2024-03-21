@@ -63,7 +63,6 @@ class QuestViewModel : ViewModel() {
                 }
                 allQuestItems = filterList?.toMutableList()
                 filterLevel(currentLevel)
-
             }
         } else {
             getQuestItems(true)
@@ -80,6 +79,7 @@ class QuestViewModel : ViewModel() {
         viewModelScope.launch {
             val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess.not() }
             val successKeywords = successResults.map { it.quest }
+
             _successKeywords.value = successKeywords.toMutableList()
         }
     }
@@ -88,6 +88,7 @@ class QuestViewModel : ViewModel() {
         val resultItems = questStackEntity.successItems.map {
             QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)
         }
+
         return QuestData(
             keyWord = questStackEntity.keyWord,
             level = questStackEntity.level,
