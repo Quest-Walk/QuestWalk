@@ -20,7 +20,7 @@ class GetWeatherUseCase (
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(
             "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
-            "dataType" to "JSON",
+            "dataType" to "json",
             "base_date" to requestDateTime.first,
             "base_time" to requestDateTime.second,
             "numOfRows" to "144",
