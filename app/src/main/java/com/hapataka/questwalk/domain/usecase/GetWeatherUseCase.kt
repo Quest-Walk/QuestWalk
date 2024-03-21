@@ -16,17 +16,19 @@ class GetWeatherUseCase (
     suspend operator fun invoke(): List<WeatherEntity> {
         val currentLocation = locationRepo.getCurrent().location
         val convertXy = convertToXY(currentLocation.first.toDouble(), currentLocation.second.toDouble())
+        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(
             "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
             "dataType" to "JSON",
             "base_date" to requestDateTime.first,
             "base_time" to requestDateTime.second,
-            "numOfRows" to "120",
+            "numOfRows" to "144",
             "nx" to convertXy.x.toInt().toString(),
             "ny" to convertXy.y.toInt().toString(),
         )
-        return weatherRepository.getWeatherInfo(queries)
+        val weatherInfo = weatherRepository.getWeatherInfo(queries)
+        return weatherInfo.filter { it.fcstTime >= requestTime }.take(10)
     }
 
     private fun convertToXY(latX: Double, lngY: Double): LatXLngY {
@@ -77,15 +79,14 @@ class GetWeatherUseCase (
         val yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE)
         val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"))
         val result = when {
-            requestTime < "0220"  -> Pair(yesterday, "2300")
-            requestTime < "0520" -> Pair(today, "0200")
-            requestTime < "0820" -> Pair(today, "0500")
-            requestTime < "1120" -> Pair(today, "0800")
-            requestTime < "1420" -> Pair(today, "1100")
-            requestTime < "1720" -> Pair(today, "1400")
-            requestTime < "2020" -> Pair(today, "1700")
-            requestTime < "2320" -> Pair(today, "2000")
-            requestTime <= "2359" -> Pair(today, "2300")
+            requestTime < "0300"  -> Pair(yesterday, "2300")
+            requestTime < "0600" -> Pair(today, "0200")
+            requestTime < "0900" -> Pair(today, "0500")
+            requestTime < "1200" -> Pair(today, "0800")
+            requestTime < "1500" -> Pair(today, "1100")
+            requestTime < "1800" -> Pair(today, "1400")
+            requestTime < "2100" -> Pair(today, "1700")
+            requestTime < "2359" -> Pair(today, "2000")
             else -> Pair(yesterday, "2300")
         }
         return result

@@ -71,7 +71,8 @@ class WeatherViewModel (
     }
 
     private fun setWeatherPreview() {
-        val currentWeather = _weatherInfo.value?.first()
+        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
+        val currentWeather = _weatherInfo.value?.first { it.fcstTime == requestTime }
         _weatherPreview.value = WeatherPreviewData(
             currentTmp = currentWeather?.temp ?: "0",
             sky = getSkyState(currentWeather?.sky ?: "0"),
