@@ -2,6 +2,7 @@ package com.hapataka.questwalk.ui.record
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -76,6 +77,7 @@ class RecordItemFragment(private val items: List<RecordItem>) :
                 if (item is RecordItem.ResultItem) {
                     mainViewModel.moveToResult { uid, _ ->
                         val bundle = Bundle().apply {
+                            Log.i(TAG, "record: $uid")
                             putString(USER_ID, uid)
                             putString(QUEST_KEYWORD, item.keyword)
                             putString(REGISTER_TIME, item.registerAt)

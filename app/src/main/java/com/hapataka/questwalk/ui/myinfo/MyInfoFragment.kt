@@ -17,6 +17,7 @@ import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
@@ -161,16 +162,15 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun updateNickName(newNickname: String) {
-        viewModel.getCurrentUserId { userId ->
-            viewModel.getUserCharacterNum { characterNum ->
-                val charNum = characterNum ?: 1
-                viewModel.setUserInfo(userId, charNum, newNickname,
-                    onSuccess = {
-                        ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
-                        binding.tvPlayerName.text = newNickname
-                    },
-                    onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
-            }
+        viewModel.getUserCharacterNum { characterNum ->
+            val uid = UserInfo.uid
+            val charNum = characterNum ?: 1
+            viewModel.setUserInfo(uid, charNum, newNickname,
+                onSuccess = {
+                    ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
+                    binding.tvPlayerName.text = newNickname
+                },
+                onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
         }
     }
 }

@@ -7,7 +7,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
-import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -55,6 +54,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var croppedSize = 0
     private var x = 0
     private var y = 0
+
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy,sizeRate : Double) {
         val imageWidth = inputImage.height // 1392
         val imageHeight = inputImage.width // 1856
@@ -69,7 +69,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         y = (imageHeight/2.0 - croppedSize).toInt()
 
         return
-
     }
 
     fun imageProxyToBitmap(image: ImageProxy) {
@@ -78,7 +77,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         val rotation = image.imageInfo.rotationDegrees.toFloat()
         bitmap = rotateBitmap(bitmap, rotation)!!
         setBitmap(bitmap)
-
     }
 
     private fun setBitmap(bitmap: Bitmap?) {
@@ -99,6 +97,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         matrix.postRotate(rotation)
         val postBitmap =
             bitmap?.let { Bitmap.createBitmap(it, 0, 0, bitmap.width, bitmap.height, matrix, true) }
+
         return postBitmap
     }
 
@@ -122,21 +121,17 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         _isSucceed.value = null
     }
 
-    fun deleteBitmapByFile() {
-        repository.deleteBitmap()
-    }
-
     fun getCroppedBitmap() = croppedBitmap
-    fun getDrawBoxOnBitmap() = drawBoxOnBitmap
 
+    fun getDrawBoxOnBitmap() = drawBoxOnBitmap
 
     /**
      *  Ocr 처리(google MLKit 이용)
      */
 
     val isLoading = MutableLiveData(false)
-    fun postCapturedImageWithMLKit(keyword: String) {
 
+    fun postCapturedImageWithMLKit(keyword: String) {
         viewModelScope.launch {
             processImage(keyword)
         }
@@ -144,19 +139,19 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private fun preProcessImage(bitmap: Bitmap?): Bitmap?{
         var resultImage = bitmap
+
         resultImage = repository.toGrayScaleBitmap(resultImage)
         resultImage = repository.contractBitmap(resultImage,1.5f)
         return resultImage
     }
+
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
-        val image: InputImage
-        image = if (isCropped) {
+        val image  = if (isCropped) {
             croppedBitmap = preProcessImage(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
         }
-
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
         try {
@@ -168,28 +163,23 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 for (line in block.lines) {
                     for (element in line.elements) {
                         resultListByMLKit.add(element)
-                        Log.d("ocrResult", element.text)
                     }
                 }
             }
             isLoading.postValue(false)
-
             _isSucceed.postValue(validationResponseByMLKit(keyword))
-
         } catch (e: Exception) {
-            Log.d("ocrResult", e.toString())
             isLoading.postValue(false)
         }
     }
 
     private fun validationResponseByMLKit(keyword: String): Boolean {
-
         var isValidated = false
         val similarityObj = RatcliffObershelp()
 
         resultListByMLKit.forEach { element: Element ->
             val word = element.text
-            Log.d("ocrResult", word+"!")
+
             if (word.contains(keyword)) {
                 isValidated = true
                 return@forEach
@@ -197,8 +187,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 isValidated = true
                 return@forEach
             }
-            Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())
         }
+
         if (isValidated) {
             file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
         } else {
@@ -208,37 +198,10 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         return isValidated
     }
 
-    fun failedImageDrawWithCanvasByMLKit(keyword: String) {
-        val tempBitmap = _bitmap.value ?: return
-        val canvas = Canvas(tempBitmap)
-        val paint = Paint().apply {
-            color = Color.RED
-            style = Paint.Style.STROKE
-            strokeWidth = 4f
-        }
-        val similarityObj = RatcliffObershelp()
-        val keywordPaint = Paint().apply {
-            color = Color.BLUE
-            style = Paint.Style.STROKE
-            strokeWidth = 4f
-        }
-        resultListByMLKit.forEach { element ->
-            val word = element.text
-            if (similarityObj.similarity(word, keyword) >= 0.2)
-                canvas.drawRect(element.boundingBox!!, keywordPaint)
-            else
-                canvas.drawRect(element.boundingBox!!, paint)
-        }
-
-        _bitmap.value = tempBitmap
-        initIsSucceed()
-    }
-
     //초기화
     fun initIsSucceed() {
         _isSucceed.value = null
     }
-
 
     /**
      *  Debug
@@ -257,9 +220,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
         }
         x = bitmap.width/2 - croppedSize
         y = bitmap.height/2 - croppedSize
-//        if(y<0) y = -y
         croppedBitmap = cropBitmap(mutableBitmap)
         drawBoxOnBitmap = drawBoxOnBitmap(mutableBitmap)
     }
-
 }

@@ -10,6 +10,7 @@ import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.TAG
+import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.launch
 
 class MyInfoViewModel(
@@ -24,7 +25,7 @@ class MyInfoViewModel(
 
     fun getUserInfo() {
         viewModelScope.launch {
-            _userInfo.value = userRepo.getInfo(authRepo.getCurrentUserUid())
+            _userInfo.value = userRepo.getInfo(UserInfo.uid)
         }
     }
 
@@ -39,8 +40,6 @@ class MyInfoViewModel(
     fun deleteCurrentUser(pw: String, callback: () -> Unit) {
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserUid()
-
-            Log.i(TAG, "id: ${authRepo.getCurrentUserEmail()}")
 
             getLoginInfo(pw)
             authRepo.deleteCurrentUser { task ->
