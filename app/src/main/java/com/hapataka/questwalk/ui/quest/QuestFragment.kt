@@ -1,9 +1,7 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -28,11 +26,9 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun setObserve() {
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
-                questListAdapter.submitList(it)
+                val list = mutableListOf(QuestData()) + it + mutableListOf(QuestData())
+                questListAdapter.submitList(list)
             }
-//            allUserSize.observe(viewLifecycleOwner) {
-//                questListAdapter.setAllUser(it)
-//            }
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
             }
@@ -41,7 +37,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initViews() {
         initBackButton()
-        initSpinner()
+//        initSpinner()
         initCompleteButton()
         initQuestRecyclerView()
     }
@@ -52,23 +48,23 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
         }
     }
 
-    private fun initSpinner() {
+//    private fun initSpinner() {
 //        binding.spinnerLevel.selectItemByIndex(0)
-        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
-            questViewModel.filterLevel(Index)
-        }
-    }
+//        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
+//            questViewModel.filterLevel(Index)
+//        }
+//    }
 
     private fun initCompleteButton() {
-        binding.constrainComplete.setOnClickListener {
-            if (binding.ivCheck.isVisible) {
-                binding.ivCheck.visibility = View.INVISIBLE
-                questViewModel.filterComplete(false)
-            } else {
-                binding.ivCheck.visibility = View.VISIBLE
-                questViewModel.filterComplete(true)
-            }
-        }
+//        binding.constrainComplete.setOnClickListener {
+//            if (binding.ivCheck.isVisible) {
+//                binding.ivCheck.visibility = View.INVISIBLE
+//                questViewModel.filterComplete(false)
+//            } else {
+//                binding.ivCheck.visibility = View.VISIBLE
+//                questViewModel.filterComplete(true)
+//            }
+//        }
     }
 
     private fun initQuestRecyclerView() {
@@ -91,5 +87,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             }
         )
         binding.revQuest.adapter = questListAdapter
+//        binding.revQuest.addItemDecoration(QuestRecyclerViewDecoration(requireContext()))
     }
 }
