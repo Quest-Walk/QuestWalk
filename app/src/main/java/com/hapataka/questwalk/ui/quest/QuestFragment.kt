@@ -73,6 +73,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initQuestRecyclerView() {
         questListAdapter = QuestListAdapter(
+            requireContext(),
             onClickMoreText = {questData, allUser ->
                 val bundle = Bundle().apply {
                     putParcelable("item", questData)

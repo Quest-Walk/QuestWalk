@@ -9,7 +9,8 @@ data class QuestData(
     val keyWord: String = "",
     val level: Int = 0,
     var successItems: List<SuccessItem> = listOf(),
-    val allUser: Long = 0
+    val allUser: Long = 0,
+    val isSuccess: Boolean = false
 ) : Parcelable {
     @Parcelize
     data class SuccessItem(

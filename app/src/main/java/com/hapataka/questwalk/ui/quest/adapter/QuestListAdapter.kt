@@ -2,6 +2,7 @@ package com.hapataka.questwalk.ui.quest.adapter
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 class QuestListAdapter(
+    val context: Context,
     val onClickMoreText: (QuestData, Long) -> Unit,
     val onClickView: (String) -> Unit
 ) : ListAdapter<QuestData, QuestListAdapter.QuestViewHolder>(diffUtil) {
@@ -34,9 +36,6 @@ class QuestListAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: QuestData) {
-            Log.d("QuestListAdapter:","allUser:${item.allUser}")
-            Log.d("QuestListAdapter:","keyword:${item.keyWord}")
-            Log.d("QuestListAdapter:","successItem:${item.successItems.size}")
             val completeRate = if (item.allUser != 0L) {
                 (((item.successItems.size.toDouble() / item.allUser)*100) *10.0 ).roundToInt() / 10.0
             } else {
@@ -59,10 +58,9 @@ class QuestListAdapter(
                 tvSolvePercent.text = "$completeRate %"
                 tvKeyword.text = item.keyWord
                 ivLevel.load(leveImg)
+                root.setBackgroundColor(if (item.isSuccess) context.getColor(R.color.gray) else context.getColor(R.color.white))
 
-
-
-                ValueAnimator.ofInt(0, completeRate.toInt()).apply {
+                ValueAnimator.ofInt(0, 30).apply {
                     duration = 800
                     addUpdateListener { animation ->
                         progressBar.progress = animation.animatedValue as Int

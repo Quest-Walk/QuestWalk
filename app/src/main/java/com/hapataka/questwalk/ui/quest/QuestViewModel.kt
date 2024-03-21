@@ -9,6 +9,8 @@ import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 class QuestViewModel : ViewModel() {
@@ -29,20 +31,24 @@ class QuestViewModel : ViewModel() {
     val filterUseCase = QuestFilteringUseCase() // 완료 안된 퀘스트 반환
 
     init {
-        getAllUserSize()
-        getQuestItems()
-        getSuccessKeywords()
+        viewModelScope.launch {
+            val getAllUserTask = async { getAllUserSize() }
+            val getSuccessKeywordsTask = async { getSuccessKeywords() }
+            val list = mutableListOf(getAllUserTask, getSuccessKeywordsTask)
+
+            list.awaitAll()
+            getQuestItems()
+        }
     }
 
 
-    private fun getQuestItems() {
-        viewModelScope.launch {
-            val filterList = filterUseCase().map {
-                convertToQuestData(it)
-            }
-            allQuestItems = filterList.toMutableList()
-            filterLevel(currentLevel)
+    private suspend fun getQuestItems() {
+        filterUseCase().map {
+            convertToQuestData(it)
+        }.also {
+            allQuestItems = it.toMutableList()
         }
+        filterLevel(currentLevel)
     }
 
     fun filterLevel(level: Int) {
@@ -65,33 +71,33 @@ class QuestViewModel : ViewModel() {
                 filterLevel(currentLevel)
             }
         } else {
-            getQuestItems()
+            viewModelScope.launch {
+                getQuestItems()
+            }
         }
     }
 
-    private fun getAllUserSize() {
-        viewModelScope.launch {
-            allUser = userRepo.getAllUserSize()
-        }
-    }
-
-    private fun getSuccessKeywords() {
-        viewModelScope.launch {
+    private suspend fun getSuccessKeywords() {
             val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess.not() }
             val successKeywords = successResults.map { it.quest }
             _successKeywords.value = successKeywords.toMutableList()
-        }
+    }
+
+    private suspend fun getAllUserSize() {
+            allUser = userRepo.getAllUserSize()
     }
 
     private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
             QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)
         }
+        val isSuccess = _successKeywords.value?.any { it.contains(questStackEntity.keyWord) } ?: false
         return QuestData(
             keyWord = questStackEntity.keyWord,
             level = questStackEntity.level,
             successItems = resultItems,
-            allUser = allUser
+            allUser = allUser,
+            isSuccess = isSuccess
         )
     }
 }
