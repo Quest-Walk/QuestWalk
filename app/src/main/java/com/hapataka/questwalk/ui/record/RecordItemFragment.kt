@@ -28,7 +28,7 @@ class RecordItemFragment(private val items: List<RecordItem>) :
     private val recordDetailAdapter by lazy { RecordDetailAdapter(requireContext()) }
     private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
     private val navController by lazy { (parentFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).findNavController() }
-    private val mainViewModel by activityViewModels<MainViewModel> { ViewModelFactory(requireContext()) }
+    private val mainViewModel by activityViewModels<MainViewModel> { ViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

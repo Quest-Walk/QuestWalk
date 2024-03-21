@@ -36,18 +36,20 @@ class UserRepositoryImpl : UserRepository {
             var userStack = hashMapOf<String, Any>()
 
             if (result is ResultEntity) {
+                val totalTime = if (currentInfo.totalTime.isEmpty()) 0L else currentInfo.totalTime.toLong()
+
                 userStack = hashMapOf(
                     "histories" to FieldValue.arrayUnion(covertToUploadObject(result)),
                     "totalDistance" to currentInfo.totalDistance + result.distance,
                     "totalStep" to currentInfo.totalStep + result.step,
-                    "totalTime" to currentInfo.totalTime.toLong() + result.time
+                    "totalTime" to totalTime + result.time
                 )
             }
 
             if (result is AchieveResultEntity) {
                 userStack = hashMapOf("histories" to FieldValue.arrayUnion(result))
             }
-            currentDocument.update(userStack)
+            currentDocument.update(userStack).await()
         }
     }
 
@@ -141,7 +143,7 @@ class UserRepositoryImpl : UserRepository {
     }
 
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
-        var resultList = mutableListOf<HistoryEntity>()
+        val resultList = mutableListOf<HistoryEntity>()
 
         items.forEach { item ->
             when (item["type"]) {

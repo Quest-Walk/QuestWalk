@@ -2,7 +2,6 @@ package com.hapataka.questwalk.ui.mainactivity
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import androidx.camera.core.ImageProxy

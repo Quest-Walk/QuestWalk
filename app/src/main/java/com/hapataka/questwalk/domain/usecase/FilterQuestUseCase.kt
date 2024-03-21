@@ -13,7 +13,7 @@ class QuestFilteringUseCase {
 
     suspend operator fun invoke (): List<QuestStackEntity> = withContext(Dispatchers.IO) {
         val allQuests = questRepo.getAllItems()
-        val successResults = userRepo.getResultHistory(UserInfo.uid).filter { it.isSuccess.not() }
+        val successResults = userRepo.getResultHistory(UserInfo.uid).filter { it.isSuccess }
         val successKeywords = successResults.map { it.quest }
 
         return@withContext allQuests.filterNot { successKeywords.contains(it.keyWord) }

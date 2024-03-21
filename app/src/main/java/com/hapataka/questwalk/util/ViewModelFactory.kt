@@ -57,7 +57,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(RecordViewModel::class.java)) {
-            return RecordViewModel(authRepo, userRepo, achieveItemRepo) as T
+            return RecordViewModel(userRepo, achieveItemRepo) as T
         }
 
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {

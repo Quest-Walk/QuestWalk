@@ -77,7 +77,7 @@ class QuestViewModel : ViewModel() {
 
     private fun getSuccessKeywords() {
         viewModelScope.launch {
-            val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess.not() }
+            val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess }
             val successKeywords = successResults.map { it.quest }
 
             _successKeywords.value = successKeywords.toMutableList()
