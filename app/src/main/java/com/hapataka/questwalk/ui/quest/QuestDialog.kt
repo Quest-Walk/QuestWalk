@@ -34,7 +34,6 @@ class QuestDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        getDeviceSize()
         setDialogSize()
         initButtons()
         binding.tvKeyword.text = keyWord
@@ -54,18 +53,6 @@ class QuestDialog(
                 }
                 dismiss()
             }
-        }
-    }
-
-    private fun getDeviceSize() {
-        val displayMetrics = DisplayMetrics()
-
-        requireActivity().windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-        val dialogWidth = (displayMetrics.widthPixels * 0.9f).toInt()
-
-        dialog?.window?.apply {
-            setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
-            isCancelable = false
         }
     }
 

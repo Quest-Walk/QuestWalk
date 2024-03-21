@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.domain.usecase
 
+import android.util.Log
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
@@ -13,7 +14,7 @@ class QuestFilteringUseCase {
 
     suspend operator fun invoke (): List<QuestStackEntity> = withContext(Dispatchers.IO) {
         val allQuests = questRepo.getAllItems()
-        val successResults = userRepo.getResultHistory(UserInfo.uid).filter { it.isSuccess.not() }
+        val successResults = userRepo.getResultHistory(UserInfo.uid).filter { it.isSuccess }
         val successKeywords = successResults.map { it.quest }
 
         return@withContext allQuests.filterNot { successKeywords.contains(it.keyWord) }
