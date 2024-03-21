@@ -15,7 +15,6 @@ import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.util.BaseFragment
 
-
 class OnBoardingFragment :
     BaseFragment<FragmentOnBoardingBinding>(FragmentOnBoardingBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
@@ -26,7 +25,6 @@ class OnBoardingFragment :
             AuthRepositoryImpl()
         )
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,11 +78,6 @@ class OnBoardingFragment :
                     ("로그인 상태를 확인할 수 없습니다.").showSnackbar(requireView())
                 }
             }
-
-//            lifecycleScope.launch {
-//                val userId = authRepo.getCurrentUserUid()
-//                userRepo.setUserInfo(userId,characterNum,nickName)
-//            }
         }
     }
 

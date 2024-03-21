@@ -4,8 +4,6 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 
 object AchievementListener {
-
-
     operator fun invoke(userInfo: UserEntity): List<Int> {
         val successCount =
             userInfo.histories.filterIsInstance<HistoryEntity.ResultEntity>().filter {

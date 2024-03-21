@@ -42,7 +42,6 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
         }
     }
 
-
     private fun checkEmailValidity(id: String): Boolean {
         if (emailId.isEmpty()) {
             binding.tvWarning.showError("이메일을 입력해 주세요")
@@ -83,8 +82,6 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
         text = msg
         startAnimation(animShake)
     }
-
-
 
     private fun goBackToLogIn() {
         binding.btnGoToLogIn.setOnClickListener {

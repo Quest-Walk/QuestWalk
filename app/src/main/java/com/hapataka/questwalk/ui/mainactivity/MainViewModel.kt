@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
-import com.hapataka.questwalk.domain.repository.AchieveStackRepository
-import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
@@ -29,10 +27,8 @@ const val QUEST_START = 1
 const val QUEST_SUCCESS = 2
 
 class MainViewModel(
-    private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
     private val questRepo: QuestStackRepository,
-    private val achieveRepo: AchieveStackRepository,
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
@@ -168,11 +164,13 @@ class MainViewModel(
     private fun setTimer() {
         if (playState.value != QUEST_STOP) {
             timer = viewModelScope.launch {
+                _durationTime.value = 0
+
                 while (true) {
                     var currentTime = durationTime.value!!
 
-                    _durationTime.value = currentTime + 1
                     delay(1000L)
+                    _durationTime.value = currentTime + 1
                 }
             }
         } else {

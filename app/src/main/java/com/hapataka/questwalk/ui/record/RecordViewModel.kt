@@ -27,7 +27,6 @@ class RecordViewModel(
     private var _achieveItems = MutableLiveData<List<AchieveItem>> ()
     val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
 
-
     fun getRecordItems() {
         viewModelScope.launch {
             var currentItems = mutableListOf<RecordItem>()
