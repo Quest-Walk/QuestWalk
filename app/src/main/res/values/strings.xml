@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">Quest Walk</string>
+    <string name="app_name">퀘스트 워크</string>
+    <string-array name="level">
+        <item>전체보기</item>
+        <item>★</item>
+        <item>★★</item>
+        <item>★★★</item>
+    </string-array>
+
+    <string name="adventure_time_label">모험한 시간</string>
+    <string name="adventure_distance_label">모험한 거리</string>
+    <string name="total_steps_label">총 걸음수</string>
+    <string name="congrats">잘했어요!</string>
+    <string name="back_to_menu">메인으로</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="homefragment_quest_distance_default">0.0km</string>
+    <string name="homefragment_quest_playing">진행중</string>
+    <string name="homefragment_quest_time_default">00:00</string>
+    <string name="homefragment_quest_title_default">Quest_Title</string>
+    <string name="homefragment_quest_change">퀘스트 변경</string>
+    <string name="play_time">모험한 시간</string>
+    <string name="play_distance">모험한 거리</string>
+    <string name="all_step">총 걸음수</string>
+    <string name="default_time">0분</string>
+    <string name="default_distance">0km</string>
+    <string name="default_total_steps">0걸음</string>
+    <string name="default_calories">0kcal</string>
 </resources>

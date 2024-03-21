@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="32dp"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_quest"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_keyword"
+            style="@style/pixel_body_big_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="한의원"
+            android:textColor="@color/main_purple"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_solve_percent"-->
+        <!--            style="@style/sans_body_small"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            android:layout_marginBottom="-4dp"-->
+        <!--            android:fontFamily="@font/pretendard_regular"-->
+        <!--            android:text="해결 인원 58%"-->
+        <!--            android:textColor="#AEAEAE"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/tv_keyword"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/tv_keyword" />-->
+
+        <TextView
+            android:id="@+id/tv_more"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="-4dp"
+            android:text="모두보기"
+            app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_image_1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_quest_image"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/image_empty"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_keyword"
+            app:layout_constraintWidth_percent="0.23" />
+
+        <ImageView
+            android:id="@+id/iv_image_2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_quest_image"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/image_empty"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/iv_image_3"
+            app:layout_constraintStart_toEndOf="@id/iv_image_1"
+            app:layout_constraintTop_toTopOf="@id/iv_image_1"
+            app:layout_constraintWidth_percent="0.23" />
+
+        <ImageView
+            android:id="@+id/iv_image_3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_quest_image"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/image_empty"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/iv_image_4"
+            app:layout_constraintStart_toEndOf="@id/iv_image_2"
+            app:layout_constraintTop_toTopOf="@id/iv_image_1"
+            app:layout_constraintWidth_percent="0.23" />
+
+        <ImageView
+            android:id="@+id/iv_image_4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_quest_image"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/image_empty"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_image_1"
+            app:layout_constraintWidth_percent="0.23" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

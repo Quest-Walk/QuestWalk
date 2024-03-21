@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="ui.login.LogInFragment">
+
+    <ImageView
+        android:id="@+id/iv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/image_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.75" />
+
+    <EditText
+        android:id="@+id/et_login_id"
+        style="@style/pixel_body_default"
+        android:layout_width="280dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/background_edit_text"
+        android:hint="아이디 (이메일)"
+        android:inputType="textEmailAddress"
+        android:paddingHorizontal="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_title" />
+
+    <EditText
+        android:id="@+id/et_login_password"
+        style="@style/pixel_body_default"
+        android:layout_width="280dp"
+        android:layout_height="36dp"
+        android:background="@drawable/background_edit_text"
+        android:layout_marginTop="20dp"
+        android:hint="비밀번호"
+        android:inputType="textPassword"
+        android:paddingHorizontal="15dp"
+        app:layout_constraintStart_toStartOf="@id/et_login_id"
+        app:layout_constraintTop_toBottomOf="@id/et_login_id" />
+
+    <TextView
+        android:id="@+id/tv_findPassWord"
+        style="@style/pixel_body_small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="비밀번호를 잊어버리셨나요?"
+        android:textColor="#C8c8c8"
+        app:layout_constraintStart_toStartOf="@id/et_login_password"
+        app:layout_constraintEnd_toEndOf="@id/et_login_password"
+        app:layout_constraintTop_toBottomOf="@id/et_login_password" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_login"
+        style="@style/pixel_body_big"
+        android:layout_width="280dp"
+        android:background="@drawable/background_edit_text"
+        android:backgroundTint="@color/main_purple"
+        android:textColor="@color/white"
+        android:layout_height="40dp"
+        android:layout_marginTop="24dp"
+        android:text="로그인"
+        app:layout_constraintStart_toStartOf="@id/et_login_password"
+        app:layout_constraintEnd_toEndOf="@id/et_login_password"
+        app:layout_constraintTop_toBottomOf="@id/tv_findPassWord"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_sign_up"
+        style="@style/pixel_body_big"
+        android:layout_width="280dp"
+        android:background="@drawable/background_edit_text"
+        android:backgroundTint="#999999"
+        android:textColor="@color/white"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:text="회원가입"
+        app:layout_constraintStart_toStartOf="@id/et_login_password"
+        app:layout_constraintEnd_toEndOf="@id/et_login_password"
+        app:layout_constraintTop_toBottomOf="@id/btn_login"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
