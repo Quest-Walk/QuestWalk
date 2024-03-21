@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.domain.entity.DustEntity
+import com.hapataka.questwalk.domain.entity.TmEntity
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
 import com.hapataka.questwalk.domain.usecase.GetTmLocationUseCase
@@ -52,21 +53,10 @@ class WeatherViewModel (
     }
     private suspend fun getDustInfo() {
         val tmLocation = getTMLocationUseCase()
-        val stationQueryMap = mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
-            "returnType" to "json",
-            "tmX" to tmLocation.tmx,
-            "tmY" to tmLocation.tmy
-        )
+        val stationQueryMap = requestStationQueryMap(tmLocation)
         val stationName = dustRepo.getStation(stationQueryMap).stationName
 
-        val dustQueryMap = mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
-            "returnType" to "json",
-            "stationName" to stationName,
-            "dataTerm" to "DAILY",
-            "ver" to "1.0"
-        )
+        val dustQueryMap = requestDustQueryMap(stationName)
         _dustInfo.value = dustRepo.getDustInfo(dustQueryMap)
     }
 
@@ -81,6 +71,25 @@ class WeatherViewModel (
             choMiseState = getChoMiseState(_dustInfo.value?.pm25Value ?: 0)
         )
         _isLoading.value = false
+    }
+
+    private fun requestStationQueryMap(tmLocation: TmEntity): Map<String, String> {
+        return mapOf(
+            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "returnType" to "json",
+            "tmX" to tmLocation.tmx,
+            "tmY" to tmLocation.tmy
+        )
+    }
+
+    private fun requestDustQueryMap(station: String): Map<String, String> {
+        return mapOf(
+            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "returnType" to "json",
+            "stationName" to station,
+            "dataTerm" to "DAILY",
+            "ver" to "1.0"
+        )
     }
 
     private fun convertWeatherData(weatherEntity: WeatherEntity): WeatherData {
