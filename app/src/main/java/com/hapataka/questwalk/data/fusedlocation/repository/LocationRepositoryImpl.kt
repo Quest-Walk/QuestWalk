@@ -46,7 +46,8 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                 if (currentLocation.accuracy > 30) {
                     return
                 }
-                if(currentLocation.accuracy*1.5<moveDistance){
+
+                if (currentLocation.accuracy * 1.5 < moveDistance) {
                     return
                 }
 

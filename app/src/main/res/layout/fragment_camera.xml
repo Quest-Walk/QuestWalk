@@ -87,15 +87,14 @@
 
     <TextView
         android:id="@+id/tv_camera_quest"
+        style="@style/pixel_head"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:elevation="2dp"
-        android:fontFamily="@font/ramche"
         android:text="quest_keyword"
         android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textColor="@color/yellow"
         app:layout_constraintBottom_toTopOf="@+id/cl_crop_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -104,14 +103,25 @@
         android:id="@+id/cl_crop_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#578F8F8F"
+        android:background="@drawable/background_camera_frame"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.8"
         app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        style="@style/sans_body_small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:elevation="2dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="사각형에 맞춰 키워드를 찍어주세요"
+        android:textColor="@color/yellow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_crop_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
