@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/iv_thumbnail"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
         android:background="@drawable/frame_ractangle_coner_radius_5dp"
         android:clipToOutline="true"
         android:scaleType="centerCrop"

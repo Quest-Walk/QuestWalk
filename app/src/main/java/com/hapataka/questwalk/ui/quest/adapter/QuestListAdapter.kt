@@ -1,5 +1,9 @@
 package com.hapataka.questwalk.ui.quest.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,12 +13,13 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestData
+import kotlin.math.roundToInt
 
 class QuestListAdapter(
+    val context: Context,
     val onClickMoreText: (QuestData, Long) -> Unit,
     val onClickView: (String) -> Unit
 ) : ListAdapter<QuestData, QuestListAdapter.QuestViewHolder>(diffUtil) {
-    private var allUser = 1L
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return QuestViewHolder(ItemQuestBinding.inflate(layoutInflater, parent, false))
@@ -26,31 +31,47 @@ class QuestListAdapter(
 
     inner class QuestViewHolder(private val binding: ItemQuestBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val imageList = listOf(
-            binding.ivImage1,
-            binding.ivImage2,
-            binding.ivImage3,
-            binding.ivImage4
-        )
 
         fun bind(item: QuestData) {
-            binding.tvKeyword.text = item.keyWord
+            val completeRate = if (item.allUser != 0L) {
+                (((item.successItems.size.toDouble() / item.allUser)*100) *10.0 ).roundToInt() / 10.0
+            } else {
+                0.0
+            }
 
-            imageList.forEach { it.load(R.drawable.image_empty) }
-            item.successItems.reversed().take(4).forEachIndexed { index, successItem ->
-                imageList[index].load(successItem.imageUrl) {
-                    crossfade(true)
-                    placeholder(R.drawable.image_empty)
+            val leveImg = when (item.level) {
+                1 -> {
+                    R.drawable.ic_lv_01
+                }
+                2 -> {
+                    R.drawable.ic_lv_02
+                }
+                else -> {
+                    R.drawable.ic_lv_03
                 }
             }
 
-            binding.tvMore.setOnClickListener {
-                if (item.successItems.isEmpty()) return@setOnClickListener
-                onClickMoreText(item, allUser)
-            }
+            with(binding) {
+                tvSolvePercent.text = "$completeRate %"
+                tvKeyword.text = item.keyWord
+                ivLevel.load(leveImg)
+                root.setBackgroundColor(if (item.isSuccess) context.getColor(R.color.gray) else context.getColor(R.color.white))
 
-            binding.constraintQuest.setOnClickListener {
-                onClickView(item.keyWord)
+                ValueAnimator.ofInt(0, 30).apply {
+                    duration = 800
+                    addUpdateListener { animation ->
+                        progressBar.progress = animation.animatedValue as Int
+                    }
+                }.start()
+
+                btnMore.setOnClickListener {
+                    if (item.successItems.isEmpty()) return@setOnClickListener
+                    onClickMoreText(item, item.allUser)
+                }
+
+                btnSelect.setOnClickListener {
+                    onClickView(item.keyWord)
+                }
             }
         }
     }
@@ -65,9 +86,5 @@ class QuestListAdapter(
                 return oldItem == newItem
             }
         }
-    }
-
-    fun setAllUser(allUser: Long) {
-        this.allUser = allUser
     }
 }
