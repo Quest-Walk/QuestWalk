@@ -66,37 +66,47 @@
             app:spinner_popup_animation="dropdown"
             app:spinner_popup_background="@drawable/bg_spinner" />
 
-        <TextView
-            android:id="@+id/tv_complete"
-            style="@style/pixel_body_small"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constrain_complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:text="완료한 퀘스트 숨기기"
+            app:layout_constraintTop_toTopOf="@id/spinner_level"
             app:layout_constraintBottom_toBottomOf="@id/spinner_level"
-            app:layout_constraintEnd_toStartOf="@id/iv_complete"
-            app:layout_constraintTop_toTopOf="@id/spinner_level" />
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_complete"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:background="@drawable/bg_quest_hide_circle"
-            android:clipToOutline="true"
-            app:layout_constraintBottom_toBottomOf="@id/tv_complete"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_complete" />
+            <TextView
+                android:id="@+id/tv_complete"
+                style="@style/pixel_body_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="완료한 퀘스트 보기"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_complete"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/iv_complete"
-            app:layout_constraintEnd_toEndOf="@id/iv_complete"
-            app:layout_constraintStart_toStartOf="@id/iv_complete"
-            app:layout_constraintTop_toTopOf="@id/iv_complete" />
+            <ImageView
+                android:id="@+id/iv_complete"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/bg_quest_hide_circle"
+                android:clipToOutline="true"
+                app:layout_constraintBottom_toBottomOf="@id/tv_complete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_complete" />
+
+            <ImageView
+                android:id="@+id/iv_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/iv_complete"
+                app:layout_constraintEnd_toEndOf="@id/iv_complete"
+                app:layout_constraintStart_toStartOf="@id/iv_complete"
+                app:layout_constraintTop_toTopOf="@id/iv_complete" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rev_quest"
