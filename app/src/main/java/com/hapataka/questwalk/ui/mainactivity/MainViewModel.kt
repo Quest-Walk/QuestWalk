@@ -212,7 +212,7 @@ class MainViewModel(
             if (playState.value == QUEST_SUCCESS) {
                 updateQuestStack(result.questImg.toString())
             }
-            userRepo.updateUserInfo(UserInfo.uid, result)
+            userRepo.updateHistoryInfo(UserInfo.uid, result)
             moveToResult { uid, registerAt ->
                 navigateResult(uid, registerAt)
             }
@@ -227,7 +227,7 @@ class MainViewModel(
                     userInfo.histories.filterIsInstance<HistoryEntity.AchieveResultEntity>()
 
                 if (userAchieveResults.none() { it.achievementId == id }) {
-                    userRepo.updateUserInfo(
+                    userRepo.updateHistoryInfo(
                         UserInfo.uid,
                         HistoryEntity.AchieveResultEntity(
                             currentTime,
