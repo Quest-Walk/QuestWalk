@@ -10,9 +10,13 @@ import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
+import com.hapataka.questwalk.data.remote.repository.DustRepositoryImpl
+import com.hapataka.questwalk.data.remote.repository.WeatherRepositoryImpl
+import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
 import com.hapataka.questwalk.data.pref.repository.LocalRepositoryImpl
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
@@ -21,6 +25,7 @@ import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.MyInfoViewModel
 import com.hapataka.questwalk.ui.record.RecordViewModel
 import com.hapataka.questwalk.ui.result.ResultViewModel
+import com.hapataka.questwalk.ui.weather.WeatherViewModel
 import com.hapataka.questwalk.ui.signup.SignUpViewModel
 
 class ViewModelFactory() : ViewModelProvider.Factory {
@@ -37,6 +42,8 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val userRepo = UserRepositoryImpl()
         val questRepo = QuestStackRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
+        val weatherRepo = WeatherRepositoryImpl()
+        val dustRepo = DustRepositoryImpl()
         val ocrRepo = OcrRepositoryImpl()
         val achieveItemRepo = AchieveItemRepositoryImpl()
 
@@ -71,6 +78,11 @@ class ViewModelFactory() : ViewModelProvider.Factory {
 
         if(modelClass.isAssignableFrom(CameraViewModel::class.java)){
             return CameraViewModel(imageUtil) as T
+        }
+
+        if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
+            return WeatherViewModel(GetWeatherUseCase(weatherRepo, locationRepo),
+                GetDustUseCase(locationRepo, dustRepo)) as T
         }
 
         throw IllegalArgumentException("unknown view model")

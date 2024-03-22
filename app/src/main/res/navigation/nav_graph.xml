@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_frag_home_to_frag_result"
             app:destination="@id/frag_result" />
+        <action
+            android:id="@+id/action_frag_home_to_weatherFragment"
+            app:destination="@id/frag_weather" />
     </fragment>
 
     <fragment
@@ -137,7 +140,6 @@
         android:name="com.hapataka.questwalk.ui.questdetail.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail">
-
         <action
             android:id="@+id/action_frag_quest_detail_to_dialog_full_image"
             app:destination="@id/dialog_full_image" />
@@ -153,5 +155,11 @@
         android:id="@+id/dialog_full_image"
         android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
         android:label="dialog_full_image" />
+
+    <fragment
+        android:id="@+id/frag_weather"
+        android:name="com.hapataka.questwalk.ui.weather.WeatherFragment"
+        android:label="fragment_weather"
+        tools:layout="@layout/fragment_weather" />
 
 </navigation>
