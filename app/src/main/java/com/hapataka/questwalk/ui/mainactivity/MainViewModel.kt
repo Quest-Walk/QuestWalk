@@ -71,6 +71,7 @@ class MainViewModel(
     private var questLocation: Pair<Float, Float>? = null
     private var currentTime: String = ""
 
+    private var isPreProcess = false
     fun setCaptureImage(
         image: ImageProxy,
         croppedImage: Bitmap?,
@@ -78,38 +79,45 @@ class MainViewModel(
         visibleImageCallback: (Bitmap) -> Unit,
         invisibleImageCallback: () -> Unit,
     ) {
+
         if (croppedImage == null) return
         visibleLoading(SHOW_LOADING)
 
-
         val bitmapImage = imageUtil.setCaptureImage(image)
         visibleImageCallback(bitmapImage)
-        getTextFromOCR(croppedImage, navigateCallback, invisibleImageCallback)
+        viewModelScope.launch {
+            if (!getTextFromOCR(croppedImage, navigateCallback, invisibleImageCallback)) {
+                val preProcessImage = imageUtil.preProcessBitmap(croppedImage)
+                isPreProcess = true
+                getTextFromOCR(preProcessImage!!, navigateCallback, invisibleImageCallback)
+            }
+        }
     }
 
-    private fun getTextFromOCR(
+    private suspend fun getTextFromOCR(
         image: Bitmap,
         visibleImageCallback: () -> Unit,
         invisibleImageCallback: () -> Unit,
-    ) {
-        viewModelScope.launch {
-            val element = ocrRepo.getWordFromImage(image)
-            val keyword = currentKeyword.value ?: ""
-            val checkFail = validationResponseByMLKit(keyword, element)
+    ): Boolean {
+        val element = ocrRepo.getWordFromImage(image)
+        val keyword = currentKeyword.value ?: ""
+        val checkFail = validationResponseByMLKit(keyword, element)
 
-            delay(1500L)
-            _isLoading.value = false
+        delay(1500L)
 
-            if (checkFail) {
-                questLocation = locationRepo.getCurrent().location
-                _playState.value = QUEST_SUCCESS
-                visibleImageCallback()
-            } else {
-                // CropImage 를 다시 설정하여 해야함
-                _snackBarMsg.value = "키워드가 보이게 사진을 다시 찍어주세요"
-                invisibleImageCallback()
-            }
+        if (checkFail) {
+            questLocation = locationRepo.getCurrent().location
+            _playState.value = QUEST_SUCCESS
+            visibleLoading(HIDE_LOADING)
+            visibleImageCallback()
         }
+        if (isPreProcess) {
+            _snackBarMsg.value = "키워드가 보이게 사진을 다시 찍어주세요"
+            isPreProcess = false
+            visibleLoading(HIDE_LOADING)
+            invisibleImageCallback()
+        }
+        return checkFail
     }
 
     fun togglePlay() {
@@ -214,7 +222,7 @@ class MainViewModel(
 
     private suspend fun setResultHistory(
         navigateCallback: (String, String) -> Unit,
-        isSuccess: Boolean
+        isSuccess: Boolean,
     ) {
         val result = makeResult(isSuccess)
 
