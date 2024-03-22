@@ -36,7 +36,7 @@ class MainViewModel(
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
-    private val imageUtil: ImageUtil,
+    private val imageUtil: ImageUtil
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -72,6 +72,7 @@ class MainViewModel(
     private var currentTime: String = ""
 
     private var isPreProcess = false
+
     fun setCaptureImage(
         image: ImageProxy,
         croppedImage: Bitmap?,

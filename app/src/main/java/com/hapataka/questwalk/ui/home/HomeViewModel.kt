@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo
 import java.time.LocalTime
@@ -11,6 +12,7 @@ import java.time.LocalTime
 class HomeViewModel(
     private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
+    private val encryptRepo: EncryptionKeyRepository
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
     val isNight: LiveData<Boolean> get() = _isNight
@@ -27,7 +29,8 @@ class HomeViewModel(
         }
     }
 
-    suspend fun setUid() {
+    suspend fun setUserInfo() {
         UserInfo.uid = authRepo.getCurrentUserUid()
+        UserInfo.encryptionKey = encryptRepo.getKey(UserInfo.uid)
     }
 }

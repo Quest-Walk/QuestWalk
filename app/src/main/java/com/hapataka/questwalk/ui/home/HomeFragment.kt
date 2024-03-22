@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -33,7 +34,6 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
-import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
@@ -389,15 +389,40 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
+    val TAG = "permission_test"
     private fun checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            checkCamera()
-            checkLocation()
+        val camera = android.Manifest.permission.CAMERA
+        val activity = android.Manifest.permission.ACTIVITY_RECOGNITION
+        val location = android.Manifest.permission.ACCESS_FINE_LOCATION
+
+        if (checkPermission(activity)) {
+            Log.i(TAG, "신체정보 퍼미션 없음")
         }
+
+        if (checkPermission(camera)) {
+            Log.i(TAG, "카메라 퍼미션 없음")
+        }
+
+        if (checkPermission(location)) {
+            Log.i(TAG, "위치 퍼미션 없음")
+        }
+
+//        if (ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                android.Manifest.permission.CAMERA
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            Log.i(TAG, "퍼미션 없음")
+//            checkCamera()
+//            checkLocation()
+//        }
+    }
+
+    private fun checkPermission(name: String): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            requireContext(),
+            name
+        ) != PackageManager.PERMISSION_GRANTED
     }
 
 
@@ -463,7 +488,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun setUid() {
         lifecycleScope.launch {
-            viewModel.setUid()
+            viewModel.setUserInfo()
         }
     }
 

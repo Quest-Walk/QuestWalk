@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.ui.mainactivity
+package com.hapataka.questwalk.ui.home
 
 import android.content.Intent
 import android.net.Uri
