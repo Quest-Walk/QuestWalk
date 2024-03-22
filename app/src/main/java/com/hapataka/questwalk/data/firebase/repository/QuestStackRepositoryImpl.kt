@@ -21,11 +21,10 @@ class QuestStackRepositoryImpl : QuestStackRepository {
         registerAt: String
     ) {
         withContext(Dispatchers.IO) {
-            var currentItem = getItemByKeyword(keyword)
+            val currentItem = getItemByKeyword(keyword)
 
             currentItem.successItems += SuccessItem(userId, imageUrl, registerAt)
-            questCollection.document(keyword)
-                .set(currentItem)
+            questCollection.document(keyword).set(currentItem).await()
         }
     }
 
@@ -41,7 +40,7 @@ class QuestStackRepositoryImpl : QuestStackRepository {
         withContext(Dispatchers.IO) {
             val results = mutableListOf<QuestStackEntity>()
             val levelList = intArrayOf(1, 2, 3)
-            var differ = levelList.map {
+            val differ = levelList.map {
                 async {
                     questCollection.whereEqualTo("level", it).get().await()
                 }

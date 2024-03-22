@@ -7,6 +7,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
@@ -15,12 +16,14 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentFindPassWordBinding
-import com.hapataka.questwalk.ui.login.showSnackbar
+import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 
 
 class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentFindPassWordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
+    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private var emailId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +45,6 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
         }
     }
 
-
     private fun checkEmailValidity(id: String): Boolean {
         if (emailId.isEmpty()) {
             binding.tvWarning.showError("이메일을 입력해 주세요")
@@ -62,10 +64,11 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
 
         FirebaseAuth.getInstance().sendPasswordResetEmail(emailId).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                "이메일을 보냈습니다. 메일함을 확인해 주세요.".showSnackbar(requireView())
+                mainViewModel.setSnackBarMsg("이메일을 보냈습니다. 메일함을 확인해 주세요.")
             } else {
                 val errorMessage = getErrorMessageForEmailSending(task.exception)
-                errorMessage.showSnackbar(requireView())
+
+                mainViewModel.setSnackBarMsg(errorMessage)
             }
         }
     }
@@ -83,8 +86,6 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
         text = msg
         startAnimation(animShake)
     }
-
-
 
     private fun goBackToLogIn() {
         binding.btnGoToLogIn.setOnClickListener {

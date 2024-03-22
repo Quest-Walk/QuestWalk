@@ -2,7 +2,6 @@ package com.hapataka.questwalk.ui.result
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
@@ -10,7 +9,6 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
@@ -25,7 +23,6 @@ const val REGISTER_TIME = "register_time"
 
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate) {
     private val viewModel: ResultViewModel by viewModels { ViewModelFactory() }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
     private var userId: String? = null
     private var keyword: String? = null
     private var registerAt: String? = null

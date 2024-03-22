@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.domain.usecase
 
-import android.util.Log
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity

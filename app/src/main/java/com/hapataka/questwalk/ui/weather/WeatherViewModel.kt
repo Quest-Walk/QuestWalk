@@ -9,7 +9,6 @@ import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
-import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch

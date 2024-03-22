@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AchieveItemRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.AchieveStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
@@ -41,7 +40,6 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val authRepo = AuthRepositoryImpl()
         val userRepo = UserRepositoryImpl()
         val questRepo = QuestStackRepositoryImpl()
-        val achieveRepo = AchieveStackRepositoryImpl()
         val imageRepo = ImageRepositoryImpl()
         val weatherRepo = WeatherRepositoryImpl()
         val dustRepo = DustRepositoryImpl()
@@ -50,11 +48,11 @@ class ViewModelFactory() : ViewModelProvider.Factory {
 
 
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(authRepo, userRepo, questRepo, achieveRepo, imageRepo, ocrRepo, locationRepo, imageUtil) as T
+            return MainViewModel(userRepo, questRepo, imageRepo, ocrRepo, locationRepo, imageUtil) as T
         }
 
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(authRepo, localRepo) as T
+            return LoginViewModel(localRepo, authRepo) as T
         }
 
         if (modelClass.isAssignableFrom(SignUpViewModel::class.java)) {
@@ -62,15 +60,15 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(MyInfoViewModel::class.java)) {
-            return MyInfoViewModel(authRepo, userRepo, localRepo) as T
+            return MyInfoViewModel(authRepo, userRepo) as T
         }
 
         if (modelClass.isAssignableFrom(RecordViewModel::class.java)) {
-            return RecordViewModel(authRepo, userRepo, achieveItemRepo) as T
+            return RecordViewModel(userRepo, achieveItemRepo) as T
         }
 
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(authRepo, userRepo) as T
+            return HomeViewModel(authRepo,userRepo) as T
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {

@@ -22,7 +22,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_close" />
+            android:src="@drawable/btn_close" />
 
 
     </LinearLayout>

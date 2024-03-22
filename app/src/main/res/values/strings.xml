@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Quest Walk</string>
+    <string name="app_name">퀘스트 워크</string>
     <string-array name="level">
         <item>전체보기</item>
         <item>★</item>
