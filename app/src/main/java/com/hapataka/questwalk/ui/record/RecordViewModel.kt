@@ -8,6 +8,7 @@ import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
+import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
@@ -16,6 +17,7 @@ import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.launch
 
 class RecordViewModel(
+    private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
     private val achieveItemRepo: AchieveItemRepository
 ) : ViewModel() {
@@ -24,6 +26,7 @@ class RecordViewModel(
 
     private var _achieveItems = MutableLiveData<List<AchieveItem>> ()
     val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
+
 
     fun getRecordItems() {
         viewModelScope.launch {

@@ -26,7 +26,7 @@ fun View.invisible() {
 fun TextView.showErrMsg(msg: String, context: Context) {
     val animShake = AnimationUtils.loadAnimation(context, R.anim.shake_error)
 
-    text = msg
+    setText(msg)
     visibility = View.VISIBLE
     setTextColor(resources.getColor(R.color.red))
     startAnimation(animShake)
@@ -52,8 +52,9 @@ fun Long.convertTime(code: Int): String {
             val totalMinute = this / 60
             val minute = totalMinute % 60
             val hour = totalMinute / 60
+            val result = "${hour}시간 ${minute}분 ${second}초"
 
-            return "${hour}시간 ${minute}분 ${second}초"
+            return result
         }
 
         else -> throw IllegalArgumentException("Unknown code type")

@@ -2,6 +2,7 @@ plugins {
     kotlin("kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
@@ -15,8 +16,9 @@ android {
         applicationId = "com.hapataka.questwalk"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.22"
+        versionCode = 6
+        versionName = "1.2"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -77,6 +79,11 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     // OKHttp for 통신 로그
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+    //Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
 
     // Fragment KTX (for the `by viewModels()` delegate)
     implementation("androidx.fragment:fragment-ktx:1.6.2")

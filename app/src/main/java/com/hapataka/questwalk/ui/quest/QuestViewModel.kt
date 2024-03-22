@@ -24,7 +24,8 @@ class QuestViewModel : ViewModel() {
 
     private val _questItems = MutableLiveData<MutableList<QuestData>>()
     val questItems: LiveData<MutableList<QuestData>> = _questItems
-
+//    private val _allUserSize = MutableLiveData<Long>()
+//    val allUserSize: LiveData<Long> = _allUserSize
     private val _successKeywords = MutableLiveData<MutableList<String>>()
     val successKeywords: LiveData<MutableList<String>> get() = _successKeywords
     val filterUseCase = QuestFilteringUseCase() // 완료 안된 퀘스트 반환
@@ -79,7 +80,6 @@ class QuestViewModel : ViewModel() {
     private suspend fun getSuccessKeywords() {
             val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess.not() }
             val successKeywords = successResults.map { it.quest }
-
             _successKeywords.value = successKeywords.toMutableList()
     }
 
@@ -92,7 +92,6 @@ class QuestViewModel : ViewModel() {
             QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)
         }
         val isSuccess = _successKeywords.value?.any { it.contains(questStackEntity.keyWord) } ?: false
-
         return QuestData(
             keyWord = questStackEntity.keyWord,
             level = questStackEntity.level,

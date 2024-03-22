@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -13,21 +12,21 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.ViewModelFactory
+
 
 class OnBoardingFragment :
     BaseFragment<FragmentOnBoardingBinding>(FragmentOnBoardingBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var characterNum = 1
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val viewModel: OnBoardingViewModel by viewModels {
         OnBoardingViewModelFactory(
             UserRepositoryImpl(),
             AuthRepositoryImpl()
         )
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +65,7 @@ class OnBoardingFragment :
             val nickName = binding.etNickname.text.toString()
 
             if (nickName.isEmpty()) {
-                mainViewModel.setSnackBarMsg("닉네임을 입력해 주세요")
+                ("닉네임을 입력해 주세요").showSnackbar(requireView())
                 return@setOnClickListener
             }
 
@@ -76,11 +75,16 @@ class OnBoardingFragment :
                         characterNum,
                         nickName,
                         { navigateGoHome() },
-                        onError = { error -> mainViewModel.setSnackBarMsg(error) })
+                        onError = { error -> error.showSnackbar(requireView()) })
                 } else {
-                    mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
+                    ("로그인 상태를 확인할 수 없습니다.").showSnackbar(requireView())
                 }
             }
+
+//            lifecycleScope.launch {
+//                val userId = authRepo.getCurrentUserUid()
+//                userRepo.setUserInfo(userId,characterNum,nickName)
+//            }
         }
     }
 

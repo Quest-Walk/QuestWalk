@@ -8,9 +8,10 @@ import kotlinx.coroutines.tasks.await
 class AchieveItemRepositoryImpl : AchieveItemRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val collection by lazy { remoteDb.collection("AchieveItem") }
+
     override suspend fun getAchieveItem(): List<AchieveItemEntity> {
         val documents = collection.get().await().documents
-        val results = documents.map {
+        var results = documents.map {
                 it?.toObject(AchieveItemEntity::class.java) ?: return emptyList()
         }
 

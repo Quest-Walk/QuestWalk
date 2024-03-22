@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
-import com.hapataka.questwalk.domain.entity.LocationEntity
-import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.domain.repository.AchieveStackRepository
+import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
@@ -27,12 +27,12 @@ import java.time.LocalDateTime
 const val QUEST_STOP = 0
 const val QUEST_START = 1
 const val QUEST_SUCCESS = 2
-const val SHOW_LOADING = true
-const val HIDE_LOADING = false
 
 class MainViewModel(
+    private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
     private val questRepo: QuestStackRepository,
+    private val achieveRepo: AchieveStackRepository,
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
@@ -71,13 +71,19 @@ class MainViewModel(
     private var questLocation: Pair<Float, Float>? = null
     private var currentTime: String = ""
 
+    fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
+        viewModelScope.launch {
+            callback(UserInfo.uid, currentTime)
+        }
+    }
+
     fun setCaptureImage(
         image: ImageProxy,
         navigateCallback: () -> Unit,
         visibleImageCallback: (Bitmap) -> Unit,
         invisibleImageCallback: () -> Unit,
     ) {
-        visibleLoading(SHOW_LOADING)
+        _isLoading.value = true
 
         val bitmapImage = imageUtil.setCaptureImage(image)
 
@@ -110,50 +116,43 @@ class MainViewModel(
     }
 
     fun togglePlay() {
-        viewModelScope.launch {
-            val playState = playState.value ?: 0
+        val playState = playState.value ?: 0
 
-            setCurrentLocationInfo(locationRepo.getCurrent())
+        viewModelScope.launch {
+            val locationInfo = locationRepo.getCurrent()
+
+            locationHistory += locationInfo.location
 
             if (playState == QUEST_STOP) {
                 _playState.value = QUEST_START
                 initPlayInfo()
-                return@launch
+            } else {
+                _isStop.value = true
             }
-            _isStop.value = true
         }
     }
 
-    suspend fun stopPlay(callback: (String, String) -> Unit) {
-        val distance = totalDistance.value ?: 0f
-        val playState = playState.value ?: 0
-
-        if (distance > 10f) {
-            setCurrentLocationInfo(locationRepo.getCurrent())
-
-            _isStop.value = false
-            _playState.value = QUEST_STOP
-            visibleLoading(SHOW_LOADING)
-            setResultHistory(callback, playState == QUEST_SUCCESS)
-        }
-        _isStop.value = false
-        _playState.value = QUEST_STOP
-        initPlayInfo()
-    }
-
-    fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
+    fun stopPlay(callback: (String, String) -> Unit) {
         viewModelScope.launch {
-            callback(UserInfo.uid, currentTime)
+            val distance = totalDistance.value ?: 0f
+            val playState = playState.value ?: 0
+
+            if (distance > 10f) {
+                val locationInfo = locationRepo.getCurrent()
+
+                locationHistory += locationInfo.location
+                _totalDistance.value = _totalDistance.value?.plus(locationInfo.distance)
+                setResultHistory(callback)
+
+                if (playState == QUEST_SUCCESS) {
+                    _isLoading.value = true
+                    setRandomKeyword()
+                }
+            }
+            _playState.value = QUEST_STOP
+            _isStop.value = false
+            initPlayInfo()
         }
-    }
-
-    fun visibleLoading(show: Boolean) {
-        _isLoading.value = show
-    }
-
-    private fun setCurrentLocationInfo(locationInfo: LocationEntity) {
-        locationHistory += locationInfo.location
-        _totalDistance.value = _totalDistance.value?.plus(locationInfo.distance)
     }
 
     fun resumePlay() {
@@ -169,13 +168,11 @@ class MainViewModel(
     private fun setTimer() {
         if (playState.value != QUEST_STOP) {
             timer = viewModelScope.launch {
-                _durationTime.value = 0
-
                 while (true) {
-                    val currentTime = durationTime.value!!
+                    var currentTime = durationTime.value!!
 
-                    delay(1000L)
                     _durationTime.value = currentTime + 1
+                    delay(1000L)
                 }
             }
         } else {
@@ -185,8 +182,6 @@ class MainViewModel(
 
     private fun setLocationClient() {
         if (playState.value != QUEST_STOP) {
-            locationHistory.clear()
-            questLocation = null
             locationRepo.startRequest {
                 setDistance(it.distance)
                 locationHistory += it.location
@@ -209,26 +204,44 @@ class MainViewModel(
         return
     }
 
-    private suspend fun setResultHistory(
-        navigateCallback: (String, String) -> Unit,
-        isSuccess: Boolean
-    ) {
-        val result = makeResult(isSuccess)
+    private fun setResultHistory(navigateResult: (String, String) -> Unit) {
+        viewModelScope.launch {
+            val result = makeResult()
 
-        if (isSuccess) {
-            updateQuestStack(result.questImg.toString())
-        }
-        userRepo.updateHistoryInfo(UserInfo.uid, result)
-        visibleLoading(HIDE_LOADING)
-        resetRecord()
-        checkAchievement(userRepo.getInfo(UserInfo.uid))
-        setRandomKeyword()
-        moveToResult { uid, registerAt ->
-            navigateCallback(uid, registerAt)
+            if (playState.value == QUEST_SUCCESS) {
+                updateQuestStack(result.questImg.toString())
+            }
+            userRepo.updateHistoryInfo(UserInfo.uid, result)
+            moveToResult { uid, registerAt ->
+                navigateResult(uid, registerAt)
+            }
+            _isLoading.value = false
+            resetRecord()
+
+            val userInfo = userRepo.getInfo(UserInfo.uid)
+            val achieveId = AchievementListener(userInfo)
+
+            achieveId.forEach { id ->
+                val userAchieveResults =
+                    userInfo.histories.filterIsInstance<HistoryEntity.AchieveResultEntity>()
+
+                if (userAchieveResults.none() { it.achievementId == id }) {
+                    userRepo.updateHistoryInfo(
+                        UserInfo.uid,
+                        HistoryEntity.AchieveResultEntity(
+                            currentTime,
+                            id
+                        )
+                    )
+                    _snackBarMsg.value = "업적달성"
+                }
+            }
         }
     }
 
-    private suspend fun makeResult(isSuccess: Boolean): ResultEntity {
+    private suspend fun makeResult(): ResultEntity {
+        currentTime = LocalDateTime.now().toString()
+        val isSuccess = playState.value == QUEST_SUCCESS
         val localImage = imageUtil.getImageUri()
         val imageUri = if (isSuccess) {
             imageRepo.setImage(localImage, UserInfo.uid).toString()
@@ -236,7 +249,6 @@ class MainViewModel(
             null
         }
 
-        currentTime = LocalDateTime.now().toString()
         return ResultEntity(
             currentTime,
             currentKeyword.value ?: "",
@@ -248,26 +260,6 @@ class MainViewModel(
             questLocation,
             imageUri,
         )
-    }
-
-    private suspend fun checkAchievement(user: UserEntity) {
-        val achieveId = AchievementListener(user)
-
-        achieveId.forEach { id ->
-            val userAchieveResults =
-                user.histories.filterIsInstance<HistoryEntity.AchieveResultEntity>()
-
-            if (userAchieveResults.none() { it.achievementId == id }) {
-                userRepo.updateHistoryInfo(
-                    UserInfo.uid,
-                    HistoryEntity.AchieveResultEntity(
-                        currentTime,
-                        id
-                    )
-                )
-                _snackBarMsg.value = "업적달성"
-            }
-        }
     }
 
     private suspend fun updateQuestStack(uri: String) {
@@ -289,8 +281,9 @@ class MainViewModel(
     }
 
     private fun setDistance(distance: Float) {
-        if (distance > 30f) return
-
+        if (distance > 30f) {
+            return
+        }
         val currentDistance = totalDistance.value ?: 0f
         val result = currentDistance + distance
 

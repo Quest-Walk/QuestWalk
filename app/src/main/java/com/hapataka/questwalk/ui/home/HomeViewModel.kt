@@ -4,15 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo
 import java.time.LocalTime
 
 class HomeViewModel(
-    private val authRepo: AuthRepository
+    private val authRepo: AuthRepository,
+    private val userRepo: UserRepository,
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
     val isNight: LiveData<Boolean> get() = _isNight
 
+    private var _charNum = MutableLiveData<Int>()
     private var time = -1
 
     fun checkCurrentTime() {
