@@ -12,11 +12,12 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
+import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
-import com.hapataka.questwalk.ui.onboarding.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
@@ -64,7 +65,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         val defaultNickName = "이름없는 모험가"
 
         with(binding) {
-            tvPlayerName.text = if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
+            tvPlayerName.text =
+                if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
             tvStepValue.text = userInfo.totalStep.toString() + " 걸음"
             tvDistanceValue.text = userInfo.totalDistance.convertKm()
             tvAchieveCouunt.text = "$achieveCount 개"
@@ -91,15 +93,14 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun initDropOut() {
         binding.btnDropOut.setOnClickListener {
-            val dialog = DropOutDialog{ pw ->
+            val dialog = DropOutDialog { pw ->
                 viewModel.deleteCurrentUser(pw) {
                     navController.navigate(R.id.action_frag_my_info_to_frag_login)
                     navGraph.setStartDestination(R.id.frag_home)
                     navController.graph = navGraph
                 }
             }
-
-            dialog.show(parentFragmentManager, "DropOutDialog")
+            dialog.show(parentFragmentManager, "dropout_dialog")
         }
     }
 
@@ -151,7 +152,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun startEditNameDialog() {
-        val dialogFragment = NickNameChangeDialog().apply {
+        val currentName = binding.tvPlayerName.text.toString()
+        val dialogFragment = NickNameChangeDialog(currentName).apply {
             onNicknameChanged = { newNickname ->
                 updateNickName(newNickname)
             }
@@ -160,16 +162,15 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun updateNickName(newNickname: String) {
-        viewModel.getCurrentUserId { userId ->
-            viewModel.getUserCharacterNum { characterNum ->
-                val charNum = characterNum ?: 1
-                viewModel.setUserInfo(userId, charNum, newNickname,
-                    onSuccess = {
-                        ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
-                        binding.tvPlayerName.text = newNickname
-                    },
-                    onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
-            }
+        viewModel.getUserCharacterNum { characterNum ->
+            val uid = UserInfo.uid
+            val charNum = characterNum ?: 1
+            viewModel.setUserInfo(uid, charNum, newNickname,
+                onSuccess = {
+                    ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
+                    binding.tvPlayerName.text = newNickname
+                },
+                onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
         }
     }
 }

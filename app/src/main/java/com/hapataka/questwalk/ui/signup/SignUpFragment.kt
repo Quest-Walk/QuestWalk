@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.signup
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,7 +22,6 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.showErrMsg
@@ -55,6 +55,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
             etSignUpPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
             etSignUpCheckPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
         }
+        checkTypeAllElements()
     }
 
     private fun initSignUpButton() {
@@ -113,7 +114,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(id).matches()) {
-            binding.tvExplainId.showErrMsg("이메일 형식이 올바르지 않습니다.", requireContext())
+            binding.tvExplainId.showErrMsg("아이디는 이메일 형식으로 입력해주세요.", requireContext())
             return true
         }
         return false
@@ -142,7 +143,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
         exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
         navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
-        navGraph.setStartDestination(R.id.frag_on_boarding)
+        navGraph.setStartDestination(R.id.frag_home)
         navController.graph = navGraph
     }
 
@@ -174,26 +175,24 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                 }
             }
         }
+    }
 
+    private fun checkTypeAllElements() {
+        val editTexts = listOf(
+            binding.etSignUpId,
+            binding.etSignUpPw,
+            binding.etSignUpCheckPw
+        )
 
-
-//    private fun showPasswordVisibility(icon: ImageView, editText: EditText) {
-//        icon.setOnTouchListener { v, event ->
-//            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    editText.transformationMethod =
-//                        HideReturnsTransformationMethod.getInstance()
-//                    editText.setSelection(editText.text.length)
-//                }
-//
-//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                    editText.transformationMethod =
-//                        PasswordTransformationMethod.getInstance()
-//                    editText.setSelection(editText.text.length)
-//                }
-//            }
-//            true
-//        }
+        editTexts.forEach {editText ->
+            editText.doAfterTextChanged {
+                if (editTexts.any { it.text.isEmpty() }) {
+                    binding.btnSignUp.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.gray))
+                } else {
+                    binding.btnSignUp.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.main_purple))
+                }
+            }
+        }
     }
 
     private fun hideKeyBoard() {

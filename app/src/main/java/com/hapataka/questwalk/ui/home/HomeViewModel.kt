@@ -3,20 +3,14 @@ package com.hapataka.questwalk.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.repository.AuthRepository
-import com.hapataka.questwalk.domain.repository.ImageRepository
-import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo
-import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 class HomeViewModel(
     private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
-    private val imageRepo: ImageRepository,
-    private val questRepo: QuestStackRepository
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
     val isNight: LiveData<Boolean> get() = _isNight
@@ -30,13 +24,6 @@ class HomeViewModel(
         when (time) {
             in 7..18 -> _isNight.value = false
             else -> _isNight.value = true
-        }
-    }
-
-    private fun getUserCharNum() {
-        viewModelScope.launch {
-            val userInfo = userRepo.getInfo(UserInfo.uid)
-            _charNum.value = userInfo.characterId
         }
     }
 

@@ -9,6 +9,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
+import com.hapataka.questwalk.ui.camera.CameraViewModel
+import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     val navController by lazy { navHost.navController }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
     private val mainViewModel: MainViewModel by viewModels { ViewModelFactory(this) }
-
+    private val cameraViewModel: CameraViewModel by viewModels { ViewModelFactory(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -32,9 +34,19 @@ class MainActivity : AppCompatActivity() {
         initOpenCv()
     }
 
+
     private fun setObserver() {
         mainViewModel.snackBarMsg.observe(this) {
             Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+        }
+        mainViewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                LoadingDialogFragment().show(supportFragmentManager, "loadingDialog")
+            } else {
+                val loadingFragment =
+                    supportFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+                loadingFragment?.dismiss()
+            }
         }
     }
 
@@ -51,7 +63,8 @@ class MainActivity : AppCompatActivity() {
             navController.graph = navGraph
         }
     }
- private fun initOpenCv(){
-     OpenCVLoader.initDebug()
- }
+
+    private fun initOpenCv() {
+        OpenCVLoader.initDebug()
+    }
 }

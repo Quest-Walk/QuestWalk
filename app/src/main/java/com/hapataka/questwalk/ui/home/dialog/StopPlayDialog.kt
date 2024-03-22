@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogStopPlayBinding
 
-class StopPlayDialog(val distance: Float, val callback: () -> Unit) : DialogFragment() {
+class StopPlayDialog(private val distance: Float, val positiveCallback: () -> Unit, val negativeCallback: () -> Unit) : DialogFragment() {
     private val binding by lazy { DialogStopPlayBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -25,6 +25,7 @@ class StopPlayDialog(val distance: Float, val callback: () -> Unit) : DialogFrag
         setDialogSize()
         initText()
         initButton()
+        dialog?.setCancelable(false)
     }
 
     private fun setDialogSize() {
@@ -32,32 +33,31 @@ class StopPlayDialog(val distance: Float, val callback: () -> Unit) : DialogFrag
             (requireActivity().windowManager.defaultDisplay).getMetrics(it)
         }
         val width = displayMetrics.widthPixels
-        val height = displayMetrics.heightPixels
-        val dialogWidth = (width * 0.75).toInt()
-        val dialogHeight = (height * 0.25).toInt()
+        val dialogWidth = (width * 0.85).toInt()
+        val dialogHeight = ViewGroup.LayoutParams.WRAP_CONTENT
 
         dialog?.window?.setLayout(dialogWidth, dialogHeight)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
     }
 
     private fun initText() {
-        if (distance < 10f) {
-            binding.tvTitle.text = "지금 포기하면 이동한 거리가 너무 짧아서\n기록이 남지 않습니다.\n그래도 포기하시겠습니까?"
-        } else {
+        if (distance > 10f) {
             binding.tvTitle.text = "모험을 종료하고 지금까지의 기록을 저장할까요?"
+        } else {
+            binding.tvTitle.text = "지금 포기하면 이동한 거리가 너무 짧아서\n기록이 남지 않습니다.\n그래도 포기하시겠습니까?"
         }
     }
 
     private fun initButton() {
         with(binding) {
             btnCancel.setOnClickListener {
+                negativeCallback()
                 dismiss()
             }
             btnConfirm.setOnClickListener {
-                callback()
+                positiveCallback()
                 dismiss()
             }
         }
-
     }
 }

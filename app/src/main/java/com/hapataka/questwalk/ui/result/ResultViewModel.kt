@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.result
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.launch
 import kotlin.math.round
 
@@ -32,7 +34,6 @@ class ResultViewModel(
                 it.quest == keyword && it.registerAt == registerAt
             }
             getQuestByKeyword(keyword)
-//            mapRepo.drawPath(_resultItem.value!!)
         }
     }
 

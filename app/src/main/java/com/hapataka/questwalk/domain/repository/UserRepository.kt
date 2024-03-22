@@ -5,7 +5,7 @@ import com.hapataka.questwalk.domain.entity.UserEntity
 
 interface UserRepository {
     suspend fun setUserInfo(userId: String, profileId: Int, name: String)
-    suspend fun updateUserInfo(userId: String, result: HistoryEntity)
+    suspend fun updateHistoryInfo(userId: String, result: HistoryEntity)
     suspend fun getInfo(userId: String): UserEntity
     suspend fun getAllUserSize(): Long
     suspend fun getAchieveHistory(userId: String): MutableList<HistoryEntity.AchieveResultEntity>

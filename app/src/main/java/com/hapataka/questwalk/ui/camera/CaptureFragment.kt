@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
@@ -17,14 +16,15 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.databinding.FragmentCaptureBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBinding::inflate) {
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
-    private val cameraViewModel: CameraViewModel by activityViewModels()
+
+    private val cameraViewModel: CameraViewModel by activityViewModels{ViewModelFactory(requireContext())}
     private val mainViewModel: MainViewModel by activityViewModels()
 
     private var bitmap: Bitmap? = null
@@ -81,23 +81,11 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
         }
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
             if (isSucceed == null) return@observe
-
             if (isSucceed) {
-                if (cameraViewModel.file != null) {
-                    Snackbar.make(requireView(),cameraViewModel.file.toString(),Snackbar.LENGTH_SHORT).show()
-//                    mainViewModel.setCaptureImage(cameraViewModel.file!!.path)
                     initCapturedImage()
                 }
-//                navController.popBackStack(R.id.frag_home, false)
-            } else {
-//                cameraViewModel.failedImageDrawWithCanvasByMLKit(keyword)
-                binding.clCheckOcr.visibility = View.GONE
-                binding.clResultOcr.visibility = View.VISIBLE
-                cameraViewModel.initBitmap()
-            }
         }
         cameraViewModel.bitmap.observe(viewLifecycleOwner){
-
             initCapturedImage()
         }
 

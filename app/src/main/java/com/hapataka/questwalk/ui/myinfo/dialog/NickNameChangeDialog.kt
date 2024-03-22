@@ -1,27 +1,19 @@
-package com.hapataka.questwalk.ui.onboarding
+package com.hapataka.questwalk.ui.myinfo.dialog
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
 import com.hapataka.questwalk.ui.login.showSnackbar
 
-class NickNameChangeDialog : DialogFragment() {
+class NickNameChangeDialog (val prevName: String) : DialogFragment() {
     private var _binding: DialogEditNicknameBinding? = null
     private val binding get() = _binding!!
     var onNicknameChanged: ((newNickname: String) -> Unit)? = null
-
-    override fun onStart() {
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.WRAP_CONTENT
-            dialog.window?.setLayout(width, height)
-        }
-        super.onStart()
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = DialogEditNicknameBinding.inflate(inflater, container, false)
@@ -35,9 +27,12 @@ class NickNameChangeDialog : DialogFragment() {
     }
 
     private fun setDialog() {
+        setSize()
+        binding.etChangeNickname.setText(prevName)
         binding.btnChange.setOnClickListener {
             val newNickName = binding.etChangeNickname.text.toString().trim()
-            if (newNickName.isBlank()) {
+
+            if (newNickName == prevName) {
                 view?.let { "변경된 정보가 없습니다.".showSnackbar(it) }
                 dismiss()
             } else {
@@ -59,6 +54,17 @@ class NickNameChangeDialog : DialogFragment() {
         _binding = null
     }
 
+    private fun setSize() {
+        val displayMetrics = DisplayMetrics().also {
+            (requireActivity().windowManager.defaultDisplay).getMetrics(it)
+        }
+        val width = displayMetrics.widthPixels
+        val dialogWidth = (width * 0.85).toInt()
+        val dialogHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        dialog?.window?.setLayout(dialogWidth, dialogHeight)
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
+    }
 }
 
 

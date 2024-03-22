@@ -31,9 +31,8 @@ class DropOutDialog(val dropOut: (String) -> Unit): DialogFragment() {
             (requireActivity().windowManager.defaultDisplay).getMetrics(it)
         }
         val width = displayMetrics.widthPixels
-        val height = displayMetrics.heightPixels
         val dialogWidth = (width * 0.75).toInt()
-        val dialogHeight = (height * 0.25).toInt()
+        val dialogHeight = ViewGroup.LayoutParams.WRAP_CONTENT
 
         dialog?.window?.setLayout(dialogWidth, dialogHeight)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
@@ -51,6 +50,5 @@ class DropOutDialog(val dropOut: (String) -> Unit): DialogFragment() {
                 dismiss()
             }
         }
-
     }
 }

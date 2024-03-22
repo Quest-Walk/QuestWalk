@@ -17,18 +17,15 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.hapataka.questwalk.ui.mainactivity.ImageUtil
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
-import javax.inject.Inject
 
 
-@HiltViewModel
-class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
+class CameraViewModel (private val imageUtil: ImageUtil) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
     val bitmap: LiveData<Bitmap?> get() = _bitmap
     private var _isSucceed: MutableLiveData<Boolean?> = MutableLiveData()
@@ -36,7 +33,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
-    var file: File? = null
     // Crop event
 
     var isCropped = true
@@ -57,12 +53,9 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private var x = 0
     private var y = 0
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy,sizeRate : Double) {
-
         val imageWidth = inputImage.height // 1392
         val imageHeight = inputImage.width // 1856
-
         //1. getRatio 세로 길이가 더 긴 상황 이므로
-
         val ratio = appHeight / imageHeight.toDouble()
 
         //3.getCropWidth
@@ -121,13 +114,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun initBitmap() {
         _bitmap.value = null
-        file = null
         resultListByMLKit.clear()
         _isSucceed.value = null
-    }
-
-    fun deleteBitmapByFile() {
-        repository.deleteBitmap()
     }
 
     fun getCroppedBitmap() = croppedBitmap
@@ -150,14 +138,19 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image: InputImage
         image = if (isCropped) {
-            croppedBitmap = repository.preProcessBitmap(croppedBitmap)
+            croppedBitmap = imageUtil.preProcessBitmap(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
         }
 
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-
+        val canvas = Canvas(croppedBitmap!!)
+        val paint = Paint().apply {
+            color = Color.CYAN
+            style = Paint.Style.STROKE
+            strokeWidth = 10f
+        }
         try {
             isLoading.postValue(true)
 
@@ -171,6 +164,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 for (line in block.lines) {
                     for (element in line.elements) {
                         resultListByMLKit.add(element)
+                        canvas.drawRect(element.boundingBox!!,paint)
                         Log.d("ocrResult", element.text)
                     }
                 }
@@ -207,12 +201,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 return@forEach
             }
             Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())
-        }
-        if (isValidated) {
-            file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
-        } else {
-            file = null
-            repository.deleteBitmap()
         }
         return isValidated
     }

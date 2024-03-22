@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -31,16 +32,18 @@ import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.LoadingDialogFragment
+import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -48,6 +51,7 @@ import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
 import com.hapataka.questwalk.util.extentions.visible
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -63,10 +67,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
+    private var currentDistance = -1f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel.setRandomKeyword()
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -108,6 +115,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             btnWheather.setOnClickListener {
                 "준비중이에요".showToast()
+                Log.d(TAG, "uid: ${UserInfo.uid}")
             }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
@@ -120,14 +128,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initQuestButton() {
         binding.btnToggleQuestState.setOnClickListener {
-            mainViewModel.togglePlay {uid, registerAt ->
-                val bundle = Bundle().apply {
-                    putString(USER_ID, uid)
-                    putString(REGISTER_TIME, registerAt)
-                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
-                }
-                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
-            }
+            mainViewModel.togglePlay()
         }
     }
 
@@ -155,32 +156,41 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             totalDistance.observe(viewLifecycleOwner) {
                 binding.tvQuestDistance.text = it.convertKm()
+                currentDistance = it
             }
             totalStep.observe(viewLifecycleOwner) { step ->
                 binding.tvQuestPlaying.text = "${step}걸음"
             }
-            isLoading.observe(viewLifecycleOwner) { isLoading ->
-                if (isLoading) {
-                    LoadingDialogFragment().show(parentFragmentManager, "loadingDialog")
-                } else {
-                    val loadingFragment =
-                        parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
-                    loadingFragment?.dismiss()
+            isStop.observe(viewLifecycleOwner) { isStop ->
+                if (isStop) {
+                    showStopDialog()
                 }
             }
         }
     }
 
-    private fun showHomeDialog() {
-        val dialog = HomeDialog {
-        }
+    private fun showStopDialog() {
+        val dialog = StopPlayDialog(currentDistance,
+            { activePositive() },
+            { activeNegative() }
+        )
+
         dialog.show(parentFragmentManager, "HomeDialog")
     }
 
-    private fun setUid() {
-        lifecycleScope.launch {
-            viewModel.setUid()
+    private fun activePositive() {
+        mainViewModel.stopPlay { uid, registerAt ->
+            val bundle = Bundle().apply {
+                putString(USER_ID, uid)
+                putString(REGISTER_TIME, registerAt)
+                putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+            }
+            navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
         }
+    }
+
+    private fun activeNegative() {
+        mainViewModel.resumePlay()
     }
 
     private fun updateWithState(playState: Int) {
@@ -232,34 +242,39 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             return
         }
 
-        if (playState == QUEST_STOP){
+        if (playState == QUEST_STOP) {
             sensorManager.unregisterListener(sensorListener, stepSensor)
             return
         }
     }
 
+    private var characterMove: Job? = null
     private fun startBackgroundAnim() {
-//        val charId = viewModel.charNum.value ?: 1
-//        val movingCharacter = when(charId) {
-//            1->R.drawable.character_move_01
-//            else -> R.drawable.character_move_01
-//        }
-        val imageLoader = ImageLoader.Builder(requireContext())
-            .components {
-                if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-            }
-            .build()
-        val requestCharacter = ImageRequest.Builder(requireContext())
-            //.data(movingCharacter)
-            .data(R.drawable.character_move_01)
-            .target(binding.ivChrImage)
-            .build()
+        characterMove = lifecycleScope.launch {
+            while (true) {
+                val imageLoader = ImageLoader.Builder(requireContext())
+                    .components {
+                        if (SDK_INT >= 28) {
+                            add(ImageDecoderDecoder.Factory())
+                        } else {
+                            add(GifDecoder.Factory())
+                        }
+                    }.build()
+                val requestCharacter = ImageRequest.Builder(requireContext())
+                    .data(R.drawable.character_move_01)
+                    .target(binding.ivChrImage)
+                    .placeholder(R.drawable.character_01)
+                    .build()
 
-        imageLoader.enqueue(requestCharacter)
+                imageLoader.enqueue(requestCharacter)
+                binding.motionLayout.scene.duration = 2000
+                binding.motionLayout.transitionToEnd()
+                delay(7000L)
+                binding.motionLayout.scene.duration = 3000
+                binding.motionLayout.transitionToStart()
+                delay(3000L)
+            }
+        }
         setBackgroundPosition(ANIM_POSITION)
         with(binding) {
             ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
@@ -269,15 +284,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun endBackgroundAnim() {
-//        val charId = viewModel.charNum.value ?: 1
-//        val character = when(charId) {
-//            1 -> R.drawable.character_01
-//            else -> R.drawable.character_01
-//        }
-
         with(binding) {
-//            ivChrImage.load(character)
-            ivChrImage.load(R.drawable.character_01)
             ivBgLayer1.clearAnimation()
             ivBgLayer2.clearAnimation()
             ivBgLayer3.clearAnimation()
@@ -285,6 +292,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             ivBgLayer1.translationX = 2115f
             ivBgLayer2.translationX = -2800f
             ivBgLayer3.translationX = 2115f
+        }
+        characterMove?.cancel()
+        characterMove = lifecycleScope.launch {
+            binding.motionLayout.scene.duration = 0
+            binding.motionLayout.transitionToStart()
+            binding.ivChrImage.load(R.drawable.character_01)
         }
     }
 
@@ -448,5 +461,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         val dialog = PermissionDialog(msg, callback)
 
         dialog.show(parentFragmentManager, "permissionDialog")
+    }
+
+    private fun setUid() {
+        lifecycleScope.launch {
+            viewModel.setUid()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        characterMove?.cancel()
     }
 }

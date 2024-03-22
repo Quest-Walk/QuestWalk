@@ -15,6 +15,7 @@ import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.data.pref.repository.LocalRepositoryImpl
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
 import com.hapataka.questwalk.ui.mainactivity.ImageUtil
@@ -65,11 +66,15 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(authRepo, userRepo, imageRepo, questRepo) as T
+            return HomeViewModel(authRepo, userRepo) as T
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {
             return ResultViewModel(userRepo, questRepo) as T
+        }
+
+        if(modelClass.isAssignableFrom(CameraViewModel::class.java)){
+            return CameraViewModel(imageUtil) as T
         }
 
         throw IllegalArgumentException("unknown view model")
