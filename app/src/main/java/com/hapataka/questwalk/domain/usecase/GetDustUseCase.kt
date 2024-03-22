@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.domain.usecase
 
 import android.util.Log
+import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.TmEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
@@ -35,7 +36,7 @@ class GetDustUseCase(
 
     private fun requestTmQueryMap(address: String): Map<String, String> {
         return mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "serviceKey" to BuildConfig.weather_key,
             "returnType" to "json",
             "umdName" to address
         )
@@ -43,7 +44,7 @@ class GetDustUseCase(
 
     private fun requestStationQueryMap(tmLocation: TmEntity): Map<String, String> {
         return mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "serviceKey" to BuildConfig.weather_key,
             "returnType" to "json",
             "tmX" to tmLocation.tmx,
             "tmY" to tmLocation.tmy
@@ -52,7 +53,7 @@ class GetDustUseCase(
 
     private fun requestDustQueryMap(station: String): Map<String, String> {
         return mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "serviceKey" to BuildConfig.weather_key,
             "returnType" to "json",
             "stationName" to station,
             "dataTerm" to "DAILY",

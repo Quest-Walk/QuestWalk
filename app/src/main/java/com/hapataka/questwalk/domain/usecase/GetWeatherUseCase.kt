@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.domain.usecase
 
 import android.util.Log
+import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.WeatherRepository
@@ -19,7 +20,7 @@ class GetWeatherUseCase (
         val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(
-            "serviceKey" to "vaXH1GPi1Tx19XQNGP2u25wMm5G/r4iAA7OZKcbQz7cVWKx+vwA+InIc3GcfBNVkF6QdQxiAtDV8+kt+TlFZAg==",
+            "serviceKey" to BuildConfig.weather_key,
             "dataType" to "json",
             "base_date" to requestDateTime.first,
             "base_time" to requestDateTime.second,
@@ -27,6 +28,7 @@ class GetWeatherUseCase (
             "nx" to convertXy.x.toInt().toString(),
             "ny" to convertXy.y.toInt().toString(),
         )
+        Log.d("GetWeatherUseCase:","$queries")
         val weatherInfo = weatherRepository.getWeatherInfo(queries)
         return weatherInfo.filter { it.fcstTime >= requestTime }.take(10)
     }
