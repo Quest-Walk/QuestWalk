@@ -41,12 +41,57 @@
         android:layout_marginBottom="-1dp"
         android:background="@color/white"
         android:paddingHorizontal="16dp"
-        android:textColor="@color/main_purple"
         android:paddingVertical="4dp"
         android:text="전체"
+        android:textColor="@color/selector_tab_all_color"
         app:layout_constraintBottom_toTopOf="@id/rev_quest"
         app:layout_constraintStart_toStartOf="@id/rev_quest"
         app:layout_constraintTop_toBottomOf="@id/app_bar" />
+
+    <TextView
+        android:id="@+id/tv_lv_1"
+        style="@style/sans_body_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
+        android:text="LV1"
+        android:textColor="@color/selector_tab_all_color"
+        app:layout_constraintTop_toTopOf="@id/tv_all"
+        app:layout_constraintBottom_toBottomOf="@id/tv_all"
+        app:layout_constraintStart_toEndOf="@id/tv_all"
+        android:layout_marginStart="1dp"/>
+
+    <TextView
+        android:id="@+id/tv_lv_2"
+        style="@style/sans_body_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
+        android:text="LV2"
+        android:textColor="@color/selector_tab_all_color"
+        app:layout_constraintTop_toTopOf="@id/tv_all"
+        app:layout_constraintBottom_toBottomOf="@id/tv_all"
+        app:layout_constraintStart_toEndOf="@id/tv_lv_1"
+        android:layout_marginStart="1dp"/>
+
+    <TextView
+        android:id="@+id/tv_lv_3"
+        style="@style/sans_body_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
+        android:text="LV3"
+        android:textColor="@color/selector_tab_all_color"
+        app:layout_constraintTop_toTopOf="@id/tv_all"
+        app:layout_constraintBottom_toBottomOf="@id/tv_all"
+        app:layout_constraintStart_toEndOf="@id/tv_lv_2"
+        android:layout_marginStart="1dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rev_quest"
@@ -55,10 +100,10 @@
         android:layout_marginHorizontal="20dp"
         android:clipToOutline="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_all"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_quest" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.quest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -38,6 +39,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initViews() {
         initBackButton()
 //        initSpinner()
+        initTabButton()
         initCompleteButton()
         initQuestRecyclerView()
     }
@@ -45,6 +47,21 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initBackButton() {
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
+        }
+    }
+
+    private fun initTabButton() {
+        with(binding) {
+            val tabList = mutableListOf(tvAll, tvLv1, tvLv2, tvLv3)
+
+            binding.tvAll.isSelected = true
+            tabList.forEachIndexed { index, tab ->
+                tab.setOnClickListener {
+                    questViewModel.filterLevel(index)
+                    tabList.map { it.isSelected = false }
+                    tab.isSelected = !tab.isSelected
+                }
+            }
         }
     }
 
