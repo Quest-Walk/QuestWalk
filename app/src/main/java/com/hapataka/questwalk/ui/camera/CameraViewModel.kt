@@ -172,7 +172,7 @@ class CameraViewModel (private val imageUtil: ImageUtil) : ViewModel() {
 
             Log.d("ocrResult","------------")
 
-            _isSucceed.value = validationResponseByMLKit(keyword)
+            _isSucceed.postValue(validationResponseByMLKit(keyword))
             isLoading.postValue(false)
 
 
@@ -203,6 +203,7 @@ class CameraViewModel (private val imageUtil: ImageUtil) : ViewModel() {
             }
             Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())
         }
+        resultListByMLKit.clear()
         return isValidated
     }
 

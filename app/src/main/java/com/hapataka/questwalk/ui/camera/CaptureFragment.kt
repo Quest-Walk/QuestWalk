@@ -24,7 +24,11 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
 
 
-    private val cameraViewModel: CameraViewModel by activityViewModels{ViewModelFactory(requireContext())}
+    private val cameraViewModel: CameraViewModel by activityViewModels {
+        ViewModelFactory(
+            requireContext()
+        )
+    }
     private val mainViewModel: MainViewModel by activityViewModels()
 
     private var bitmap: Bitmap? = null
@@ -60,10 +64,14 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
                 navController.popBackStack()
             }
 
-            ibCropBtn.apply{
+            ibCropBtn.apply {
                 setOnClickListener {
                     cameraViewModel.clickedCropImageButton()
-                    Snackbar.make(requireView(),"isCropped : ${cameraViewModel.isCropped}",Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        requireView(),
+                        "isCropped : ${cameraViewModel.isCropped}",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
             ivCapturedImage.setOnLongClickListener {
@@ -80,12 +88,9 @@ class CaptureFragment : BaseFragment<FragmentCaptureBinding>(FragmentCaptureBind
             else progressDialog.dismiss()
         }
         cameraViewModel.isSucceed.observe(viewLifecycleOwner) { isSucceed ->
-            if (isSucceed == null) return@observe
-            if (isSucceed) {
-                    initCapturedImage()
-                }
+            initCapturedImage()
         }
-        cameraViewModel.bitmap.observe(viewLifecycleOwner){
+        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
             initCapturedImage()
         }
 
