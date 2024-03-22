@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
@@ -53,7 +52,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     }
 
     private fun initSpinner() {
-//        binding.spinnerLevel.selectItemByIndex(0)
         binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
             questViewModel.filterLevel(Index)
         }
@@ -83,9 +81,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             },
 
             onClickView =  {keyWord ->
-                val dialog = QuestDialog(keyWord, keywords) {
-                    Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
-                }
+                val dialog = QuestDialog(keyWord, keywords)
 
                 dialog.show(parentFragmentManager, "QuestDialog")
             }

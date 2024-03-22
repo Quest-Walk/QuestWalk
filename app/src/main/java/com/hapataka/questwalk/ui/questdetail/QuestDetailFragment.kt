@@ -16,8 +16,6 @@ import kotlin.math.round
 
 class QuestDetailFragment : Fragment() {
     private val binding by lazy { FragmentQuestDetailBinding.inflate(layoutInflater) }
-
-    //    private val questDetailAdapter by lazy { QuestDetailAdapter() }
     private lateinit var questDetailAdapter: QuestDetailAdapter
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var completeRate: Double = 0.0

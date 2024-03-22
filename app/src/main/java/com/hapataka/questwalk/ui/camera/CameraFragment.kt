@@ -25,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.gone

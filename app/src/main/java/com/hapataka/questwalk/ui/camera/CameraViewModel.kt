@@ -173,7 +173,7 @@ class CameraViewModel (private val imageUtil: ImageUtil) : ViewModel() {
             Log.d("ocrResult","------------")
             isLoading.postValue(false)
 
-            _isSucceed.postValue(validationResponseByMLKit(keyword))
+            _isSucceed.value = validationResponseByMLKit(keyword)
 
         } catch (e: Exception) {
             Log.d("ocrResult", e.toString())

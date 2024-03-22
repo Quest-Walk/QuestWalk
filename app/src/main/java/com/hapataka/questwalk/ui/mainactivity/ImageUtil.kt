@@ -83,23 +83,23 @@ class ImageUtil(val context: Context) {
         // 3
         resultBitmap.add(dummyBitmap(mat))
 
-//        val sobelX = Mat()
-//        val sobelY = Mat()
-//        Imgproc.Sobel(mat, sobelX, mat.depth(), 1, 0)
-//        Imgproc.Sobel(mat, sobelY, mat.depth(), 0, 1)
-//        Core.addWeighted(sobelX, 0.5, sobelY, 0.5, 2.2, mat)
-        Imgproc.Canny(mat, binary, 50.0, 255.0, 5, true)
+        val sobelX = Mat()
+        val sobelY = Mat()
+        Imgproc.Sobel(mat, sobelX, mat.depth(), 1, 0)
+        Imgproc.Sobel(mat, sobelY, mat.depth(), 0, 1)
+        Core.addWeighted(sobelX, 0.5, sobelY, 0.5, 2.2, mat)
+//        Imgproc.Canny(mat, binary, 50.0, 255.0, 5, true)
         // 4
-//        resultBitmap.add(dummyBitmap(mat))
+        resultBitmap.add(dummyBitmap(mat))
 //
-//        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
+        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
         // 5
         resultBitmap.add(dummyBitmap(binary))
 
         //모폴리지 연산
         var kernel = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS, Size(5.0, 5.0))
 
-        Imgproc.morphologyEx(binary, binary, Imgproc.MORPH_DILATE, kernel)
+
         Imgproc.morphologyEx(binary, binary, Imgproc.MORPH_OPEN, kernel)
         resultBitmap.add(dummyBitmap(binary))
 
@@ -112,7 +112,7 @@ class ImageUtil(val context: Context) {
         // 검은색 부분은 원본 이미지 사용, 흰색 부분은 처리된 이미지 사용
         Core.bitwise_not(binary, mask) // 흰색 부분을 제외한 나머지를 마스크로 생성
         Core.bitwise_and(src, src, result, mask) // 원본에서 검은색 부분만 추출
-        Core.addWeighted(processedImage, 4.0, result, 1.0, 1.0, result)
+        Core.addWeighted(processedImage, 2.0, result, 1.0, 1.0, result)
 
         //7
         resultBitmap.add(dummyBitmap(result))
