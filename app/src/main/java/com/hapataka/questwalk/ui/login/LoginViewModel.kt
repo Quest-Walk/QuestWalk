@@ -18,5 +18,4 @@ class LoginViewModel(
     fun getUserId() {
         _userId.value = localRepo.getUserId()
     }
-
 }
