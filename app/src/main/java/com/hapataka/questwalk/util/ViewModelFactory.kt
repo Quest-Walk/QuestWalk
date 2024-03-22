@@ -70,7 +70,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(authRepo, userRepo, imageRepo, questRepo) as T
+            return HomeViewModel(authRepo, userRepo) as T
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {

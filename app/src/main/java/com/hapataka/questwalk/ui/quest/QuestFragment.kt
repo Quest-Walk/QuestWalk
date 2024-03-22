@@ -60,7 +60,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     }
 
     private fun initCompleteButton() {
-        binding.ivComplete.setOnClickListener {
+        binding.constrainComplete.setOnClickListener {
             if (binding.ivCheck.isVisible) {
                 binding.ivCheck.visibility = View.INVISIBLE
                 questViewModel.filterComplete(false)
