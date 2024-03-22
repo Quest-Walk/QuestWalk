@@ -2,21 +2,21 @@ package com.hapataka.questwalk.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthException
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
+import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import kotlinx.coroutines.delay
@@ -27,17 +27,20 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     private val authRepo by lazy { AuthRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
+    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val viewModel: LoginViewModel by viewModels { ViewModelFactory(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+        exitTransition =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.getUserId()
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
@@ -81,7 +84,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
 
     private fun loginByEmailPassword(id: String, pw: String) {
         if (id.isEmpty() || pw.isEmpty()) {
-            "이메일 또는 비밀번호가 비어있습니다".showSnackbar(requireView())
+            mainViewModel.setSnackBarMsg("이메일 또는 비밀번호가 비어있습니다")
             return
         }
 
@@ -100,16 +103,18 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
 
                 if (exception is FirebaseAuthException) {
                     handleFirebaseAuthException(exception)
-                } else ("로그인 정보를 다시 확인해 주세요.").showSnackbar(requireView())
+                } else {
+                    mainViewModel.setSnackBarMsg("로그인 정보를 다시 확인해 주세요.")
+                }
             }
         }
     }
 
     private fun handleFirebaseAuthException(exception: FirebaseAuthException) {
         val errorCode = exception.errorCode
-        Log.d("로그디", errorCode)
         val errorMessage = getErrorMessageByErrorCode(errorCode)
-        errorMessage.showSnackbar(requireView())
+
+        mainViewModel.setSnackBarMsg(errorMessage)
     }
 
     private fun getErrorMessageByErrorCode(errorCode: String): String {
@@ -155,12 +160,8 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     }
 
     private fun setObserver() {
-        viewModel.userId.observe(viewLifecycleOwner) {id ->
+        viewModel.userId.observe(viewLifecycleOwner) { id ->
             binding.etLoginId.setText(id)
         }
     }
-}
-
-fun String.showSnackbar(view: View) {
-    Snackbar.make(view, this, Snackbar.LENGTH_SHORT).show()
 }
