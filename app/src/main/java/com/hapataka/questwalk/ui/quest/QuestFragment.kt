@@ -102,5 +102,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             }
         )
         binding.revQuest.adapter = questListAdapter
+        binding.revQuest.itemAnimator = null
     }
 }
