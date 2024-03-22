@@ -2,6 +2,8 @@ package com.hapataka.questwalk.data.fusedlocation.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.LocationCallback
@@ -14,6 +16,7 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class LocationRepositoryImpl(context: Context) : LocationRepository {
     private val client by lazy { LocationServices.getFusedLocationProviderClient(context) }
@@ -22,6 +25,7 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
     }
     private lateinit var locationCallback: LocationCallback
     private var prevLocation: Location? = null
+    private val geocoder = Geocoder(context)
 
     @SuppressLint("MissingPermission")
     override fun startRequest(callback: (LocationEntity) -> Unit) {
@@ -74,11 +78,29 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
             if (prevLocation != null) prevLocation!! else location
         )
 
-
         LocationEntity(
             Pair(latitude, longitude),
             distance
         )
 
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun getAddress() = withContext(Dispatchers.IO) {
+//        try {
+//            val location = client.lastLocation.await()
+//            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+//            if (!addressList.isNullOrEmpty()) {
+//                addressList[0]
+//            } else {
+//                null
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+        val location = client.lastLocation.await()
+        val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+        addressList?.get(0)?.getAddressLine(0) ?: "No Address"
     }
 }

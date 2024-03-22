@@ -111,7 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
             btnWheather.setOnClickListener {
-                "준비중이에요".showToast()
+                navController.navigate(R.id.action_frag_home_to_weatherFragment)
             }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
