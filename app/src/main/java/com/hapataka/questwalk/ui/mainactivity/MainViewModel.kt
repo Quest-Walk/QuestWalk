@@ -36,7 +36,7 @@ class MainViewModel(
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
-    private val imageUtil: ImageUtil
+    private val imageUtil: ImageUtil,
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -78,23 +78,24 @@ class MainViewModel(
     }
 
     fun setCaptureImage(
-        image: Bitmap?,
+        image: ImageProxy,
+        croppedImage: Bitmap?,
         navigateCallback: () -> Unit,
         visibleImageCallback: (Bitmap) -> Unit,
         invisibleImageCallback: () -> Unit,
     ) {
-        if(image == null) return
+        if (croppedImage == null) return
         _isLoading.value = true
 
-
-        visibleImageCallback(image)
-        getTextFromOCR(image, navigateCallback, invisibleImageCallback)
+        val bitmapImage = imageUtil.setCaptureImage(image)
+        visibleImageCallback(bitmapImage)
+        getTextFromOCR(croppedImage, navigateCallback, invisibleImageCallback)
     }
 
     private fun getTextFromOCR(
         image: Bitmap,
         visibleImageCallback: () -> Unit,
-        invisibleImageCallback: () -> Unit
+        invisibleImageCallback: () -> Unit,
     ) {
         viewModelScope.launch {
             val element = ocrRepo.getWordFromImage(image)

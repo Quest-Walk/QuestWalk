@@ -181,6 +181,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 cameraViewModel.imageProxyToBitmap(image)
                 if (toFrag == TO_HOME_FRAG) {
                     mainViewModel.setCaptureImage(
+                        image,
                         cameraViewModel.getCroppedBitmap(),
                         { navController.popBackStack() },
                         {
