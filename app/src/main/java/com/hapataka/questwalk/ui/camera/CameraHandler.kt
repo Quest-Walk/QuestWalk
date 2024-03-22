@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.camera
 
 import android.content.Context
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.camera.core.CameraControl
@@ -24,12 +25,13 @@ class CameraHandler(
     private val viewLifecycleOwner: LifecycleOwner,
     private val preview: PreviewView,
 ) {
+
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraController: CameraController
-    private var cameraControl: CameraControl? = null
-    private var cameraInfo: CameraInfo? = null
+    private var cameraControl : CameraControl? = null
+    private var cameraInfo :  CameraInfo? = null
     private lateinit var scaleGestureDetector: ScaleGestureDetector
     private var flashMode = ImageCapture.FLASH_MODE_OFF
     var flashModeChanged: ((Int) -> Unit)? = null
@@ -53,6 +55,7 @@ class CameraHandler(
                     preview.surfaceProvider
                 )
             }
+
         imageCapture = ImageCapture.Builder().build()
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -63,40 +66,44 @@ class CameraHandler(
             )
             cameraControl = camera.cameraControl
             cameraInfo = camera.cameraInfo
-            setZoomInZoomOut()
+            handleZoomAndTap()
+
         } catch (e: Exception) {
-            throw Exception ("initCamera Fail")
+            Log.d("CameraX", "initCamera Fail", e)
         }
     }
+    //
 
-    private fun setZoomInZoomOut() {
-        scaleGestureDetector = ScaleGestureDetector(context,
-            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-                override fun onScale(detector: ScaleGestureDetector): Boolean {
-                    val currentZoom = cameraInfo?.zoomState?.value?.zoomRatio ?: 1.5f
-                    val delta = detector.scaleFactor
 
-                    cameraControl?.setZoomRatio(currentZoom * delta)
-                    return true
-                }
+    private fun handleZoomAndTap() {
+        scaleGestureDetector = ScaleGestureDetector(context,object :ScaleGestureDetector.SimpleOnScaleGestureListener(){
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val currentZoom = cameraInfo?.zoomState?.value?.zoomRatio ?: 1.5f
+                val delta = detector.scaleFactor
+                cameraControl?.setZoomRatio(currentZoom * delta)
+                return true
             }
-        )
+        })
+
         preview.setOnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    focusOn(event.x, event.y)
-                }
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                handleTapPoint(event.x, event.y)
             }
             scaleGestureDetector.onTouchEvent(event)
+
             true
         }
     }
 
-    private fun focusOn(x: Float, y: Float) {
+    private fun handleTapPoint(x:Float,y:Float) {
         val factory = preview.meteringPointFactory
-        val point = factory.createPoint(x, y)
-        val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+        val point = factory.createPoint(x,y)
+        val action = FocusMeteringAction.Builder(point,
+            FocusMeteringAction.FLAG_AF
+                    or FocusMeteringAction.FLAG_AE
+                    or FocusMeteringAction.FLAG_AWB)
             .setAutoCancelDuration(5, TimeUnit.SECONDS).build()
+
         cameraControl?.startFocusAndMetering(action)
     }
 
@@ -109,11 +116,9 @@ class CameraHandler(
     }
 
     fun toggleFlash() {
-        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF) {
+        flashMode = if (flashMode ==ImageCapture.FLASH_MODE_OFF){
             ImageCapture.FLASH_MODE_ON
-        } else {
-            ImageCapture.FLASH_MODE_OFF
-        }
+        } else { ImageCapture.FLASH_MODE_OFF }
         imageCapture?.flashMode = flashMode
         flashModeChanged?.invoke(flashMode)
     }

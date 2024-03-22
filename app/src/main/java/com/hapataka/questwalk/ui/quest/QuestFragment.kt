@@ -79,14 +79,11 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             },
 
             onClickView =  {keyWord ->
-                val dialog = QuestDialog(keyWord, keywords) {
-                    Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
-                }
+                val dialog = QuestDialog(keyWord, keywords)
 
                 dialog.show(parentFragmentManager, "QuestDialog")
             }
         )
         binding.revQuest.adapter = questListAdapter
-//        binding.revQuest.addItemDecoration(QuestRecyclerViewDecoration(requireContext()))
     }
 }

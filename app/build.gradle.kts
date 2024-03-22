@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
 plugins {
     kotlin("kapt")
     id("com.android.application")
@@ -7,6 +10,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
 }
+
 
 android {
     namespace = "com.hapataka.questwalk"
@@ -20,6 +24,8 @@ android {
         versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String","weather_key", gradleLocalProperties(rootDir).getProperty("WEATHER_API_KEY"))
     }
 
     buildTypes {
@@ -104,11 +110,8 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.2")
     implementation("androidx.camera:camera-extensions:1.3.2")
 
-    //Image Cropper
-    implementation("com.vanniktech:android-image-cropper:4.3.3")
-
-    //Gson Converter
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    //openCV
+    implementation("com.quickbirdstudios:opencv:4.5.2")
 
     //ProgressBar
     implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")

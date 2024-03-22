@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -38,12 +37,10 @@ import com.hapataka.questwalk.ui.mainactivity.PermissionDialog
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
 import com.hapataka.questwalk.ui.mainactivity.QUEST_STOP
 import com.hapataka.questwalk.ui.mainactivity.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -114,8 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
             btnWheather.setOnClickListener {
-                "준비중이에요".showToast()
-                Log.d(TAG, "uid: ${UserInfo.uid}")
+                navController.navigate(R.id.action_frag_home_to_weatherFragment)
             }
             ibCamera.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_camera)
@@ -179,13 +175,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun activePositive() {
-        mainViewModel.stopPlay { uid, registerAt ->
-            val bundle = Bundle().apply {
-                putString(USER_ID, uid)
-                putString(REGISTER_TIME, registerAt)
-                putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+        lifecycleScope.launch {
+            mainViewModel.stopPlay { uid, registerAt ->
+                val bundle = Bundle().apply {
+                    putString(USER_ID, uid)
+                    putString(REGISTER_TIME, registerAt)
+                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+                }
+                navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
             }
-            navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
         }
     }
 
