@@ -1,22 +1,18 @@
 package com.hapataka.questwalk.ui.myinfo
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.AuthRepository
-import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
-import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.launch
 
 class MyInfoViewModel(
     private val authRepo: AuthRepository,
-    private val userRepo: UserRepository,
-    private val localRepo: LocalRepository
+    private val userRepo: UserRepository
 ) : ViewModel() {
     private var _userInfo = MutableLiveData<UserEntity>()
     val userInfo: LiveData<UserEntity> get() = _userInfo
@@ -49,7 +45,6 @@ class MyInfoViewModel(
                     callback()
                     return@deleteCurrentUser
                 } else {
-                    Log.i(TAG, "exeption: ${task.exception}")
                     _snackbarMsg.value = "잠시후 다시 시도해주세요"
                     return@deleteCurrentUser
                 }
