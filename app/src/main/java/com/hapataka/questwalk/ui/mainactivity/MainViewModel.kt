@@ -136,6 +136,8 @@ class MainViewModel(
             visibleLoading(SHOW_LOADING)
             setResultHistory(callback, playState == QUEST_SUCCESS)
         }
+        _isStop.value = false
+        _playState.value = QUEST_STOP
         initPlayInfo()
     }
 
