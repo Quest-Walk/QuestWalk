@@ -118,13 +118,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 }
             }
         }
-        cameraViewModel.bitmap.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-            if (toFrag == TO_CAPT_FRAG) {
-                toFrag = TO_HOME_FRAG
-                navController.navigate(R.id.action_frag_camera_to_frag_capture)
-            }
-        }
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -183,12 +177,11 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-                if (toFrag == TO_CAPT_FRAG) {
-                    cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
-                    cameraViewModel.imageProxyToBitmap(image)
-                } else {
+                cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
+                cameraViewModel.imageProxyToBitmap(image)
+                if (toFrag == TO_HOME_FRAG) {
                     mainViewModel.setCaptureImage(
-                        image,
+                        cameraViewModel.getCroppedBitmap(),
                         { navController.popBackStack() },
                         {
                             binding.ivCapturedImage.load(it)
@@ -196,6 +189,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                         },
                         {binding.ivCapturedImage.gone()}
                     )
+                }
+                else{
+                    toFrag = TO_HOME_FRAG
+                    navController.navigate(R.id.action_frag_camera_to_frag_capture)
                 }
                 image.close()
             }

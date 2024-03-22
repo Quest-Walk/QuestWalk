@@ -78,17 +78,17 @@ class MainViewModel(
     }
 
     fun setCaptureImage(
-        image: ImageProxy,
+        image: Bitmap?,
         navigateCallback: () -> Unit,
         visibleImageCallback: (Bitmap) -> Unit,
         invisibleImageCallback: () -> Unit,
     ) {
+        if(image == null) return
         _isLoading.value = true
 
-        val bitmapImage = imageUtil.setCaptureImage(image)
 
-        visibleImageCallback(bitmapImage)
-        getTextFromOCR(bitmapImage, navigateCallback, invisibleImageCallback)
+        visibleImageCallback(image)
+        getTextFromOCR(image, navigateCallback, invisibleImageCallback)
     }
 
     private fun getTextFromOCR(
