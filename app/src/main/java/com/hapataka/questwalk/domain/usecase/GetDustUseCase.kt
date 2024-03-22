@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.domain.usecase
 
+import android.util.Log
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.TmEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
@@ -10,13 +11,14 @@ class GetDustUseCase(
     private val dustRepo: DustRepository
 ) {
     suspend operator fun invoke(): DustEntity {
-        val fullAddress = locationRepo.getAddress()?.getAddressLine(0) ?: return DustEntity(0,0)
+        val fullAddress = locationRepo.getAddress()
         val address = filterEupMyeonDong(fullAddress)
         val tmQueryMap = requestTmQueryMap(address)
         val tmLocation = dustRepo.getTmLocation(tmQueryMap)
 
         val stationQueryMap = requestStationQueryMap(tmLocation)
         val stationName = dustRepo.getStation(stationQueryMap).stationName
+        Log.d("GetDustUseCase:","$stationName")
 
         val dustQueryMap = requestDustQueryMap(stationName)
         return dustRepo.getDustInfo(dustQueryMap)
@@ -28,7 +30,7 @@ class GetDustUseCase(
                 return it.trim()
             }
         }
-        return "역삼동"
+        return address
     }
 
     private fun requestTmQueryMap(address: String): Map<String, String> {

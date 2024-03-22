@@ -5,13 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.R
 import com.hapataka.questwalk.domain.entity.DustEntity
-import com.hapataka.questwalk.domain.entity.TmEntity
 import com.hapataka.questwalk.domain.entity.WeatherEntity
-import com.hapataka.questwalk.domain.repository.DustRepository
 import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
+import com.hapataka.questwalk.ui.record.TAG
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -26,10 +24,12 @@ class WeatherViewModel (
     private val _dustInfo = MutableLiveData<DustEntity>()
     private val _weatherPreview = MutableLiveData<WeatherPreviewData>()
     private val _isLoading = MutableLiveData<Boolean>()
+    private val _error = MutableLiveData<String>()
     val weatherInfo: LiveData<MutableList<WeatherData>> get() = _weatherInfo
     val dustInfo: LiveData<DustEntity> get() = _dustInfo
     val weatherPreview: LiveData<WeatherPreviewData> get() = _weatherPreview
     val isLoading: LiveData<Boolean> get() = _isLoading
+    val error: LiveData<String> get() = _error
 
 
     init {
@@ -46,23 +46,40 @@ class WeatherViewModel (
 
 
     private suspend fun getWeatherInfo() {
-        _weatherInfo.value = getWeatherUseCase().map {
-            convertWeatherData(it)
-        }.toMutableList()
+        try {
+            _weatherInfo.value = getWeatherUseCase().map {
+                convertWeatherData(it)
+            }.toMutableList()
+        } catch (error: Exception) {
+            _error.value = "잠시후 다시 시도해주세요!"
+            _isLoading.value = false
+            Log.e("WeatherViewModel","WeatherError: $error")
+        }
+
     }
     private suspend fun getDustInfo() {
-        _dustInfo.value = getDustUseCase()
+        try {
+            _dustInfo.value = getDustUseCase()
+        } catch (error: Exception) {
+            _error.value = "잠시후 다시 시도해주세요!"
+            _isLoading.value = false
+            Log.e("WeatherViewModel","DustError: $error")
+        }
+
     }
 
     private fun setWeatherPreview() {
+        if (_error.value != null) return
+
         val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
         val currentWeather = _weatherInfo.value?.first { it.fcstTime == requestTime }
+
         _weatherPreview.value = WeatherPreviewData(
             currentTmp = currentWeather?.temp ?: "0",
             sky = getSkyState(currentWeather?.sky ?: "0"),
             precipType = getPrecipTypeState(currentWeather?.precipType ?: "0"),
-            miseState = getMiseState(_dustInfo.value?.pm10Value ?: 0),
-            choMiseState = getChoMiseState(_dustInfo.value?.pm25Value ?: 0)
+            miseState = getMiseState(_dustInfo.value?.pm10Value ?: -1),
+            choMiseState = getChoMiseState(_dustInfo.value?.pm25Value ?: -1)
         )
         _isLoading.value = false
     }

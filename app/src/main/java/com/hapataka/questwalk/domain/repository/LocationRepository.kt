@@ -7,5 +7,5 @@ interface LocationRepository {
     fun startRequest(callback: (LocationEntity) -> Unit)
     fun finishRequest ()
     suspend fun getCurrent(): LocationEntity
-    suspend fun getAddress(): Address?
+    suspend fun getAddress(): String
 }
