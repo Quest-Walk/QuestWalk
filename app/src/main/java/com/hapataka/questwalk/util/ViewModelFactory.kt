@@ -13,12 +13,11 @@ import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.data.remote.repository.DustRepositoryImpl
 import com.hapataka.questwalk.data.remote.repository.WeatherRepositoryImpl
-import com.hapataka.questwalk.domain.usecase.GetTmLocationUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
-import com.hapataka.questwalk.data.map.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.data.pref.repository.LocalRepositoryImpl
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
 import com.hapataka.questwalk.ui.mainactivity.ImageUtil
@@ -80,7 +79,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
 
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
             return WeatherViewModel(GetWeatherUseCase(weatherRepo, locationRepo),
-                GetTmLocationUseCase(locationRepo, dustRepo), dustRepo) as T
+                GetDustUseCase(locationRepo, dustRepo)) as T
         }
 
         throw IllegalArgumentException("unknown view model")
