@@ -5,7 +5,9 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +15,7 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.ui.quest.QuestData
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 class QuestListAdapter(

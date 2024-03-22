@@ -25,6 +25,7 @@ class SignUpViewModel(
                 }
             }
         }
+
     }
 
     fun logByEmailAndPw(email: String, pw: String, onSuccess: () -> Unit, onError: () -> Unit) {

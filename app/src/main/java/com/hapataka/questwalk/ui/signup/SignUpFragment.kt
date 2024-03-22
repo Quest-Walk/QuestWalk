@@ -14,7 +14,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -22,14 +21,13 @@ import androidx.transition.TransitionInflater
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.showErrMsg
 
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
     private val viewModel: SignUpViewModel by viewModels { ViewModelFactory(requireContext()) }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var isCanClick = true
 
@@ -84,15 +82,15 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                     return@setOnClickListener
                 }
 
-                viewModel.registerByEmailAndPw(emailId, pw, { moveHomeWithLogin(emailId, pw) }) {
-                    mainViewModel.setSnackBarMsg("이미 가입된 아이디입니다.")
-                    isCanClick = true
-                }
+                viewModel.registerByEmailAndPw(emailId, pw,
+                    { moveHomeWithLogin(emailId, pw) },
+                    { ("이미 가입된 아이디입니다.").showSnackbar(requireView())
+                    isCanClick = true })
             }
 
             Handler(Looper.getMainLooper()).postDelayed({
                 isCanClick = true
-            }, 1500)
+            },1500)
         }
     }
 
@@ -137,14 +135,13 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
     private fun moveHomeWithLogin(id: String, pw: String) {
         viewModel.logByEmailAndPw(id, pw,
-            { navigateToOnBoarding() }, { mainViewModel.setSnackBarMsg("오류가 발생해 로그인을 할 수 없습니다.") })
+            { navigateToOnBoarding() }, { ("오류가 발생해 로그인을 할 수 없습니다.").showSnackbar(requireView()) })
     }
 
     private fun navigateToOnBoarding() {
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 
-        exitTransition =
-            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+        exitTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
         navController.navigate(R.id.action_frag_sign_up_to_frag_on_boarding)
         navGraph.setStartDestination(R.id.frag_home)
         navController.graph = navGraph
@@ -187,14 +184,12 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
             binding.etSignUpCheckPw
         )
 
-        editTexts.forEach { editText ->
+        editTexts.forEach {editText ->
             editText.doAfterTextChanged {
                 if (editTexts.any { it.text.isEmpty() }) {
-                    binding.btnSignUp.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.gray))
+                    binding.btnSignUp.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.gray))
                 } else {
-                    binding.btnSignUp.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.main_purple))
+                    binding.btnSignUp.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.main_purple))
                 }
             }
         }

@@ -10,7 +10,7 @@ import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.login.showSnackbar
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
@@ -26,7 +26,6 @@ import com.hapataka.questwalk.util.extentions.convertTime
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val viewModel by viewModels<MyInfoViewModel> { ViewModelFactory(requireContext()) }
-    private val mainViewModel: MainViewModel by viewModels { ViewModelFactory(requireContext()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
@@ -49,7 +48,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     private fun setObserver() {
         with(viewModel) {
             snackbarMsg.observe(viewLifecycleOwner) { msg ->
-                mainViewModel.setSnackBarMsg(msg)
+                msg.showSnackbar(requireView())
             }
             userInfo.observe(viewLifecycleOwner) { userInfo ->
                 updateViewsWithUserInfo(userInfo)
@@ -134,7 +133,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             if (userId.isNotEmpty()) {
                 updateUserInfo(userId, characterData.num)
             } else {
-                mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
+                "로그인 상태를 확인할 수 없습니다.".showSnackbar(requireView())
             }
         }
     }
@@ -142,8 +141,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     private fun updateUserInfo(userId: String, characterNum: Int) {
         val nickName = binding.tvPlayerName.text.toString()
         viewModel.setUserInfo(userId, characterNum, nickName,
-            onSuccess = { mainViewModel.setSnackBarMsg("변경완료") },
-            onError = { mainViewModel.setSnackBarMsg("정보 변경에 실패하였습니다.") })
+            onSuccess = { "변경완료".showSnackbar(requireView()) },
+            onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
     }
 
     private fun changeName() {
@@ -168,10 +167,10 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             val charNum = characterNum ?: 1
             viewModel.setUserInfo(uid, charNum, newNickname,
                 onSuccess = {
-                    mainViewModel.setSnackBarMsg("닉네임이 성공적으로 변경되었습니다.")
+                    ("닉네임이 성공적으로 변경되었습니다.").showSnackbar(requireView())
                     binding.tvPlayerName.text = newNickname
                 },
-                onError = { mainViewModel.setSnackBarMsg("정보 변경에 실패하였습니다.") })
+                onError = { "정보 변경에 실패하였습니다.".showSnackbar(requireView()) })
         }
     }
 }

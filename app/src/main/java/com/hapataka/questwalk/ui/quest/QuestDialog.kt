@@ -17,6 +17,7 @@ import com.hapataka.questwalk.util.ViewModelFactory
 class QuestDialog(
     private val keyWord: String,
     private val successKeywords: MutableList<String>,
+    private val callback: (String) -> Unit
 ): DialogFragment() {
     private val binding by lazy { DialogQuestBinding.inflate(layoutInflater) }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
@@ -32,6 +33,7 @@ class QuestDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setDialogSize()
         initButtons()
         binding.tvKeyword.text = keyWord

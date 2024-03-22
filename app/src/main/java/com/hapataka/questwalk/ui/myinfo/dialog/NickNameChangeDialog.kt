@@ -6,18 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
-import com.hapataka.questwalk.util.ViewModelFactory
+import com.hapataka.questwalk.ui.login.showSnackbar
 
 class NickNameChangeDialog (val prevName: String) : DialogFragment() {
     private var _binding: DialogEditNicknameBinding? = null
     private val binding get() = _binding!!
     var onNicknameChanged: ((newNickname: String) -> Unit)? = null
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = DialogEditNicknameBinding.inflate(inflater, container, false)
@@ -37,7 +33,7 @@ class NickNameChangeDialog (val prevName: String) : DialogFragment() {
             val newNickName = binding.etChangeNickname.text.toString().trim()
 
             if (newNickName == prevName) {
-                view?.let { mainViewModel.setSnackBarMsg("변경된 정보가 없습니다.") }
+                view?.let { "변경된 정보가 없습니다.".showSnackbar(it) }
                 dismiss()
             } else {
                 onNicknameChanged?.invoke(newNickName)

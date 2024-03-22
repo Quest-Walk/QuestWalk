@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.ui.onboarding
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ class ChooseCharacterDialog : DialogFragment() {
     var listener: OnCharacterSelectedListener? = null
     private val binding get() = _binding!!
     private lateinit var adapter : ChooseCharacterAdapter
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = DialogChooseCharacterBinding.inflate(inflater,container,false)
@@ -40,11 +42,13 @@ class ChooseCharacterDialog : DialogFragment() {
         recyclerView.layoutManager = GridLayoutManager(context,2)
     }
 
+
     private fun close() {
         binding.btnClose.setOnClickListener {
             dismiss()
         }
     }
+
 
     override fun onDestroyView() {
         _binding = null

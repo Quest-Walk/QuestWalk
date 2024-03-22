@@ -6,11 +6,12 @@
 
     <ImageView
         android:id="@+id/iv_thumbnail"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:background="@drawable/frame_ractangle_coner_radius_5dp"
         android:clipToOutline="true"
         android:scaleType="centerCrop"
+        android:src="@drawable/dummy_record_thumbnail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

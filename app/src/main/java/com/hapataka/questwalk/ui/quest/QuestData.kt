@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.quest
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+
 @Parcelize
 data class QuestData(
     val keyWord: String = "",

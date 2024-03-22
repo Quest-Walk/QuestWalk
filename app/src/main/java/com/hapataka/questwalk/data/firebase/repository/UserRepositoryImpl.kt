@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.data.firebase.repository
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -12,6 +13,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepository
+import com.hapataka.questwalk.ui.record.TAG
 import com.hapataka.questwalk.util.extentions.decryptECB
 import com.hapataka.questwalk.util.extentions.encryptECB
 import kotlinx.coroutines.Dispatchers
@@ -32,24 +34,26 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun updateHistoryInfo(userId: String, result: HistoryEntity) {
         withContext(Dispatchers.IO) {
             val currentDocument = userCollection.document(userId)
-            val currentInfo = getInfo(userId)
+            var currentInfo = getInfo(userId)
             var userStack = hashMapOf<String, Any>()
 
-            if (result is ResultEntity) {
-                val totalTime = if (currentInfo.totalTime.isEmpty()) 0L else currentInfo.totalTime.toLong()
+            Log.i(TAG, "currentInfo: $currentInfo")
+            Log.i(TAG, "result: $result")
 
+            if (result is ResultEntity) {
                 userStack = hashMapOf(
                     "histories" to FieldValue.arrayUnion(covertToUploadObject(result)),
                     "totalDistance" to currentInfo.totalDistance + result.distance,
                     "totalStep" to currentInfo.totalStep + result.step,
-                    "totalTime" to totalTime + result.time
+                    "totalTime" to currentInfo.totalTime.toLong() + result.time
                 )
+                Log.d(TAG, "userStack: $userStack")
             }
 
             if (result is AchieveResultEntity) {
                 userStack = hashMapOf("histories" to FieldValue.arrayUnion(result))
             }
-            currentDocument.update(userStack).await()
+            currentDocument.update(userStack)
         }
     }
 
@@ -143,7 +147,7 @@ class UserRepositoryImpl : UserRepository {
     }
 
     private fun convertToHistories(items: List<Map<String, Any>>): MutableList<HistoryEntity> {
-        val resultList = mutableListOf<HistoryEntity>()
+        var resultList = mutableListOf<HistoryEntity>()
 
         items.forEach { item ->
             when (item["type"]) {

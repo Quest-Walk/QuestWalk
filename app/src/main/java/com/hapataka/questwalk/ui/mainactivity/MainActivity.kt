@@ -11,8 +11,10 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val authRepo by lazy { AuthRepositoryImpl() }
@@ -28,21 +30,20 @@ class MainActivity : AppCompatActivity() {
         setObserver()
     }
 
-    private fun setObserver() {
-        mainViewModel.snackBarMsg.observe(this) {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-        }
-        mainViewModel.isLoading.observe(this) { isLoading ->
-            if (isLoading) {
-                LoadingDialogFragment().show(supportFragmentManager, "loadingDialog")
-            } else {
-                val loadingFragment =
-                    supportFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
-                loadingFragment?.dismiss()
-            }
+private fun setObserver() {
+    mainViewModel.snackBarMsg.observe(this) {
+        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+    }
+    mainViewModel.isLoading.observe(this) { isLoading ->
+        if (isLoading) {
+            LoadingDialogFragment().show(supportFragmentManager, "loadingDialog")
+        } else {
+            val loadingFragment =
+                supportFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
+            loadingFragment?.dismiss()
         }
     }
-
+}
     private fun setStartDestination() {
         lifecycleScope.launch {
             val currentUser = authRepo.getCurrentUserUid()

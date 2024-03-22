@@ -1,12 +1,16 @@
 package com.hapataka.questwalk.ui.questdetail
 
+import android.app.Dialog
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogFullImageBinding
