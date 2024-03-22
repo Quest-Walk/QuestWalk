@@ -42,7 +42,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
-    private val cameraViewModel: CameraViewModel by activityViewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels{ViewModelFactory(requireContext())}
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
@@ -142,10 +142,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     }
 
     private fun flashImageSet() {
-        cameraHandler.flashModeChanged = {flashMode ->
+        cameraHandler.flashModeChanged = { flashMode ->
             val flashIcon = if (flashMode == ImageCapture.FLASH_MODE_ON) {
                 R.drawable.btn_flash_on
-            } else{
+            } else {
                 R.drawable.btn_flash
             }
             binding.ivFlash.setImageResource(flashIcon)
@@ -163,6 +163,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                         mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
                         cameraHandler.capturePhoto(imageCaptureCallback())
                     }
+
                     MotionEvent.ACTION_UP -> {
                         this.load(R.drawable.btn_capture)
                         v.performClick()
@@ -177,7 +178,12 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
-                cameraViewModel.calculateAcc(binding.pvPreview.width,binding.pvPreview.height,image,0.8)
+                cameraViewModel.calculateAcc(
+                    binding.pvPreview.width,
+                    binding.pvPreview.height,
+                    image,
+                    0.8
+                )
                 cameraViewModel.imageProxyToBitmap(image)
                 if (toFrag == TO_HOME_FRAG) {
                     mainViewModel.setCaptureImage(
@@ -188,10 +194,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                             binding.ivCapturedImage.load(it)
                             binding.ivCapturedImage.visible()
                         },
-                        {binding.ivCapturedImage.gone()}
+                        { binding.ivCapturedImage.gone() }
                     )
-                }
-                else{
+                } else {
                     toFrag = TO_HOME_FRAG
                     navController.navigate(R.id.action_frag_camera_to_frag_capture)
                 }

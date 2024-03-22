@@ -17,17 +17,15 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text.Element
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.hapataka.questwalk.ui.mainactivity.ImageUtil
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
-import javax.inject.Inject
 
-@HiltViewModel
-class CameraViewModel @Inject constructor(private val repository: CameraRepository) : ViewModel() {
+
+class CameraViewModel (private val imageUtil: ImageUtil) : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
     val bitmap: LiveData<Bitmap?> get() = _bitmap
     private var _isSucceed: MutableLiveData<Boolean?> = MutableLiveData()
@@ -35,7 +33,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     private var resultListByMLKit: MutableList<Element> = mutableListOf()
 
-    var file: File? = null
     // Crop event
 
     var isCropped = true
@@ -117,13 +114,8 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
 
     fun initBitmap() {
         _bitmap.value = null
-        file = null
         resultListByMLKit.clear()
         _isSucceed.value = null
-    }
-
-    fun deleteBitmapByFile() {
-        repository.deleteBitmap()
     }
 
     fun getCroppedBitmap() = croppedBitmap
@@ -146,7 +138,7 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
     private suspend fun processImage(keyword: String) = withContext(Dispatchers.IO) {
         val image: InputImage
         image = if (isCropped) {
-            croppedBitmap = repository.preProcessBitmap(croppedBitmap)
+            croppedBitmap = imageUtil.preProcessBitmap(croppedBitmap)
             InputImage.fromBitmap(croppedBitmap!!, 0)
         } else {
             InputImage.fromBitmap(bitmap.value!!, 0)
@@ -209,12 +201,6 @@ class CameraViewModel @Inject constructor(private val repository: CameraReposito
                 return@forEach
             }
             Log.d("ocrResultSimilar", similarityObj.similarity(word, keyword).toString())
-        }
-        if (isValidated) {
-            file = repository.saveBitmap(bitmap.value!!, "resultImage.png")
-        } else {
-            file = null
-            repository.deleteBitmap()
         }
         return isValidated
     }

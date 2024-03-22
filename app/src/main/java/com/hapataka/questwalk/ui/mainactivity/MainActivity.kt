@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     val navController by lazy { navHost.navController }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
     private val mainViewModel: MainViewModel by viewModels { ViewModelFactory(this) }
-
+    private val cameraViewModel: CameraViewModel by viewModels { ViewModelFactory(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
