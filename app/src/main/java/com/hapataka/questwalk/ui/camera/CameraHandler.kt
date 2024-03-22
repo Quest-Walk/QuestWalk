@@ -56,7 +56,8 @@ class CameraHandler(
                 )
             }
 
-        imageCapture = ImageCapture.Builder().build()
+        //imageCapture = ImageCapture.Builder().build()
+        setHighQualityCapture()
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
         try {
@@ -72,7 +73,14 @@ class CameraHandler(
             Log.d("CameraX", "initCamera Fail", e)
         }
     }
-    //
+
+    private fun setHighQualityCapture() {
+        imageCapture = ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+    //        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setFlashMode(flashMode).build()
+    }
+
 
 
     private fun handleZoomAndTap() {
