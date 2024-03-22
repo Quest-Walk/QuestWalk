@@ -45,7 +45,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(localRepo) as T
+            return LoginViewModel(localRepo, authRepo) as T
         }
 
         if (modelClass.isAssignableFrom(SignUpViewModel::class.java)) {
