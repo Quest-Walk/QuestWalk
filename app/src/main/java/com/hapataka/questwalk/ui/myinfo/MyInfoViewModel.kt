@@ -33,15 +33,13 @@ class MyInfoViewModel(
         }
     }
 
-    fun deleteCurrentUser(pw: String, callback: () -> Unit) {
+    fun deleteCurrentUser(callback: () -> Unit) {
         viewModelScope.launch {
-            val uid = authRepo.getCurrentUserUid()
 
-            getLoginInfo(pw)
-            authRepo.deleteCurrentUser { task ->
+            authRepo.deleteCurrentUser() { task ->
                 if (task.isSuccessful) {
                     _snackbarMsg.value = "탈퇴 완료"
-                    deleteUserData(uid)
+                    deleteUserData()
                     callback()
                     return@deleteCurrentUser
                 } else {
@@ -52,16 +50,21 @@ class MyInfoViewModel(
         }
     }
 
-    private suspend fun getLoginInfo(pw: String) {
-        val id = authRepo.getCurrentUserEmail()
+    fun reauthCurrentUser(pw: String, positiveCallback: () -> Unit, negativeCallback: () -> Unit) {
+        viewModelScope.launch {
+            val result = authRepo.reauth(pw)
 
-        authRepo.loginByEmailAndPw(id, pw) {
+            if (result) {
+                positiveCallback()
+            } else {
+                negativeCallback()
+            }
         }
     }
 
-    private fun deleteUserData(uid: String) {
+    private fun deleteUserData() {
         viewModelScope.launch {
-            userRepo.deleteUserData(uid)
+            userRepo.deleteUserData(UserInfo.uid)
         }
     }
 

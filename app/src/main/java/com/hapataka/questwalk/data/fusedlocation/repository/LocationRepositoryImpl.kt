@@ -25,6 +25,8 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
     }
     private lateinit var locationCallback: LocationCallback
     private var prevLocation: Location? = null
+    private var badLocCount: Int = 0
+    private var goodLocCount: Int = 0
     private val geocoder = Geocoder(context)
 
     @SuppressLint("MissingPermission")
@@ -37,19 +39,47 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                         if (prevLocation != null) prevLocation!! else currentLocation
                     )
 
+                if (prevLocation != null) {
+                    prevLocation = result.lastLocation
+                }
+
+                if(badLocCount<5) {
+                    if (currentLocation.hasAccuracy().not()) {
+                        badLocCount++
+                        return
+                    }
+
+                    if (currentLocation.accuracy > 30) {
+                        badLocCount++
+                        return
+                    }
+
+                    if (currentLocation.accuracy * 1.5 < moveDistance) {
+                        badLocCount++
+                        return
+                    }
+                    badLocCount=0
+                }
+                else {
+                    if (currentLocation.hasAccuracy().not()) {
+                        goodLocCount=0
+                        return
+                    }
+
+                    if (currentLocation.accuracy > 30) {
+                        goodLocCount=0
+                        return
+                    }
+
+                    goodLocCount++
+
+                    if(goodLocCount>=5){
+                        badLocCount=0
+                        goodLocCount=0
+                    }
+                }
+
                 prevLocation = result.lastLocation
-
-                if (currentLocation.hasAccuracy().not()) {
-                    return
-                }
-
-                if (currentLocation.accuracy > 30) {
-                    return
-                }
-
-                if (currentLocation.accuracy * 1.5 < moveDistance) {
-                    return
-                }
 
                 callback(
                     LocationEntity(

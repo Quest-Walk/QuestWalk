@@ -45,30 +45,35 @@
             style="@style/pixel_body_default"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/background_nagative_button"
             android:paddingVertical="12dp"
             android:text="취소"
             android:textAlignment="center"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_confirm"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_input_pw" />
+            app:layout_constraintTop_toBottomOf="@id/et_input_pw"
+            app:layout_constraintWidth_percent="0.43" />
 
         <TextView
             android:id="@+id/btn_confirm"
             style="@style/pixel_body_default"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/background_positive_button"
             android:paddingVertical="12dp"
             android:text="확인"
             android:textAlignment="center"
-            android:textColor="@color/red"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btn_cancel"
-            app:layout_constraintTop_toBottomOf="@id/et_input_pw" />
+            app:layout_constraintTop_toTopOf="@id/btn_cancel"
+            app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
+            app:layout_constraintWidth_percent="0.43" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

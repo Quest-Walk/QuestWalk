@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import java.util.Properties
 
 plugins {
     kotlin("kapt")
@@ -12,6 +11,7 @@ plugins {
 }
 
 
+
 android {
     namespace = "com.hapataka.questwalk"
     compileSdk = 34
@@ -20,12 +20,16 @@ android {
         applicationId = "com.hapataka.questwalk"
         minSdk = 26
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.2"
+        versionCode = 9
+        versionName = "1.23"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String","weather_key", gradleLocalProperties(rootDir).getProperty("WEATHER_API_KEY"))
+        buildConfigField(
+            "String",
+            "weather_key",
+            gradleLocalProperties(rootDir).getProperty("WEATHER_API_KEY")
+        )
     }
 
     buildTypes {
@@ -112,6 +116,11 @@ dependencies {
 
     //openCV
     implementation("com.quickbirdstudios:opencv:4.5.2")
+
+    // Normal
+    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
+    // Coroutine
+    implementation("io.github.ParkSangGwon:tedpermission-coroutine:3.3.0")
 
     //ProgressBar
     implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")
