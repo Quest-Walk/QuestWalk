@@ -15,12 +15,10 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.databinding.ItemQuestFooterBinding
-import com.hapataka.questwalk.databinding.ItemQuestHeaderBinding
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.util.OnSingleClickListener
 import kotlin.math.roundToInt
 
-private const val HEADER = 0
 private const val ITEM = 1
 private const val FOOTER = 2
 class QuestListAdapter(
@@ -31,7 +29,6 @@ class QuestListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when(viewType) {
-            HEADER -> HeaderViewHolder(ItemQuestHeaderBinding.inflate(layoutInflater, parent, false))
             FOOTER -> FooterViewHolder(ItemQuestFooterBinding.inflate(layoutInflater, parent, false))
             else -> QuestViewHolder(ItemQuestBinding.inflate(layoutInflater, parent, false))
         }
@@ -48,12 +45,10 @@ class QuestListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == 0) {
-            return HEADER
-        }
         if (position == currentList.size - 1 ) {
             return FOOTER
         }
+
         return ITEM
     }
 
@@ -80,16 +75,21 @@ class QuestListAdapter(
             with(binding) {
                 if (completeRate > 50) {
                     tvSolveUnder.visibility = View.VISIBLE
-                    tvSolveUnder.text = "$completeRate % 달성"
+                    tvSolveUnder.text = "$completeRate %달성"
                 } else {
                     tvSolveOver.visibility = View.VISIBLE
-                    tvSolveOver.text = "$completeRate % 달성"
+                    tvSolveOver.text = "$completeRate %달성"
                 }
                 tvKeyword.text = item.keyWord
                 ivLevel.load(leveImg)
 
                 binding.progress.setProgressPercentage(0.0, false)
-                binding.progress.setProgressPercentage(completeRate, true)
+                if (completeRate < 5.1) {
+                    binding.progress.setProgressPercentage(5.0, true)
+                }  else {
+                    binding.progress.setProgressPercentage(completeRate, true)
+                }
+
 
                 btnMore.setOnClickListener {
                     if (item.successItems.isEmpty()) return@setOnClickListener
@@ -106,7 +106,7 @@ class QuestListAdapter(
         }
     }
 
-    inner class HeaderViewHolder(binding: ItemQuestHeaderBinding): RecyclerView.ViewHolder(binding.root) {}
+//    inner class HeaderViewHolder(binding: ItemQuestHeaderBinding): RecyclerView.ViewHolder(binding.root) {}
 
     inner class FooterViewHolder(binding: ItemQuestFooterBinding): RecyclerView.ViewHolder(binding.root) {}
 

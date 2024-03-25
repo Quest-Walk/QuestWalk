@@ -27,7 +27,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun setObserve() {
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
-                val list = mutableListOf(QuestData()) + it + mutableListOf(QuestData())
+                val list = it + mutableListOf(QuestData())
                 questListAdapter.submitList(list)
             }
             successKeywords.observe(viewLifecycleOwner) {
