@@ -17,6 +17,7 @@ import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
@@ -83,26 +84,30 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun initLogoutButton() {
-        binding.btnLogout.setOnClickListener {
-            viewModel.logout {
-                navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                navGraph.setStartDestination(R.id.frag_home)
-                navController.graph = navGraph
-            }
-        }
-    }
-
-    private fun initDropOut() {
-        binding.btnDropOut.setOnClickListener {
-            val dialog = DropOutDialog { pw ->
-                viewModel.deleteCurrentUser(pw) {
+        binding.btnLogout.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                viewModel.logout {
                     navController.navigate(R.id.action_frag_my_info_to_frag_login)
                     navGraph.setStartDestination(R.id.frag_home)
                     navController.graph = navGraph
                 }
             }
-            dialog.show(parentFragmentManager, "dropout_dialog")
-        }
+        })
+    }
+
+    private fun initDropOut() {
+        binding.btnDropOut.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                val dialog = DropOutDialog { pw ->
+                    viewModel.deleteCurrentUser(pw) {
+                        navController.navigate(R.id.action_frag_my_info_to_frag_login)
+                        navGraph.setStartDestination(R.id.frag_home)
+                        navController.graph = navGraph
+                    }
+                }
+                dialog.show(parentFragmentManager, "dropout_dialog")
+            }
+        })
     }
 
     private fun initBackButton() {

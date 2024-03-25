@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.hapataka.questwalk.databinding.ItemQuestBinding
 import com.hapataka.questwalk.databinding.ItemQuestFooterBinding
 import com.hapataka.questwalk.databinding.ItemQuestHeaderBinding
 import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.util.OnSingleClickListener
 import kotlin.math.roundToInt
 
 private const val HEADER = 0
@@ -94,9 +96,12 @@ class QuestListAdapter(
                     onClickMoreText(item, item.allUser)
                 }
 
-                binding.root.setOnClickListener {
-                    onClickView(item.keyWord)
-                }
+                binding.root.setOnClickListener(object : OnSingleClickListener(){
+                    override fun onSingleClick(v: View?) {
+                        Log.d("QuestListAdapter:","Click!!!!!")
+                        onClickView(item.keyWord)
+                    }
+                })
             }
         }
     }
