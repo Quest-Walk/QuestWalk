@@ -71,8 +71,8 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     private fun setDustText(dustInfo: DustEntity) {
         with(binding) {
-            tvMiseValue.text = "${dustInfo.pm10Value} ㎍/㎥"
-            tvChomiseValue.text = "${dustInfo.pm25Value} ㎍/㎥"
+            tvMiseValue.text = if (dustInfo.pm10Value == -1) "통신 장애" else "${dustInfo.pm10Value} ㎍/㎥"
+            tvChomiseValue.text = if (dustInfo.pm25Value == -1) "통신 장애" else "${dustInfo.pm25Value} ㎍/㎥"
         }
     }
 

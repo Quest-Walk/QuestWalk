@@ -17,6 +17,7 @@ import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.ViewModelFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,18 +66,20 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
 
     private fun initLoginButton() {
         with(binding) {
-            btnLogin.setOnClickListener {
-                val id = etLoginId.text.toString()
-                val pw = etLoginPassword.text.toString()
+            btnLogin.setOnClickListener(object : OnSingleClickListener() {
+                override fun onSingleClick(v: View?) {
+                    val id = etLoginId.text.toString()
+                    val pw = etLoginPassword.text.toString()
 
-                viewModel.loginByEmailPassword(
-                    id,
-                    pw,
-                    navigateCallback = { changeStartDestinationWithNavigate(id) },
-                    snackBarMsg = { msg -> showSnackBar(msg) }
-                )
-                hideKeyBoard()
-            }
+                    viewModel.loginByEmailPassword(
+                        id,
+                        pw,
+                        navigateCallback = { changeStartDestinationWithNavigate(id) },
+                        snackBarMsg = { msg -> showSnackBar(msg) }
+                    )
+                    hideKeyBoard()
+                }
+            })
         }
     }
 

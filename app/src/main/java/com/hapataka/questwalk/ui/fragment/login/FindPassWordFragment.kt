@@ -18,6 +18,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentFindPassWordBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.ViewModelFactory
 
 
@@ -39,10 +40,12 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
     }
 
     private fun setUpSendEmailButton() {
-        binding.btnSendEmail.setOnClickListener {
-            sendEmail()
-            hideKeyBoard()
-        }
+        binding.btnSendEmail.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                sendEmail()
+                hideKeyBoard()
+            }
+        })
     }
 
     private fun checkEmailValidity(id: String): Boolean {

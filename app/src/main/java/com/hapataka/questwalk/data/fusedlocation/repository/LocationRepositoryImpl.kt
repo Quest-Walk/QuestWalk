@@ -58,6 +58,7 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                         badLocCount++
                         return
                     }
+                    badLocCount=0
                 }
                 else {
                     if (currentLocation.hasAccuracy().not()) {
@@ -69,9 +70,9 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                         goodLocCount=0
                         return
                     }
-                    else{
-                        goodLocCount++
-                    }
+
+                    goodLocCount++
+
                     if(goodLocCount>=5){
                         badLocCount=0
                         goodLocCount=0
@@ -112,24 +113,5 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
             distance
         )
 
-    }
-
-    @SuppressLint("MissingPermission")
-    override suspend fun getAddress() = withContext(Dispatchers.IO) {
-//        try {
-//            val location = client.lastLocation.await()
-//            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-//            if (!addressList.isNullOrEmpty()) {
-//                addressList[0]
-//            } else {
-//                null
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-        val location = client.lastLocation.await()
-        val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-        addressList?.get(0)?.getAddressLine(0) ?: "No Address"
     }
 }

@@ -15,6 +15,7 @@ import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.ViewModelFactory
 
 class OnBoardingFragment :
@@ -60,28 +61,30 @@ class OnBoardingFragment :
     }
 
     private fun goMain() {
-        binding.btnComplete.setOnClickListener {
-            hideKeyBoard()
+        binding.btnComplete.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                hideKeyBoard()
 
-            val nickName = binding.etNickname.text.toString()
+                val nickName = binding.etNickname.text.toString()
 
-            if (nickName.isEmpty()) {
-                mainViewModel.setSnackBarMsg("닉네임을 입력해 주세요")
-                return@setOnClickListener
-            }
+                if (nickName.isEmpty()) {
+                    mainViewModel.setSnackBarMsg("닉네임을 입력해 주세요")
+                    return@onSingleClick
+                }
 
-            viewModel.getCurrentUserId { userId ->
-                if (userId.isNotEmpty()) {
-                    viewModel.setUserInfo(userId,
-                        characterNum,
-                        nickName,
-                        { navigateGoHome() },
-                        onError = { error -> mainViewModel.setSnackBarMsg(error) })
-                } else {
-                    mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
+                viewModel.getCurrentUserId { userId ->
+                    if (userId.isNotEmpty()) {
+                        viewModel.setUserInfo(userId,
+                            characterNum,
+                            nickName,
+                            { navigateGoHome() },
+                            onError = { error -> mainViewModel.setSnackBarMsg(error) })
+                    } else {
+                        mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
+                    }
                 }
             }
-        }
+        })
     }
 
     private fun navigateGoHome() {

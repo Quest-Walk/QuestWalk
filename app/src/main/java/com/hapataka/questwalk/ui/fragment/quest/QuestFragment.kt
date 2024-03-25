@@ -2,10 +2,10 @@ package com.hapataka.questwalk.ui.fragment.quest
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.fragment.quest.adapter.QuestListAdapter
@@ -26,7 +26,8 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun setObserve() {
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
-                questListAdapter.submitList(it)
+                val list = mutableListOf(QuestData()) + it + mutableListOf(QuestData())
+                questListAdapter.submitList(list)
             }
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
@@ -36,7 +37,8 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initViews() {
         initBackButton()
-        initSpinner()
+//        initSpinner()
+        initTabButton()
         initCompleteButton()
         initQuestRecyclerView()
         binding.innerContainer.setPadding()
@@ -49,22 +51,38 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
         }
     }
 
-    private fun initSpinner() {
-        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
-            questViewModel.filterLevel(Index)
+    private fun initTabButton() {
+        with(binding) {
+            val tabList = mutableListOf(tvAll, tvLv1, tvLv2, tvLv3)
+
+            binding.tvAll.isSelected = true
+            tabList.forEachIndexed { index, tab ->
+                tab.setOnClickListener {
+                    questViewModel.filterLevel(index)
+                    tabList.map { it.isSelected = false }
+                    tab.isSelected = !tab.isSelected
+                }
+            }
         }
     }
 
+//    private fun initSpinner() {
+//        binding.spinnerLevel.selectItemByIndex(0)
+//        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
+//            questViewModel.filterLevel(Index)
+//        }
+//    }
+
     private fun initCompleteButton() {
-        binding.constrainComplete.setOnClickListener {
-            if (binding.ivCheck.isVisible) {
-                binding.ivCheck.visibility = View.INVISIBLE
-                questViewModel.filterComplete(false)
-            } else {
-                binding.ivCheck.visibility = View.VISIBLE
-                questViewModel.filterComplete(true)
-            }
-        }
+//        binding.constrainComplete.setOnClickListener {
+//            if (binding.ivCheck.isVisible) {
+//                binding.ivCheck.visibility = View.INVISIBLE
+//                questViewModel.filterComplete(false)
+//            } else {
+//                binding.ivCheck.visibility = View.VISIBLE
+//                questViewModel.filterComplete(true)
+//            }
+//        }
     }
 
     private fun initQuestRecyclerView() {
@@ -85,5 +103,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             }
         )
         binding.revQuest.adapter = questListAdapter
+        binding.revQuest.itemAnimator = null
     }
 }

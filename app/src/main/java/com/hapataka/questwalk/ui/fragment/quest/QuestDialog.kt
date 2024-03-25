@@ -64,5 +64,6 @@ class QuestDialog(
 
         dialog?.window?.setLayout(dialogWidth, dialogHeight)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
+        dialog?.setCancelable(false)
     }
 }

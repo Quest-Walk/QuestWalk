@@ -121,4 +121,10 @@ dependencies {
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
     // Coroutine
     implementation("io.github.ParkSangGwon:tedpermission-coroutine:3.3.0")
+
+    //ProgressBar
+    implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")
+
+    //Proj4j
+    implementation ("org.locationtech.proj4j:proj4j:1.3.0")
 }

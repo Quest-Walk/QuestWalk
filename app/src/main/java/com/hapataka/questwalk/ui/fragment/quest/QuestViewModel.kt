@@ -77,14 +77,14 @@ class QuestViewModel : ViewModel() {
     }
 
     private suspend fun getSuccessKeywords() {
-            val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess.not() }
-            val successKeywords = successResults.map { it.quest }
+        val successResults = userRepo.getResultHistory(authRepo.getCurrentUserUid()).filter { it.isSuccess }
+        val successKeywords = successResults.map { it.quest }
 
-            _successKeywords.value = successKeywords.toMutableList()
+        _successKeywords.value = successKeywords.toMutableList()
     }
 
     private suspend fun getAllUserSize() {
-            allUser = userRepo.getAllUserSize()
+        allUser = userRepo.getAllUserSize()
     }
 
     private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {

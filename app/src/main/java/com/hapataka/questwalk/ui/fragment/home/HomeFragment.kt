@@ -40,6 +40,7 @@ import com.hapataka.questwalk.ui.fragment.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.fragment.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.fragment.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -124,9 +125,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun initQuestButton() {
-        binding.btnToggleQuestState.setOnClickListener {
-            mainViewModel.togglePlay()
-        }
+        binding.btnToggleQuestState.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                mainViewModel.togglePlay()
+            }
+        })
     }
 
     private fun setObserver() {
