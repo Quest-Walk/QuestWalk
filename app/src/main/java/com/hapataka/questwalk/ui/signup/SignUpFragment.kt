@@ -24,6 +24,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.showErrMsg
 
@@ -62,34 +63,35 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
     private fun initSignUpButton() {
         with(binding) {
-            btnSignUp.setOnClickListener {
-                hideKeyBoard()
-                if (!isCanClick) return@setOnClickListener
-                isCanClick = false
+            btnSignUp.setOnClickListener(object : OnSingleClickListener() {
+                override fun onSingleClick(v: View?) {
+                    hideKeyBoard()
+                    if (!isCanClick) return@onSingleClick
+                    isCanClick = false
 
-                val emailId = etSignUpId.text.toString()
-                val pw = etSignUpPw.text.toString()
-                val pwCheck = etSignUpCheckPw.text.toString()
+                    val emailId = etSignUpId.text.toString()
+                    val pw = etSignUpPw.text.toString()
+                    val pwCheck = etSignUpCheckPw.text.toString()
 
 
-                if (checkEmailValidity(emailId)) {
-                    etSignUpId.requestFocus()
-                    isCanClick = true
-                    return@setOnClickListener
+                    if (checkEmailValidity(emailId)) {
+                        etSignUpId.requestFocus()
+                        isCanClick = true
+                        return@onSingleClick
+                    }
+
+                    if (checkPwValidity(pw, pwCheck)) {
+                        etSignUpPw.requestFocus()
+                        isCanClick = true
+                        return@onSingleClick
+                    }
+
+                    viewModel.registerByEmailAndPw(emailId, pw, { moveHomeWithLogin(emailId, pw) }) {
+                        mainViewModel.setSnackBarMsg("이미 가입된 아이디입니다.")
+                        isCanClick = true
+                    }
                 }
-
-                if (checkPwValidity(pw, pwCheck)) {
-                    etSignUpPw.requestFocus()
-                    isCanClick = true
-                    return@setOnClickListener
-                }
-
-                viewModel.registerByEmailAndPw(emailId, pw, { moveHomeWithLogin(emailId, pw) }) {
-                    mainViewModel.setSnackBarMsg("이미 가입된 아이디입니다.")
-                    isCanClick = true
-                }
-            }
-
+            })
             Handler(Looper.getMainLooper()).postDelayed({
                 isCanClick = true
             }, 1500)

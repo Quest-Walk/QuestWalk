@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModelProvider
 import com.hapataka.questwalk.data.cloudvision.repository.OcrRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AchieveItemRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.data.firebase.repository.EncryptionKeyRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.ImageRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.data.fusedlocation.repository.LocationRepositoryImpl
+import com.hapataka.questwalk.data.pref.repository.LocalRepositoryImpl
 import com.hapataka.questwalk.data.remote.repository.DustRepositoryImpl
 import com.hapataka.questwalk.data.remote.repository.WeatherRepositoryImpl
-import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
-import com.hapataka.questwalk.data.pref.repository.LocalRepositoryImpl
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.usecase.GetDustUseCase
+import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.home.HomeViewModel
 import com.hapataka.questwalk.ui.login.LoginViewModel
@@ -25,8 +26,8 @@ import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.MyInfoViewModel
 import com.hapataka.questwalk.ui.record.RecordViewModel
 import com.hapataka.questwalk.ui.result.ResultViewModel
-import com.hapataka.questwalk.ui.weather.WeatherViewModel
 import com.hapataka.questwalk.ui.signup.SignUpViewModel
+import com.hapataka.questwalk.ui.weather.WeatherViewModel
 
 class ViewModelFactory() : ViewModelProvider.Factory {
     private lateinit var locationRepo: LocationRepository
@@ -46,6 +47,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         val dustRepo = DustRepositoryImpl()
         val ocrRepo = OcrRepositoryImpl()
         val achieveItemRepo = AchieveItemRepositoryImpl()
+        val encryptRepo = EncryptionKeyRepositoryImpl()
 
 
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
@@ -69,7 +71,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(authRepo,userRepo) as T
+            return HomeViewModel(authRepo,userRepo, encryptRepo) as T
         }
 
         if (modelClass.isAssignableFrom(ResultViewModel::class.java)) {

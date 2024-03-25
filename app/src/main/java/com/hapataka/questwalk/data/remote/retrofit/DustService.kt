@@ -16,9 +16,4 @@ interface DustService {
     suspend fun getStation(
         @QueryMap queryMap: Map<String, String>
     ): StationResponse
-
-    @GET("MsrstnInfoInqireSvc/getTMStdrCrdnt")
-    suspend fun getTmLocation(
-        @QueryMap queryMap: Map<String, String>
-    ): TmResponse
 }
