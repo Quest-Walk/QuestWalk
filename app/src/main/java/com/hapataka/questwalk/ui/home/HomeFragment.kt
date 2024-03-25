@@ -1,5 +1,7 @@
 package com.hapataka.questwalk.ui.home
 
+import android.Manifest
+import android.Manifest.permission
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -9,7 +11,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -32,6 +33,7 @@ import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
 import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.mainactivity.QUEST_START
@@ -86,10 +88,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         initBackground()
         initNaviButtons()
         initQuestButton()
+        checkPermissions()
     }
 
     private fun setup() {
-        checkPermissions()
         setObserver()
         initBackPressedCallback()
         setUid()
@@ -390,100 +392,88 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     val TAG = "permission_test"
-    private fun checkPermissions() {
-        val camera = android.Manifest.permission.CAMERA
-        val activity = android.Manifest.permission.ACTIVITY_RECOGNITION
-        val location = android.Manifest.permission.ACCESS_FINE_LOCATION
 
-        if (checkPermission(activity)) {
-            Log.i(TAG, "신체정보 퍼미션 없음")
+    private fun makeResultLauncher() {
+        activityResultLauncher = registerForActivityResult(contract) { permissions ->
+            if (permissions.values.all { it }) {
+                return@registerForActivityResult
+            }
+
+            val deniedArray = permissions.keys.toTypedArray()
+            val needPermission = makePermissionToText(deniedArray)
+            val isShowRationales = mutableListOf<Boolean>()
+
+
+            deniedArray.forEach {
+                isShowRationales += shouldShowRequestPermissionRationale(it)
+            }
+
+            if (isShowRationales.any { it }) {
+                val dialog = PermissionDialog(
+                    "퀘스트 워크를 사용하기 위해서는\n${needPermission}이 필요합니다",
+                    negativeCallback = { requireActivity().finish() },
+                    positiveCallback = { activityResultLauncher.launch(deniedArray) }
+                )
+
+                dialog.show(parentFragmentManager, "permission")
+                return@registerForActivityResult
+            }
+
+            val dialog = PermissionDialog(
+                "퀘스트 워크를 사용하기 위해서는\n${needPermission}이 필요합니다",
+                negativeCallback = { requireActivity().finish() },
+                positiveCallback = { activityResultLauncher.launch(deniedArray) }
+            )
+
+            dialog.show(parentFragmentManager, "eiri")
+            return@registerForActivityResult
         }
-
-        if (checkPermission(camera)) {
-            Log.i(TAG, "카메라 퍼미션 없음")
-        }
-
-        if (checkPermission(location)) {
-            Log.i(TAG, "위치 퍼미션 없음")
-        }
-
-//        if (ActivityCompat.checkSelfPermission(
-//                requireContext(),
-//                android.Manifest.permission.CAMERA
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            Log.i(TAG, "퍼미션 없음")
-//            checkCamera()
-//            checkLocation()
-//        }
     }
 
-    private fun checkPermission(name: String): Boolean {
+    private fun checkPermissions() {
+        makeResultLauncher()
+
+        var requestList = arrayOf<String>()
+
+        if (isDenied(permission.ACTIVITY_RECOGNITION)) requestList += permission.ACTIVITY_RECOGNITION
+
+        if (isDenied(permission.CAMERA)) requestList += permission.CAMERA
+
+        if (isDenied(permission.ACCESS_FINE_LOCATION)) requestList += permission.ACCESS_FINE_LOCATION
+
+        activityResultLauncher.launch(requestList)
+    }
+
+    val contract = ActivityResultContracts.RequestMultiplePermissions()
+
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Array<String>>
+
+    private fun isDenied(name: String): Boolean {
         return ActivityCompat.checkSelfPermission(
             requireContext(),
             name
         ) != PackageManager.PERMISSION_GRANTED
     }
 
+    private fun makePermissionToText(permissions: Array<String>): String {
+        var result = mutableListOf<String>()
 
-    private fun checkCamera() {
-        permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted.not()) {
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
-                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
-                    return@registerForActivityResult
-                }
-                showDialog(
-                    "Quest Keyword를 사용하려면\n카메라 권한이 필요합니다.",
-                ) {
-                    permissionLauncher.launch(android.Manifest.permission.CAMERA)
-                }
-            }
-        }
-
-        permissionLauncher.launch(android.Manifest.permission.CAMERA)
-    }
-
-    private fun checkLocation() {
-        permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted.not()) {
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    return@registerForActivityResult
+        permissions.forEach { permission ->
+            when (permission) {
+                Manifest.permission.CAMERA -> {
+                    result += "카메라 권한"
                 }
 
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                    return@registerForActivityResult
-                }
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    return@registerForActivityResult
+                Manifest.permission.ACCESS_FINE_LOCATION -> {
+                    result += "위치 권한"
                 }
 
-                showDialog(
-                    "Quest Keyword를 사용하려면\n위치 권한이 필요합니다.",
-                ) {
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                    permissionLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                Manifest.permission.ACTIVITY_RECOGNITION -> {
+                    result += "신체활동 권한"
                 }
             }
         }
-
-        permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    private lateinit var permissionLauncher: ActivityResultLauncher<String>
-
-    private fun showDialog(msg: String, callback: () -> Unit) {
-        val dialog = PermissionDialog(msg, callback)
-
-        dialog.show(parentFragmentManager, "permissionDialog")
+        return result.joinToString()
     }
 
     private fun setUid() {

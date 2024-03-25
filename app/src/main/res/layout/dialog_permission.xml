@@ -10,20 +10,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_achieve_dialog"
-        android:clipToOutline="true">
+        android:clipToOutline="true"
+        android:paddingVertical="32dp">
+
+        <ImageView
+            android:id="@+id/iv_caution"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/ic_caution"
+            app:layout_constraintBottom_toTopOf="@id/tv_title"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
             android:id="@+id/tv_title"
             style="@style/pixel_body_small"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:gravity="center"
             android:lineSpacingExtra="8dp"
             app:layout_constraintBottom_toTopOf="@id/btn_cancel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintEnd_toEndOf="@id/btn_confirm"
+            app:layout_constraintStart_toStartOf="@id/btn_cancel"
+            app:layout_constraintTop_toBottomOf="@id/iv_caution"
             tools:text="Quest Keyword를 사용하려면\n카메라 권한이 필요합니다." />
 
         <TextView
@@ -31,30 +43,35 @@
             style="@style/pixel_body_default"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/background_nagative_button"
             android:paddingVertical="12dp"
-            android:text="취소"
+            android:text="종료하기"
             android:textAlignment="center"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_confirm"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintWidth_percent="0.43" />
 
         <TextView
             android:id="@+id/btn_confirm"
             style="@style/pixel_body_default"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/background_positive_button"
             android:paddingVertical="12dp"
-            android:text="확인"
+            android:text="설정"
             android:textAlignment="center"
-            android:textColor="@color/main_purple"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btn_cancel"
-            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+            app:layout_constraintTop_toTopOf="@id/btn_cancel"
+            app:layout_constraintWidth_percent="0.43" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
