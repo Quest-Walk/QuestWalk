@@ -13,6 +13,8 @@ class GetDustUseCase(
 ) {
     suspend operator fun invoke(): DustEntity {
         val fullAddress = locationRepo.getAddress()
+        Log.d("GetDustUseCase:","$fullAddress")
+
         val address = filterEupMyeonDong(fullAddress)
         val tmQueryMap = requestTmQueryMap(address)
         val tmLocation = dustRepo.getTmLocation(tmQueryMap)

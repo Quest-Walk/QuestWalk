@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogDropOutBinding
 
-class DropOutDialog(val dropOut: (String) -> Unit): DialogFragment() {
+class DropOutDialog(val dropOutCallback: () -> Unit): DialogFragment() {
     private val binding by lazy { DialogDropOutBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -44,9 +44,7 @@ class DropOutDialog(val dropOut: (String) -> Unit): DialogFragment() {
                 dismiss()
             }
             btnConfirm.setOnClickListener{
-                val dialog = DropOutInputPwDialog(dropOut)
-
-                dialog.show(parentFragmentManager, "inputDialog")
+                dropOutCallback()
                 dismiss()
             }
         }
