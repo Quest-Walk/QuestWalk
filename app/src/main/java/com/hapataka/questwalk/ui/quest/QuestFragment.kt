@@ -83,10 +83,10 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initQuestRecyclerView() {
         questListAdapter = QuestListAdapter(
             requireContext(),
-            onClickMoreText = {questData, allUser ->
+            onClickMoreText = {questData ->
                 val bundle = Bundle().apply {
                     putParcelable("item", questData)
-                    putLong("allUser", allUser)
+                    putLong("allUser", questData.allUser)
                 }
                 navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
             },
