@@ -43,7 +43,6 @@ class WeatherViewModel (
         }
     }
 
-
     private suspend fun getWeatherInfo() {
         try {
             _weatherInfo.value = getWeatherUseCase().map {
@@ -54,8 +53,8 @@ class WeatherViewModel (
             _isLoading.value = false
             Log.e("WeatherViewModel","WeatherError: $error")
         }
-
     }
+
     private suspend fun getDustInfo() {
         try {
             _dustInfo.value = getDustUseCase()
@@ -64,7 +63,6 @@ class WeatherViewModel (
             _isLoading.value = false
             Log.e("WeatherViewModel","DustError: $error")
         }
-
     }
 
     private fun setWeatherPreview() {

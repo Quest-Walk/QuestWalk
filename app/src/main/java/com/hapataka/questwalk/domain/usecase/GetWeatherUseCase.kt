@@ -28,7 +28,6 @@ class GetWeatherUseCase (
             "nx" to convertXy.x.toInt().toString(),
             "ny" to convertXy.y.toInt().toString(),
         )
-        Log.d("GetWeatherUseCase:","$queries")
         val weatherInfo = weatherRepository.getWeatherInfo(queries)
         return weatherInfo.filter { it.fcstTime >= requestTime }.take(10)
     }

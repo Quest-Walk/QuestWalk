@@ -115,4 +115,7 @@ dependencies {
 
     //ProgressBar
     implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")
+
+    //Proj4J
+    implementation ("org.locationtech.proj4j:proj4j:1.3.0")
 }

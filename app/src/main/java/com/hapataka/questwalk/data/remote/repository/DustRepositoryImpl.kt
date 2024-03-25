@@ -1,13 +1,10 @@
 package com.hapataka.questwalk.data.remote.repository
 
-import android.util.Log
 import com.hapataka.questwalk.data.remote.dto.dust.Dust
 import com.hapataka.questwalk.data.remote.dto.station.StationResponse
-import com.hapataka.questwalk.data.remote.dto.tm.TmResponse
 import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.StationEntity
-import com.hapataka.questwalk.domain.entity.TmEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,10 +20,6 @@ class DustRepositoryImpl: DustRepository {
         convertToStationEntity(dustService.getStation(queryMap))
     }
 
-    override suspend fun getTmLocation(queryMap: Map<String, String>) = withContext(Dispatchers.IO) {
-        convertToTmEntity(dustService.getTmLocation(queryMap))
-    }
-
     private fun convertToDustEntity(item: Dust): DustEntity {
         return DustEntity(
             pm10Value = item.dustResponse.dustBody.dustItems[0].pm10Value.toInt(),
@@ -40,14 +33,6 @@ class DustRepositoryImpl: DustRepository {
             stationName = nearStation.stationName,
             stationAddr = nearStation.addr,
             distance = nearStation.tm
-        )
-    }
-
-    private fun convertToTmEntity(item: TmResponse): TmEntity {
-        Log.d("StationRepositoryImpl:","$item")
-        return TmEntity(
-            tmx = item.response.body.items[0].tmX,
-            tmy = item.response.body.items[0].tmY
         )
     }
 }
