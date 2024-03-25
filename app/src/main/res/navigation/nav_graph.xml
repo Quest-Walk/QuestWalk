@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/frag_my_info"
-        android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.myinfo.MyInfoFragment"
         android:label="frag_my_info"
         tools:layout="@layout/fragment_my_info">
         <action
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/frag_record"
-        android:name="com.hapataka.questwalk.ui.record.RecordFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.record.RecordFragment"
         android:label="frag_record"
         tools:layout="@layout/fragment_record">
         <action
@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/frag_home"
-        android:name="com.hapataka.questwalk.ui.home.HomeFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.home.HomeFragment"
         android:label="frag_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/frag_camera"
-        android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.camera.CameraFragment"
         android:label="frag_camera"
         tools:layout="@layout/fragment_camera">
         <action
@@ -64,13 +64,13 @@
 
     <fragment
         android:id="@+id/frag_capture"
-        android:name="com.hapataka.questwalk.ui.camera.CaptureFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.camera.CaptureFragment"
         android:label="frag_capture"
         tools:layout="@layout/fragment_capture" />
 
     <fragment
         android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.login.LogInFragment"
         android:label="frag_login"
         tools:layout="@layout/fragment_log_in">
         <action
@@ -90,7 +90,7 @@
 
     <fragment
         android:id="@+id/frag_sign_up"
-        android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.signup.SignUpFragment"
         android:label="frag_sign_up"
         tools:layout="@layout/fragment_sign_up">
         <action
@@ -107,7 +107,7 @@
 
     <fragment
         android:id="@+id/frag_on_boarding"
-        android:name="com.hapataka.questwalk.ui.onboarding.OnBoardingFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.onboarding.OnBoardingFragment"
         android:label="frag_on_boarding"
         tools:layout="@layout/fragment_on_boarding">
         <action
@@ -117,7 +117,7 @@
 
     <fragment
         android:id="@+id/frag_result"
-        android:name="com.hapataka.questwalk.ui.result.ResultFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.result.ResultFragment"
         android:label="frag_result"
         tools:layout="@layout/fragment_result" />
 
@@ -127,7 +127,7 @@
 
     <fragment
         android:id="@+id/frag_quest"
-        android:name="com.hapataka.questwalk.ui.quest.QuestFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.quest.QuestFragment"
         android:label="frag_quest"
         tools:layout="@layout/fragment_quest">
         <action
@@ -137,7 +137,7 @@
 
     <fragment
         android:id="@+id/frag_quest_detail"
-        android:name="com.hapataka.questwalk.ui.questdetail.QuestDetailFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.questdetail.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail">
         <action
@@ -153,12 +153,12 @@
 
     <dialog
         android:id="@+id/dialog_full_image"
-        android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
+        android:name="com.hapataka.questwalk.ui.fragment.questdetail.FullImageDialog"
         android:label="dialog_full_image" />
 
     <fragment
         android:id="@+id/frag_weather"
-        android:name="com.hapataka.questwalk.ui.weather.WeatherFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.weather.WeatherFragment"
         android:label="fragment_weather"
         tools:layout="@layout/fragment_weather" />
 
