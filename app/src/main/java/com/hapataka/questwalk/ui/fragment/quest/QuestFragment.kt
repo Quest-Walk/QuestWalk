@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.fragment.quest.adapter.QuestListAdapter
@@ -26,7 +25,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun setObserve() {
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
-                val list = mutableListOf(QuestData()) + it + mutableListOf(QuestData())
+                val list = it + mutableListOf(QuestData())
                 questListAdapter.submitList(list)
             }
             successKeywords.observe(viewLifecycleOwner) {
@@ -37,12 +36,11 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initViews() {
         initBackButton()
-//        initSpinner()
         initTabButton()
         initCompleteButton()
         initQuestRecyclerView()
         binding.innerContainer.setPadding()
-        requireActivity().setLightBarColor(true)
+        requireActivity().setLightBarColor(false)
     }
 
     private fun initBackButton() {

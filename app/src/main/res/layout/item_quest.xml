@@ -21,7 +21,7 @@
             style="@style/pixel_body_big_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="10dp"
             android:text="한의원"
             android:textColor="@color/main_purple"
             app:layout_constraintStart_toStartOf="@id/constraint_progress_bar"
@@ -42,14 +42,16 @@
             style="@style/sans_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
             android:background="@drawable/bg_quest_item_button"
-            android:gravity="center"
+            android:textAlignment="center"
             android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
             android:text="모두보기"
+            android:layout_marginEnd="10dp"
             android:textColor="@color/main_purple"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_keyword" />
+            app:layout_constraintTop_toTopOf="@id/tv_keyword"
+            app:layout_constraintBottom_toBottomOf="@id/tv_keyword"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_progress_bar"

@@ -1,7 +1,6 @@
 package com.hapataka.questwalk.ui.fragment.record
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -16,7 +15,7 @@ import com.hapataka.questwalk.util.ViewModelFactory
 class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val viewModel by viewModels<RecordViewModel> { ViewModelFactory() }
-    private val recordItemAdapter by lazy { RecordItemAdapter(requireActivity()) }
+    private lateinit var recordItemAdapter: RecordItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,15 +26,17 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
 
     private fun initView() {
         initBackButton()
+        recordItemAdapter = RecordItemAdapter(requireActivity())
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(true)
     }
 
     private fun setObserver() {
         with(viewModel) {
-            recordItems.observe(viewLifecycleOwner) {items ->
-                Log.d("why_kill", "items: $items")
-                initViewPager(items)
+            recordItems.observe(viewLifecycleOwner) { items ->
+                if (items != recordItemAdapter.items) {
+                    initViewPager(items)
+                }
             }
             achieveItems.observe(viewLifecycleOwner) {
                 recordItemAdapter.achieveItems = it
@@ -47,10 +48,11 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
         viewModel.getRecordItems()
     }
 
-    private fun initViewPager(recordItems: List<RecordItem>) {
+    private fun initViewPager(itemList: List<RecordItem>) {
+        recordItemAdapter.items = itemList
+
         val tabTitle = listOf("히스토리", "업적")
 
-        recordItemAdapter.items = recordItems
         with(binding) {
             vpRecordContents.apply {
                 adapter = recordItemAdapter
