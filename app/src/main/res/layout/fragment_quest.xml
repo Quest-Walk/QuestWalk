@@ -38,7 +38,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/quest_item_header"
-        android:paddingBottom="24dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/rev_quest"
         app:layout_constraintEnd_toEndOf="@id/rev_quest"
         app:layout_constraintStart_toStartOf="@id/rev_quest"

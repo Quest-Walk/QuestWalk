@@ -1,13 +1,10 @@
 package com.hapataka.questwalk.ui.quest.adapter
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +20,7 @@ private const val ITEM = 1
 private const val FOOTER = 2
 class QuestListAdapter(
     val context: Context,
-    val onClickMoreText: (QuestData, Long) -> Unit,
+    val onClickMoreText: (QuestData) -> Unit,
     val onClickView: (String) -> Unit
 ) : ListAdapter<QuestData, RecyclerView.ViewHolder>(diffUtil) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -53,6 +50,65 @@ class QuestListAdapter(
     }
 
     inner class QuestViewHolder(private val binding: ItemQuestBinding) : RecyclerView.ViewHolder(binding.root) {
+        private fun setColorSuccess(completeRate: Double) {
+            with(binding) {
+                root.setBackgroundColor(context.getColor(R.color.text_box))
+                tvKeyword.setTextColor(context.getColor(R.color.gray_c8))
+                ivLevel.isSelected = false
+
+                if (completeRate > 50) {
+                    tvSolveUnder.visibility = View.INVISIBLE
+                    tvSolveOver.visibility = View.VISIBLE
+                    tvSolveOver.setTextColor(context.getColor(R.color.gray_c8))
+                    tvSolveOver.text = "$completeRate %달성"
+                } else {
+                    tvSolveOver.visibility = View.INVISIBLE
+                    tvSolveUnder.visibility = View.VISIBLE
+                    tvSolveUnder.setTextColor(context.getColor(R.color.white))
+                    tvSolveUnder.text = "$completeRate %달성"
+                }
+
+                constraintProgressBar.setBackgroundResource(R.drawable.bg_progress_bar_success)
+                progress.setProgressPercentage(0.0, false)
+                progress.setProgressDrawableColor(context.getColor(R.color.gray_c8))
+
+                if (completeRate < 5.1) {
+                    progress.setProgressPercentage(5.0, true)
+                }  else {
+                    progress.setProgressPercentage(completeRate, true)
+                }
+            }
+        }
+
+        private fun setColorDefault(completeRate: Double) {
+            with(binding) {
+                root.setBackgroundColor(context.getColor(R.color.white))
+                tvKeyword.setTextColor(context.getColor(R.color.main_purple))
+                ivLevel.isSelected = true
+
+                if (completeRate > 50) {
+                    tvSolveUnder.visibility = View.INVISIBLE
+                    tvSolveOver.visibility = View.VISIBLE
+                    tvSolveOver.setTextColor(context.getColor(R.color.main_purple))
+                    tvSolveOver.text = "$completeRate %달성"
+                } else {
+                    tvSolveOver.visibility = View.INVISIBLE
+                    tvSolveUnder.visibility = View.VISIBLE
+                    tvSolveUnder.setTextColor(context.getColor(R.color.white))
+                    tvSolveUnder.text = "$completeRate %달성"
+                }
+
+                constraintProgressBar.setBackgroundResource(R.drawable.bg_progress_bar_default)
+                progress.setProgressPercentage(0.0, false)
+                progress.setProgressDrawableColor(context.getColor(R.color.main_purple))
+
+                if (completeRate < 5.1) {
+                    progress.setProgressPercentage(5.0, true)
+                }  else {
+                    progress.setProgressPercentage(completeRate, true)
+                }
+            }
+        }
         fun bind(item: QuestData) {
             val completeRate = if (item.allUser != 0L) {
                 (((item.successItems.size.toDouble() / item.allUser)*100) *10.0 ).roundToInt() / 10.0
@@ -73,27 +129,18 @@ class QuestListAdapter(
             }
 
             with(binding) {
-                if (completeRate > 50) {
-                    tvSolveUnder.visibility = View.VISIBLE
-                    tvSolveUnder.text = "$completeRate %달성"
-                } else {
-                    tvSolveOver.visibility = View.VISIBLE
-                    tvSolveOver.text = "$completeRate %달성"
-                }
                 tvKeyword.text = item.keyWord
                 ivLevel.load(leveImg)
 
-                binding.progress.setProgressPercentage(0.0, false)
-                if (completeRate < 5.1) {
-                    binding.progress.setProgressPercentage(5.0, true)
-                }  else {
-                    binding.progress.setProgressPercentage(completeRate, true)
+                if (item.isSuccess) {
+                    setColorSuccess(completeRate)
+                } else {
+                    setColorDefault(completeRate)
                 }
-
 
                 btnMore.setOnClickListener {
                     if (item.successItems.isEmpty()) return@setOnClickListener
-                    onClickMoreText(item, item.allUser)
+                    onClickMoreText(item)
                 }
 
                 binding.root.setOnClickListener(object : OnSingleClickListener(){
