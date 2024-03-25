@@ -6,6 +6,7 @@ import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.WeatherRepository
 import com.hapataka.questwalk.ui.weather.LatXLngY
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -17,7 +18,8 @@ class GetWeatherUseCase (
     suspend operator fun invoke(): List<WeatherEntity> {
         val currentLocation = locationRepo.getCurrent().location
         val convertXy = convertToXY(currentLocation.first.toDouble(), currentLocation.second.toDouble())
-        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
+        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00")).toInt()
+        val requestDay = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
         val requestDateTime = setRequestDateTime()
         val queries = mapOf(
             "serviceKey" to BuildConfig.weather_key,
@@ -28,9 +30,9 @@ class GetWeatherUseCase (
             "nx" to convertXy.x.toInt().toString(),
             "ny" to convertXy.y.toInt().toString(),
         )
-        Log.d("GetWeatherUseCase:","$queries")
         val weatherInfo = weatherRepository.getWeatherInfo(queries)
-        return weatherInfo.filter { it.fcstTime >= requestTime }.take(10)
+        return weatherInfo.filter { it.fcstTime.toInt() >= requestTime || it.fcstDate.toInt() > requestDay }
+            .take(10)
     }
 
     private fun convertToXY(latX: Double, lngY: Double): LatXLngY {

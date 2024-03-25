@@ -114,23 +114,4 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
         )
 
     }
-
-    @SuppressLint("MissingPermission")
-    override suspend fun getAddress() = withContext(Dispatchers.IO) {
-//        try {
-//            val location = client.lastLocation.await()
-//            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-//            if (!addressList.isNullOrEmpty()) {
-//                addressList[0]
-//            } else {
-//                null
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-        val location = client.lastLocation.await()
-        val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-        addressList?.get(0)?.getAddressLine(0) ?: "No Address"
-    }
 }
