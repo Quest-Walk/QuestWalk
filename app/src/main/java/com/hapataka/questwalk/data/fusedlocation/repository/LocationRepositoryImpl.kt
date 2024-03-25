@@ -61,10 +61,12 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                 }
                 else {
                     if (currentLocation.hasAccuracy().not()) {
+                        goodLocCount=0
                         return
                     }
 
                     if (currentLocation.accuracy > 30) {
+                        goodLocCount=0
                         return
                     }
                     else{
