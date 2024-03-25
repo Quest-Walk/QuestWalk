@@ -11,10 +11,11 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::inflate) {
     private lateinit var questListAdapter: QuestListAdapter
-    private val questViewModel: QuestViewModel by viewModels()
+    private val questViewModel: QuestViewModel by viewModels { ViewModelFactory() }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var keywords: MutableList<String> = mutableListOf()
 
@@ -30,6 +31,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 val list = it + mutableListOf(QuestData())
                 questListAdapter.submitList(list) {
                     binding.revQuest.scrollToPosition(0)
+                    binding.loading.visibility = View.INVISIBLE
                 }
             }
             successKeywords.observe(viewLifecycleOwner) {
