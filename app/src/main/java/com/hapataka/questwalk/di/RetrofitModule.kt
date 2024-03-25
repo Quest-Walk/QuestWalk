@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.di
 
+import com.hapataka.questwalk.data.remote.retrofit.WeatherService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,34 +14,34 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        val interceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-        return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient,
-    ): Retrofit {
-        val BASE_URL = ""
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-
-
 //    @Provides
 //    @Singleton
-//    fun provideRetrofitService(retrofit: Retrofit):
+//    fun provideOkHttpClient(): OkHttpClient {
+//        val interceptor = HttpLoggingInterceptor().apply {
+//            level = HttpLoggingInterceptor.Level.BODY
+//        }
+//        return OkHttpClient.Builder()
+//            .addInterceptor(interceptor)
+//            .build()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideWeatherRetrofit(
+//        okHttpClient: OkHttpClient,
+//    ): Retrofit {
+//        val BASE_URL = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
+//        return Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideWeatherService(retrofit: Retrofit): WeatherService = retrofit.create(WeatherService::class.java)
+
+
 
 }

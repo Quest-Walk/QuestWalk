@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
 plugins {
     kotlin("kapt")
     id("com.android.application")
@@ -7,6 +10,8 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
 }
+
+
 
 android {
     namespace = "com.hapataka.questwalk"
@@ -20,6 +25,8 @@ android {
         versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String","weather_key", gradleLocalProperties(rootDir).getProperty("WEATHER_API_KEY"))
     }
 
     buildTypes {
