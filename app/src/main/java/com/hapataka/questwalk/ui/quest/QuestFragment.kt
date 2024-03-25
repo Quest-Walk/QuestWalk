@@ -28,7 +28,9 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
                 val list = it + mutableListOf(QuestData())
-                questListAdapter.submitList(list)
+                questListAdapter.submitList(list) {
+                    binding.revQuest.scrollToPosition(0)
+                }
             }
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
@@ -38,7 +40,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initViews() {
         initBackButton()
-//        initSpinner()
         initTabButton()
         initCompleteButton()
         initQuestRecyclerView()
@@ -54,7 +55,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
         with(binding) {
             val tabList = mutableListOf(tvAll, tvLv1, tvLv2, tvLv3)
 
-            binding.tvAll.isSelected = true
+            tvAll.isSelected = true
             tabList.forEachIndexed { index, tab ->
                 tab.setOnClickListener {
                     questViewModel.filterLevel(index)
@@ -64,13 +65,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             }
         }
     }
-
-//    private fun initSpinner() {
-//        binding.spinnerLevel.selectItemByIndex(0)
-//        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
-//            questViewModel.filterLevel(Index)
-//        }
-//    }
 
     private fun initCompleteButton() {
 //        binding.constrainComplete.setOnClickListener {
