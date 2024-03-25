@@ -21,9 +21,12 @@ class DustRepositoryImpl: DustRepository {
     }
 
     private fun convertToDustEntity(item: Dust): DustEntity {
+        val pm10Value = item.dustResponse.dustBody.dustItems[0].pm10Value
+        val pm25Value = item.dustResponse.dustBody.dustItems[0].pm25Value
+
         return DustEntity(
-            pm10Value = item.dustResponse.dustBody.dustItems[0].pm10Value.toInt(),
-            pm25Value = item.dustResponse.dustBody.dustItems[0].pm25Value.toInt()
+            pm10Value = if (pm10Value == "-") -1 else pm10Value.toInt(),
+            pm25Value = if (pm25Value == "-") -1 else pm25Value.toInt()
         )
     }
 

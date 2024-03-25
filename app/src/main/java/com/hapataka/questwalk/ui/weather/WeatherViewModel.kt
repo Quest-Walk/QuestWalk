@@ -110,6 +110,7 @@ class WeatherViewModel (
 
     private fun getMiseState(pm10Value: Int): String {
         return when(pm10Value) {
+            -1 -> "통신 장애로 인해 측정이 어렵고"
             in 0..30 -> "좋음 이고"
             in 31..80 -> "보통 이고"
             in 81..150 -> "나쁨 이고"
@@ -119,6 +120,7 @@ class WeatherViewModel (
 
     private fun getChoMiseState(pm25Value: Int): String {
         return when(pm25Value) {
+            -1 -> "통신 장애로 인해 측정이 어렵구먼"
             in 0..15 -> "좋음 이구먼"
             in 16..35 -> "보통 이구먼"
             in 36..75 -> "나쁨 이구먼"
