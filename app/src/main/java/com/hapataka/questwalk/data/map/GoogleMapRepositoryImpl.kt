@@ -23,6 +23,11 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
             LatLng(it.first.toDouble(), it.second.toDouble())
         }?.toMutableList() ?: mutableListOf()
 
+        while(locationList.size>1000){
+            locationList =
+                locationList.filterIndexed { index, latLng -> index % 2 == 0 }.toMutableList()
+        }
+
         val tAnimator = ValueAnimator.ofInt(0, if (locationList.size < 2) 0 else locationList.size - 2 ).apply {
             duration = (locationList.size * 50).toLong()
             addUpdateListener { tAnimator ->
