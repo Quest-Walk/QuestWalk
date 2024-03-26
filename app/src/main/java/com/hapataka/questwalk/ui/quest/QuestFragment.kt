@@ -11,10 +11,11 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.ViewModelFactory
 
 class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::inflate) {
     private lateinit var questListAdapter: QuestListAdapter
-    private val questViewModel: QuestViewModel by viewModels()
+    private val questViewModel: QuestViewModel by viewModels { ViewModelFactory() }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var keywords: MutableList<String> = mutableListOf()
 
@@ -27,8 +28,11 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun setObserve() {
         with(questViewModel) {
             questItems.observe(viewLifecycleOwner) {
-                val list = mutableListOf(QuestData()) + it + mutableListOf(QuestData())
-                questListAdapter.submitList(list)
+                val list = it + mutableListOf(QuestData())
+                questListAdapter.submitList(list) {
+                    binding.revQuest.scrollToPosition(0)
+                    binding.loading.visibility = View.INVISIBLE
+                }
             }
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
@@ -38,7 +42,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
 
     private fun initViews() {
         initBackButton()
-//        initSpinner()
         initTabButton()
         initCompleteButton()
         initQuestRecyclerView()
@@ -54,7 +57,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
         with(binding) {
             val tabList = mutableListOf(tvAll, tvLv1, tvLv2, tvLv3)
 
-            binding.tvAll.isSelected = true
+            tvAll.isSelected = true
             tabList.forEachIndexed { index, tab ->
                 tab.setOnClickListener {
                     questViewModel.filterLevel(index)
@@ -64,13 +67,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
             }
         }
     }
-
-//    private fun initSpinner() {
-//        binding.spinnerLevel.selectItemByIndex(0)
-//        binding.spinnerLevel.setOnSpinnerItemSelectedListener<String> { _, _, Index, Level ->
-//            questViewModel.filterLevel(Index)
-//        }
-//    }
 
     private fun initCompleteButton() {
 //        binding.constrainComplete.setOnClickListener {
@@ -87,10 +83,10 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initQuestRecyclerView() {
         questListAdapter = QuestListAdapter(
             requireContext(),
-            onClickMoreText = {questData, allUser ->
+            onClickMoreText = {questData ->
                 val bundle = Bundle().apply {
                     putParcelable("item", questData)
-                    putLong("allUser", allUser)
+                    putLong("allUser", questData.allUser)
                 }
                 navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
             },
