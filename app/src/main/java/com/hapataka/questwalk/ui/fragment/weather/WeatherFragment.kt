@@ -65,7 +65,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     private fun setWeatherPreview(weatherPreview: WeatherPreviewData) {
         binding.tvMessage.text =
-            "현재 온도는 ${weatherPreview.currentTmp}도 이고, 하늘 상태는 ${weatherPreview.sky} ${weatherPreview.precipType}" +
+            "현재 온도는 ${weatherPreview.currentTmp}도 이고, 하늘 상태는 ${weatherPreview.sky} ${weatherPreview.precipType} "+
                     "미세먼지 상태는 ${weatherPreview.miseState} 초미세 먼지 상태는 ${weatherPreview.choMiseState} 오늘 여행에 참고하라구!!"
     }
 

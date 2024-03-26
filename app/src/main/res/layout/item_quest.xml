@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:paddingHorizontal="12dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="16dp"
+    android:paddingTop="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_quest"
@@ -32,6 +33,7 @@
             android:layout_width="60dp"
             android:layout_height="20dp"
             android:layout_marginStart="12dp"
+            app:tint="@color/selector_quest_lv"
             app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
             app:layout_constraintStart_toEndOf="@id/tv_keyword"
             app:layout_constraintTop_toTopOf="@id/tv_keyword"
@@ -58,7 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_progress_bar"
+            android:background="@drawable/bg_progress_bar_default"
             android:paddingHorizontal="4dp"
             android:paddingVertical="4dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,7 +79,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tv_solve_under"
+            android:id="@+id/tv_solve_over"
             style="@style/sans_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,7 +92,7 @@
             tools:text="32.5% 달성" />
 
         <TextView
-            android:id="@+id/tv_solve_over"
+            android:id="@+id/tv_solve_under"
             style="@style/sans_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
