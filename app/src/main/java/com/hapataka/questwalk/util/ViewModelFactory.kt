@@ -19,17 +19,17 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.usecase.GetAllQuestUseCase
 import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
-import com.hapataka.questwalk.ui.camera.CameraViewModel
-import com.hapataka.questwalk.ui.home.HomeViewModel
-import com.hapataka.questwalk.ui.login.LoginViewModel
-import com.hapataka.questwalk.ui.mainactivity.ImageUtil
-import com.hapataka.questwalk.ui.mainactivity.MainViewModel
-import com.hapataka.questwalk.ui.myinfo.MyInfoViewModel
-import com.hapataka.questwalk.ui.quest.QuestViewModel
-import com.hapataka.questwalk.ui.record.RecordViewModel
-import com.hapataka.questwalk.ui.result.ResultViewModel
-import com.hapataka.questwalk.ui.signup.SignUpViewModel
-import com.hapataka.questwalk.ui.weather.WeatherViewModel
+import com.hapataka.questwalk.ui.activity.mainactivity.ImageUtil
+import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.fragment.camera.CameraViewModel
+import com.hapataka.questwalk.ui.fragment.home.HomeViewModel
+import com.hapataka.questwalk.ui.fragment.login.LoginViewModel
+import com.hapataka.questwalk.ui.fragment.myinfo.MyInfoViewModel
+import com.hapataka.questwalk.ui.fragment.quest.QuestViewModel
+import com.hapataka.questwalk.ui.fragment.record.RecordViewModel
+import com.hapataka.questwalk.ui.fragment.result.ResultViewModel
+import com.hapataka.questwalk.ui.fragment.signup.SignUpViewModel
+import com.hapataka.questwalk.ui.fragment.weather.WeatherViewModel
 
 class ViewModelFactory() : ViewModelProvider.Factory {
     private lateinit var locationRepo: LocationRepository

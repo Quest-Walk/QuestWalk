@@ -3,7 +3,7 @@ package com.hapataka.questwalk.data.pref.repository
 import android.content.Context
 import android.content.SharedPreferences
 import com.hapataka.questwalk.domain.repository.LocalRepository
-import com.hapataka.questwalk.ui.result.USER_ID
+import com.hapataka.questwalk.ui.fragment.result.USER_ID
 
 class LocalRepositoryImpl(val context: Context) : LocalRepository {
     private val pref: SharedPreferences = context.getSharedPreferences(USER_ID, 0)

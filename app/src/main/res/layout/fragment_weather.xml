@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.weather.WeatherFragment">
+    tools:context=".ui.fragment.weather.WeatherFragment">
 
     <View
         android:id="@+id/bg_weather"
@@ -14,8 +14,12 @@
         app:layout_constraintHeight_percent="0.7"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inner_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout
+        <LinearLayout
             android:id="@+id/iv_arrow_back"
             android:layout_width="56dp"
             android:layout_height="56dp"
@@ -33,146 +37,146 @@
         </LinearLayout>
 
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_arrow_back">
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_arrow_back">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tv_message"
-                style="@style/pixel_body_default"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_quest_image"
-                android:lineSpacingExtra="8dp"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="24dp"
-                tools:text="오늘 온도는 180도, 비가 내리는군\n미세먼지는 깨끗하군\n\n오늘은 집에 있는게 나을수도 있겠어!"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.9" />
+                <TextView
+                    android:id="@+id/tv_message"
+                    style="@style/pixel_body_default"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_quest_image"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.9"
+                    tools:text="오늘 온도는 180도, 비가 내리는군\n미세먼지는 깨끗하군\n\n오늘은 집에 있는게 나을수도 있겠어!" />
 
-            <ImageView
-                android:id="@+id/iv_weather"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/weather_mage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_message"
-                app:layout_constraintVertical_bias="0.7" />
+                <ImageView
+                    android:id="@+id/iv_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/weather_mage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_message"
+                    app:layout_constraintVertical_bias="0.7" />
 
-            <ImageView
-                android:id="@+id/iv_arrow_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/iv_arrow_down"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_weather" />
+                <ImageView
+                    android:id="@+id/iv_arrow_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/iv_arrow_down"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/iv_weather" />
 
-            <TextView
-                android:id="@+id/tv_weather_detail"
-                style="@style/pixel_body_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="12dp"
-                android:text="날씨 상세정보"
-                android:textColor="#C8C8C8"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_arrow_down" />
+                <TextView
+                    android:id="@+id/tv_weather_detail"
+                    style="@style/pixel_body_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="날씨 상세정보"
+                    android:textColor="#C8C8C8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/iv_arrow_down" />
 
-            <TextView
-                android:id="@+id/tv_mise"
-                style="@style/pixel_body_default"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="미세먼지"
-                android:textColor="#c8c8c8"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="12dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather_detail"
-                app:layout_constraintWidth_percent="0.5" />
+                <TextView
+                    android:id="@+id/tv_mise"
+                    style="@style/pixel_body_default"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="8dp"
+                    android:text="미세먼지"
+                    android:textColor="#c8c8c8"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_weather_detail"
+                    app:layout_constraintWidth_percent="0.5" />
 
-            <TextView
-                android:id="@+id/tv_chomise"
-                style="@style/pixel_body_default"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="초미세먼지"
-                android:textColor="#c8c8c8"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tv_mise"
-                app:layout_constraintTop_toTopOf="@id/tv_mise" />
+                <TextView
+                    android:id="@+id/tv_chomise"
+                    style="@style/pixel_body_default"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="초미세먼지"
+                    android:textColor="#c8c8c8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_mise"
+                    app:layout_constraintTop_toTopOf="@id/tv_mise" />
 
-            <TextView
-                android:id="@+id/tv_mise_value"
-                style="@style/pixel_body_default"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                tools:text="0.8 마이크론"
-                android:textColor="#c8c8c8"
-                app:layout_constraintEnd_toEndOf="@id/tv_mise"
-                app:layout_constraintStart_toStartOf="@id/tv_mise"
-                app:layout_constraintTop_toBottomOf="@id/tv_mise" />
+                <TextView
+                    android:id="@+id/tv_mise_value"
+                    style="@style/pixel_body_default"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#c8c8c8"
+                    app:layout_constraintEnd_toEndOf="@id/tv_mise"
+                    app:layout_constraintStart_toStartOf="@id/tv_mise"
+                    app:layout_constraintTop_toBottomOf="@id/tv_mise"
+                    tools:text="0.8 마이크론" />
 
-            <TextView
-                android:id="@+id/tv_chomise_value"
-                style="@style/pixel_body_default"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                tools:text="0.08 마이크론"
-                android:textColor="#c8c8c8"
-                app:layout_constraintEnd_toEndOf="@id/tv_chomise"
-                app:layout_constraintStart_toStartOf="@id/tv_chomise"
-                app:layout_constraintTop_toBottomOf="@id/tv_chomise" />
+                <TextView
+                    android:id="@+id/tv_chomise_value"
+                    style="@style/pixel_body_default"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#c8c8c8"
+                    app:layout_constraintEnd_toEndOf="@id/tv_chomise"
+                    app:layout_constraintStart_toStartOf="@id/tv_chomise"
+                    app:layout_constraintTop_toBottomOf="@id/tv_chomise"
+                    tools:text="0.08 마이크론" />
 
-            <TextView
-                android:id="@+id/tv_weather_time"
-                style="@style/pixel_body_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="시간대별 날씨"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="12dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_mise_value" />
+                <TextView
+                    android:id="@+id/tv_weather_time"
+                    style="@style/pixel_body_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="30dp"
+                    android:text="시간대별 날씨"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_mise_value" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rev_weather"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather_time"
-                android:layout_marginBottom="12dp"
-                tools:listitem="@layout/item_weather" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rev_weather"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_weather_time"
+                    tools:listitem="@layout/item_weather" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
 
-    </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
