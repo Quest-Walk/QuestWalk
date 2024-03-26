@@ -29,7 +29,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 val list = it + mutableListOf(QuestData())
                 questListAdapter.submitList(list) {
                     binding.revQuest.scrollToPosition(0)
-                    binding.loading.visibility = View.INVISIBLE
+//                    binding.loading.visibility = View.INVISIBLE
                 }
             }
             successKeywords.observe(viewLifecycleOwner) {
