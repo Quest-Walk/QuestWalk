@@ -50,8 +50,8 @@ class WeatherAdapter(val context: Context): ListAdapter<WeatherData, WeatherAdap
 
         private fun setSkyState(sky: Int): Int {
             return when(sky) {
-                in 0..5 -> R.drawable.ic_sky1
-                in 6..8 -> R.drawable.ic_sky2
+                1 -> R.drawable.ic_sky1
+                3 -> R.drawable.ic_sky2
                 else -> R.drawable.ic_sky3
             }
         }
