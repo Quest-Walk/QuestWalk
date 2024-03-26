@@ -81,7 +81,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
         }
 
         if(modelClass.isAssignableFrom(CameraViewModel::class.java)){
-            return CameraViewModel(imageUtil) as T
+            return CameraViewModel() as T
         }
 
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
