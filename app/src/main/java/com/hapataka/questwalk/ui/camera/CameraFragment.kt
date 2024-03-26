@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -26,6 +27,7 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleTouchListener
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.visible
@@ -155,23 +157,19 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         val mediaActionSound = MediaActionSound()
 
         binding.btnCapture.apply {
-            setOnTouchListener { v, event ->
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        this.load(R.drawable.btn_capture_click)
-                        mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
-                        cameraHandler.capturePhoto(imageCaptureCallback())
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        this.load(R.drawable.btn_capture)
-                        v.performClick()
-                    }
+            setOnTouchListener(object : OnSingleTouchListener() {
+                override fun onSingleTouchUp(v: View, event: MotionEvent) {
+                    this@apply.load(R.drawable.btn_capture_click)
+                    mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
+                    cameraHandler.capturePhoto(imageCaptureCallback())
                 }
-                true
-            }
-        }
 
+                override fun onSingleTouchDown(v: View, event: MotionEvent) {
+                    this@apply.load(R.drawable.btn_capture)
+                    v.performClick()
+                }
+            })
+        }
     }
 
     private fun imageCaptureCallback(): ImageCapture.OnImageCapturedCallback {

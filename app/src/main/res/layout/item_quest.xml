@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="32dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="24dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_quest"
@@ -23,66 +24,81 @@
             android:layout_marginStart="4dp"
             android:text="한의원"
             android:textColor="@color/main_purple"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/constraint_progress_bar"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_level"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="12dp"
             app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
             app:layout_constraintStart_toEndOf="@id/tv_keyword"
             app:layout_constraintTop_toTopOf="@id/tv_keyword"
             tools:src="@drawable/ic_lv_01" />
 
         <TextView
-            android:id="@+id/btn_select"
-            style="@style/sans_body_small"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_quest_item_button"
-            android:gravity="center"
-            android:text="선택하기"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_more"
-            app:layout_constraintTop_toTopOf="@id/btn_more" />
-
-        <TextView
             android:id="@+id/btn_more"
-            style="@style/sans_body_small"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/bg_quest_item_button"
-            android:gravity="center"
-            android:text="모두보기"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_keyword" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
-            android:layout_marginTop="12dp"
-            android:progressDrawable="@drawable/bg_progress_bar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_keyword"
-            tools:progress="30" />
-
-        <TextView
-            android:id="@+id/tv_solve_percent"
             style="@style/sans_body_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="@id/progress_bar"
-            app:layout_constraintTop_toBottomOf="@id/progress_bar"
-            tools:text="32.5%" />
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_quest_item_button"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:text="모두보기"
+            android:textColor="@color/main_purple"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_keyword" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_progress_bar"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_keyword">
+
+            <com.mackhartley.roundedprogressbar.RoundedProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:rpbBackgroundColor="@color/white"
+                app:rpbCornerRadius="30dp"
+                app:rpbProgressColor="@color/main_purple"
+                app:rpbShowProgressText="false" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_solve_under"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/constraint_progress_bar"
+            app:layout_constraintStart_toStartOf="@id/constraint_progress_bar"
+            app:layout_constraintTop_toTopOf="@id/constraint_progress_bar"
+            tools:text="32.5% 달성" />
+
+        <TextView
+            android:id="@+id/tv_solve_over"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/main_purple"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/constraint_progress_bar"
+            app:layout_constraintEnd_toEndOf="@id/constraint_progress_bar"
+            app:layout_constraintTop_toTopOf="@id/constraint_progress_bar"
+            tools:text="53.5% 달성" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

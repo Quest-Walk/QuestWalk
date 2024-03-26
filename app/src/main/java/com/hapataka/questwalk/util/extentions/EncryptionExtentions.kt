@@ -1,13 +1,12 @@
 package com.hapataka.questwalk.util.extentions
 
 import android.util.Base64
+import com.hapataka.questwalk.util.UserInfo
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-const val SECRET_KEY = "Q2CR35WC121QCB4T"
-
 fun String.encryptECB(): String {
-    val keySpec = SecretKeySpec(SECRET_KEY.toByteArray(), "AES")
+    val keySpec = SecretKeySpec(UserInfo.encryptionKey.toByteArray(), "AES")
     val cipher = Cipher.getInstance("AES/ECB/PKCS7PADDING")
 
     cipher.init(Cipher.ENCRYPT_MODE, keySpec)
@@ -19,7 +18,7 @@ fun String.encryptECB(): String {
 }
 
 fun String.decryptECB(): String {
-    val keySpec = SecretKeySpec(SECRET_KEY.toByteArray(), "AES")
+    val keySpec = SecretKeySpec(UserInfo.encryptionKey.toByteArray(), "AES")
     val cipher = Cipher.getInstance("AES/ECB/PKCS7PADDING")
 
     cipher.init(Cipher.DECRYPT_MODE, keySpec)

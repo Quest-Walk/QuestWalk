@@ -1,16 +1,10 @@
 package com.hapataka.questwalk.ui.weather
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.hapataka.questwalk.R
-import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
@@ -75,8 +69,8 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     private fun setDustText(dustInfo: DustEntity) {
         with(binding) {
-            tvMiseValue.text = "${dustInfo.pm10Value} ㎍/㎥"
-            tvChomiseValue.text = "${dustInfo.pm25Value} ㎍/㎥"
+            tvMiseValue.text = if (dustInfo.pm10Value == -1) "통신 장애" else "${dustInfo.pm10Value} ㎍/㎥"
+            tvChomiseValue.text = if (dustInfo.pm25Value == -1) "통신 장애" else "${dustInfo.pm25Value} ㎍/㎥"
         }
     }
 

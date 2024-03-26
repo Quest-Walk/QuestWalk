@@ -1,7 +1,9 @@
 package com.hapataka.questwalk.ui.myinfo
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -12,11 +14,13 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.ui.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
+import com.hapataka.questwalk.ui.myinfo.dialog.InputPwDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
+import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
@@ -26,7 +30,7 @@ import com.hapataka.questwalk.util.extentions.convertTime
 
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val viewModel by viewModels<MyInfoViewModel> { ViewModelFactory(requireContext()) }
-    private val mainViewModel: MainViewModel by viewModels { ViewModelFactory(requireContext()) }
+    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
@@ -83,26 +87,53 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun initLogoutButton() {
-        binding.btnLogout.setOnClickListener {
-            viewModel.logout {
-                navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                navGraph.setStartDestination(R.id.frag_home)
-                navController.graph = navGraph
-            }
-        }
-    }
-
-    private fun initDropOut() {
-        binding.btnDropOut.setOnClickListener {
-            val dialog = DropOutDialog { pw ->
-                viewModel.deleteCurrentUser(pw) {
+        binding.btnLogout.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                viewModel.logout {
                     navController.navigate(R.id.action_frag_my_info_to_frag_login)
                     navGraph.setStartDestination(R.id.frag_home)
                     navController.graph = navGraph
                 }
             }
-            dialog.show(parentFragmentManager, "dropout_dialog")
+        })
+    }
+
+    lateinit var inputPwDialog: InputPwDialog
+    private fun initDropOut() {
+        binding.btnDropOut.setOnClickListener {
+            inputPwDialog = InputPwDialog(
+                reauthCallback = { pw ->
+                    viewModel.reauthCurrentUser(
+                        pw,
+                        positiveCallback = {
+                            showDropOutDialog()
+                            inputPwDialog.dismiss()
+                        },
+                        negativeCallback = {
+                            mainViewModel.setSnackBarMsg("비밀번호를 확인해주세요.")
+                        }
+                    )
+                },
+
+                snackBarCallback = {
+                    mainViewModel.setSnackBarMsg(it)
+                    Log.i("permission_test", "$it")
+                }
+            )
+            inputPwDialog.show(parentFragmentManager, "input_pw_dialog")
         }
+    }
+
+    private fun showDropOutDialog() {
+        DropOutDialog(
+            dropOutCallback = {
+                viewModel.deleteCurrentUser() {
+                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
+                    navGraph.setStartDestination(R.id.frag_home)
+                    navController.graph = navGraph
+                }
+            }
+        ).show(parentFragmentManager, "dropOut Dialog")
     }
 
     private fun initBackButton() {
