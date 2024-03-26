@@ -21,7 +21,7 @@ import com.hapataka.questwalk.domain.usecase.GetDustUseCase
 import com.hapataka.questwalk.domain.usecase.GetWeatherUseCase
 import com.hapataka.questwalk.ui.activity.mainactivity.ImageUtil
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
-import com.hapataka.questwalk.ui.fragment.camera.CameraViewModel
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.ui.fragment.home.HomeViewModel
 import com.hapataka.questwalk.ui.fragment.login.LoginViewModel
 import com.hapataka.questwalk.ui.fragment.myinfo.MyInfoViewModel
