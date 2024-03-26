@@ -36,19 +36,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
-    companion object {
-        private var TO_HOME_FRAG = "homefragment"
-        private var TO_CAPT_FRAG = "capturefragment"
-    }
+
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
-    private val cameraViewModel: CameraViewModel by activityViewModels{ViewModelFactory(requireContext())}
+    private val cameraViewModel: CameraViewModel by activityViewModels {
+        ViewModelFactory(
+            requireContext()
+        )
+    }
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
 
-    private var toFrag = TO_HOME_FRAG
 
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
@@ -135,10 +135,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 navController.popBackStack()
             }
             tvCameraQuest.text = mainViewModel.currentKeyword.value
-            tvCameraQuest.setOnClickListener {
-                cameraHandler.capturePhoto(imageCaptureCallback())
-                toFrag = TO_CAPT_FRAG
-            }
         }
     }
 
@@ -182,21 +178,18 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     0.8
                 )
                 cameraViewModel.imageProxyToBitmap(image)
-                if (toFrag == TO_HOME_FRAG) {
-                    mainViewModel.setCaptureImage(
-                        image,
-                        cameraViewModel.getCroppedBitmap(),
-                        { navController.popBackStack() },
-                        {
-                            binding.ivCapturedImage.load(it)
-                            binding.ivCapturedImage.visible()
-                        },
-                        { binding.ivCapturedImage.gone() }
-                    )
-                } else {
-                    toFrag = TO_HOME_FRAG
-                    navController.navigate(R.id.action_frag_camera_to_frag_capture)
-                }
+
+                mainViewModel.setCaptureImage(
+                    image,
+                    cameraViewModel.getCroppedBitmap(),
+                    { navController.popBackStack() },
+                    {
+                        binding.ivCapturedImage.load(it)
+                        binding.ivCapturedImage.visible()
+                    },
+                    { binding.ivCapturedImage.gone() }
+                )
+
                 image.close()
             }
         }

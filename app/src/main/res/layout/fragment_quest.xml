@@ -33,65 +33,88 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/tv_all"
-        style="@style/sans_body_default"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_tab"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-1dp"
-        android:background="@color/white"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:text="전체"
-        android:textColor="@color/selector_tab_all_color"
+        android:background="@drawable/quest_item_header"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/rev_quest"
+        app:layout_constraintEnd_toEndOf="@id/rev_quest"
         app:layout_constraintStart_toStartOf="@id/rev_quest"
-        app:layout_constraintTop_toBottomOf="@id/app_bar" />
+        app:layout_constraintTop_toBottomOf="@id/app_bar">
 
-    <TextView
-        android:id="@+id/tv_lv_1"
-        style="@style/sans_body_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:text="LV1"
-        android:textColor="@color/selector_tab_all_color"
-        app:layout_constraintTop_toTopOf="@id/tv_all"
-        app:layout_constraintBottom_toBottomOf="@id/tv_all"
-        app:layout_constraintStart_toEndOf="@id/tv_all"
-        android:layout_marginStart="1dp"/>
+        <TextView
+            android:id="@+id/tv_all"
+            style="@style/sans_body_default"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_quest_tab"
+            android:paddingVertical="1dp"
+            android:text="전체"
+            android:textAlignment="center"
+            android:textColor="@color/selector_tab_all_color"
+            app:layout_constraintEnd_toStartOf="@+id/tv_lv_1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_lv_2"
-        style="@style/sans_body_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:text="LV2"
-        android:textColor="@color/selector_tab_all_color"
-        app:layout_constraintTop_toTopOf="@id/tv_all"
-        app:layout_constraintBottom_toBottomOf="@id/tv_all"
-        app:layout_constraintStart_toEndOf="@id/tv_lv_1"
-        android:layout_marginStart="1dp"/>
+        <ImageView
+            android:id="@+id/tv_lv_1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_quest_tab"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="1dp"
+            android:src="@drawable/ic_lv_01"
+            app:layout_constraintBottom_toBottomOf="@id/tv_all"
+            app:layout_constraintEnd_toStartOf="@+id/tv_lv_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_all"
+            app:layout_constraintTop_toTopOf="@id/tv_all"
+            app:tint="@color/selector_tab_all_color" />
 
-    <TextView
-        android:id="@+id/tv_lv_3"
-        style="@style/sans_body_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:text="LV3"
-        android:textColor="@color/selector_tab_all_color"
-        app:layout_constraintTop_toTopOf="@id/tv_all"
-        app:layout_constraintBottom_toBottomOf="@id/tv_all"
-        app:layout_constraintStart_toEndOf="@id/tv_lv_2"
-        android:layout_marginStart="1dp"/>
+        <ImageView
+            android:id="@+id/tv_lv_2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_quest_tab"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="1dp"
+            android:src="@drawable/ic_lv_02"
+            android:textColor="@color/selector_tab_all_color"
+            app:layout_constraintBottom_toBottomOf="@id/tv_all"
+            app:layout_constraintEnd_toStartOf="@+id/tv_lv_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_lv_1"
+            app:layout_constraintTop_toTopOf="@id/tv_all"
+            app:tint="@color/selector_tab_all_color" />
+
+        <ImageView
+            android:id="@+id/tv_lv_3"
+            style="@style/sans_body_default"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_quest_tab"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="1dp"
+            android:src="@drawable/ic_lv_03"
+            android:textColor="@color/selector_tab_all_color"
+            app:layout_constraintBottom_toBottomOf="@id/tv_all"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_lv_2"
+            app:layout_constraintTop_toTopOf="@id/tv_all"
+            app:tint="@color/selector_tab_all_color" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rev_quest"
@@ -103,7 +126,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_all"
+        app:layout_constraintTop_toBottomOf="@id/constraint_tab"
         tools:listitem="@layout/item_quest" />
+
+    <View
+        android:id="@+id/loading"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/constraint_tab"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
