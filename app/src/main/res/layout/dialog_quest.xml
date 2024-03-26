@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:paddingTop="36dp"
+    android:paddingBottom="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -31,13 +33,16 @@
 
             <TextView
                 android:id="@+id/tv_content"
-                style="@style/pixel_body_small"
-                android:layout_width="match_parent"
+                style="@style/pixel_body_default"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="퀘스트 키워드를 변경하시겠습니까?"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="24dp"
+                android:text="키워드를 변경하시겠습니까?"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toTopOf="@id/btn_cancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_keyword" />
 
             <TextView
@@ -45,7 +50,7 @@
                 style="@style/pixel_body_default"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:background="@drawable/background_nagative_button"
                 android:paddingVertical="12dp"
                 android:text="취소"
@@ -56,24 +61,24 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_content"
-                app:layout_constraintWidth_percent="0.43" />
+                app:layout_constraintWidth_percent="0.4" />
 
             <TextView
                 android:id="@+id/btn_confirm"
                 style="@style/pixel_body_default"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="16dp"
                 android:background="@drawable/background_positive_button"
                 android:paddingVertical="12dp"
                 android:text="확인"
                 android:textAlignment="center"
                 android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_cancel"
-                app:layout_constraintTop_toBottomOf="@id/tv_content"
-                app:layout_constraintWidth_percent="0.43" />
+                app:layout_constraintTop_toTopOf="@id/btn_cancel"
+                app:layout_constraintWidth_percent="0.4" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

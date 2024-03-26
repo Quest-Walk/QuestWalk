@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.fragment.home.HomeFragment">
 
     <ImageView
         android:id="@+id/iv_bg_layer_3"
@@ -36,215 +36,239 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:src="@drawable/background_day_layer1" />
 
-    <LinearLayout
-        android:id="@+id/btn_my_page"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_my_info" />
-
-        <TextView
-            android:id="@+id/tv_my_page"
-            style="@style/sans_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="내정보"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/btn_wheather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/btn_my_page"
-        app:layout_constraintEnd_toStartOf="@id/btn_my_page"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btn_my_page">
-
-        <ImageView
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_question_mark" />
-
-        <TextView
-            android:id="@+id/tv_weather"
-            style="@style/sans_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="준비중"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/btn_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/btn_my_page"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btn_my_page"
-        app:layout_constraintTop_toTopOf="@id/btn_my_page">
-
-        <ImageView
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_record" />
-
-        <TextView
-            android:id="@+id/tv_history"
-            style="@style/sans_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="기록보기"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/btn_quest_change"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3">
+        android:id="@+id/inner_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_quest_keyword"
-            style="@style/pixel_head"
+        <LinearLayout
+            android:id="@+id/btn_my_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/yellow"
-            app:layout_constraintBottom_toTopOf="@id/tv_quest_change"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_my_info" />
+
+            <TextView
+                android:id="@+id/tv_my_page"
+                style="@style/sans_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="내정보"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_wheather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/btn_my_page"
+            app:layout_constraintEnd_toStartOf="@id/btn_my_page"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_my_page">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_weather" />
+
+            <TextView
+                android:id="@+id/tv_weather"
+                style="@style/sans_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="날씨"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/btn_my_page"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_my_page"
+            app:layout_constraintTop_toTopOf="@id/btn_my_page">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_record" />
+
+            <TextView
+                android:id="@+id/tv_history"
+                style="@style/sans_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="기록보기"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btn_quest_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="@string/homefragment_quest_title_default" />
+            app:layout_constraintVertical_bias="0.3">
 
-        <TextView
-            android:id="@+id/tv_quest_change"
-            style="@style/pixel_body_small"
+            <TextView
+                android:id="@+id/tv_quest_keyword"
+                style="@style/pixel_head"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/yellow"
+                app:layout_constraintBottom_toTopOf="@id/tv_quest_change"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="@string/homefragment_quest_title_default" />
+
+            <TextView
+                android:id="@+id/tv_quest_change"
+                style="@style/pixel_body_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/homefragment_quest_change"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/tv_quest_keyword"
+                app:layout_constraintStart_toStartOf="@id/tv_quest_keyword"
+                app:layout_constraintTop_toBottomOf="@id/tv_quest_keyword" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_playing_contents"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/homefragment_quest_change"
-            android:textColor="@color/white"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/btn_quest_change"
+            app:layout_constraintEnd_toEndOf="@id/btn_quest_change"
+            app:layout_constraintStart_toStartOf="@id/btn_quest_change">
+
+            <TextView
+                android:id="@+id/tv_quest_distance"
+                style="@style/sans_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/homefragment_quest_distance_default"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_quest_playing"
+                style="@style/sans_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/homefragment_quest_playing"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_quest_time"
+                style="@style/sans_body_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/homefragment_quest_time_default"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/motion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutDescription="@xml/fragment_home_scene"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/tv_quest_keyword"
-            app:layout_constraintStart_toStartOf="@id/tv_quest_keyword"
-            app:layout_constraintTop_toBottomOf="@id/tv_quest_keyword" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_quest_change"
+            app:layout_constraintVertical_bias="1.0">
+
+            <ImageView
+                android:id="@+id/btn_toggle_quest_state"
+                style="@style/pixel_body_default"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="32dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/btn_quest_default"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.4" />
+
+            <TextView
+                android:id="@+id/tv_toggle_quest_state"
+                style="@style/pixel_body_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="모험 시작하기"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/btn_toggle_quest_state"
+                app:layout_constraintEnd_toEndOf="@id/btn_toggle_quest_state"
+                app:layout_constraintStart_toStartOf="@id/btn_toggle_quest_state"
+                app:layout_constraintTop_toTopOf="@id/btn_toggle_quest_state" />
+
+            <ImageView
+                android:id="@+id/iv_chr_image"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:adjustViewBounds="true"
+                android:elevation="5dp"
+                android:src="@drawable/character_01"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
+
+        <ImageView
+            android:id="@+id/ib_camera"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="44dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/btn_camera"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_playing_contents"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/btn_quest_change"
-        app:layout_constraintEnd_toEndOf="@id/btn_quest_change"
-        app:layout_constraintStart_toStartOf="@id/btn_quest_change">
-
-        <TextView
-            android:id="@+id/tv_quest_distance"
-            style="@style/sans_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/homefragment_quest_distance_default"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/tv_quest_playing"
-            style="@style/sans_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/homefragment_quest_playing"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/tv_quest_time"
-            style="@style/sans_body_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/homefragment_quest_time_default"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
-    <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/motion_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layoutDescription="@xml/fragment_home_scene"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_quest_change">
-
-        <Button
-            android:id="@+id/btn_toggle_quest_state"
-            style="@style/pixel_body_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="32dp"
-            android:backgroundTint="@color/button"
-            android:text="모험 시작하기"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_chr_image"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:adjustViewBounds="true"
-            android:elevation="5dp"
-            android:src="@drawable/character_01"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.motion.widget.MotionLayout>
-
-    <ImageView
-        android:id="@+id/ib_camera"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="44dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/btn_camera"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@
     <style name="Base.Theme.QuestWalk" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="android:statusBarColor">@android:color/darker_gray</item>
+        <item name="android:statusBarColor">@color/main_purple</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">true</item>

@@ -20,8 +20,8 @@ android {
         applicationId = "com.hapataka.questwalk"
         minSdk = 26
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.23"
+        versionCode = 10
+        versionName = "1.231"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -125,6 +125,6 @@ dependencies {
     //ProgressBar
     implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")
 
-    //Proj4J
+    //Proj4j
     implementation ("org.locationtech.proj4j:proj4j:1.3.0")
 }
