@@ -8,9 +8,9 @@
     tools:context=".ui.signup.SignUpFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/inner_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/inner_container">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/app_bar"

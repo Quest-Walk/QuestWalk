@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemQuestBinding
-import com.hapataka.questwalk.ui.fragment.quest.QuestData
 import com.hapataka.questwalk.databinding.ItemQuestFooterBinding
+import com.hapataka.questwalk.ui.fragment.quest.QuestData
 import com.hapataka.questwalk.util.OnSingleClickListener
 import kotlin.math.roundToInt
 

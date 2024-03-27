@@ -53,6 +53,8 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
         initLoginButton()
         initSignUpButton()
         initFindPassWordButton()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun initFindPassWordButton() {

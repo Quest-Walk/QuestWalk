@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -26,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentCameraBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
+import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleTouchListener
 import com.hapataka.questwalk.util.ViewModelFactory
@@ -36,19 +36,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
-    companion object {
-        private var TO_HOME_FRAG = "homefragment"
-        private var TO_CAPT_FRAG = "capturefragment"
-    }
+
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
-    private val cameraViewModel: CameraViewModel by activityViewModels{ViewModelFactory(requireContext())}
+    private val cameraViewModel: CameraViewModel by activityViewModels {
+        ViewModelFactory(
+            requireContext()
+        )
+    }
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
 
-    private var toFrag = TO_HOME_FRAG
 
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
@@ -135,10 +135,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 navController.popBackStack()
             }
             tvCameraQuest.text = mainViewModel.currentKeyword.value
-            tvCameraQuest.setOnClickListener {
-                cameraHandler.capturePhoto(imageCaptureCallback())
-                toFrag = TO_CAPT_FRAG
-            }
         }
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
@@ -184,21 +180,18 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                     0.8
                 )
                 cameraViewModel.imageProxyToBitmap(image)
-                if (toFrag == TO_HOME_FRAG) {
-                    mainViewModel.setCaptureImage(
-                        image,
-                        cameraViewModel.getCroppedBitmap(),
-                        { navController.popBackStack() },
-                        {
-                            binding.ivCapturedImage.load(it)
-                            binding.ivCapturedImage.visible()
-                        },
-                        { binding.ivCapturedImage.gone() }
-                    )
-                } else {
-                    toFrag = TO_HOME_FRAG
-                    navController.navigate(R.id.action_frag_camera_to_frag_capture)
-                }
+
+                mainViewModel.setCaptureImage(
+                    image,
+                    cameraViewModel.getCroppedBitmap(),
+                    { navController.popBackStack() },
+                    {
+                        binding.ivCapturedImage.load(it)
+                        binding.ivCapturedImage.visible()
+                    },
+                    { binding.ivCapturedImage.gone() }
+                )
+
                 image.close()
             }
         }
