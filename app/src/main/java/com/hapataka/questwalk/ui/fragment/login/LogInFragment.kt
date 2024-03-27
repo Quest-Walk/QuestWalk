@@ -45,6 +45,8 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
         super.onViewCreated(view, savedInstanceState)
         initView()
         setup()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun initView() {

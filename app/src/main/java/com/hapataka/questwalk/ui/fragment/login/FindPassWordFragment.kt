@@ -37,6 +37,8 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
 
         setUpSendEmailButton()
         goBackToLogIn()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun setUpSendEmailButton() {
@@ -68,6 +70,7 @@ class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentF
         FirebaseAuth.getInstance().sendPasswordResetEmail(emailId).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 mainViewModel.setSnackBarMsg("이메일을 보냈습니다. 메일함을 확인해 주세요.")
+                navController.popBackStack()
             } else {
                 val errorMessage = getErrorMessageForEmailSending(task.exception)
 

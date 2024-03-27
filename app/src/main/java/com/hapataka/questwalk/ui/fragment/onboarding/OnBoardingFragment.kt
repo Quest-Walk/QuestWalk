@@ -39,6 +39,8 @@ class OnBoardingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun init() {
