@@ -58,12 +58,12 @@ class QuestListAdapter(
                 if (completeRate > 50) {
                     tvSolveUnder.visibility = View.INVISIBLE
                     tvSolveOver.visibility = View.VISIBLE
-                    tvSolveOver.setTextColor(context.getColor(R.color.gray_c8))
+                    tvSolveOver.setTextColor(context.getColor(R.color.white))
                     tvSolveOver.text = "$completeRate %달성"
                 } else {
                     tvSolveOver.visibility = View.INVISIBLE
                     tvSolveUnder.visibility = View.VISIBLE
-                    tvSolveUnder.setTextColor(context.getColor(R.color.white))
+                    tvSolveUnder.setTextColor(context.getColor(R.color.gray_c8))
                     tvSolveUnder.text = "$completeRate %달성"
                 }
 
@@ -88,12 +88,12 @@ class QuestListAdapter(
                 if (completeRate > 50) {
                     tvSolveUnder.visibility = View.INVISIBLE
                     tvSolveOver.visibility = View.VISIBLE
-                    tvSolveOver.setTextColor(context.getColor(R.color.main_purple))
+                    tvSolveOver.setTextColor(context.getColor(R.color.white))
                     tvSolveOver.text = "$completeRate %달성"
                 } else {
                     tvSolveOver.visibility = View.INVISIBLE
                     tvSolveUnder.visibility = View.VISIBLE
-                    tvSolveUnder.setTextColor(context.getColor(R.color.white))
+                    tvSolveUnder.setTextColor(context.getColor(R.color.main_purple))
                     tvSolveUnder.text = "$completeRate %달성"
                 }
 
