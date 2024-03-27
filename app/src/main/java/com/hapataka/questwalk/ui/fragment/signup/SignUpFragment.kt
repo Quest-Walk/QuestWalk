@@ -50,6 +50,8 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         initSignUpButton()
         initCloseButton()
         initPwVisibilityButton()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun initEditText() {

@@ -44,6 +44,8 @@ class OnBoardingFragment :
     private fun init() {
         changeProfile()
         goMain()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun changeProfile() {
