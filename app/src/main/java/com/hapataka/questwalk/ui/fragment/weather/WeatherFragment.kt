@@ -92,7 +92,6 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
             tvMise.visibility = View.INVISIBLE
             tvChomise.visibility = View.INVISIBLE
             tvWeatherTime.visibility = View.INVISIBLE
-            tvWeatherDetail.visibility = View.INVISIBLE
             ivArrowDown.visibility = View.INVISIBLE
             revWeather.visibility = View.INVISIBLE
         }

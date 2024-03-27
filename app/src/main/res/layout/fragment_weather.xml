@@ -86,29 +86,16 @@
                     app:layout_constraintTop_toBottomOf="@id/iv_weather" />
 
                 <TextView
-                    android:id="@+id/tv_weather_detail"
-                    style="@style/pixel_body_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="12dp"
-                    android:text="날씨 상세정보"
-                    android:textColor="#C8C8C8"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_arrow_down" />
-
-                <TextView
                     android:id="@+id/tv_mise"
                     style="@style/pixel_body_default"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="20dp"
                     android:text="미세먼지"
                     android:textColor="#c8c8c8"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_weather_detail"
+                    app:layout_constraintTop_toBottomOf="@id/iv_arrow_down"
                     app:layout_constraintWidth_percent="0.5" />
 
                 <TextView

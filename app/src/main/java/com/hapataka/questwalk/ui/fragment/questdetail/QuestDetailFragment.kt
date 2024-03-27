@@ -11,11 +11,12 @@ import com.hapataka.questwalk.ui.fragment.questdetail.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.fragment.questdetail.adapter.QuestDetailRecyclerViewDecoration
 import com.hapataka.questwalk.util.BaseFragment
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 class QuestDetailFragment : BaseFragment<FragmentQuestDetailBinding>(FragmentQuestDetailBinding::inflate) {
     private lateinit var questDetailAdapter: QuestDetailAdapter
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private var completeRate: Double = 0.0
+//    private var completeRate: Double = 0.0
     private var item: QuestData? = null
     private var allUser: Long = 0L
 
@@ -34,13 +35,18 @@ class QuestDetailFragment : BaseFragment<FragmentQuestDetailBinding>(FragmentQue
     }
 
     private fun initViews() {
-        completeRate =
-            round((item?.successItems?.size?.toDouble()?.div(allUser))?.times(100) ?: 0.0)
+        item?.let {
+            val completeRate = if (it.allUser != 0L) {
+                (((it.successItems.size.toDouble() / it.allUser)*100) *10.0 ).roundToInt() / 10.0
+            } else {
+                0.0
+            }
+            binding.tvSolvePercent.text = "해결 인원${completeRate}%"
+        }
 
         with(binding) {
             tvKeyword.text = item?.keyWord
             tvSolve.text = "이 퀘스트는 ${item?.successItems?.size}명이 해결했어요"
-            tvSolvePercent.text = "해결 인원${completeRate.toInt()}%"
             ivArrowBack.setOnClickListener {
                 navHost.popBackStack()
             }

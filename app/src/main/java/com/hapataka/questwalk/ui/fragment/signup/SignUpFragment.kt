@@ -43,6 +43,8 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        binding.innerContainer.setPadding()
+        requireActivity().setLightBarColor(true)
     }
 
     private fun initView() {
