@@ -82,7 +82,7 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
                     memoryCacheKey(result.questImg)
                 }
             } else {
-                ivQuestImage.load(R.drawable.image_fail)
+                ivQuestImage.visibility = View.GONE
             }
             tvAdvTime.text = result.time.convertTime(DETAIL_TIME)
             tvAdvDistance.text = result.distance.convertKm()
