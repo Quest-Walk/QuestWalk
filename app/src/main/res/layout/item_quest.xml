@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_quest"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_keyword"
+            style="@style/pixel_body_big_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="한의원"
+            android:textColor="@color/main_purple"
+            app:layout_constraintStart_toStartOf="@id/constraint_progress_bar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_level"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="12dp"
+            app:tint="@color/selector_quest_lv"
+            app:layout_constraintBottom_toBottomOf="@id/tv_keyword"
+            app:layout_constraintStart_toEndOf="@id/tv_keyword"
+            app:layout_constraintTop_toTopOf="@id/tv_keyword"
+            tools:src="@drawable/ic_lv_01" />
+
+        <TextView
+            android:id="@+id/btn_more"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_quest_item_button"
+            android:textAlignment="center"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="모두보기"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/main_purple"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_keyword"
+            app:layout_constraintBottom_toBottomOf="@id/tv_keyword"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_progress_bar_default"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_keyword">
+
+            <com.mackhartley.roundedprogressbar.RoundedProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:rpbBackgroundColor="@color/white"
+                app:rpbCornerRadius="30dp"
+                app:rpbProgressColor="@color/main_purple"
+                app:rpbShowProgressText="false" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_solve_over"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/constraint_progress_bar"
+            app:layout_constraintStart_toStartOf="@id/constraint_progress_bar"
+            app:layout_constraintTop_toTopOf="@id/constraint_progress_bar"
+            tools:text="32.5% 달성" />
+
+        <TextView
+            android:id="@+id/tv_solve_under"
+            style="@style/sans_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/main_purple"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/constraint_progress_bar"
+            app:layout_constraintEnd_toEndOf="@id/constraint_progress_bar"
+            app:layout_constraintTop_toTopOf="@id/constraint_progress_bar"
+            tools:text="53.5% 달성" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

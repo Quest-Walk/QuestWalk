@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "472639929110",
+    "project_id": "quest-walk-d261b",
+    "storage_bucket": "quest-walk-d261b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472639929110:android:25e0703f781ab8c3492e37",
+        "android_client_info": {
+          "package_name": "com.hapataka.questwalk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXfOWu4DVjX6wUdPpPYVT3Un4C9qlRHRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

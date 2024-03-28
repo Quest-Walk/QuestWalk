@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/frag_login">
+
+    <fragment
+        android:id="@+id/frag_my_info"
+        android:name="com.hapataka.questwalk.ui.fragment.myinfo.MyInfoFragment"
+        android:label="frag_my_info"
+        tools:layout="@layout/fragment_my_info">
+        <action
+            android:id="@+id/action_frag_my_info_to_frag_login"
+            app:destination="@id/frag_login"
+            app:popUpTo="@id/frag_login"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_record"
+        android:name="com.hapataka.questwalk.ui.fragment.record.RecordFragment"
+        android:label="frag_record"
+        tools:layout="@layout/fragment_record">
+        <action
+            android:id="@+id/action_frag_record_to_frag_result"
+            app:destination="@id/frag_result" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_home"
+        android:name="com.hapataka.questwalk.ui.fragment.home.HomeFragment"
+        android:label="frag_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_frag_home_to_frag_my_info"
+            app:destination="@id/frag_my_info" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_record"
+            app:destination="@id/frag_record" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_camera"
+            app:destination="@id/frag_camera" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_quest"
+            app:destination="@id/frag_quest" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_result"
+            app:destination="@id/frag_result" />
+        <action
+            android:id="@+id/action_frag_home_to_weatherFragment"
+            app:destination="@id/frag_weather" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_camera"
+        android:name="com.hapataka.questwalk.ui.fragment.camera.CameraFragment"
+        android:label="frag_camera"
+        tools:layout="@layout/fragment_camera">
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/frag_login"
+        android:name="com.hapataka.questwalk.ui.fragment.login.LogInFragment"
+        android:label="frag_login"
+        tools:layout="@layout/fragment_log_in">
+        <action
+            android:id="@+id/action_frag_login_to_frag_sign_up"
+            app:destination="@id/frag_sign_up" />
+        <action
+            android:id="@+id/action_frag_login_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
+        <action
+            android:id="@+id/action_frag_login_to_frag_home"
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_login_to_findPassWordFragment"
+            app:destination="@id/findPassWordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_sign_up"
+        android:name="com.hapataka.questwalk.ui.fragment.signup.SignUpFragment"
+        android:label="frag_sign_up"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_home"
+            app:destination="@id/frag_home"
+            app:popUpTo="@id/frag_home" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_login"
+            app:destination="@id/frag_login" />
+        <action
+            android:id="@+id/action_frag_sign_up_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_on_boarding"
+        android:name="com.hapataka.questwalk.ui.fragment.onboarding.OnBoardingFragment"
+        android:label="frag_on_boarding"
+        tools:layout="@layout/fragment_on_boarding">
+        <action
+            android:id="@+id/action_frag_on_boarding_to_frag_home"
+            app:destination="@id/frag_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_result"
+        android:name="com.hapataka.questwalk.ui.fragment.result.ResultFragment"
+        android:label="frag_result"
+        tools:layout="@layout/fragment_result" />
+
+    <fragment
+        android:id="@+id/frag_success"
+        tools:layout="@layout/fragment_success" />
+
+    <fragment
+        android:id="@+id/frag_quest"
+        android:name="com.hapataka.questwalk.ui.fragment.quest.QuestFragment"
+        android:label="frag_quest"
+        tools:layout="@layout/fragment_quest">
+        <action
+            android:id="@+id/action_frag_quest_to_frag_quest_detail"
+            app:destination="@id/frag_quest_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_quest_detail"
+        android:name="com.hapataka.questwalk.ui.fragment.questdetail.QuestDetailFragment"
+        android:label="frag_quest_detail"
+        tools:layout="@layout/fragment_quest_detail">
+        <action
+            android:id="@+id/action_frag_quest_detail_to_dialog_full_image"
+            app:destination="@id/dialog_full_image" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/findPassWordFragment"
+        android:name="com.example.firebasetestapp.FindPassWordFragment"
+        android:label="FindPassWordFragment"
+        tools:layout="@layout/fragment_find_pass_word" />
+
+    <dialog
+        android:id="@+id/dialog_full_image"
+        android:name="com.hapataka.questwalk.ui.fragment.questdetail.FullImageDialog"
+        android:label="dialog_full_image" />
+
+    <fragment
+        android:id="@+id/frag_weather"
+        android:name="com.hapataka.questwalk.ui.fragment.weather.WeatherFragment"
+        android:label="fragment_weather"
+        tools:layout="@layout/fragment_weather" />
+
+</navigation>
