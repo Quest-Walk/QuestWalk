@@ -2,10 +2,10 @@ package com.hapataka.questwalk.data.fusedlocation.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -16,7 +16,6 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class LocationRepositoryImpl(context: Context) : LocationRepository {
     private val client by lazy { LocationServices.getFusedLocationProviderClient(context) }
@@ -43,13 +42,13 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                     prevLocation = result.lastLocation
                 }
 
-                if(badLocCount<5) {
+                if (badLocCount < 5) {
                     if (currentLocation.hasAccuracy().not()) {
                         badLocCount++
                         return
                     }
 
-                    if (currentLocation.accuracy > 30) {
+                    if (currentLocation.accuracy > 12) {
                         badLocCount++
                         return
                     }
@@ -58,24 +57,23 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
                         badLocCount++
                         return
                     }
-                    badLocCount=0
-                }
-                else {
+                    badLocCount = 0
+                } else {
                     if (currentLocation.hasAccuracy().not()) {
-                        goodLocCount=0
+                        goodLocCount = 0
                         return
                     }
 
-                    if (currentLocation.accuracy > 30) {
-                        goodLocCount=0
+                    if (currentLocation.accuracy > 12) {
+                        goodLocCount = 0
                         return
                     }
 
                     goodLocCount++
 
-                    if(goodLocCount>=5){
-                        badLocCount=0
-                        goodLocCount=0
+                    if (goodLocCount >= 5) {
+                        badLocCount = 0
+                        goodLocCount = 0
                     }
                 }
 
@@ -101,7 +99,7 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
 
     @SuppressLint("MissingPermission")
     override suspend fun getCurrent(): LocationEntity = withContext(Dispatchers.IO) {
-        val location = client.lastLocation.await()
+        var location = client.lastLocation.await()
         val latitude = location.latitude.toFloat()
         val longitude = location.longitude.toFloat()
         val distance = location.distanceTo(
