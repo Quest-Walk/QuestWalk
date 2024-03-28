@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 
 
 class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
-    private val authRepo by lazy { AuthRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }

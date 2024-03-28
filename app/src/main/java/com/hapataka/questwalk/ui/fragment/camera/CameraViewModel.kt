@@ -16,32 +16,25 @@ import androidx.lifecycle.ViewModel
 
 class CameraViewModel : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
-    val bitmap: LiveData<Bitmap?> get() = _bitmap
+//    val bitmap: LiveData<Bitmap?> get() = _bitmap
 
     private var croppedBitmap: Bitmap? = null
     private var drawBoxOnBitmap: Bitmap? = null
-
-
-
-
     private var croppedSize = 0
     private var x = 0
     private var y = 0
+
     fun calculateAcc(appWidth: Int, appHeight: Int, inputImage: ImageProxy,sizeRate : Double) {
-        val imageWidth = inputImage.height // 1392
-        val imageHeight = inputImage.width // 1856
-        //1. getRatio 세로 길이가 더 긴 상황 이므로
+        val imageWidth = inputImage.height
+        val imageHeight = inputImage.width
         val ratio = appHeight / imageHeight.toDouble()
 
-        //3.getCropWidth
         croppedSize = ((appWidth * sizeRate/2)/ratio).toInt()
 
-        //4.getX
         x = (imageWidth/2.0- croppedSize).toInt()
         y = (imageHeight/2.0 - croppedSize).toInt()
 
         return
-
     }
 
     fun imageProxyToBitmap(image: ImageProxy) {
@@ -57,7 +50,6 @@ class CameraViewModel : ViewModel() {
         if (bitmap == null) return
         _bitmap.value = bitmap
         croppedBitmap = cropBitmap(bitmap)
-        drawBoxOnBitmap = drawBoxOnBitmap(bitmap)
     }
 
 
@@ -73,21 +65,6 @@ class CameraViewModel : ViewModel() {
             bitmap?.let { Bitmap.createBitmap(it, 0, 0, bitmap.width, bitmap.height, matrix, true) }
         return postBitmap
     }
-
-    private fun drawBoxOnBitmap(bitmap: Bitmap?): Bitmap? {
-        if (bitmap == null) return null
-        val drawBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        val canvas = Canvas(drawBitmap)
-        val paint = Paint().apply {
-            color = Color.RED
-            style = Paint.Style.STROKE
-            strokeWidth = 5f
-        }
-        canvas.drawRect(x.toFloat(), y.toFloat(), x + 2*croppedSize.toFloat(), y + 2*croppedSize.toFloat(), paint)
-        return drawBitmap
-    }
-
-
 
     fun getCroppedBitmap() = croppedBitmap
 }

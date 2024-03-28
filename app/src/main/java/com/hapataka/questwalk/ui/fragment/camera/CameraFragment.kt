@@ -31,13 +31,8 @@ import com.hapataka.questwalk.util.OnSingleTouchListener
 import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.visible
-import dagger.hilt.android.AndroidEntryPoint
 
-
-@AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
-
-
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
     private val cameraViewModel: CameraViewModel by activityViewModels {

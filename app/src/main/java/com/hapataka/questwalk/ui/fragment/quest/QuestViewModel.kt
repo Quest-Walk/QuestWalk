@@ -73,22 +73,6 @@ class QuestViewModel(
         allUser = userRepo.getAllUserSize()
     }
 
-//    fun filterComplete(isChecked: Boolean) {
-//        if (isChecked) {
-//            viewModelScope.launch {
-//                _questItems.value = questStackRepo.getAllItems().map {
-//                    convertToQuestData(it)
-//                }.toMutableList()
-//                allQuestItems = _questItems.value?.toMutableList() ?: mutableListOf()
-//                filterLevel(currentLevel)
-//            }
-//        } else {
-//            viewModelScope.launch {
-//                getQuestItems()
-//            }
-//        }
-//    }
-
     private fun convertToQuestData(questStackEntity: QuestStackEntity): QuestData {
         val resultItems = questStackEntity.successItems.map {
             QuestData.SuccessItem(it.userId, it.imageUrl, it.registerAt)

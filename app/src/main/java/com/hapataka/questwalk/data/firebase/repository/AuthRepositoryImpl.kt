@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.data.firebase.repository
 
-import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
@@ -47,13 +46,11 @@ class AuthRepositoryImpl : AuthRepository {
         val email = auth.currentUser?.email ?: ""
         val credential = EmailAuthProvider.getCredential(email, pw)
 
-        Log.i("Authentication", "password: ${pw}")
         try {
             auth.currentUser!!.reauthenticate(credential).await()
             return true
         } catch (e: Exception) {
-            Log.e("Exception_Authentication", ": $e")
-            return false
+            throw Exception("Exception_Authentication: $e")
         }
     }
 

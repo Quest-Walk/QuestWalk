@@ -14,7 +14,6 @@ data class CharacterData(
     }
 }
 
-
 interface OnCharacterSelectedListener {
     fun onCharacterSelected(characterData: CharacterData)
 }

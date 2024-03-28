@@ -32,6 +32,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                     binding.loading.visibility = View.INVISIBLE
                 }
             }
+
             successKeywords.observe(viewLifecycleOwner) {
                 keywords = it
             }
@@ -41,7 +42,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initViews() {
         initBackButton()
         initTabButton()
-        initCompleteButton()
         initQuestRecyclerView()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
@@ -66,18 +66,6 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 }
             }
         }
-    }
-
-    private fun initCompleteButton() {
-//        binding.constrainComplete.setOnClickListener {
-//            if (binding.ivCheck.isVisible) {
-//                binding.ivCheck.visibility = View.INVISIBLE
-//                questViewModel.filterComplete(false)
-//            } else {
-//                binding.ivCheck.visibility = View.VISIBLE
-//                questViewModel.filterComplete(true)
-//            }
-//        }
     }
 
     private fun initQuestRecyclerView() {

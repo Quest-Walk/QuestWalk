@@ -69,43 +69,39 @@ class ImageUtil(val context: Context) {
         var bitmap = Bitmap.createBitmap(src.width(), src.height(), Bitmap.Config.ARGB_8888)
         Utils.matToBitmap(src, bitmap)
         resultBitmap.add(bitmap)
-        // 이미지 처리 과정
+
         val mat = src.clone()
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY)
-        // 1
+
         resultBitmap.add(dummyBitmap(mat))
         Imgproc.createCLAHE(200.0, getSize(10.0)).apply(mat, mat)
-        // 2
+
         resultBitmap.add(dummyBitmap(mat))
 
         Imgproc.GaussianBlur(mat, mat, getSize(51.0), 0.0)
-        // 3
-        resultBitmap.add(dummyBitmap(mat))
 
+        resultBitmap.add(dummyBitmap(mat))
 
         Imgproc.Laplacian(mat, mat, -1, 5, 3.0, 0.0, Core.BORDER_REPLICATE)
 
-        // 4
         resultBitmap.add(dummyBitmap(mat))
-//
-        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
-        // 5
-        resultBitmap.add(dummyBitmap(binary))
 
-        //모폴리지 연산
+        Imgproc.threshold(mat, binary, 0.0, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU)
+
+        resultBitmap.add(dummyBitmap(binary))
 
         Imgproc.morphologyEx(binary, binary, Imgproc.MORPH_OPEN, getKernel(Imgproc.MORPH_OPEN, 3.0))
         resultBitmap.add(dummyBitmap(binary))
 
 
-        // 6
+
         resultBitmap.add(dummyBitmap(binary))
-        // 흰색 부분만 처리하기 위한 마스크 생성
+
         Core.bitwise_and(src, src, processedImage, binary)
 
-        // 검은색 부분은 원본 이미지 사용, 흰색 부분은 처리된 이미지 사용
-        Core.bitwise_not(binary, mask) // 흰색 부분을 제외한 나머지를 마스크로 생성
-        Core.bitwise_and(src, src, result, mask) // 원본에서 검은색 부분만 추출
+
+        Core.bitwise_not(binary, mask)
+        Core.bitwise_and(src, src, result, mask) 
         Core.addWeighted(processedImage, 1.5, result, 1.0, 1.0, result)
 
         //7

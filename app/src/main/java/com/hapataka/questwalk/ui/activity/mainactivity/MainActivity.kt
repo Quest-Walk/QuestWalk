@@ -12,12 +12,9 @@ import com.hapataka.questwalk.databinding.ActivityMainBinding
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.opencv.android.OpenCVLoader
 
-
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val authRepo by lazy { AuthRepositoryImpl() }

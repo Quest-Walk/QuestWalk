@@ -11,13 +11,11 @@ import java.time.LocalTime
 
 class HomeViewModel(
     private val authRepo: AuthRepository,
-    private val userRepo: UserRepository,
     private val encryptRepo: EncryptionKeyRepository
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
     val isNight: LiveData<Boolean> get() = _isNight
 
-    private var _charNum = MutableLiveData<Int>()
     private var time = -1
 
     fun checkCurrentTime() {

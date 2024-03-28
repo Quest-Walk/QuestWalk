@@ -1,9 +1,6 @@
 package com.hapataka.questwalk.domain.usecase
 
-import android.util.Log
-import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo

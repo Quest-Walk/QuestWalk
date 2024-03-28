@@ -93,8 +93,8 @@ class WeatherViewModel (
 
     private fun getSkyState(sky: String): String {
         return when(sky.toInt()) {
-            in 0..5 -> "맑음 이구먼"
-            in 6..8 -> "구름이 많구먼"
+            1 -> "맑음 이구먼"
+            3 -> "구름이 많구먼"
             else -> "많이 흐리겠구먼"
         }
     }

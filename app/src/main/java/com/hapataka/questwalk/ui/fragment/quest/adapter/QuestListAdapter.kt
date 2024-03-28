@@ -151,8 +151,6 @@ class QuestListAdapter(
         }
     }
 
-//    inner class HeaderViewHolder(binding: ItemQuestHeaderBinding): RecyclerView.ViewHolder(binding.root) {}
-
     inner class FooterViewHolder(binding: ItemQuestFooterBinding): RecyclerView.ViewHolder(binding.root) {}
 
     companion object {

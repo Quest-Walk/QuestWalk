@@ -69,7 +69,7 @@ class CameraHandler(
             handleZoomAndTap()
 
         } catch (e: Exception) {
-            Log.d("CameraX", "initCamera Fail", e)
+            throw IllegalArgumentException("Exception: $e")
         }
     }
 

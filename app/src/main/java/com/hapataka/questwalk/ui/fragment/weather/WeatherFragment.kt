@@ -12,9 +12,7 @@ import com.hapataka.questwalk.ui.fragment.weather.adapter.WeatherAdapterDecorati
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import com.hapataka.questwalk.util.ViewModelFactory
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBinding::inflate){
     private val weatherViewModel: WeatherViewModel by viewModels {ViewModelFactory(requireContext())}
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }

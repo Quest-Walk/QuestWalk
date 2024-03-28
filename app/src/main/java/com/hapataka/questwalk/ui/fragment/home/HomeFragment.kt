@@ -382,8 +382,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    val TAG = "permission_test"
-
     private fun makeResultLauncher() {
         activityResultLauncher = registerForActivityResult(contract) { permissions ->
             if (permissions.values.all { it }) {

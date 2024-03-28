@@ -16,7 +16,6 @@ import kotlin.math.roundToInt
 class QuestDetailFragment : BaseFragment<FragmentQuestDetailBinding>(FragmentQuestDetailBinding::inflate) {
     private lateinit var questDetailAdapter: QuestDetailAdapter
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-//    private var completeRate: Double = 0.0
     private var item: QuestData? = null
     private var allUser: Long = 0L
 
