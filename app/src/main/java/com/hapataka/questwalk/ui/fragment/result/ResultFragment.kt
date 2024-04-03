@@ -11,18 +11,19 @@ import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.fragment.quest.QuestData
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
+import dagger.hilt.android.AndroidEntryPoint
 
 const val USER_ID = "user_id"
 const val QUEST_KEYWORD = "quest_keyword"
 const val REGISTER_TIME = "register_time"
 
+@AndroidEntryPoint
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate) {
-    private val viewModel: ResultViewModel by viewModels { ViewModelFactory() }
+    private val viewModel: ResultViewModel by viewModels()
     private var userId: String? = null
     private var keyword: String? = null
     private var registerAt: String? = null

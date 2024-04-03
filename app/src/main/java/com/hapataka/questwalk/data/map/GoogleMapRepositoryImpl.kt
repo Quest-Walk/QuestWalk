@@ -52,7 +52,7 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
                 polyline?.endCap = RoundCap()
             }
         }
-        tAnimator.startDelay = 3000
+        tAnimator.startDelay = 800
         tAnimator.start()
 
         addMarker(result)

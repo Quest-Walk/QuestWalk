@@ -5,7 +5,6 @@ import android.content.Context
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -13,11 +12,13 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LocationRepositoryImpl(context: Context) : LocationRepository {
+class LocationRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) : LocationRepository {
     private val client by lazy { LocationServices.getFusedLocationProviderClient(context) }
     private val request by lazy {
         LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
@@ -110,6 +111,5 @@ class LocationRepositoryImpl(context: Context) : LocationRepository {
             Pair(latitude, longitude),
             distance
         )
-
     }
 }

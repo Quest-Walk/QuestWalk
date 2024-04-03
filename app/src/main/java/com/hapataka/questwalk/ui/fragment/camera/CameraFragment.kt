@@ -2,9 +2,13 @@ package com.hapataka.questwalk.ui.fragment.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.media.AudioManager
 import android.media.MediaActionSound
+import android.media.MediaPlayer
+import android.media.SoundPool
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -28,7 +32,6 @@ import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.ui.camera.CameraViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleTouchListener
-import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.visible
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,14 +40,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
 
-
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory() }
-    private val cameraViewModel: CameraViewModel by activityViewModels {
-        ViewModelFactory(
-            requireContext()
-        )
-    }
+    private val mainViewModel: MainViewModel by activityViewModels ()
+    private val cameraViewModel: CameraViewModel by activityViewModels ()
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
@@ -119,7 +117,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 }
             }
         }
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -151,14 +148,36 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
+    fun playWithMediaPlayer() {
+        val audioManager = requireContext().applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM).toFloat()
+        val mediaPlayer = MediaPlayer.create(
+            context,
+            Uri.parse("file:///system/media/audio/ui/camera_click.ogg")
+        )
+
+        mediaPlayer.apply {
+            setVolume(1.0f, 1.0f)
+            start()
+        }
+    }
+
+    fun playWithSoundPool() {
+        val soundPool = SoundPool.Builder().build()
+
+    }
+
     private fun initCaptureButton() {
         val mediaActionSound = MediaActionSound()
 
         binding.btnCapture.apply {
             setOnTouchListener(object : OnSingleTouchListener() {
                 override fun onSingleTouchUp(v: View, event: MotionEvent) {
+
+                    playWithMediaPlayer()
                     this@apply.load(R.drawable.btn_capture_click)
                     mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
+
                     cameraHandler.capturePhoto(imageCaptureCallback())
                 }
 

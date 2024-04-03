@@ -7,9 +7,12 @@ import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalTime
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val authRepo: AuthRepository,
     private val userRepo: UserRepository,
     private val encryptRepo: EncryptionKeyRepository

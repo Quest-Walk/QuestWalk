@@ -9,11 +9,12 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
 import com.hapataka.questwalk.ui.fragment.quest.adapter.QuestListAdapter
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::inflate) {
     private lateinit var questListAdapter: QuestListAdapter
-    private val questViewModel: QuestViewModel by viewModels { ViewModelFactory() }
+    private val questViewModel: QuestViewModel by viewModels()
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var keywords: MutableList<String> = mutableListOf()
 
@@ -83,7 +84,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
     private fun initQuestRecyclerView() {
         questListAdapter = QuestListAdapter(
             requireContext(),
-            onClickMoreText = {questData ->
+            onClickMoreText = { questData ->
                 val bundle = Bundle().apply {
                     putParcelable("item", questData)
                     putLong("allUser", questData.allUser)
@@ -91,7 +92,7 @@ class QuestFragment : BaseFragment<FragmentQuestBinding>(FragmentQuestBinding::i
                 navHost.navigate(R.id.action_frag_quest_to_frag_quest_detail, bundle)
             },
 
-            onClickView =  {keyWord ->
+            onClickView = { keyWord ->
                 val dialog = QuestDialog(keyWord, keywords)
 
                 dialog.show(parentFragmentManager, "QuestDialog")

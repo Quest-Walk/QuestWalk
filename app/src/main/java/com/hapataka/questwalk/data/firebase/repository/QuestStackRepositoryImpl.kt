@@ -9,8 +9,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class QuestStackRepositoryImpl : QuestStackRepository {
+class QuestStackRepositoryImpl @Inject constructor() : QuestStackRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val questCollection by lazy { remoteDb.collection("quest") }
 

@@ -72,17 +72,41 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
-                <TextView
-                    android:id="@+id/tv_player_name"
-                    style="@style/pixel_body_big"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/btn_player_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:textColor="@color/main_purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_player_character"
-                    tools:text="모험가 1527" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_player_character">
+
+                    <TextView
+                        android:id="@+id/tv_player_name"
+                        style="@style/pixel_body_big"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/main_purple"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="모험가 1527" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginVertical="3dp"
+                        android:layout_marginStart="12dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/btn_edit"
+                        app:layout_constraintBottom_toBottomOf="@id/tv_player_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tv_player_name"
+                        app:layout_constraintTop_toTopOf="@id/tv_player_name"
+                        app:tint="@color/main_purple" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/tv_title_time"
@@ -92,7 +116,7 @@
                     android:layout_marginTop="30dp"
                     android:text="@string/play_time"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_player_name" />
+                    app:layout_constraintTop_toBottomOf="@id/btn_player_name" />
 
                 <TextView
                     android:id="@+id/tv_time_value"

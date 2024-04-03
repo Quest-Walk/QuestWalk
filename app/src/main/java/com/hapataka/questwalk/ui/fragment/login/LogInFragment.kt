@@ -18,17 +18,17 @@ import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
     private val authRepo by lazy { AuthRepositoryImpl() }
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
-    private val viewModel: LoginViewModel by viewModels { ViewModelFactory(requireContext()) }
+    private val mainViewModel: MainViewModel by activityViewModels ()
+    private val viewModel: LoginViewModel by viewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

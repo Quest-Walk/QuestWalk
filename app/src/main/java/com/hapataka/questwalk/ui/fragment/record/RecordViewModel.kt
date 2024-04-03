@@ -13,9 +13,12 @@ import com.hapataka.questwalk.ui.fragment.record.model.RecordItem
 import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.ResultItem
 import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecordViewModel(
+@HiltViewModel
+class RecordViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val achieveItemRepo: AchieveItemRepository
 ) : ViewModel() {

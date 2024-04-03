@@ -8,9 +8,12 @@ import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MyInfoViewModel(
+@HiltViewModel
+class MyInfoViewModel @Inject constructor(
     private val authRepo: AuthRepository,
     private val userRepo: UserRepository
 ) : ViewModel() {

@@ -19,12 +19,12 @@ import com.hapataka.questwalk.databinding.FragmentFindPassWordBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentFindPassWordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
+    private val mainViewModel: MainViewModel by activityViewModels ()
     private var emailId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -9,8 +9,9 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import org.locationtech.proj4j.CRSFactory
 import org.locationtech.proj4j.CoordinateTransformFactory
 import org.locationtech.proj4j.ProjCoordinate
+import javax.inject.Inject
 
-class GetDustUseCase(
+class GetDustUseCase @Inject constructor(
     private val locationRepo: LocationRepository,
     private val dustRepo: DustRepository
 ) {

@@ -5,9 +5,9 @@ import com.hapataka.questwalk.data.remote.dto.weather.Item
 import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.WeatherRepository
+import javax.inject.Inject
 
-class WeatherRepositoryImpl (
-) : WeatherRepository {
+class WeatherRepositoryImpl @Inject constructor () : WeatherRepository {
     private val weatherService = RetrofitClient.weatherApi
 
     override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {

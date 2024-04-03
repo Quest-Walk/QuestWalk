@@ -8,8 +8,9 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.auth
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class AuthRepositoryImpl : AuthRepository {
+class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     private val auth by lazy { Firebase.auth }
 
     override suspend fun registerByEmailAndPw(

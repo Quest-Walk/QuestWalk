@@ -4,20 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.firebase.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.firebase.repository.UserRepositoryImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.domain.usecase.GetAllQuestUseCase
-import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class QuestViewModel(
+@HiltViewModel
+class QuestViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val getAllQuestUseCase: GetAllQuestUseCase
 ) : ViewModel() {

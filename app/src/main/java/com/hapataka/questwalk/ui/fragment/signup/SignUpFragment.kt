@@ -25,12 +25,13 @@ import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
-import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.showErrMsg
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding::inflate) {
-    private val viewModel: SignUpViewModel by viewModels { ViewModelFactory(requireContext()) }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
+    private val viewModel: SignUpViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var isCanClick = true
 
@@ -90,7 +91,10 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                         return@onSingleClick
                     }
 
-                    viewModel.registerByEmailAndPw(emailId, pw, { moveHomeWithLogin(emailId, pw) }) {
+                    viewModel.registerByEmailAndPw(
+                        emailId,
+                        pw,
+                        { moveHomeWithLogin(emailId, pw) }) {
                         mainViewModel.setSnackBarMsg("이미 가입된 아이디입니다.")
                         isCanClick = true
                     }
