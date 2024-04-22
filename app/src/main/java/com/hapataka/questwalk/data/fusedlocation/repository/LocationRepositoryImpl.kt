@@ -2,7 +2,6 @@ package com.hapataka.questwalk.data.fusedlocation.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.LocationCallback
@@ -25,9 +24,6 @@ class LocationRepositoryImpl @Inject constructor(@ApplicationContext private val
     }
     private lateinit var locationCallback: LocationCallback
     private var prevLocation: Location? = null
-    private var badLocCount: Int = 0
-    private var goodLocCount: Int = 0
-    private val geocoder = Geocoder(context)
 
     @SuppressLint("MissingPermission")
     override fun startRequest(callback: (LocationEntity) -> Unit) {
@@ -43,43 +39,18 @@ class LocationRepositoryImpl @Inject constructor(@ApplicationContext private val
                     prevLocation = result.lastLocation
                 }
 
-                if (badLocCount < 5) {
-                    if (currentLocation.hasAccuracy().not()) {
-                        badLocCount++
-                        return
-                    }
-
-                    if (currentLocation.accuracy > 12) {
-                        badLocCount++
-                        return
-                    }
-
-                    if (currentLocation.accuracy * 1.5 < moveDistance) {
-                        badLocCount++
-                        return
-                    }
-                    badLocCount = 0
-                } else {
-                    if (currentLocation.hasAccuracy().not()) {
-                        goodLocCount = 0
-                        return
-                    }
-
-                    if (currentLocation.accuracy > 12) {
-                        goodLocCount = 0
-                        return
-                    }
-
-                    goodLocCount++
-
-                    if (goodLocCount >= 5) {
-                        badLocCount = 0
-                        goodLocCount = 0
-                    }
+                if(currentLocation.speed < 1) {
+                    return
                 }
 
-                prevLocation = result.lastLocation
+                if (currentLocation.accuracy > 12) {
+                    return
+                }
 
+                if (currentLocation.accuracy * 1.5 < moveDistance) {
+                    return
+                }
+                prevLocation = result.lastLocation
                 callback(
                     LocationEntity(
                         Pair(

@@ -2,13 +2,9 @@ package com.hapataka.questwalk.ui.fragment.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.media.AudioManager
 import android.media.MediaActionSound
-import android.media.MediaPlayer
-import android.media.SoundPool
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -41,8 +37,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding::inflate) {
 
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val mainViewModel: MainViewModel by activityViewModels ()
-    private val cameraViewModel: CameraViewModel by activityViewModels ()
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels()
 
     private lateinit var cameraHandler: CameraHandler
     private var isComingFromSettings = false
@@ -50,8 +46,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
 
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-            ::handlePermissionResult
+            ActivityResultContracts.RequestPermission(), ::handlePermissionResult
         )
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -93,18 +88,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
             Snackbar.make(requireView(), "카메라를 사용하기 위해서는 권한이 필요합니다.", Snackbar.LENGTH_SHORT)
                 .setAction("확인") {
                     requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-                .show()
+                }.show()
         } else {
-            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT)
-                .setAction("권한 설정") {
+            Snackbar.make(requireView(), "권한 받아 오기 실패", Snackbar.LENGTH_SHORT).setAction("권한 설정") {
                     isComingFromSettings = true
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", requireActivity().packageName, null)
                     }
                     startActivity(intent)
-                }
-                .show()
+                }.show()
         }
     }
 
@@ -148,36 +140,14 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         }
     }
 
-    fun playWithMediaPlayer() {
-        val audioManager = requireContext().applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM).toFloat()
-        val mediaPlayer = MediaPlayer.create(
-            context,
-            Uri.parse("file:///system/media/audio/ui/camera_click.ogg")
-        )
-
-        mediaPlayer.apply {
-            setVolume(1.0f, 1.0f)
-            start()
-        }
-    }
-
-    fun playWithSoundPool() {
-        val soundPool = SoundPool.Builder().build()
-
-    }
-
     private fun initCaptureButton() {
         val mediaActionSound = MediaActionSound()
 
         binding.btnCapture.apply {
             setOnTouchListener(object : OnSingleTouchListener() {
                 override fun onSingleTouchUp(v: View, event: MotionEvent) {
-
-                    playWithMediaPlayer()
                     this@apply.load(R.drawable.btn_capture_click)
                     mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
-
                     cameraHandler.capturePhoto(imageCaptureCallback())
                 }
 
@@ -193,23 +163,18 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
         return object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 cameraViewModel.calculateAcc(
-                    binding.pvPreview.width,
-                    binding.pvPreview.height,
-                    image,
-                    0.8
+                    binding.pvPreview.width, binding.pvPreview.height, image, 0.8
                 )
                 cameraViewModel.imageProxyToBitmap(image)
 
-                mainViewModel.setCaptureImage(
-                    image,
+                mainViewModel.setCaptureImage(image,
                     cameraViewModel.getCroppedBitmap(),
                     { navController.popBackStack() },
                     {
                         binding.ivCapturedImage.load(it)
                         binding.ivCapturedImage.visible()
                     },
-                    { binding.ivCapturedImage.gone() }
-                )
+                    { binding.ivCapturedImage.gone() })
 
                 image.close()
             }
