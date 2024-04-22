@@ -24,7 +24,7 @@ class ResultViewModel @Inject constructor(
     private val _questItem = MutableLiveData<QuestData>()
     val questItem: LiveData<QuestData> = _questItem
     private val _completeRate = MutableLiveData<Double>()
-    val completeRate: LiveData<Double> = _completeRate
+    val completeRate: LiveData<Double> get() = _completeRate
 
     fun getResult(userId: String, keyword: String, registerAt: String) {
         viewModelScope.launch {
