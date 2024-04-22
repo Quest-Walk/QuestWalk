@@ -7,9 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.LocalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val localRepo: LocalRepository,
     private val authRepo: AuthRepository
 ) : ViewModel() {

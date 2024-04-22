@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel(
+class SignUpViewModel @Inject constructor(
     private val autoRepo: AuthRepository,
     private val localRepo: LocalRepository
 ) : ViewModel() {

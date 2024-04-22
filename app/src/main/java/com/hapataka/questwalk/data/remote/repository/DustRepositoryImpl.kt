@@ -8,8 +8,9 @@ import com.hapataka.questwalk.domain.entity.StationEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DustRepositoryImpl: DustRepository {
+class DustRepositoryImpl @Inject constructor(): DustRepository {
     private val dustService = RetrofitClient.dustApi
 
     override suspend fun getDustInfo(queryMap: Map<String, String>) = withContext(Dispatchers.IO) {

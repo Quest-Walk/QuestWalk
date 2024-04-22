@@ -8,8 +8,9 @@ import com.hapataka.questwalk.domain.repository.OcrRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OcrRepositoryImpl : OcrRepository {
+class OcrRepositoryImpl @Inject constructor() : OcrRepository {
     override suspend fun getWordFromImage(image: Bitmap): List<String> =
         withContext(Dispatchers.IO) {
             val recognizer =

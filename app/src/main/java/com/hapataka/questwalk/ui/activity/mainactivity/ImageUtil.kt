@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.net.Uri
 import androidx.camera.core.ImageProxy
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -15,8 +16,9 @@ import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class ImageUtil(val context: Context) {
+class ImageUtil @Inject constructor(@ApplicationContext val context: Context) {
     private var file: File? = null
     fun setCaptureImage(image: ImageProxy): Bitmap {
         val bitmap = image.toBitmap()

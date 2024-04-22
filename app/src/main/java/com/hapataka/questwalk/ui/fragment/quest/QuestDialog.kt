@@ -12,15 +12,16 @@ import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogQuestBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class QuestDialog(
     private val keyWord: String,
     private val successKeywords: MutableList<String>,
 ): DialogFragment() {
     private val binding by lazy { DialogQuestBinding.inflate(layoutInflater) }
     private val navHost by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
+    private val mainViewModel: MainViewModel by activityViewModels ()
 
     override fun onCreateView(
         inflater: LayoutInflater,

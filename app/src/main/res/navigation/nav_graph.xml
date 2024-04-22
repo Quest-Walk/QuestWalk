@@ -99,7 +99,7 @@
 
     <fragment
         android:id="@+id/frag_on_boarding"
-        android:name="com.hapataka.questwalk.ui.fragment.onboarding.OnBoardingFragment"
+        android:name="com.hapataka.questwalk.ui.fragment.onboarding.ProfileSetupFragment"
         android:label="frag_on_boarding"
         tools:layout="@layout/fragment_on_boarding">
         <action

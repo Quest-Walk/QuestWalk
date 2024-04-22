@@ -9,8 +9,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
+import javax.inject.Inject
 
-class ImageRepositoryImpl: ImageRepository {
+class ImageRepositoryImpl @Inject constructor(): ImageRepository {
     private val storage by lazy { Firebase.storage }
     private val storageRef by lazy { storage.reference }
     override suspend fun setImage(uri: Uri, uid: String): Uri = withContext(Dispatchers.IO) {

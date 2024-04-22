@@ -18,11 +18,13 @@ import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.domain.usecase.AchievementListener
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 const val QUEST_STOP = 0
 const val QUEST_START = 1
@@ -30,7 +32,8 @@ const val QUEST_SUCCESS = 2
 const val SHOW_LOADING = true
 const val HIDE_LOADING = false
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val questRepo: QuestStackRepository,
     private val imageRepo: ImageRepository,

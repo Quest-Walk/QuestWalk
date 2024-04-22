@@ -10,11 +10,12 @@ import com.hapataka.questwalk.databinding.FragmentRecordBinding
 import com.hapataka.questwalk.ui.fragment.record.adapter.RecordItemAdapter
 import com.hapataka.questwalk.ui.fragment.record.model.RecordItem
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val viewModel by viewModels<RecordViewModel> { ViewModelFactory() }
+    private val viewModel by viewModels<RecordViewModel> ()
     private lateinit var recordItemAdapter: RecordItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -41,13 +42,13 @@ import com.hapataka.questwalk.ui.fragment.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.fragment.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
-import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
 import com.hapataka.questwalk.util.extentions.visible
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,9 +56,10 @@ import kotlinx.coroutines.launch
 const val STOP_POSITION = 0
 const val ANIM_POSITION = 1
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
-    private val viewModel: HomeViewModel by activityViewModels { ViewModelFactory() }
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: HomeViewModel by viewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
     private val sensorManager by lazy {

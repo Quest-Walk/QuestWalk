@@ -10,7 +10,7 @@ import com.hapataka.questwalk.ui.fragment.quest.QuestData
 import com.hapataka.questwalk.ui.fragment.questdetail.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.fragment.questdetail.adapter.QuestDetailRecyclerViewDecoration
 import com.hapataka.questwalk.util.BaseFragment
-import kotlin.math.round
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
 class QuestDetailFragment : BaseFragment<FragmentQuestDetailBinding>(FragmentQuestDetailBinding::inflate) {

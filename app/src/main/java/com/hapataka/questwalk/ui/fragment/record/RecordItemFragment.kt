@@ -21,14 +21,15 @@ import com.hapataka.questwalk.ui.fragment.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.fragment.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.fragment.result.USER_ID
 import com.hapataka.questwalk.util.BaseFragment
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RecordItemFragment(private val items: List<RecordItem>) :
     BaseFragment<FragmentRecordItemBinding>(FragmentRecordItemBinding::inflate) {
     private val recordDetailAdapter by lazy { RecordDetailAdapter(requireContext()) }
     private val gridLayoutManager by lazy { GridLayoutManager(requireContext(), 3) }
     private val navController by lazy { (parentFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).findNavController() }
-    private val mainViewModel by activityViewModels<MainViewModel> { ViewModelFactory() }
+    private val mainViewModel by activityViewModels<MainViewModel> ()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

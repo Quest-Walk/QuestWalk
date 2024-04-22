@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.domain.usecase
 
-import android.util.Log
 import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
@@ -9,8 +8,9 @@ import com.hapataka.questwalk.ui.fragment.weather.LatXLngY
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class GetWeatherUseCase (
+class GetWeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val locationRepo: LocationRepository
 ) {

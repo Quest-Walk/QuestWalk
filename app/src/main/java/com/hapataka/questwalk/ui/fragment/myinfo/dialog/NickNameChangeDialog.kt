@@ -10,13 +10,14 @@ import androidx.fragment.app.activityViewModels
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
 import com.hapataka.questwalk.ui.activity.mainactivity.MainViewModel
-import com.hapataka.questwalk.util.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NickNameChangeDialog (val prevName: String) : DialogFragment() {
     private var _binding: DialogEditNicknameBinding? = null
     private val binding get() = _binding!!
     var onNicknameChanged: ((newNickname: String) -> Unit)? = null
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
+    private val mainViewModel: MainViewModel by activityViewModels ()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -17,8 +17,9 @@ import com.hapataka.questwalk.util.extentions.encryptECB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class UserRepositoryImpl : UserRepository {
+class UserRepositoryImpl @Inject constructor() : UserRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val userCollection by lazy { remoteDb.collection("user") }
 

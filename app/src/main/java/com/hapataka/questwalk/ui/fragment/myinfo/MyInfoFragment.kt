@@ -22,15 +22,16 @@ import com.hapataka.questwalk.ui.fragment.onboarding.OnCharacterSelectedListener
 import com.hapataka.questwalk.util.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.UserInfo
-import com.hapataka.questwalk.util.ViewModelFactory
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
-    private val viewModel by viewModels<MyInfoViewModel> { ViewModelFactory(requireContext()) }
-    private val mainViewModel: MainViewModel by activityViewModels { ViewModelFactory(requireContext()) }
+    private val viewModel by viewModels<MyInfoViewModel>()
+    private val mainViewModel: MainViewModel by activityViewModels ()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
@@ -179,7 +180,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
     private fun changeName() {
-        binding.tvPlayerName.setOnClickListener {
+        binding.btnPlayerName.setOnClickListener {
             startEditNameDialog()
         }
     }

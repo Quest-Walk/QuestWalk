@@ -9,10 +9,13 @@ import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import com.hapataka.questwalk.ui.fragment.quest.QuestData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.round
 
-class ResultViewModel(
+@HiltViewModel
+class ResultViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val questRepo: QuestStackRepository,
 ) : ViewModel() {

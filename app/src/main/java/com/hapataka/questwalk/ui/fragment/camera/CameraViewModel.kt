@@ -11,18 +11,16 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-
-class CameraViewModel : ViewModel() {
+@HiltViewModel
+class CameraViewModel @Inject constructor() : ViewModel() {
     private var _bitmap: MutableLiveData<Bitmap?> = MutableLiveData()
     val bitmap: LiveData<Bitmap?> get() = _bitmap
 
     private var croppedBitmap: Bitmap? = null
     private var drawBoxOnBitmap: Bitmap? = null
-
-
-
 
     private var croppedSize = 0
     private var x = 0
@@ -86,8 +84,6 @@ class CameraViewModel : ViewModel() {
         canvas.drawRect(x.toFloat(), y.toFloat(), x + 2*croppedSize.toFloat(), y + 2*croppedSize.toFloat(), paint)
         return drawBitmap
     }
-
-
 
     fun getCroppedBitmap() = croppedBitmap
 }

@@ -3,8 +3,9 @@ package com.hapataka.questwalk.data.firebase.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class EncryptionKeyRepositoryImpl : EncryptionKeyRepository {
+class EncryptionKeyRepositoryImpl @Inject constructor(): EncryptionKeyRepository {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val collection by lazy { remoteDb.collection("EncryptionKey") }
 
