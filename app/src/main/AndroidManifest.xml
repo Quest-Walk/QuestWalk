@@ -35,7 +35,7 @@
         android:theme="@style/Theme.QuestWalk"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.SplashSceneActivity"
+            android:name=".ui.SplashSceneActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.mainactivity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
@@ -58,7 +58,7 @@
             android:value="ocr_korean"></meta-data>
 
         <service
-            android:name=".ui.activity.mainactivity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:foregroundServiceType="location" />
     </application>
 
