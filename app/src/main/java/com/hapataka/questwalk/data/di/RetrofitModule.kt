@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.data.di
 
-import com.hapataka.questwalk.data.remote.retrofit.WeatherService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

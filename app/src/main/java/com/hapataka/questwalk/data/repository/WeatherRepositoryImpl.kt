@@ -1,7 +1,8 @@
 package com.hapataka.questwalk.data.repository
 
 import android.util.Log
-import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
+import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
+import com.hapataka.questwalk.data.dto.WeatherItem
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.WeatherRepository
 import javax.inject.Inject
@@ -11,12 +12,12 @@ class WeatherRepositoryImpl @Inject constructor () : WeatherRepository {
 
     override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {
         Log.d("WeatherRepositoryImpl:","WeatherRepositoryImpl: $quries")
-        val items = weatherService.getWeatherInfo(quries).response.body.items.item
+        val items = weatherService.getWeatherInfo(quries).weather.weatherBody.weatherItems.weatherItem
         return convertToWeatherEntity(items)
     }
 
-    private fun convertToWeatherEntity(items: List<com.hapataka.questwalk.data.dto.weather.Item>): MutableList<WeatherEntity> {
-        val itemsGroup = items.groupBy { "${it.fcstDate}${it.fcstTime}" }
+    private fun convertToWeatherEntity(weatherItems: List<WeatherItem>): MutableList<WeatherEntity> {
+        val itemsGroup = weatherItems.groupBy { "${it.fcstDate}${it.fcstTime}" }
         val result =  itemsGroup.map { (dateTime, item) ->
             val sky = item.first { it.category == "SKY" }.fcstValue
             val pty = item.first { it.category == "PTY" }.fcstValue

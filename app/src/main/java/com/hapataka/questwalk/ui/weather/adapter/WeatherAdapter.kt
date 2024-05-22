@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemWeatherBinding
-import com.hapataka.questwalk.ui.fragment.weather.WeatherData
+import com.hapataka.questwalk.ui.weather.WeatherData
 
 class WeatherAdapter(val context: Context): ListAdapter<WeatherData, WeatherAdapter.WeatherViewHolder>(diffUtil) {
 

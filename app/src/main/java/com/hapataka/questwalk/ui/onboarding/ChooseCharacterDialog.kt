@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hapataka.questwalk.databinding.DialogChooseCharacterBinding
-import com.hapataka.questwalk.ui.fragment.onboarding.CharacterData.Companion.characterList
+import com.hapataka.questwalk.ui.onboarding.CharacterData.Companion.characterList
 
 
 class ChooseCharacterDialog : DialogFragment() {

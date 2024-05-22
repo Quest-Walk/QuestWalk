@@ -8,7 +8,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRDS
-import com.hapataka.questwalk.ui.fragment.quest.QuestData
+import com.hapataka.questwalk.ui.quest.QuestData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

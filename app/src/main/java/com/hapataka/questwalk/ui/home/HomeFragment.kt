@@ -35,11 +35,11 @@ import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
 import com.hapataka.questwalk.ui.main.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.fragment.home.dialog.PermissionDialog
-import com.hapataka.questwalk.ui.fragment.home.dialog.StopPlayDialog
-import com.hapataka.questwalk.ui.fragment.result.QUEST_KEYWORD
-import com.hapataka.questwalk.ui.fragment.result.REGISTER_TIME
-import com.hapataka.questwalk.ui.fragment.result.USER_ID
+import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
+import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME

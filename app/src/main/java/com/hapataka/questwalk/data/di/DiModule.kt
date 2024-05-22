@@ -9,8 +9,8 @@ import com.hapataka.questwalk.data.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.repository.UserRDSImpl
 import com.hapataka.questwalk.data.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.data.repository.LocalRepositoryImpl
-import com.hapataka.questwalk.data.remote.repository.DustRepositoryImpl
-import com.hapataka.questwalk.data.remote.repository.WeatherRepositoryImpl
+import com.hapataka.questwalk.data.repository.DustRepositoryImpl
+import com.hapataka.questwalk.data.repository.WeatherRepositoryImpl
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.DustRepository

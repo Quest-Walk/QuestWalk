@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hapataka.questwalk.databinding.ItemQuestDetailBinding
-import com.hapataka.questwalk.ui.fragment.quest.QuestData
+import com.hapataka.questwalk.ui.quest.QuestData
 
 class QuestDetailAdapter(
     val itemClick: (uri: String, imageView: View) -> Unit

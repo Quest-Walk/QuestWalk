@@ -1,6 +1,8 @@
 package com.hapataka.questwalk.data.repository
 
-import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
+import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
+import com.hapataka.questwalk.data.dto.DustResponse
+import com.hapataka.questwalk.data.dto.StationResponse
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.StationEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
@@ -19,9 +21,9 @@ class DustRepositoryImpl @Inject constructor(): DustRepository {
         convertToStationEntity(dustService.getStation(queryMap))
     }
 
-    private fun convertToDustEntity(item: com.hapataka.questwalk.data.dto.dust.Dust): DustEntity {
-        val pm10Value = item.dustResponse.dustBody.dustItems[0].pm10Value
-        val pm25Value = item.dustResponse.dustBody.dustItems[0].pm25Value
+    private fun convertToDustEntity(item: DustResponse): DustEntity {
+        val pm10Value = item.dust.dustBody.dustItems[0].pm10Value
+        val pm25Value = item.dust.dustBody.dustItems[0].pm25Value
 
         return DustEntity(
             pm10Value = if (pm10Value == "-") -1 else pm10Value.toInt(),
@@ -29,8 +31,8 @@ class DustRepositoryImpl @Inject constructor(): DustRepository {
         )
     }
 
-    private fun convertToStationEntity(item: com.hapataka.questwalk.data.dto.station.StationResponse): StationEntity {
-        val nearStation = item.response.body.items.minBy { it.tm }
+    private fun convertToStationEntity(item: StationResponse): StationEntity {
+        val nearStation = item.station.stationBody.stationItems.minBy { it.tm }
         return StationEntity(
             stationName = nearStation.stationName,
             stationAddr = nearStation.addr,

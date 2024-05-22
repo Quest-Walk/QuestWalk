@@ -9,9 +9,9 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.domain.repository.UserRDS
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.AchieveItem
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.ResultItem
+import com.hapataka.questwalk.ui.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

@@ -7,8 +7,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.domain.entity.DustEntity
-import com.hapataka.questwalk.ui.fragment.weather.adapter.WeatherAdapter
-import com.hapataka.questwalk.ui.fragment.weather.adapter.WeatherAdapterDecoration
+import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
+import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapterDecoration
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint

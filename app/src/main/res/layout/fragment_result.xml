@@ -54,7 +54,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.hapataka.questwalk.ui.fragment.result.ResultCustomMapView
+                <com.hapataka.questwalk.ui.result.ResultCustomMapView
                     android:id="@+id/fragMap"
                     android:layout_width="match_parent"
                     android:layout_height="356dp" />

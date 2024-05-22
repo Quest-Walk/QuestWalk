@@ -7,8 +7,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
-import com.hapataka.questwalk.ui.fragment.record.adapter.RecordItemAdapter
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
+import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 

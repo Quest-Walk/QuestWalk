@@ -3,10 +3,10 @@ package com.hapataka.questwalk.ui.record.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.hapataka.questwalk.ui.fragment.record.RecordItemFragment
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.AchieveItem
-import com.hapataka.questwalk.ui.fragment.record.model.RecordItem.Header
+import com.hapataka.questwalk.ui.record.RecordItemFragment
+import com.hapataka.questwalk.ui.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.Header
 
 class RecordItemAdapter(fragmentActivity: FragmentActivity, var items: List<RecordItem> = listOf()): FragmentStateAdapter(fragmentActivity) {
     private val page = 2
