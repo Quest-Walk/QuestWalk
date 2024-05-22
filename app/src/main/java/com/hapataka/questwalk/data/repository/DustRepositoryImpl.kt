@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.data.repository
 
-import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
+import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.domain.entity.StationEntity
 import com.hapataka.questwalk.domain.repository.DustRepository
