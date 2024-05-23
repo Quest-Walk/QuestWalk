@@ -1,7 +1,11 @@
 package com.hapataka.questwalk.data.model
 
-sealed class HistoryModel {
+import java.time.LocalDateTime
+
+sealed class HistoryModel(open val userId: String, open val registerAt: LocalDateTime) {
     data class ResultRecord(
+        override val userId: String,
+        override val registerAt: LocalDateTime,
         val questKeyword: String = "",
         val duration: Long = 0L,
         val distance: Float = 0f,
@@ -10,9 +14,11 @@ sealed class HistoryModel {
         val route: List<Pair<Float, Float>>?,
         val successLocation: Pair<Float, Float>? = null,
         val questImg: String? = null
-    ) : HistoryModel()
+    ) : HistoryModel(userId, registerAt)
 
     data class AchievementRecord(
+        override val userId: String,
+        override val registerAt: LocalDateTime,
         val achievementId: Int,
-    ) : HistoryModel()
+    ) : HistoryModel(userId, registerAt)
 }

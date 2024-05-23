@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.AuthRepository
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyInfoViewModel @Inject constructor(
     private val authRepo: AuthRepository,
-    private val userRepo: UserRDS
+    private val userRepo: UserRepo
 ) : ViewModel() {
     private var _userInfo = MutableLiveData<UserEntity>()
     val userInfo: LiveData<UserEntity> get() = _userInfo

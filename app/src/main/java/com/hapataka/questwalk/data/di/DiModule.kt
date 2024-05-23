@@ -9,10 +9,10 @@ import com.hapataka.questwalk.data.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.data.repository.OcrRepositoryImpl
 import com.hapataka.questwalk.data.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.repository.WeatherRepositoryImpl
+import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.DustRepository
-import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
@@ -40,8 +40,6 @@ abstract class DiModule {
 
     @Binds
     abstract fun provideAuthRepository(authRepoImpl: AuthRepositoryImpl):AuthRepository
-
-
 
     @Binds
     abstract fun provideAchievementItemRepository(achieveItemRepo: AchieveItemRepositoryImpl): AchieveItemRepository

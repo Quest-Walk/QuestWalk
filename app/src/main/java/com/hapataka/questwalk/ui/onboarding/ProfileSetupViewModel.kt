@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.repository.UserRDSImpl
+import com.hapataka.questwalk.data.repository.UserRepoImpl
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProfileSetupViewModel @Inject constructor(
-    private val userRepo: UserRDSImpl,
+    private val userRepoImpl: UserRepoImpl,
     private val authRepo: AuthRepositoryImpl
 ) : ViewModel() {
 
@@ -35,7 +35,7 @@ class ProfileSetupViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                userRepo.setUserInfo(userId, characterNum, nickName)
+                userRepoImpl.setUserInfo(userId, characterNum, nickName)
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "사용자 정보 저장 중 오류가 발생했습니다.")
@@ -45,13 +45,13 @@ class ProfileSetupViewModel @Inject constructor(
 }
 
 class OnBoardingViewModelFactory(
-    private val userRepo: UserRDSImpl,
+    private val userRepoImpl: UserRepoImpl,
     private val authRepo: AuthRepositoryImpl
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileSetupViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ProfileSetupViewModel(userRepo, authRepo) as T
+            return ProfileSetupViewModel(userRepoImpl, authRepo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

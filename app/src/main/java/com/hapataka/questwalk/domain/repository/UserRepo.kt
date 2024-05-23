@@ -3,7 +3,7 @@ package com.hapataka.questwalk.domain.repository
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 
-interface UserRDS {
+interface UserRepo {
     suspend fun setUserInfo(userId: String, profileId: Int, name: String)
     suspend fun updateHistoryInfo(userId: String, result: HistoryEntity)
     suspend fun getInfo(userId: String): UserEntity

@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -30,17 +31,18 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.data.datasource.remote.FirebaseUserRDSImpl
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
+import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
 import com.hapataka.questwalk.ui.main.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.fragment.home.dialog.PermissionDialog
-import com.hapataka.questwalk.ui.fragment.home.dialog.StopPlayDialog
-import com.hapataka.questwalk.ui.fragment.result.QUEST_KEYWORD
-import com.hapataka.questwalk.ui.fragment.result.REGISTER_TIME
-import com.hapataka.questwalk.ui.fragment.result.USER_ID
-import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
+import com.hapataka.questwalk.ui.result.REGISTER_TIME
+import com.hapataka.questwalk.ui.result.USER_ID
 import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -91,6 +93,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         checkPermissions()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
+
+        binding.ivChrImage.setOnClickListener {
+            lifecycleScope.launch {
+                val userRDS = FirebaseUserRDSImpl().getUserById("tester")
+
+                if (userRDS != null) {
+                    Log.d(TAG, "userRDS: $userRDS")
+                } else {
+                    Log.d(TAG, "userRDS: null")
+                }
+            }
+        }
     }
 
     private fun setup() {

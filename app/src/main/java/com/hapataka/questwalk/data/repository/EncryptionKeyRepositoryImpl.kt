@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
+import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hapataka.questwalk.domain.repository.AuthRepository
-import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalTime
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepo: AuthRepository,
-    private val userRepo: UserRDS,
+    private val userRepo: UserRepo,
     private val encryptRepo: EncryptionKeyRepository
 ) : ViewModel() {
     private var _isNight = MutableLiveData(false)
