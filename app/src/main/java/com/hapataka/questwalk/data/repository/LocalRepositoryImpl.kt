@@ -3,7 +3,7 @@ package com.hapataka.questwalk.data.repository
 import android.content.Context
 import android.content.SharedPreferences
 import com.hapataka.questwalk.domain.repository.LocalRepository
-import com.hapataka.questwalk.ui.fragment.result.USER_ID
+import com.hapataka.questwalk.ui.result.USER_ID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.data.repository
 
 import android.util.Log
-import com.hapataka.questwalk.data.remote.retrofit.RetrofitClient
+import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.WeatherRepository
 import javax.inject.Inject

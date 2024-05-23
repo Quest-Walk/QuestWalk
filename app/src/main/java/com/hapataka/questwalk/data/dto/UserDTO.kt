@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.data.dto
 
 data class UserDTO(
-    val id: String,
+    val id: String = "",
     var nickName: String = "",
     var characterId: Int = -1,
     var totalTime: Int = 0,

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.domain.usecase.GetAllQuestUseCase
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestViewModel @Inject constructor(
-    private val userRepo: UserRDS,
+    private val userRepo: UserRepo,
     private val getAllQuestUseCase: GetAllQuestUseCase
 ) : ViewModel() {
     private var allUser: Long = 0

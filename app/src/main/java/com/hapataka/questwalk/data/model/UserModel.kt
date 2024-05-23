@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.data.model
 
 data class UserModel(
+    val userId: String,
     var nickName: String = "",
     var characterId: Int = -1,
     var totalTime: Int = 0,

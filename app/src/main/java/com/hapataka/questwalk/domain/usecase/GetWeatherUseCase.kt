@@ -4,7 +4,7 @@ import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.domain.entity.WeatherEntity
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.WeatherRepository
-import com.hapataka.questwalk.ui.fragment.weather.LatXLngY
+import com.hapataka.questwalk.ui.weather.LatXLngY
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
