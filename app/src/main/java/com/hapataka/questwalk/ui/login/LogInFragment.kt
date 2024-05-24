@@ -13,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.common.BaseFragment

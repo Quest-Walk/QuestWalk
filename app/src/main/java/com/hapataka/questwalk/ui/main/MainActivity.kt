@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.data.repository.backup.AuthRepoImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +18,7 @@ import org.opencv.android.OpenCVLoader
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val authRepo by lazy { AuthRepositoryImpl() }
+    private val authRepo by lazy { AuthRepoImpl() }
     private val navHost by lazy { supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment }
     val navController by lazy { navHost.navController }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }

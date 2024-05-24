@@ -3,15 +3,15 @@ package com.hapataka.questwalk.ui.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
-import com.hapataka.questwalk.data.repository.UserRepoImpl
+import com.hapataka.questwalk.data.repository.backup.AuthRepoImpl
+import com.hapataka.questwalk.data.repository.backup.UserRepoImpl
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProfileSetupViewModel @Inject constructor(
     private val userRepoImpl: UserRepoImpl,
-    private val authRepo: AuthRepositoryImpl
+    private val authRepo: AuthRepoImpl
 ) : ViewModel() {
 
     fun getCurrentUserId(onResult: (String) -> Unit) {
@@ -46,7 +46,7 @@ class ProfileSetupViewModel @Inject constructor(
 
 class OnBoardingViewModelFactory(
     private val userRepoImpl: UserRepoImpl,
-    private val authRepo: AuthRepositoryImpl
+    private val authRepo: AuthRepoImpl
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileSetupViewModel::class.java)) {

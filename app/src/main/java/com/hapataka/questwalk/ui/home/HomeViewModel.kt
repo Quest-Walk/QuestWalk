@@ -3,7 +3,7 @@ package com.hapataka.questwalk.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val authRepo: AuthRepository,
+    private val authRepo: AuthRepo,
     private val userRepo: UserRepo,
     private val encryptRepo: EncryptionKeyRepository
 ) : ViewModel() {

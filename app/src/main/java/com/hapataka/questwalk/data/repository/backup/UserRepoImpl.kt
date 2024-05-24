@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.data.repository
+package com.hapataka.questwalk.data.repository.backup
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue

@@ -6,5 +6,4 @@ interface CacheDataSource {
     fun saveUser(user: UserModel)
     fun getUser(): UserModel?
     fun clearUser()
-
 }

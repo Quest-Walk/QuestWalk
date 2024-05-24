@@ -96,7 +96,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
         binding.ivChrImage.setOnClickListener {
             lifecycleScope.launch {
-                val userRDS = FirebaseUserRDSImpl().getUserById("tester")
+                val userRDS = FirebaseUserRDSImpl().getUserById("testuser")
 
                 if (userRDS != null) {
                     Log.d(TAG, "userRDS: $userRDS")

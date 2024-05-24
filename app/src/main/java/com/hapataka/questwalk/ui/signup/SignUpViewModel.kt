@@ -2,7 +2,7 @@ package com.hapataka.questwalk.ui.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.domain.repository.AuthRepository
+import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val autoRepo: AuthRepository,
+    private val autoRepo: AuthRepo,
     private val localRepo: LocalRepository
 ) : ViewModel() {
     fun registerByEmailAndPw(
