@@ -39,7 +39,7 @@ abstract class DiModule {
     abstract fun provideDustRepository(dustRepo: DustRepositoryImpl): DustRepository
 
     @Binds
-    abstract fun provideAuthRepository(authRepoImpl: AuthRepoImpl):AuthRepo
+    abstract fun provideAuthRepo(authRepoImpl: AuthRepoImpl):AuthRepo
 
     @Binds
     abstract fun provideAchievementItemRepository(achieveItemRepo: AchieveItemRepositoryImpl): AchieveItemRepository

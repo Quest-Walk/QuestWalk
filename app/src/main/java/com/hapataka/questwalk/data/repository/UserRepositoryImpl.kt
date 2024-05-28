@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.data.repository
 
-import com.google.firebase.auth.FirebaseUser
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.data.local.CacheDataSource
 import com.hapataka.questwalk.domain.data.remote.UserRDS
@@ -13,8 +12,17 @@ class UserRepositoryImpl @Inject constructor(
     private val firebaseUserRDS: UserRDS,
     private val cacheDataSource: CacheDataSource
 ): UserRepository {
-    override suspend fun getCurrentUser(): UserModel? {
-        return null
+    override suspend fun getUserById(id: String): UserModel? {
+        val userDTO = firebaseUserRDS.getUserById(id) ?: return null
+
+        return UserModel(
+                userDTO.id,
+                userDTO.nickName,
+                userDTO.characterId,
+                userDTO.totalTime,
+                userDTO.totalDistance,
+                userDTO.totalStep
+            )
     }
 
     override suspend fun cacheUser(user: UserModel) {
@@ -23,5 +31,9 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun uploadUser(user: UserModel) {
         firebaseUserRDS.setUserById(user)
+    }
+
+    override suspend fun getCachedUser(): UserModel? {
+        return cacheDataSource.getUser()
     }
 }

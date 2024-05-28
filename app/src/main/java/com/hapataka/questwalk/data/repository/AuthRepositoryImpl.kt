@@ -17,7 +17,7 @@ class AuthRepositoryImpl @Inject constructor(
         firebaseAuthRDS.loginByEmailAndPw(id, pw)
     }
 
-    override suspend fun getCurrentUserInfo() {
-        firebaseAuthRDS.getCurrentUserInfo()
+    override suspend fun getCurrentUserId(): String? {
+        return firebaseAuthRDS.getCurrentUserInfo()?.uid
     }
 }

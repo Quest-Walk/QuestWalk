@@ -18,6 +18,6 @@ abstract class AuthModule {
     abstract fun provideAuthRDS(firebaseAuthRDS: FirebaseAuthRDSImpl) : AuthRDS
 
     @Binds
-    abstract fun provideAuthRepo(authRepositoryImpl: AuthRepositoryImpl) : AuthRepository
+    abstract fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl) : AuthRepository
 
 }
