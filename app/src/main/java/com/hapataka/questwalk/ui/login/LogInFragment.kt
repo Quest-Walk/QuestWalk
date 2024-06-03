@@ -14,8 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
-import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.util.OnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -86,7 +86,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     }
 
     private fun changeStartDestinationWithNavigate(id: String) {
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_login)
 
         viewModel.setUserId(id)
         navController.navigate(R.id.action_frag_login_to_frag_home)

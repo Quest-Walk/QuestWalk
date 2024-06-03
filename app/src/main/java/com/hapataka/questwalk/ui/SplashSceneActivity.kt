@@ -2,45 +2,45 @@ package com.hapataka.questwalk.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
-import com.hapataka.questwalk.domain.usecase.CacheCurrentUserUserCase
-import com.hapataka.questwalk.domain.usecase.GetCacheUserUseCase
+import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashSceneActivity : AppCompatActivity() {
-    private val binding by lazy { ActivitySplashSceneBinding.inflate(layoutInflater) }
+    private var _binding: ActivitySplashSceneBinding? = null
+    private val binding get() = _binding!!
+
     @Inject
-    lateinit var cache: CacheCurrentUserUserCase
-    @Inject
-    lateinit var getUser: GetCacheUserUseCase
+    lateinit var userFacade: UserFacade
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        _binding = ActivitySplashSceneBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         lifecycleScope.launch {
+            val user = userFacade.getLoginUserToken()
 
-            async { cache.invoke() }.await()
+            delay(2000L) // wait for splash scene
 
-            val user = getUser()
+            if (user == null) {
+                val intentToLogin = Intent(this@SplashSceneActivity, LoginActivity::class.java)
 
+                startActivity(intentToLogin)
+                finish()
+            } else {
+                val intentToMain = Intent(this@SplashSceneActivity, MainActivity::class.java)
 
-
-            delay(2000L)
-            Log.d("down_user_test", "user: $user")
-            val intent = Intent(this@SplashSceneActivity, MainActivity::class.java)
-
-            startActivity(intent)
-            finish()
+                startActivity(intentToMain)
+                finish()
+            }
         }
-
     }
 }
