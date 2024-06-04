@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_login">
+    app:startDestination="@id/frag_home">
 
     <fragment
         android:id="@+id/frag_my_info"
@@ -60,25 +60,25 @@
     </fragment>
 
 
-    <fragment
-        android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
-        android:label="frag_login"
-        tools:layout="@layout/fragment_log_in">
-        <action
-            android:id="@+id/action_frag_login_to_frag_sign_up"
-            app:destination="@id/frag_sign_up" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_on_boarding"
-            app:destination="@id/frag_on_boarding" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_home"
-            app:destination="@id/frag_home"
-            app:popUpTo="@id/frag_home" />
-        <action
-            android:id="@+id/action_frag_login_to_findPassWordFragment"
-            app:destination="@id/findPassWordFragment" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/frag_login"-->
+<!--        android:name="com.hapataka.questwalk.ui.login.LogInFragment"-->
+<!--        android:label="frag_login"-->
+<!--        tools:layout="@layout/fragment_log_in">-->
+<!--        <action-->
+<!--            android:id="@+id/action_frag_login_to_frag_sign_up"-->
+<!--            app:destination="@id/frag_sign_up" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_frag_login_to_frag_on_boarding"-->
+<!--            app:destination="@id/frag_on_boarding" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_frag_login_to_frag_home"-->
+<!--            app:destination="@id/frag_home"-->
+<!--            app:popUpTo="@id/frag_home" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_frag_login_to_findPassWordFragment"-->
+<!--            app:destination="@id/findPassWordFragment" />-->
+<!--    </fragment>-->
 
     <fragment
         android:id="@+id/frag_sign_up"

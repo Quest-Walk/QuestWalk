@@ -1,9 +1,9 @@
 package com.hapataka.questwalk.ui.login
 
-import android.content.Context
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -15,8 +15,9 @@ import androidx.transition.TransitionInflater
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.main.MainActivity
 import com.hapataka.questwalk.ui.main.MainViewModel
-import com.hapataka.questwalk.util.OnSingleClickListener
+import com.hapataka.questwalk.util.extentions.hideKeyBoard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,34 +26,66 @@ import kotlinx.coroutines.launch
 class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-    private val mainViewModel: MainViewModel by activityViewModels ()
-    private val viewModel: LoginViewModel by viewModels ()
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enterTransition =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
         exitTransition =
             TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.getUserId()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        loadInitialSetting()
+        initViews()
         setup()
-        binding.innerContainer.setPadding()
-        requireActivity().setLightBarColor(true)
     }
 
-    private fun initView() {
+    private fun loadInitialSetting() {
+        initObserver()
+        loadInfo()
+    }
+
+    private fun initObserver() {
+        viewModel.userId.observe(viewLifecycleOwner) { userId ->
+            binding.etLoginId.setText(userId)
+        }
+        viewModel.loginResult.observe(viewLifecycleOwner) { loginResult ->
+            if(loginResult) {
+                lifecycleScope.launch {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle())
+                    delay(1000L)
+                    requireActivity().finish()
+                }
+            }
+        }
+        viewModel.toastMsg.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadInfo() {
+        requireActivity().setLightBarColor(true)
+        viewModel.getIdFromPref()
+    }
+
+    private fun initViews() {
         initLoginButton()
         initSignUpButton()
         initFindPassWordButton()
-        binding.innerContainer.setPadding()
-        requireActivity().setLightBarColor(true)
+    }
+
+    private fun setup() {
+        initBackPressedCallback()
     }
 
     private fun initFindPassWordButton() {
@@ -61,37 +94,16 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
         }
     }
 
-    private fun setup() {
-        initBackPressedCallback()
-        setObserver()
-    }
-
     private fun initLoginButton() {
         with(binding) {
-            btnLogin.setOnClickListener(object : OnSingleClickListener() {
-                override fun onSingleClick(v: View?) {
-                    val id = etLoginId.text.toString()
-                    val pw = etLoginPassword.text.toString()
+            btnLogin.setOnClickListener {
+                val id = etLoginId.text.toString()
+                val pw = etLoginPassword.text.toString()
 
-                    viewModel.loginByEmailPassword(
-                        id,
-                        pw,
-                        navigateCallback = { changeStartDestinationWithNavigate(id) },
-                        snackBarMsg = { msg -> showSnackBar(msg) }
-                    )
-                    hideKeyBoard()
-                }
-            })
+                viewModel.loginByIdAndPw(id, pw)
+                hideKeyBoard()
+            }
         }
-    }
-
-    private fun changeStartDestinationWithNavigate(id: String) {
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_login)
-
-        viewModel.setUserId(id)
-        navController.navigate(R.id.action_frag_login_to_frag_home)
-        navGraph.setStartDestination(R.id.frag_home)
-        navController.graph = navGraph
     }
 
     private fun initSignUpButton() {
@@ -99,14 +111,6 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
             navController.navigate(R.id.action_frag_login_to_frag_sign_up)
         }
     }
-
-    private fun showSnackBar(msg: String) {
-        mainViewModel.setSnackBarMsg(msg)
-    }
-
-
-
-
 
     private fun initBackPressedCallback() {
         object : OnBackPressedCallback(true) {
@@ -125,18 +129,6 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
             }
         }.also {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
-        }
-    }
-
-    private fun hideKeyBoard() {
-        val imm =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
-    }
-
-    private fun setObserver() {
-        viewModel.userId.observe(viewLifecycleOwner) { id ->
-            binding.etLoginId.setText(id)
         }
     }
 }

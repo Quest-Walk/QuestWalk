@@ -1,25 +1,63 @@
 package com.hapataka.questwalk.ui.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
+import com.hapataka.questwalk.domain.facade.LoginFacade
+import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.repository.LocalRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val TAG = "quest_walk_test_tag"
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val loginFacade: LoginFacade,
+    private val userFacade: UserFacade,
     private val localRepo: LocalRepository,
     private val authRepo: AuthRepo
 ) : ViewModel() {
     private var _userId = MutableLiveData<String>()
     val userId: LiveData<String> get() = _userId
 
-    fun loginByEmailPassword(id: String, pw: String,  navigateCallback: () -> Unit, snackBarMsg: (String) -> Unit) {
+    private var _loginResult = MutableLiveData<Boolean>()
+    val loginResult: LiveData<Boolean> get() = _loginResult
+
+    private var _toastMsg = MutableLiveData<String>()
+    val toastMsg: LiveData<String> get() = _toastMsg
+
+    fun loginByIdAndPw(id: String, pw: String) {
+        viewModelScope.launch {
+            val result = loginFacade.loginByIdAndPw(id, pw)
+
+            if (result.isSuccess) {
+                _loginResult.value = true
+            } else {
+                _loginResult.value = false
+                _toastMsg.value = result.exceptionOrNull()?.message
+            }
+        }
+    }
+
+    fun getIdFromPref() {
+        viewModelScope.launch {
+            userFacade.getUserIdFromPref()
+                .collect { id -> if (id != null) _userId.value = id }
+        }
+    }
+
+    fun loginByEmailPassword(
+        id: String,
+        pw: String,
+        navigateCallback: () -> Unit,
+        snackBarMsg: (String) -> Unit
+    ) {
         if (id.isEmpty() || pw.isEmpty()) {
             snackBarMsg("이메일 또는 비밀번호가 비어있습니다")
             return
@@ -67,9 +105,5 @@ class LoginViewModel @Inject constructor(
 
     fun setUserId(id: String) {
         localRepo.setUserId(id)
-    }
-
-    fun getUserId() {
-        _userId.value = localRepo.getUserId()
     }
 }

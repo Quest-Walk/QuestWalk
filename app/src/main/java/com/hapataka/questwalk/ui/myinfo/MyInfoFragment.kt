@@ -1,10 +1,13 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
@@ -12,6 +15,7 @@ import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
@@ -27,6 +31,8 @@ import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
@@ -92,9 +98,16 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         binding.btnLogout.setOnClickListener(object : OnSingleClickListener() {
             override fun onSingleClick(v: View?) {
                 viewModel.logout {
-                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                    navGraph.setStartDestination(R.id.frag_home)
-                    navController.graph = navGraph
+                    lifecycleScope.launch {
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle())
+                        delay(1000L)
+                        requireActivity().finish()
+                    }
+//                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
+//                    navGraph.setStartDestination(R.id.frag_home)
+//                    navController.graph = navGraph
                 }
             }
         })

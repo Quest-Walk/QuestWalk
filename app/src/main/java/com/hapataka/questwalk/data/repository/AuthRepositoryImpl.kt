@@ -13,8 +13,8 @@ class AuthRepositoryImpl @Inject constructor(
         firebaseAuthRDS.registerByEmailAndPw(id, pw)
     }
 
-    override suspend fun loginByIdAndPw(id: String, pw: String) {
-        firebaseAuthRDS.loginByEmailAndPw(id, pw)
+    override suspend fun loginByIdAndPw(id: String, pw: String) :Result<Boolean> {
+        return firebaseAuthRDS.loginByEmailAndPw(id, pw)
     }
 
     override suspend fun getCurrentUserId(): String? {

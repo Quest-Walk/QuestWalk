@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.hapataka.questwalk.domain.data.remote.AuthRDS
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseAuthRDSImpl @Inject constructor() : AuthRDS {
@@ -18,13 +19,10 @@ class FirebaseAuthRDSImpl @Inject constructor() : AuthRDS {
             }
     }
 
-    override suspend fun loginByEmailAndPw(email: String, pw: String) {
-        auth.signInWithEmailAndPassword(email, pw)
-            .addOnCompleteListener {
-                if(it.isSuccessful.not()) {
-                    throw Exception(it.exception)
-                }
-            }
+    override suspend fun loginByEmailAndPw(email: String, pw: String): Result<Boolean> {
+        return kotlin.runCatching {
+            auth.signInWithEmailAndPassword(email, pw).await().user != null
+        }
     }
 
     override suspend fun getCurrentUserInfo(): FirebaseUser? {

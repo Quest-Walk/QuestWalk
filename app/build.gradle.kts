@@ -128,4 +128,8 @@ dependencies {
 
     //Proj4j
     implementation ("org.locationtech.proj4j:proj4j:1.3.0")
+
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation ("androidx.datastore:datastore-core:1.1.1")
 }

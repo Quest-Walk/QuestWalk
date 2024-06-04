@@ -1,11 +1,11 @@
 package com.hapataka.questwalk.ui.main
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.repository.backup.AuthRepoImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObserver() {
         mainViewModel.snackBarMsg.observe(this) {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
         }
         mainViewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) {

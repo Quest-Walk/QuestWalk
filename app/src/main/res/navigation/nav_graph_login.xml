@@ -11,8 +11,11 @@
         android:label="frag_login"
         tools:layout="@layout/fragment_log_in" >
         <action
-            android:id="@+id/action_frag_login_to_frag_sign_up2"
+            android:id="@+id/action_frag_login_to_frag_sign_up"
             app:destination="@id/frag_sign_up" />
+        <action
+            android:id="@+id/action_frag_login_to_findPassWordFragment"
+            app:destination="@id/findPassWordFragment" />
     </fragment>
 
     <fragment

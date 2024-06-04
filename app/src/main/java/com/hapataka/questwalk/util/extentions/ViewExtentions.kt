@@ -1,9 +1,14 @@
 package com.hapataka.questwalk.util.extentions
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.hapataka.questwalk.R
 import java.text.DecimalFormat
 import kotlin.math.round
@@ -73,4 +78,26 @@ fun Float.convertKm(): String {
     }
     val km = this / 1000.0f
     return df.format(km) + "km"
+}
+
+fun View.setInnerPadding() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+        insets
+    }
+}
+
+fun Fragment.hideKeyBoard() {
+    view?.let { activity?.hideKeyBoard(it) }
+}
+
+fun Activity.hideKeyBoard() {
+    hideKeyBoard(currentFocus ?: View(this))
+}
+fun Context.hideKeyBoard(view: View) {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
