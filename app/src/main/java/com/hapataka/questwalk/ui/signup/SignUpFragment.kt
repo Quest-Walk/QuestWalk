@@ -1,15 +1,12 @@
 package com.hapataka.questwalk.ui.signup
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,9 +19,10 @@ import androidx.transition.TransitionInflater
 import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
-import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.common.BaseFragment
-import com.hapataka.questwalk.util.OnSingleClickListener
+import com.hapataka.questwalk.ui.login.TAG
+import com.hapataka.questwalk.ui.main.MainViewModel
+import com.hapataka.questwalk.util.extentions.hideKeyBoard
 import com.hapataka.questwalk.util.extentions.showErrMsg
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +31,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
     private val viewModel: SignUpViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private var isCanClick = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,66 +40,75 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-        binding.innerContainer.setPadding()
-        requireActivity().setLightBarColor(true)
+        loadInitialSetting()
+        initViews()
     }
 
-    private fun initView() {
-        initEditText()
-        initSignUpButton()
-        initCloseButton()
-        initPwVisibilityButton()
-        binding.innerContainer.setPadding()
-        requireActivity().setLightBarColor(true)
+    private fun loadInitialSetting() {
+        initObserver()
+        loadInfo()
     }
 
-    private fun initEditText() {
-        with(binding) {
-            etSignUpId.resetMsg(tvExplainId, "아이디는 이메일 형식으로 입력해 주세요.")
-            etSignUpPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
-            etSignUpCheckPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
+    private fun initObserver() {
+        viewModel.isValidId.observe(viewLifecycleOwner) {
+            binding.tvExplainId.showErrMsg(
+                context = requireContext(),
+                msg = when (it) {
+                    EMPTY_INPUT -> "아이디를 입력해주세요."
+                    NOT_EMAIL_TYPE -> "아이디는 이메일 형식으로 입력해 주세요."
+                    else -> ""
+                }
+            )
         }
-        checkTypeAllElements()
+    }
+
+    private fun loadInfo() {
+        requireActivity().setLightBarColor(true)
+    }
+
+    private fun initViews() {
+        initInputField()
+        initSignUpButton()
+
+        initPwVisibilityButton()
+        initCloseButton()
+    }
+
+    fun <T : View> T.setOnFocusOutListener(action: (T) -> Unit) {
+        setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus.not()) {
+                action(v as T)
+            }
+        }
+    }
+
+    private fun initInputField() {
+        binding.etSignUpId.setOnFocusOutListener {
+            viewModel.validateId(it.text.toString())
+        }
+        binding.etSignUpPw.setOnFocusOutListener {
+            Log.d(TAG, "포커스 아웃")
+        }
+        binding.etSignUpCheckPw.setOnFocusOutListener {
+            Log.d(TAG, "포커스 아웃")
+        }
+//        with(binding) {
+//            etSignUpId.resetMsg(tvExplainId, "아이디는 이메일 형식으로 입력해 주세요.")
+//            etSignUpPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
+//            etSignUpCheckPw.resetMsg(tvExplainPw, "비밀번호는 6자 이상으로 입력해주세요.")
+//        }
+//        checkTypeAllElements()
     }
 
     private fun initSignUpButton() {
         with(binding) {
-            btnSignUp.setOnClickListener(object : OnSingleClickListener() {
-                override fun onSingleClick(v: View?) {
-                    hideKeyBoard()
-                    if (!isCanClick) return@onSingleClick
-                    isCanClick = false
+            btnSignUp.setOnClickListener {
+                val id = etSignUpId.text.toString()
+                val pw = etSignUpPw.text.toString()
+                val pwCheck = etSignUpCheckPw.text.toString()
 
-                    val emailId = etSignUpId.text.toString()
-                    val pw = etSignUpPw.text.toString()
-                    val pwCheck = etSignUpCheckPw.text.toString()
-
-
-                    if (checkEmailValidity(emailId)) {
-                        etSignUpId.requestFocus()
-                        isCanClick = true
-                        return@onSingleClick
-                    }
-
-                    if (checkPwValidity(pw, pwCheck)) {
-                        etSignUpPw.requestFocus()
-                        isCanClick = true
-                        return@onSingleClick
-                    }
-
-                    viewModel.registerByEmailAndPw(
-                        emailId,
-                        pw,
-                        { moveHomeWithLogin(emailId, pw) }) {
-                        mainViewModel.setSnackBarMsg("이미 가입된 아이디입니다.")
-                        isCanClick = true
-                    }
-                }
-            })
-            Handler(Looper.getMainLooper()).postDelayed({
-                isCanClick = true
-            }, 1500)
+                hideKeyBoard()
+            }
         }
     }
 
@@ -208,12 +214,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
                 }
             }
         }
-    }
-
-    private fun hideKeyBoard() {
-        val imm =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
     }
 }
 

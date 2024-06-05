@@ -105,9 +105,6 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
                         delay(1000L)
                         requireActivity().finish()
                     }
-//                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
-//                    navGraph.setStartDestination(R.id.frag_home)
-//                    navController.graph = navGraph
                 }
             }
         })

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -16,7 +15,6 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentLogInBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.main.MainActivity
-import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.util.extentions.hideKeyBoard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -26,7 +24,6 @@ import kotlinx.coroutines.launch
 class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var backPressedOnce = false
-    private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,15 +34,10 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
             TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadInitialSetting()
         initViews()
-        setup()
     }
 
     private fun loadInitialSetting() {
@@ -54,44 +46,36 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     }
 
     private fun initObserver() {
-        viewModel.userId.observe(viewLifecycleOwner) { userId ->
-            binding.etLoginId.setText(userId)
-        }
-        viewModel.loginResult.observe(viewLifecycleOwner) { loginResult ->
-            if(loginResult) {
-                lifecycleScope.launch {
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+        with(viewModel) {
+            userId.observe(viewLifecycleOwner) { userId ->
+                binding.etLoginId.setText(userId)
+            }
 
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle())
-                    delay(1000L)
-                    requireActivity().finish()
+            loginResult.observe(viewLifecycleOwner) { loginResult ->
+                if (loginResult) changeToMain()
+            }
+
+            toastMsg.observe(viewLifecycleOwner) {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+
+            btnState.observe(viewLifecycleOwner) { isActive ->
+                if (isActive) {
+                    initLoginButton()
                 }
             }
-        }
-        viewModel.toastMsg.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun loadInfo() {
         requireActivity().setLightBarColor(true)
+        initBackPressedCallback()
         viewModel.getIdFromPref()
     }
 
     private fun initViews() {
-        initLoginButton()
         initSignUpButton()
         initFindPassWordButton()
-    }
-
-    private fun setup() {
-        initBackPressedCallback()
-    }
-
-    private fun initFindPassWordButton() {
-        binding.tvFindPassWord.setOnClickListener {
-            navController.navigate(R.id.action_frag_login_to_findPassWordFragment)
-        }
     }
 
     private fun initLoginButton() {
@@ -103,6 +87,12 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
                 viewModel.loginByIdAndPw(id, pw)
                 hideKeyBoard()
             }
+        }
+    }
+
+    private fun initFindPassWordButton() {
+        binding.tvFindPassWord.setOnClickListener {
+            navController.navigate(R.id.action_frag_login_to_findPassWordFragment)
         }
     }
 
@@ -129,6 +119,19 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
             }
         }.also {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
+    }
+
+    private fun changeToMain() {
+        lifecycleScope.launch {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+
+            startActivity(
+                intent,
+                ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle()
+            )
+            delay(1000L)
+            requireActivity().finish()
         }
     }
 }
