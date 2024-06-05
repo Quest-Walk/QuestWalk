@@ -37,6 +37,14 @@ fun TextView.showErrMsg(msg: String, context: Context) {
     startAnimation(animShake)
 }
 
+fun <T : View> T.setOnFocusOutListener(action: (T) -> Unit) {
+    setOnFocusChangeListener { v, hasFocus ->
+        if (hasFocus.not()) {
+            action(v as T)
+        }
+    }
+}
+
 fun Long.convertTime(code: Int): String {
     when (code) {
         SIMPLE_TIME -> {

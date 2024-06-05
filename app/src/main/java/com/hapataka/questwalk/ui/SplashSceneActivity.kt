@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
 import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.ui.common.BaseActivity
+import com.hapataka.questwalk.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,8 +29,7 @@ class SplashSceneActivity : BaseActivity<ActivitySplashSceneBinding>(ActivitySpl
             if (user == null) {
                 changeTo(LoginActivity::class.java)
             } else {
-//                changeTo(MainActivity::class.java)
-                changeTo(LoginActivity::class.java)
+                changeTo(MainActivity::class.java)
             }
         }
     }

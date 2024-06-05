@@ -10,13 +10,10 @@ import javax.inject.Inject
 class FirebaseAuthRDSImpl @Inject constructor() : AuthRDS {
     private val auth by lazy { Firebase.auth }
 
-    override suspend fun registerByEmailAndPw(email: String, pw: String) {
-        auth.createUserWithEmailAndPassword(email, pw)
-            .addOnCompleteListener {
-                if (it.isSuccessful.not()) {
-                    throw Exception(it.exception)
-                }
-            }
+    override suspend fun registerByEmailAndPw(email: String, pw: String): Result<Boolean> {
+        return kotlin.runCatching {
+            auth.createUserWithEmailAndPassword(email, pw).await().user != null
+        }
     }
 
     override suspend fun loginByEmailAndPw(email: String, pw: String): Result<Boolean> {

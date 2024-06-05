@@ -139,9 +139,9 @@
 
     <fragment
         android:id="@+id/findPassWordFragment"
-        android:name="com.example.firebasetestapp.FindPassWordFragment"
+        android:name="com.hapataka.questwalk.ui.resetpassword.ResetPasswordFragment"
         android:label="FindPassWordFragment"
-        tools:layout="@layout/fragment_find_pass_word" />
+        tools:layout="@layout/fragment_reset_password" />
 
     <dialog
         android:id="@+id/dialog_full_image"

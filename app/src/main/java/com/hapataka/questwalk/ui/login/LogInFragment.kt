@@ -59,9 +59,9 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
 
-            btnState.observe(viewLifecycleOwner) { isActive ->
+            loginBtnState.observe(viewLifecycleOwner) { isActive ->
                 if (isActive) {
-                    initLoginButton()
+                    binding.btnLogin.isEnabled = true
                 }
             }
         }
@@ -74,6 +74,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
     }
 
     private fun initViews() {
+        initLoginButton()
         initSignUpButton()
         initFindPassWordButton()
     }
@@ -84,6 +85,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
                 val id = etLoginId.text.toString()
                 val pw = etLoginPassword.text.toString()
 
+                it.isEnabled = false
                 viewModel.loginByIdAndPw(id, pw)
                 hideKeyBoard()
             }

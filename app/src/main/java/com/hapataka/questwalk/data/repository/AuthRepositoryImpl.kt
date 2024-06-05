@@ -9,8 +9,8 @@ class AuthRepositoryImpl @Inject constructor(
     @Named("firebaseAuth")
     private val firebaseAuthRDS: AuthRDS
 ) : AuthRepository {
-    override suspend fun registerByIdAndPw(id: String, pw: String) {
-        firebaseAuthRDS.registerByEmailAndPw(id, pw)
+    override suspend fun registerByIdAndPw(id: String, pw: String): Result<Boolean> {
+        return firebaseAuthRDS.registerByEmailAndPw(id, pw)
     }
 
     override suspend fun loginByIdAndPw(id: String, pw: String) :Result<Boolean> {
