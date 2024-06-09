@@ -5,5 +5,5 @@ import com.hapataka.questwalk.data.model.UserModel
 
 interface UserRDS {
     suspend fun getUserById(userId: String): UserDTO?
-    suspend fun setUserById(user: UserModel)
+    suspend fun uploadUser(user: UserModel)
 }

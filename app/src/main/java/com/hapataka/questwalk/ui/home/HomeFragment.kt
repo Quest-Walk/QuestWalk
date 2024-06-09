@@ -10,7 +10,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -31,7 +30,6 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.data.datasource.remote.FirebaseUserRDSImpl
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
@@ -77,8 +75,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadInitialSetting()
         initViews()
         setup()
+    }
+
+    fun loadInitialSetting() {
+        setObserver()
+        viewModel.checkCurrentUserName()
     }
 
     override fun onResume() {
@@ -94,21 +98,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
 
-        binding.ivChrImage.setOnClickListener {
-            lifecycleScope.launch {
-                val userRDS = FirebaseUserRDSImpl().getUserById("testuser")
 
-                if (userRDS != null) {
-                    Log.d(TAG, "userRDS: $userRDS")
-                } else {
-                    Log.d(TAG, "userRDS: null")
-                }
-            }
-        }
     }
 
+
     private fun setup() {
-        setObserver()
         initBackPressedCallback()
         setUid()
     }
@@ -149,6 +143,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
+        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput->
+            if(isInput.not()) {
+                navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
+            }
+        }
+
+
         with(viewModel) {
             isNight.observe(viewLifecycleOwner) { night ->
                 if (night) {

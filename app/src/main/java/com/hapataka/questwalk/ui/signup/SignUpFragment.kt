@@ -2,6 +2,7 @@ package com.hapataka.questwalk.ui.signup
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -10,6 +11,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -122,6 +124,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
         initInputField()
         initPwVisibilityButton()
         initCloseButton()
+        checkTypeAllElements()
     }
 
     private fun initInputField() {
@@ -198,6 +201,26 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
             )
             delay(1000L)
             requireActivity().finish()
+        }
+    }
+
+    private fun checkTypeAllElements() {
+        val editTexts = listOf(
+            binding.etSignUpId,
+            binding.etSignUpPw,
+            binding.etSignUpCheckPw
+        )
+
+        editTexts.forEach { editText ->
+            editText.doAfterTextChanged {
+                if (editTexts.any { it.text.isEmpty() }) {
+                    binding.btnSignUp.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.gray))
+                } else {
+                    binding.btnSignUp.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.main_purple))
+                }
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ class FirebaseUserRDSImpl @Inject constructor() : UserRDS {
                 return userInfo.getOrNull()
     }
 
-    override suspend fun setUserById(user: UserModel) {
+    override suspend fun uploadUser(user: UserModel) {
         userDB.document(user.userId).set(user)
     }
 }

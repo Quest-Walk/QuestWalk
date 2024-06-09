@@ -33,7 +33,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadUser(user: UserModel) {
-        firebaseUserRDS.setUserById(user)
+            firebaseUserRDS.uploadUser(user)
     }
 
     override suspend fun getCachedUser(): UserModel? {

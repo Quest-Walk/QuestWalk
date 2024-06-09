@@ -32,7 +32,6 @@ class LoginViewModel @Inject constructor(
     val loginBtnState: LiveData<Boolean> get() = _loginBtnState
 
     fun loginByIdAndPw(id: String, pw: String) {
-        Log.d(TAG, "로그인 눌려용")
         if (checkInput(id, pw).not()) {
             _loginBtnState.value = true
             return
