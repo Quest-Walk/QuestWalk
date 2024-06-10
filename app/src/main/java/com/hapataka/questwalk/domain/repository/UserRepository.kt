@@ -10,4 +10,5 @@ interface UserRepository {
     suspend fun getCachedUser(): UserModel?
     suspend fun getUserIdFromPref(): Flow<String?>
     suspend fun setUserIdToPref(id: String)
+    suspend fun clearCachedUser()
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,7 +25,6 @@ import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
-import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
@@ -37,17 +37,22 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val viewModel by viewModels<MyInfoViewModel>()
-    private val mainViewModel: MainViewModel by activityViewModels ()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadInitialSetting()
         initView()
+
+    }
+
+    private fun loadInitialSetting() {
         setObserver()
-        viewModel.getUserInfo()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(true)
+        viewModel.getCurrentUserInfo()
     }
 
     private fun initView() {
@@ -60,12 +65,50 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun setObserver() {
         with(viewModel) {
-            snackbarMsg.observe(viewLifecycleOwner) { msg ->
-                mainViewModel.setSnackBarMsg(msg)
+            currentUser.observe(viewLifecycleOwner) { user ->
+                with(binding) {
+                    tvPlayerName.text = user.nickName
+                    tvStepValue.text = "${user.totalStep}걸음"
+                    tvDistanceValue.text = user.totalDistance.convertKm()
+                    tvCalorie.text = user.totalStep.convertKcal()
+                    tvTimeValue.text = user.totalTime.convertTime(DETAIL_TIME)
+                }
             }
+            logoutSuccess.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess) {
+                    lifecycleScope.launch {
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                        startActivity(
+                            intent,
+                            ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle()
+                        )
+                        delay(1000L)
+                        requireActivity().finish()
+                    }
+                }
+            }
+            toastMsg.observe(viewLifecycleOwner) { msg ->
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+            btnState.observe(viewLifecycleOwner) { isEnable ->
+                if (isEnable) {
+                    binding.btnLogout.isEnabled = true
+                }
+            }
+        }
+
+        with(viewModel) {
             userInfo.observe(viewLifecycleOwner) { userInfo ->
                 updateViewsWithUserInfo(userInfo)
             }
+        }
+    }
+
+    private fun initLogoutButton() {
+        binding.btnLogout.setOnClickListener {
+            viewModel.logout()
+            it.isEnabled = false
         }
     }
 
@@ -74,40 +117,17 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         val achieveCount = history.filterIsInstance<AchieveResultEntity>().size
         val successResultCount =
             history.filterIsInstance<ResultEntity>().filterNot { it.isSuccess }.size.toString()
-        val time = userInfo.totalTime.toLongOrNull()
-        val defaultNickName = "이름없는 모험가"
 
         with(binding) {
-            tvPlayerName.text =
-                if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
-            tvStepValue.text = userInfo.totalStep.toString() + " 걸음"
-            tvDistanceValue.text = userInfo.totalDistance.convertKm()
             tvAchieveCouunt.text = "$achieveCount 개"
             tvSolveQuestValue.text = "$successResultCount 개"
-            tvCalorie.text = userInfo.totalStep.convertKcal()
+
 
             when (userInfo.characterId) {
                 1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
                 else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
             }
-            tvTimeValue.text = time?.convertTime(DETAIL_TIME) ?: "00시간 00분 00초"
         }
-    }
-
-    private fun initLogoutButton() {
-        binding.btnLogout.setOnClickListener(object : OnSingleClickListener() {
-            override fun onSingleClick(v: View?) {
-                viewModel.logout {
-                    lifecycleScope.launch {
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
-
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle())
-                        delay(1000L)
-                        requireActivity().finish()
-                    }
-                }
-            }
-        })
     }
 
     lateinit var inputPwDialog: InputPwDialog

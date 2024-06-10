@@ -20,4 +20,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUserId(): String? {
         return firebaseAuthRDS.getCurrentUserInfo()?.uid
     }
+
+    override suspend fun logout(): Result<Unit> {
+        return firebaseAuthRDS.logout()
+    }
 }

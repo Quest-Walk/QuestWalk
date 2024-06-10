@@ -25,4 +25,8 @@ class FirebaseAuthRDSImpl @Inject constructor() : AuthRDS {
     override suspend fun getCurrentUserInfo(): FirebaseUser? {
         return kotlin.runCatching { auth.currentUser }.getOrNull()
     }
+
+    override suspend fun logout(): Result<Unit> {
+        return kotlin.runCatching { auth.signOut() }
+    }
 }

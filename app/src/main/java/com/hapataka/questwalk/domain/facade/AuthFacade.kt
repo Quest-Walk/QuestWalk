@@ -1,15 +1,19 @@
 package com.hapataka.questwalk.domain.facade
 
 import com.hapataka.questwalk.domain.usecase.CacheCurrentUserUserCase
+import com.hapataka.questwalk.domain.usecase.ClearUserCacheUseCase
 import com.hapataka.questwalk.domain.usecase.GetCacheUserUseCase
 import com.hapataka.questwalk.domain.usecase.GetUserIdFromPrefUseCase
 import com.hapataka.questwalk.domain.usecase.LoginByIdAndPwUseCase
+import com.hapataka.questwalk.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.domain.usecase.RegisterByIdAndPwUseCase
 import com.hapataka.questwalk.domain.usecase.SetUserIdToPrefUseCase
 import com.hapataka.questwalk.domain.usecase.UploadUserUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+
+const val LOGOUT_SUCCESS = 0
 
 class AuthFacade @Inject constructor(
     private val setUserIdToPrefUseCase: SetUserIdToPrefUseCase,
@@ -18,7 +22,9 @@ class AuthFacade @Inject constructor(
     private val getUserIdFromPrefUseCase: GetUserIdFromPrefUseCase,
     private val registerByIdAndPwUseCase: RegisterByIdAndPwUseCase,
     private val getCacheUserUseCase: GetCacheUserUseCase,
-    private val uploadUserUseCase: UploadUserUseCase
+    private val uploadUserUseCase: UploadUserUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val clearUserCacheUseCase: ClearUserCacheUseCase
 ) {
     suspend fun loginByIdAndPw(id: String, password: String): Result<Boolean> {
         val result = loginByIdAndPwUseCase(id, password)
@@ -57,5 +63,15 @@ class AuthFacade @Inject constructor(
 
     suspend fun getUserIdFromPref(): Flow<String?> {
         return getUserIdFromPrefUseCase()
+    }
+    suspend fun logout(): Result<Int> {
+        val result = logoutUseCase()
+
+        if (result.isSuccess) {
+            clearUserCacheUseCase()
+            return Result.success(LOGOUT_SUCCESS)
+        } else {
+            return Result.failure(result.exceptionOrNull() ?: Exception())
+        }
     }
 }

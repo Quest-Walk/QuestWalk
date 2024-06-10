@@ -11,12 +11,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+
 class UserFacade @Inject constructor(
     private val cacheCurrentUserUseCase: CacheCurrentUserUserCase,
     private val getCacheUserUseCase: GetCacheUserUseCase,
     private val checkCurrentUserNameUseCase: CheckCurrentUserNameUseCase,
     private val updateUserNameUseCase: UpdateUserNameUseCase,
-    private val uploadUserUseCase: UploadUserUseCase
+    private val uploadUserUseCase: UploadUserUseCase,
 ) {
     suspend fun getLoginUserToken(): UserModel? = withContext(Dispatchers.IO) {
         async { cacheCurrentUserUseCase() }.await()
@@ -34,5 +35,9 @@ class UserFacade @Inject constructor(
         if (user != null) {
             uploadUserUseCase(user)
         }
+    }
+
+    suspend fun getCacheUser(): UserModel? {
+        return getCacheUserUseCase()
     }
 }

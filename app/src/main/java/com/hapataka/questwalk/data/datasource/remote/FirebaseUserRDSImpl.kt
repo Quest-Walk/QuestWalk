@@ -15,7 +15,8 @@ class FirebaseUserRDSImpl @Inject constructor() : UserRDS {
         val userInfo = kotlin.runCatching {
             userDB.document(userId).get().await().toObject(UserDTO::class.java)
         }
-                return userInfo.getOrNull()
+
+        return userInfo.getOrNull()
     }
 
     override suspend fun uploadUser(user: UserModel) {

@@ -37,6 +37,7 @@ class SignUpViewModel @Inject constructor(
 
     private var _signUpBtnState = MutableLiveData<Boolean>(false)
     val signUpBtnState: LiveData<Boolean> get() = _signUpBtnState
+
     fun validateId(id: String) {
         when {
             id.isEmpty() -> _isValidId.value = EMPTY_INPUT

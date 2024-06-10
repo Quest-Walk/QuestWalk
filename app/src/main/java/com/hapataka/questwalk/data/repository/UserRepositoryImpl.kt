@@ -40,6 +40,10 @@ class UserRepositoryImpl @Inject constructor(
         return cacheDataSource.getUser()
     }
 
+    override suspend fun clearCachedUser() {
+        cacheDataSource.clearUser()
+    }
+
     override suspend fun setUserIdToPref(id: String) {
         prefDataSource.setUserId(id)
     }
