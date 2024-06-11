@@ -21,7 +21,7 @@ class MyInfoViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val userRepo: UserRepo,
     private val userFacade: UserFacade,
-    private val authFacade: AuthFacade
+    private val authFacade: AuthFacade,
 ) : ViewModel() {
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> get() = _currentUser
@@ -78,6 +78,12 @@ class MyInfoViewModel @Inject constructor(
                     return@deleteCurrentUser
                 }
             }
+        }
+    }
+
+    fun changeUserNickName(newNickName: String) {
+        viewModelScope.launch {
+            userFacade.updateUserName(newNickName)
         }
     }
 

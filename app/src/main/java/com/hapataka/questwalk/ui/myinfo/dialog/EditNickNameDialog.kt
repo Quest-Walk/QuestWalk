@@ -6,19 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.DialogEditNicknameBinding
-import com.hapataka.questwalk.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NickNameChangeDialog (val prevName: String) : DialogFragment() {
+class EditNickNameDialog (private val prevName: String) : DialogFragment() {
     private var _binding: DialogEditNicknameBinding? = null
     private val binding get() = _binding!!
-    var onNicknameChanged: ((newNickname: String) -> Unit)? = null
-    private val mainViewModel: MainViewModel by activityViewModels ()
 
+    var onNicknameChanged: ((newNickname: String) -> Result<Boolean>)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = DialogEditNicknameBinding.inflate(inflater, container, false)
@@ -28,27 +25,23 @@ class NickNameChangeDialog (val prevName: String) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDialog()
-        closeDialog()
+        setButtons()
     }
 
     private fun setDialog() {
         setSize()
         binding.etChangeNickname.setText(prevName)
-        binding.btnChange.setOnClickListener {
-            val newNickName = binding.etChangeNickname.text.toString().trim()
-
-            if (newNickName == prevName) {
-                view?.let { mainViewModel.setSnackBarMsg("변경된 정보가 없습니다.") }
-                dismiss()
-            } else {
-                onNicknameChanged?.invoke(newNickName)
-                dismiss()
-            }
-        }
     }
 
 
-    private fun closeDialog() {
+    private fun setButtons() {
+        binding.btnChange.setOnClickListener {
+            val newNickName = binding.etChangeNickname.text.toString().trim()
+
+            onNicknameChanged?.invoke(newNickName)?.let {
+                if (it.isSuccess) dismiss()
+            }
+        }
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
@@ -60,13 +53,21 @@ class NickNameChangeDialog (val prevName: String) : DialogFragment() {
     }
 
     private fun setSize() {
-        val displayMetrics = DisplayMetrics().also {
-            (requireActivity().windowManager.defaultDisplay).getMetrics(it)
-        }
-        val width = displayMetrics.widthPixels
-        val dialogWidth = (width * 0.85).toInt()
+        var dialogWidth: Int
         val dialogHeight = ViewGroup.LayoutParams.WRAP_CONTENT
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics = requireActivity().windowManager.currentWindowMetrics
+
+            dialogWidth = (windowMetrics.bounds.width() * 0.85).toInt()
+        } else {
+            @Suppress("DEPRECATION")
+            val displayMetrics = DisplayMetrics().also {
+                requireActivity().windowManager.defaultDisplay.getRealMetrics(it)
+            }
+
+            dialogWidth = (displayMetrics.widthPixels * 0.85).toInt()
+        }
         dialog?.window?.setLayout(dialogWidth, dialogHeight)
         dialog?.window?.setBackgroundDrawableResource(R.drawable.background_achieve_dialog)
     }

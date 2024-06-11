@@ -20,8 +20,8 @@ import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
+import com.hapataka.questwalk.ui.myinfo.dialog.EditNickNameDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.InputPwDialog
-import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
 import com.hapataka.questwalk.ui.onboarding.CharacterData
 import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
 import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
@@ -57,10 +57,9 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
     private fun initView() {
         initLogoutButton()
+        initButtons()
+
         initDropOut()
-        initBackButton()
-        changeCharacter()
-        changeName()
     }
 
     private fun setObserver() {
@@ -81,15 +80,13 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
 
                         startActivity(
                             intent,
-                            ActivityOptions.makeSceneTransitionAnimation(requireActivity()).toBundle()
+                            ActivityOptions.makeSceneTransitionAnimation(requireActivity())
+                                .toBundle()
                         )
                         delay(1000L)
                         requireActivity().finish()
                     }
                 }
-            }
-            toastMsg.observe(viewLifecycleOwner) { msg ->
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
             }
             btnState.observe(viewLifecycleOwner) { isEnable ->
                 if (isEnable) {
@@ -112,6 +109,22 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         }
     }
 
+    private fun initButtons() {
+        with(binding) {
+            btnBack.setOnClickListener {
+                navController.popBackStack()
+            }
+            btnPlayerName.setOnClickListener {
+                showEditNickNameDialog()
+            }
+            ivPlayerCharacter.setOnClickListener {
+                showCharacterDialog()
+            }
+        }
+    }
+
+
+
     private fun updateViewsWithUserInfo(userInfo: UserEntity) {
         val history = userInfo.histories
         val achieveCount = history.filterIsInstance<AchieveResultEntity>().size
@@ -129,8 +142,8 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             }
         }
     }
-
     lateinit var inputPwDialog: InputPwDialog
+
     private fun initDropOut() {
         binding.btnDropOut.setOnClickListener {
             inputPwDialog = InputPwDialog(
@@ -168,19 +181,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         ).show(parentFragmentManager, "dropOut Dialog")
     }
 
-    private fun initBackButton() {
-        binding.btnBack.setOnClickListener {
-            navController.popBackStack()
-        }
-    }
-
-    private fun changeCharacter() {
-        binding.ivPlayerCharacter.setOnClickListener {
-            startCharacterDialog()
-        }
-    }
-
-    private fun startCharacterDialog() {
+    private fun showCharacterDialog() {
         val dialogFragment = ChooseCharacterDialog().apply {
             listener = object : OnCharacterSelectedListener {
                 override fun onCharacterSelected(characterData: CharacterData) {
@@ -209,20 +210,22 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             onError = { mainViewModel.setSnackBarMsg("정보 변경에 실패하였습니다.") })
     }
 
-    private fun changeName() {
-        binding.btnPlayerName.setOnClickListener {
-            startEditNameDialog()
-        }
-    }
-
-    private fun startEditNameDialog() {
+    private fun showEditNickNameDialog() {
         val currentName = binding.tvPlayerName.text.toString()
-        val dialogFragment = NickNameChangeDialog(currentName).apply {
-            onNicknameChanged = { newNickname ->
-                updateNickName(newNickname)
+        val dialogFragment = EditNickNameDialog(currentName)
+
+        dialogFragment.onNicknameChanged = { newNickname ->
+            if (newNickname == currentName) {
+                Toast.makeText(requireContext(), "변경된 정보가 없습니다", Toast.LENGTH_SHORT).show()
+                Result.failure(Exception("Nickname not changed"))
+            } else {
+                viewModel.changeUserNickName(newNickname)
+                binding.tvPlayerName.text = newNickname
+                Toast.makeText(requireContext(), "유저정보가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                Result.success(true)
             }
         }
-        dialogFragment.show(parentFragmentManager, "NickNameChangeDialog")
+        dialogFragment.show(parentFragmentManager, "EditNickNameDialog")
     }
 
     private fun updateNickName(newNickname: String) {
