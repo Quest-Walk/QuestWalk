@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.weather
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -31,20 +32,8 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     private fun dataObserve() {
         with(weatherViewModel) {
-            weatherInfo.observe(viewLifecycleOwner) {
-                weatherAdapter.submitList(it)
-            }
-            dustInfo.observe(viewLifecycleOwner) {
-                setDustText(it)
-            }
-            weatherPreview.observe(viewLifecycleOwner) {
-                setWeatherPreview(it)
-            }
-            error.observe(viewLifecycleOwner) {
-                setErrorState(it)
-            }
-            isLoading.observe(viewLifecycleOwner) {isLoading ->
-                showLoadingDialog(isLoading)
+            weatherModel.observe(viewLifecycleOwner) {
+                Log.d("WeatherFragment", "dataObserve: $it")
             }
         }
     }
