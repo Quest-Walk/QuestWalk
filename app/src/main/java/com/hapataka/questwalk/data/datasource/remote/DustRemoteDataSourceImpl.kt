@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.data.datasource.remote
 
 import android.location.Location
+import android.util.Log
 import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.data.dto.DustDTO
 import com.hapataka.questwalk.domain.repository.DustRemoteDataSource
@@ -20,17 +21,23 @@ class DustRemoteDataSourceImpl @Inject constructor(
             "tmX" to besselLocation.latitude.toString(),
             "tmY" to besselLocation.longitude.toString()
         )
-        val station = dustService.getStation(stationQueryMap).station.stationBody.stationItems.minBy { it.tm }.stationName
+        val stationList = dustService.getStation(stationQueryMap).station.stationBody.stationItems.sortedBy { it.tm }
 
-        val dustQueryMap = mapOf(
-            "serviceKey" to BuildConfig.weather_key,
-            "returnType" to "json",
-            "stationName" to station,
-            "dataTerm" to "DAILY",
-            "ver" to "1.0"
-        )
+        for (station in stationList) {
+            val dustQueryMap = mapOf(
+                "serviceKey" to BuildConfig.weather_key,
+                "returnType" to "json",
+                "stationName" to station.stationName,
+                "dataTerm" to "DAILY",
+                "ver" to "1.0"
+            )
+            val dustInfo = dustService.getDust(dustQueryMap).dust.dustBody.dustDTO
 
-        return dustService.getDust(dustQueryMap).dust.dustBody.dustDTO[0]
+            if (dustInfo.isNotEmpty()) {
+                return dustInfo[0]
+            }
+        }
+        throw Exception("Dust Info Not Found")
     }
 
     private fun convertToBesselLocation(location: Pair<Float, Float>): Location {
