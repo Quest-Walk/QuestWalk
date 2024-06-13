@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -31,9 +32,12 @@ import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.domain.facade.HistoryFacade
+import com.hapataka.questwalk.domain.repository.HistoryRepository
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
 import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
+import com.hapataka.questwalk.ui.login.TAG
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
@@ -52,6 +56,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 const val STOP_POSITION = 0
 const val ANIM_POSITION = 1
@@ -80,7 +85,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         setup()
     }
 
-    fun loadInitialSetting() {
+    private fun loadInitialSetting() {
         setObserver()
         viewModel.checkCurrentUserName()
     }
@@ -90,6 +95,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         viewModel.checkCurrentTime()
     }
 
+    @Inject lateinit var historyRepo: HistoryRepository
+
     private fun initViews() {
         initBackground()
         initNaviButtons()
@@ -98,10 +105,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
 
+        binding.ivChrImage.setOnClickListener {
+            val map = historyFacade.countCurrentUserHistories()
 
+            Log.d(TAG, "map: $map")
+            // TODO: 테스트용
+        }
     }
 
-
+    @Inject
+    lateinit var historyFacade: HistoryFacade
     private fun setup() {
         initBackPressedCallback()
         setUid()
@@ -143,8 +156,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
-        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput->
-            if(isInput.not()) {
+        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
+            if (isInput.not()) {
                 navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
             }
         }
@@ -398,8 +411,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
         }
     }
-
-    val TAG = "permission_test"
 
     private fun makeResultLauncher() {
         activityResultLauncher = registerForActivityResult(contract) { permissions ->

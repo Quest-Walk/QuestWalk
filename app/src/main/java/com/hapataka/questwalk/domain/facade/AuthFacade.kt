@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.domain.facade
 
+import com.hapataka.questwalk.domain.usecase.CacheCurrentUserHistoriesUseCase
 import com.hapataka.questwalk.domain.usecase.CacheCurrentUserUserCase
 import com.hapataka.questwalk.domain.usecase.ClearUserCacheUseCase
 import com.hapataka.questwalk.domain.usecase.GetCacheUserUseCase
@@ -24,7 +25,8 @@ class AuthFacade @Inject constructor(
     private val getCacheUserUseCase: GetCacheUserUseCase,
     private val uploadUserUseCase: UploadUserUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val clearUserCacheUseCase: ClearUserCacheUseCase
+    private val clearUserCacheUseCase: ClearUserCacheUseCase,
+    private val cacheCurrentUserHistoriesUseCase: CacheCurrentUserHistoriesUseCase
 ) {
     suspend fun loginByIdAndPw(id: String, password: String): Result<Boolean> {
         val result = loginByIdAndPwUseCase(id, password)
@@ -32,6 +34,7 @@ class AuthFacade @Inject constructor(
         if (result.isSuccess) {
             setUserIdToPrefUseCase(id)
             cacheCurrentUserUserCase()
+            cacheCurrentUserHistoriesUseCase()
         }
         return result
     }
@@ -49,6 +52,7 @@ class AuthFacade @Inject constructor(
             if (loginResult.isSuccess) {
                 setUserIdToPrefUseCase(id)
                 cacheCurrentUserUserCase()
+                cacheCurrentUserHistoriesUseCase
                 val user = getCacheUserUseCase()
 
                 if (user != null) {

@@ -16,6 +16,8 @@ import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.domain.facade.ACHIEVEMENT_COUNT
+import com.hapataka.questwalk.domain.facade.RESULT_SUCCESS_COUNT
 import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.main.MainViewModel
@@ -53,6 +55,7 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(true)
         viewModel.getCurrentUserInfo()
+        viewModel.getHistoryCount()
     }
 
     private fun initView() {
@@ -72,6 +75,10 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
                     tvCalorie.text = user.totalStep.convertKcal()
                     tvTimeValue.text = user.totalTime.convertTime(DETAIL_TIME)
                 }
+            }
+            historyCount.observe(viewLifecycleOwner) { countMap ->
+                binding.tvSolveQuestValue.text = countMap[RESULT_SUCCESS_COUNT].toString() + "개"
+                binding.tvAchieveCouunt.text = countMap[ACHIEVEMENT_COUNT].toString() + "개"
             }
             logoutSuccess.observe(viewLifecycleOwner) { isSuccess ->
                 if (isSuccess) {
@@ -124,7 +131,6 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
     }
 
 
-
     private fun updateViewsWithUserInfo(userInfo: UserEntity) {
         val history = userInfo.histories
         val achieveCount = history.filterIsInstance<AchieveResultEntity>().size
@@ -135,13 +141,13 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             tvAchieveCouunt.text = "$achieveCount 개"
             tvSolveQuestValue.text = "$successResultCount 개"
 
-
             when (userInfo.characterId) {
                 1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
                 else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
             }
         }
     }
+
     lateinit var inputPwDialog: InputPwDialog
 
     private fun initDropOut() {
@@ -215,14 +221,23 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
         val dialogFragment = EditNickNameDialog(currentName)
 
         dialogFragment.onNicknameChanged = { newNickname ->
-            if (newNickname == currentName) {
-                Toast.makeText(requireContext(), "변경된 정보가 없습니다", Toast.LENGTH_SHORT).show()
-                Result.failure(Exception("Nickname not changed"))
-            } else {
-                viewModel.changeUserNickName(newNickname)
-                binding.tvPlayerName.text = newNickname
-                Toast.makeText(requireContext(), "유저정보가 변경되었습니다.", Toast.LENGTH_SHORT).show()
-                Result.success(true)
+            when {
+                newNickname.isEmpty() -> {
+                    Toast.makeText(requireContext(), "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    Result.failure(Exception("No Input Name"))
+                }
+
+                newNickname == currentName -> {
+                    Toast.makeText(requireContext(), "변경된 정보가 없습니다", Toast.LENGTH_SHORT).show()
+                    Result.failure(Exception("Nickname not changed"))
+                }
+
+                else -> {
+                    viewModel.changeUserNickName(newNickname)
+                    binding.tvPlayerName.text = newNickname
+                    Toast.makeText(requireContext(), "유저정보가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    Result.success(true)
+                }
             }
         }
         dialogFragment.show(parentFragmentManager, "EditNickNameDialog")

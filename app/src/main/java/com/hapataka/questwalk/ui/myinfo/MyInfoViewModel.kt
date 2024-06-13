@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.facade.AuthFacade
+import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.repository.UserRepo
@@ -22,6 +23,7 @@ class MyInfoViewModel @Inject constructor(
     private val userRepo: UserRepo,
     private val userFacade: UserFacade,
     private val authFacade: AuthFacade,
+    private val historyFacade: HistoryFacade
 ) : ViewModel() {
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> get() = _currentUser
@@ -34,6 +36,9 @@ class MyInfoViewModel @Inject constructor(
 
     private var _toastMsg = MutableLiveData<String>()
     val toastMsg: LiveData<String> get() = _toastMsg
+
+    private var _historyCount = MutableLiveData<Map<Int, Int>> ()
+    val historyCount: LiveData<Map<Int, Int>> get() = _historyCount
 
     private var _btnState = MutableLiveData<Boolean>(false)
     val btnState: LiveData<Boolean> get() = _btnState
@@ -62,6 +67,10 @@ class MyInfoViewModel @Inject constructor(
             }
             _btnState.value = true
         }
+    }
+
+    fun getHistoryCount() {
+        _historyCount.value = historyFacade.countCurrentUserHistories()
     }
 
     fun deleteCurrentUser(callback: () -> Unit) {

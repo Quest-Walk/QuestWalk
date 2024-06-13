@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.data.di
 
-import com.hapataka.questwalk.data.datasource.remote.FirebaseAuthRDSImpl
+import com.hapataka.questwalk.data.datasource.remote.FirebaseAuthRDS
 import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
 import com.hapataka.questwalk.domain.data.remote.AuthRDS
 import com.hapataka.questwalk.domain.repository.AuthRepository
@@ -15,9 +15,8 @@ import javax.inject.Named
 abstract class AuthModule {
     @Binds
     @Named("firebaseAuth")
-    abstract fun provideAuthRDS(firebaseAuthRDS: FirebaseAuthRDSImpl) : AuthRDS
+    abstract fun provideAuthRDS(firebaseAuthRDS: FirebaseAuthRDS) : AuthRDS
 
     @Binds
     abstract fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl) : AuthRepository
-
 }

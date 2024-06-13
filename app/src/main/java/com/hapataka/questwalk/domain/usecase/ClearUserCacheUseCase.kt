@@ -1,12 +1,12 @@
 package com.hapataka.questwalk.domain.usecase
 
-import com.hapataka.questwalk.domain.repository.UserRepository
+import com.hapataka.questwalk.domain.repository.CacheRepository
 import javax.inject.Inject
 
 class ClearUserCacheUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val cacheRepository: CacheRepository
 ) {
     suspend operator fun invoke() {
-        userRepository.clearCachedUser()
+        cacheRepository.cleanCurrentUserCache()
     }
 }

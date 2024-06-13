@@ -7,7 +7,7 @@ import com.hapataka.questwalk.domain.data.remote.AuthRDS
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseAuthRDSImpl @Inject constructor() : AuthRDS {
+class FirebaseAuthRDS @Inject constructor() : AuthRDS {
     private val auth by lazy { Firebase.auth }
 
     override suspend fun registerByEmailAndPw(email: String, pw: String): Result<Boolean> {
