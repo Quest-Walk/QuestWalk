@@ -14,10 +14,11 @@ data class Dust(
 
 data class DustBody(
     @SerializedName("items")
-    val dustItems: List<DustItem>,
+    val dustDTO: List<DustDTO>,
 )
 
-data class DustItem(
+// TODO:  DTO
+data class DustDTO(
     val pm10Flag: Any,
     val pm10Grade: String,
     val pm10Value: String,
