@@ -7,7 +7,7 @@ import retrofit2.http.QueryMap
 interface WeatherService {
     @GET("getVilageFcst")
     suspend fun getWeatherInfo(
-        @QueryMap queries: Map<String, String>
+        @QueryMap queryMap: Map<String, String>
     ): WeatherResponse
 
 }
