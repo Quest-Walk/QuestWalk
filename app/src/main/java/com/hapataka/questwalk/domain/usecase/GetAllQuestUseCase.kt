@@ -2,13 +2,13 @@ package com.hapataka.questwalk.domain.usecase
 
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
 import javax.inject.Inject
 
 class GetAllQuestUseCase @Inject constructor(
     private val questStackRepo: QuestStackRepository,
-    private val userRepo: UserRDS,
+    private val userRepo: UserRepo,
 ) {
     suspend operator fun invoke(): List<QuestStackEntity> {
         val allQuestItems = questStackRepo.getAllItems()

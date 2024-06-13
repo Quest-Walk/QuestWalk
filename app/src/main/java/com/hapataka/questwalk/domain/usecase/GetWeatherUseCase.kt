@@ -16,4 +16,3 @@ class GetWeatherUseCase @Inject constructor(
         return weatherRepository.getWeatherInfo(currentLocation)
     }
 }
-

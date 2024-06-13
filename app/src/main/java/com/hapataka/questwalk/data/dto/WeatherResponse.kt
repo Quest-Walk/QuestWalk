@@ -3,21 +3,23 @@ package com.hapataka.questwalk.data.dto
 import com.google.gson.annotations.SerializedName
 
 data class WeatherResponse(
+    @SerializedName("response")
     val weather: Weather
 )
 
 data class Weather(
+    @SerializedName("body")
     val weatherBody: WeatherBody
 )
 
 data class WeatherBody(
     val dataType: String,
-    @SerializedName("weatherItems")
+    @SerializedName("items")
     val forecastDTO: ForecastDTO,
 )
 
 data class ForecastDTO(
-    @SerializedName("weatherDTO")
+    @SerializedName("item")
     val hourlyForecast: List<HourlyForecast>
 )
 

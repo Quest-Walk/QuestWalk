@@ -14,7 +14,7 @@ import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.domain.usecase.AchievementListener
 import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.util.UserInfo
@@ -34,7 +34,7 @@ const val HIDE_LOADING = false
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userRepo: UserRDS,
+    private val userRepo: UserRepo,
     private val questRepo: QuestStackRepository,
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,

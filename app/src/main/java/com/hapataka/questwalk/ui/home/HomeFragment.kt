@@ -31,16 +31,16 @@ import coil.load
 import coil.request.ImageRequest
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
+import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
+import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
 import com.hapataka.questwalk.ui.main.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
-import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
-import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -75,8 +75,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadInitialSetting()
         initViews()
         setup()
+    }
+
+    fun loadInitialSetting() {
+        setObserver()
+        viewModel.checkCurrentUserName()
     }
 
     override fun onResume() {
@@ -91,10 +97,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         checkPermissions()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
+
+
     }
 
+
     private fun setup() {
-        setObserver()
         initBackPressedCallback()
         setUid()
     }
@@ -135,6 +143,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
+        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput->
+            if(isInput.not()) {
+                navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
+            }
+        }
+
+
         with(viewModel) {
             isNight.observe(viewLifecycleOwner) { night ->
                 if (night) {

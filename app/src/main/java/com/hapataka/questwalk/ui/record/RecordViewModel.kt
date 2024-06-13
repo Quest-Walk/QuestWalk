@@ -8,7 +8,7 @@ import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecordViewModel @Inject constructor(
-    private val userRepo: UserRDS,
+    private val userRepo: UserRepo,
     private val achieveItemRepo: AchieveItemRepository
 ) : ViewModel() {
     private var _recordItems = MutableLiveData<List<RecordItem>>()

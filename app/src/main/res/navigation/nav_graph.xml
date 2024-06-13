@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_login">
+    app:startDestination="@id/frag_home">
 
     <fragment
         android:id="@+id/frag_my_info"
-        android:name="com.hapataka.questwalk.ui.fragment.myinfo.MyInfoFragment"
+        android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
         tools:layout="@layout/fragment_my_info">
         <action
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/frag_record"
-        android:name="com.hapataka.questwalk.ui.fragment.record.RecordFragment"
+        android:name="com.hapataka.questwalk.ui.record.RecordFragment"
         android:label="frag_record"
         tools:layout="@layout/fragment_record">
         <action
@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/frag_home"
-        android:name="com.hapataka.questwalk.ui.fragment.home.HomeFragment"
+        android:name="com.hapataka.questwalk.ui.home.HomeFragment"
         android:label="frag_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -50,56 +50,21 @@
         <action
             android:id="@+id/action_frag_home_to_weatherFragment"
             app:destination="@id/frag_weather" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
     </fragment>
 
     <fragment
         android:id="@+id/frag_camera"
-        android:name="com.hapataka.questwalk.ui.fragment.camera.CameraFragment"
+        android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
         android:label="frag_camera"
         tools:layout="@layout/fragment_camera">
     </fragment>
 
-
-    <fragment
-        android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.ui.fragment.login.LogInFragment"
-        android:label="frag_login"
-        tools:layout="@layout/fragment_log_in">
-        <action
-            android:id="@+id/action_frag_login_to_frag_sign_up"
-            app:destination="@id/frag_sign_up" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_on_boarding"
-            app:destination="@id/frag_on_boarding" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_home"
-            app:destination="@id/frag_home"
-            app:popUpTo="@id/frag_home" />
-        <action
-            android:id="@+id/action_frag_login_to_findPassWordFragment"
-            app:destination="@id/findPassWordFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/frag_sign_up"
-        android:name="com.hapataka.questwalk.ui.fragment.signup.SignUpFragment"
-        android:label="frag_sign_up"
-        tools:layout="@layout/fragment_sign_up">
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_home"
-            app:destination="@id/frag_home"
-            app:popUpTo="@id/frag_home" />
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_login"
-            app:destination="@id/frag_login" />
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_on_boarding"
-            app:destination="@id/frag_on_boarding" />
-    </fragment>
-
     <fragment
         android:id="@+id/frag_on_boarding"
-        android:name="com.hapataka.questwalk.ui.fragment.onboarding.ProfileSetupFragment"
+        android:name="com.hapataka.questwalk.ui.onboarding.ProfileSetupFragment"
         android:label="frag_on_boarding"
         tools:layout="@layout/fragment_on_boarding">
         <action
@@ -109,7 +74,7 @@
 
     <fragment
         android:id="@+id/frag_result"
-        android:name="com.hapataka.questwalk.ui.fragment.result.ResultFragment"
+        android:name="com.hapataka.questwalk.ui.result.ResultFragment"
         android:label="frag_result"
         tools:layout="@layout/fragment_result" />
 
@@ -119,7 +84,7 @@
 
     <fragment
         android:id="@+id/frag_quest"
-        android:name="com.hapataka.questwalk.ui.fragment.quest.QuestFragment"
+        android:name="com.hapataka.questwalk.ui.quest.QuestFragment"
         android:label="frag_quest"
         tools:layout="@layout/fragment_quest">
         <action
@@ -129,7 +94,7 @@
 
     <fragment
         android:id="@+id/frag_quest_detail"
-        android:name="com.hapataka.questwalk.ui.fragment.questdetail.QuestDetailFragment"
+        android:name="com.hapataka.questwalk.ui.questdetail.QuestDetailFragment"
         android:label="frag_quest_detail"
         tools:layout="@layout/fragment_quest_detail">
         <action
@@ -137,20 +102,15 @@
             app:destination="@id/dialog_full_image" />
     </fragment>
 
-    <fragment
-        android:id="@+id/findPassWordFragment"
-        android:name="com.example.firebasetestapp.FindPassWordFragment"
-        android:label="FindPassWordFragment"
-        tools:layout="@layout/fragment_find_pass_word" />
 
     <dialog
         android:id="@+id/dialog_full_image"
-        android:name="com.hapataka.questwalk.ui.fragment.questdetail.FullImageDialog"
+        android:name="com.hapataka.questwalk.ui.questdetail.FullImageDialog"
         android:label="dialog_full_image" />
 
     <fragment
         android:id="@+id/frag_weather"
-        android:name="com.hapataka.questwalk.ui.fragment.weather.WeatherFragment"
+        android:name="com.hapataka.questwalk.ui.weather.WeatherFragment"
         android:label="fragment_weather"
         tools:layout="@layout/fragment_weather" />
 

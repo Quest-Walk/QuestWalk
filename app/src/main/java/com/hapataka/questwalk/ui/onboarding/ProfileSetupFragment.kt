@@ -11,9 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentOnBoardingBinding
-import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.common.BaseFragment
-import com.hapataka.questwalk.util.OnSingleClickListener
+import com.hapataka.questwalk.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +21,7 @@ class ProfileSetupFragment :
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private var characterNum = 1
     private val mainViewModel: MainViewModel by activityViewModels ()
-    private val viewModel: ProfileSetupViewModel by viewModels ()
+    private val viewModel: ProfileSetupViewModel by viewModels<ProfileSetupViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,31 +58,36 @@ class ProfileSetupFragment :
     }
 
     private fun goMain() {
-        binding.btnComplete.setOnClickListener(object : OnSingleClickListener() {
-            override fun onSingleClick(v: View?) {
-                hideKeyBoard()
+        binding.btnComplete.setOnClickListener {
+            hideKeyBoard()
 
-                val nickName = binding.etNickname.text.toString()
+            val nickName = binding.etNickname.text.toString()
 
-                if (nickName.isEmpty()) {
-                    mainViewModel.setSnackBarMsg("닉네임을 입력해 주세요")
-                    return@onSingleClick
-                }
-
-                viewModel.getCurrentUserId { userId ->
-                    if (userId.isNotEmpty()) {
-                        viewModel.setUserInfo(userId,
-                            characterNum,
-                            nickName,
-                            { navigateGoHome() },
-                            onError = { error -> mainViewModel.setSnackBarMsg(error) })
-                    } else {
-                        mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
-                    }
-                }
+            if (nickName.isEmpty()) {
+                mainViewModel.setSnackBarMsg("닉네임을 입력해 주세요")
+                return@setOnClickListener
             }
-        })
+            viewModel.updateUserName(nickName)
+            navController.popBackStack()
+        }
     }
+
+
+
+//                viewModel.getCurrentUserId { userId ->
+//                    if (userId.isNotEmpty()) {
+
+//                        viewModel.setUserInfo(userId,
+//                            characterNum,
+//                            nickName,
+//                            { navigateGoHome() },
+//                            onError = { error -> mainViewModel.setSnackBarMsg(error) })
+//                    } else {
+//                        mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
+//                    }
+//                }
+//            }
+//        })
 
     private fun navigateGoHome() {
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)

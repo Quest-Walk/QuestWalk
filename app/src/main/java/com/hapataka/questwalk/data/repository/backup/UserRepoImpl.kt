@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.data.repository
+package com.hapataka.questwalk.data.repository.backup
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -11,7 +11,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
-import com.hapataka.questwalk.domain.repository.UserRDS
+import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.extentions.decryptECB
 import com.hapataka.questwalk.util.extentions.encryptECB
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class UserRDSImpl @Inject constructor() : UserRDS {
+class UserRepoImpl @Inject constructor() : UserRepo {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
     private val userCollection by lazy { remoteDb.collection("user") }
 

@@ -9,8 +9,8 @@ import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.repository.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentResultBinding
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm

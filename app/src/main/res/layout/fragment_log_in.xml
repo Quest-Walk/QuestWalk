@@ -4,13 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context="ui.login.LogInFragment">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/inner_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/iv_title"
@@ -90,7 +84,5 @@
             app:layout_constraintEnd_toEndOf="@id/et_login_password"
             app:layout_constraintStart_toStartOf="@id/et_login_password"
             app:layout_constraintTop_toBottomOf="@id/btn_login" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

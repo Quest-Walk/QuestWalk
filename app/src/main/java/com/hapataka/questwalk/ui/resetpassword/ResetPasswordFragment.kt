@@ -1,4 +1,4 @@
-package com.example.firebasetestapp
+package com.hapataka.questwalk.ui.resetpassword
 
 import android.content.Context
 import android.os.Bundle
@@ -15,14 +15,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.databinding.FragmentFindPassWordBinding
-import com.hapataka.questwalk.ui.main.MainViewModel
+import com.hapataka.questwalk.databinding.FragmentResetPasswordBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.util.OnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FindPassWordFragment : BaseFragment<FragmentFindPassWordBinding>(FragmentFindPassWordBinding::inflate) {
+class ResetPasswordFragment : BaseFragment<FragmentResetPasswordBinding>(FragmentResetPasswordBinding::inflate) {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val mainViewModel: MainViewModel by activityViewModels ()
     private var emailId = ""
