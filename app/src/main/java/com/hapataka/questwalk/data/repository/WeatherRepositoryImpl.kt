@@ -1,39 +1,56 @@
 package com.hapataka.questwalk.data.repository
 
-import android.util.Log
-import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
-import com.hapataka.questwalk.data.dto.WeatherItem
-import com.hapataka.questwalk.domain.entity.WeatherEntity
+import com.hapataka.questwalk.data.dto.DustDTO
+import com.hapataka.questwalk.data.dto.ForecastDTO
+import com.hapataka.questwalk.data.dto.HourlyForecast
+import com.hapataka.questwalk.data.model.WeatherModel
+import com.hapataka.questwalk.domain.repository.DustRemoteDataSource
+import com.hapataka.questwalk.domain.repository.WeatherRemoteDataSource
 import com.hapataka.questwalk.domain.repository.WeatherRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor () : WeatherRepository {
-    private val weatherService = RetrofitClient.weatherApi
+class WeatherRepositoryImpl @Inject constructor(
+    private val weatherRemoteDataSource: WeatherRemoteDataSource,
+    private val dustRemoteDataSource: DustRemoteDataSource
+) : WeatherRepository {
+    override suspend fun getWeatherInfo(currentLocation: Pair<Float, Float>): WeatherModel =
+        withContext(Dispatchers.IO) {
+            val weatherResponse = async { weatherRemoteDataSource.getWeatherInfo(currentLocation) }.await()
+            val dustResponse = async { dustRemoteDataSource.getDustInfo(currentLocation) }.await()
 
-    override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {
-        Log.d("WeatherRepositoryImpl:","WeatherRepositoryImpl: $quries")
-        val items = weatherService.getWeatherInfo(quries).weather.weatherBody.weatherItems.weatherItem
-        return convertToWeatherEntity(items)
-    }
+            val weatherModel = convertToWeatherModel(weatherResponse, dustResponse)
+            weatherModel
+        }
 
-    private fun convertToWeatherEntity(weatherItems: List<WeatherItem>): MutableList<WeatherEntity> {
-        val itemsGroup = weatherItems.groupBy { "${it.fcstDate}${it.fcstTime}" }
-        val result =  itemsGroup.map { (dateTime, item) ->
-            val sky = item.first { it.category == "SKY" }.fcstValue
-            val pty = item.first { it.category == "PTY" }.fcstValue
-            val tmp = item.first { it.category == "TMP" }.fcstValue
+    private fun convertToWeatherModel(
+        forecastResponse: ForecastDTO,
+        dustResponse: DustDTO
+    ): WeatherModel {
+        val foreCastModelList = forecastResponse.hourlyForecast.groupBy { "${it.fcstDate}${it.fcstTime}" }
+            .map { (_, weatherList) ->
+                val sky = weatherList.first { it.category == "SKY" }.fcstValue
+                val pty = weatherList.first { it.category == "PTY" }.fcstValue
+                val tmp = weatherList.first { it.category == "TMP" }.fcstValue
 
-            WeatherEntity(
-                fcstDate = item[0].fcstDate,
-                fcstTime = item[0].fcstTime,
-                baseDate = item[0].baseDate,
-                sky = sky,
-                precipType = pty,
-                temp = tmp
-            )
-        }.toMutableList()
-        Log.d("WeatherRepository:","$result")
-        return result
+                WeatherModel.ForecastModel(
+                    fcstDate = weatherList.first().fcstDate,
+                    fcstTime = weatherList.first().fcstTime,
+                    baseDate = weatherList.first().baseDate,
+                    sky = sky,
+                    precipType = pty,
+                    temp = tmp
+                )
+            }
+
+        return WeatherModel(
+            forecastList = foreCastModelList,
+        ).apply {
+            setPmInfo(dustResponse.pm10Value.toIntOrNull() ?: -1, dustResponse.pm25Value.toIntOrNull() ?: -1)
+        }
     }
 }
 
