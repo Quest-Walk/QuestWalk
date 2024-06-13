@@ -9,11 +9,8 @@ import com.hapataka.questwalk.data.repository.QuestStackRepositoryImpl
 import com.hapataka.questwalk.data.repository.UserRDSImpl
 import com.hapataka.questwalk.data.repository.LocationRepositoryImpl
 import com.hapataka.questwalk.data.repository.LocalRepositoryImpl
-import com.hapataka.questwalk.data.repository.DustRepositoryImpl
-import com.hapataka.questwalk.data.repository.WeatherRepositoryImpl
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.domain.repository.AuthRepository
-import com.hapataka.questwalk.domain.repository.DustRepository
 import com.hapataka.questwalk.domain.repository.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.LocalRepository
@@ -21,7 +18,6 @@ import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRDS
-import com.hapataka.questwalk.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,12 +31,6 @@ abstract class DiModule {
 
     @Binds
     abstract fun provideEncryptRepository(encryptRepo: EncryptionKeyRepositoryImpl): EncryptionKeyRepository
-
-    @Binds
-    abstract fun provideWeatherRepository(weatherRepo: WeatherRepositoryImpl): WeatherRepository
-
-    @Binds
-    abstract fun provideDustRepository(dustRepo: DustRepositoryImpl): DustRepository
 
     @Binds
     abstract fun provideAuthRepository(authRepoImpl: AuthRepositoryImpl):AuthRepository
