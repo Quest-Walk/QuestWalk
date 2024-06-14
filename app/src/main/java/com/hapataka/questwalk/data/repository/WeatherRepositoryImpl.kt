@@ -11,6 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
@@ -30,6 +33,8 @@ class WeatherRepositoryImpl @Inject constructor(
         forecastResponse: ForecastDTO,
         dustResponse: DustDTO
     ): WeatherModel {
+        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00")).toInt()
+        val requestDay = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
         val foreCastModelList = forecastResponse.hourlyForecast.groupBy { "${it.fcstDate}${it.fcstTime}" }
             .map { (_, weatherList) ->
                 val sky = weatherList.first { it.category == "SKY" }.fcstValue
@@ -44,7 +49,7 @@ class WeatherRepositoryImpl @Inject constructor(
                     precipType = pty,
                     temp = tmp
                 )
-            }
+            }.filter { it.fcstTime.toInt() >= requestTime || it.fcstDate.toInt() > requestDay }.take(10)
 
         return WeatherModel(
             forecastList = foreCastModelList,
