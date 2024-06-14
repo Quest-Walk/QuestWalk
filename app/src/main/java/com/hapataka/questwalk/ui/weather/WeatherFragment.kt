@@ -32,8 +32,9 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     private fun dataObserve() {
         with(weatherViewModel) {
-            weatherModel.observe(viewLifecycleOwner) {
-                Log.d("WeatherFragment", "dataObserve: $it")
+            weatherModel.observe(viewLifecycleOwner) {weatherModel ->
+                Log.d("WeatherFragment", "dataObserve: $weatherModel")
+                weatherAdapter.submitList(weatherModel.forecastList)
             }
         }
     }
