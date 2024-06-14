@@ -24,4 +24,12 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout(): Result<Unit> {
         return firebaseAuthRDS.logout()
     }
+
+    override suspend fun reauthCurrentUser(pw: String): Result<Unit> {
+        return firebaseAuthRDS.reauthCurrentUser(pw)
+    }
+
+    override suspend fun dropOutCurrentUser(): Result<Unit> {
+        return firebaseAuthRDS.dropOutCurrentUser()
+    }
 }

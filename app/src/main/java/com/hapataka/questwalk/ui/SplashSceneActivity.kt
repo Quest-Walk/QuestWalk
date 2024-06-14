@@ -18,7 +18,6 @@ class SplashSceneActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initBackPressedCallback()
         loadInitialSetting()
     }

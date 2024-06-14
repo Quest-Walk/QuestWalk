@@ -26,4 +26,8 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun uploadUser(user: UserModel) {
         firebaseUserRDS.uploadUser(user)
     }
+
+    override suspend fun deleteUserById(userId: String) {
+        firebaseUserRDS.deleteUserById(userId)
+    }
 }

@@ -1,12 +1,10 @@
 package com.hapataka.questwalk.data.repository
 
-import android.util.Log
 import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.data.model.HistoryModel.AchievementRecordModel
 import com.hapataka.questwalk.data.model.HistoryModel.ResultRecordModel
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
 import com.hapataka.questwalk.domain.repository.HistoryRepository
-import com.hapataka.questwalk.ui.login.TAG
 import com.hapataka.questwalk.util.extentions.decryptECB
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
@@ -47,12 +45,15 @@ class HistoryRepositoryImpl @Inject constructor(
         return result
     }
 
+    override suspend fun deleteHistoriesById(userId: String): Result<Unit> {
+        return firebaseHistoryRDS.deleteHistoriesById(userId)
+    }
+
     private fun String.toRoute(): MutableList<Pair<Float, Float>> {
         return Json.decodeFromString(this.decryptECB())
     }
 
     private fun String.toSuccessLocation(): Pair<Float, Float> {
         return Json.decodeFromString(this.decryptECB())
-
     }
 }

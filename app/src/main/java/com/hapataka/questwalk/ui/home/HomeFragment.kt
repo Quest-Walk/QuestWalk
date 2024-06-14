@@ -10,7 +10,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -30,14 +29,18 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.ImageRequest
+import com.google.firebase.auth.FirebaseAuth
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.data.datasource.remote.FirebaseHistoryRDS
+import com.hapataka.questwalk.data.dto.AchievementRecordDTO
+import com.hapataka.questwalk.data.dto.ResultRecordDTO
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.domain.facade.HistoryFacade
+import com.hapataka.questwalk.domain.repository.AuthRepository
 import com.hapataka.questwalk.domain.repository.HistoryRepository
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
 import com.hapataka.questwalk.ui.home.dialog.StopPlayDialog
-import com.hapataka.questwalk.ui.login.TAG
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
@@ -56,6 +59,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 const val STOP_POSITION = 0
@@ -83,6 +87,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         loadInitialSetting()
         initViews()
         setup()
+        testCode()
     }
 
     private fun loadInitialSetting() {
@@ -95,8 +100,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         viewModel.checkCurrentTime()
     }
 
-    @Inject lateinit var historyRepo: HistoryRepository
-
     private fun initViews() {
         initBackground()
         initNaviButtons()
@@ -104,17 +107,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         checkPermissions()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
-
-        binding.ivChrImage.setOnClickListener {
-            val map = historyFacade.countCurrentUserHistories()
-
-            Log.d(TAG, "map: $map")
-            // TODO: 테스트용
-        }
     }
 
-    @Inject
-    lateinit var historyFacade: HistoryFacade
     private fun setup() {
         initBackPressedCallback()
         setUid()
@@ -129,9 +123,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initNaviButtons() {
         with(binding) {
-            btnRecord.setOnClickListener {
-                navController.navigate(R.id.action_frag_home_to_frag_record)
-            }
+//            btnRecord.setOnClickListener {
+//                navController.navigate(R.id.action_frag_home_to_frag_record)
+//            }
             btnMyPage.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
@@ -504,5 +498,50 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     override fun onDestroyView() {
         super.onDestroyView()
         characterMove?.cancel()
+    }
+
+    @Inject
+    lateinit var historyRepo: HistoryRepository
+
+    @Inject
+    lateinit var historyFacade: HistoryFacade
+
+    @Inject
+    lateinit var authRepository: AuthRepository
+
+    private fun testCode() {
+        val auth = FirebaseAuth.getInstance()
+        val historyRDS = FirebaseHistoryRDS()
+
+        binding.ivChrImage.setOnClickListener {
+            val resultDTO = ResultRecordDTO(
+                auth.currentUser?.uid ?: return@setOnClickListener,
+                LocalDateTime.now().toString(),
+                listOf("가위", "바위", "보").random(),
+                150L,
+                5485.151f,
+                3498L,
+                true,
+                "S92jA0tYFTyv6gq33b5FxfanC+OTIppzutqEEIG5plAgJumbyXGQ4KMLJJSjc0o+hYF7t6w8nCqW 7vUzmSC98b4+ihMVXN8Ou+6JZHkaR7g= ",
+                "spOMRx6pxQkwaHHya+wmNCIlmeUWJT2g8XaKphFQOioKrQgm7X+bvmxZG4f+z4rV ",
+                "https://velog.velcdn.com/images/etgt777/post/83eadb2b-025a-403e-a66d-68d52c3f0cd3/image.png",
+            )
+            val achieveDTO = AchievementRecordDTO(
+                auth.currentUser?.uid ?: return@setOnClickListener,
+                LocalDateTime.now().toString(),
+                listOf(1, 2, 3, 4, 5, 6, 7).random(),
+            )
+
+            lifecycleScope.launch {
+                historyRDS.uploadHistoryInfo(resultDTO)
+                historyRDS.uploadHistoryInfo(achieveDTO)
+            }
+        }
+
+        binding.btnRecord.setOnClickListener {
+            lifecycleScope.launch {
+                historyRDS.deleteHistoriesById(auth.currentUser?.uid ?: return@launch)
+            }
+        }
     }
 }

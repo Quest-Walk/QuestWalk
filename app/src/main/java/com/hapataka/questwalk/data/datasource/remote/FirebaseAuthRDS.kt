@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.data.datasource.remote
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -29,4 +30,20 @@ class FirebaseAuthRDS @Inject constructor() : AuthRDS {
     override suspend fun logout(): Result<Unit> {
         return kotlin.runCatching { auth.signOut() }
     }
+
+    override suspend fun reauthCurrentUser(pw: String): Result<Unit> {
+        val user = auth.currentUser ?: return Result.failure(Exception("User is null"))
+        val email = user.email ?: return Result.failure(Exception("Email is null"))
+        val credential = EmailAuthProvider.getCredential(email, pw)
+
+        return kotlin.runCatching {
+            user.reauthenticate(credential).await()
+        }
+    }
+
+    override suspend fun dropOutCurrentUser(): Result<Unit> {
+        return kotlin.runCatching { auth.currentUser?.delete() }
+    }
+
+
 }

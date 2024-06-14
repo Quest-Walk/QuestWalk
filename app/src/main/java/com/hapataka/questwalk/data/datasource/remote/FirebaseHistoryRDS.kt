@@ -35,4 +35,26 @@ class FirebaseHistoryRDS @Inject constructor() : HistoryRDS {
                 achievementDeferred.await().map { it.toObject(AchievementRecordDTO::class.java) }
             )
         }
+
+    override suspend fun uploadHistoryInfo(history: Any) {
+        when (history) {
+            is ResultRecordDTO -> {
+                historyDB.add(history).await()
+            }
+
+            is AchievementRecordDTO -> {
+                historyDB.add(history).await()
+            }
+
+            else -> throw (Exception("Unknown record type"))
+        }
+    }
+
+
+    override suspend fun deleteHistoriesById(id: String): Result<Unit> {
+        return kotlin.runCatching {
+            historyDB.whereEqualTo("userId", id).get().await().documents
+                .forEach { historyDB.document(it.id).delete().await() }
+        }
+    }
 }

@@ -7,4 +7,6 @@ interface AuthRDS {
     suspend fun getCurrentUserInfo(): FirebaseUser?
     suspend fun registerByEmailAndPw(email: String, pw: String): Result<Boolean>
     suspend fun logout(): Result<Unit>
+    suspend fun reauthCurrentUser(pw: String): Result<Unit>
+    suspend fun dropOutCurrentUser(): Result<Unit>
 }

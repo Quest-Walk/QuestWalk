@@ -22,4 +22,8 @@ class FirebaseUserRDS @Inject constructor() : UserRDS {
     override suspend fun uploadUser(user: UserModel) {
         userDB.document(user.userId).set(user)
     }
+
+    override suspend fun deleteUserById(userId: String) {
+        userDB.document(userId).delete()
+    }
 }
