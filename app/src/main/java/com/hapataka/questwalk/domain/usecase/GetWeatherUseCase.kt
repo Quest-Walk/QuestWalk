@@ -12,7 +12,6 @@ class GetWeatherUseCase @Inject constructor(
     suspend operator fun invoke(): WeatherModel {
         val currentLocation = locationRepository.getCurrent().location
 
-        //weatherInfo.filter { it.fcstTime.toInt() >= requestTime || it.fcstDate.toInt() > requestDay }.take(10)
         return weatherRepository.getWeatherInfo(currentLocation)
     }
 }
