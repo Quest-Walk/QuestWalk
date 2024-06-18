@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.hapataka.questwalk.data.model.WeatherModel
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.domain.entity.DustEntity
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
@@ -23,19 +24,36 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataObserve()
-        initRecyclerView()
-        initBackButton()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
+        dataObserve()
+        initViews()
     }
 
     private fun dataObserve() {
         with(weatherViewModel) {
             weatherModel.observe(viewLifecycleOwner) {weatherModel ->
-                Log.d("WeatherFragment", "dataObserve: $weatherModel")
+                Log.d("weatherFragment:","weatherModel: $weatherModel")
                 weatherAdapter.submitList(weatherModel.forecastList)
+                initDustViews(weatherModel)
             }
+
+            weatherState.observe(viewLifecycleOwner) {weatherState ->
+                Log.d("weatherFragment:","weatherState: $weatherState")
+            }
+        }
+    }
+
+    private fun initViews() {
+        initRecyclerView()
+        initBackButton()
+
+        // TODO: 예외처리 코드 작성 (Toast Message를 띄우고 날씨 화면을 종료) try-catch OR runCatching
+        // TODO: 날씨정보를 받아오기전까지 로딩 화면을 구성해야댐
+        try {
+            weatherViewModel.getWeatherModel()
+        } catch (e: Exception) {
+            setErrorState(e.message.toString())
         }
     }
 
@@ -49,6 +67,13 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
     private fun initBackButton() {
         binding.ivArrowBack.setOnClickListener {
             navHost.popBackStack()
+        }
+    }
+
+    private fun initDustViews(weathertModel: WeatherModel) {
+        with(binding) {
+            tvMiseValue.text = weathertModel.pm10Value.toString()
+            tvChomiseValue.text = weathertModel.pm25Value.toString()
         }
     }
 

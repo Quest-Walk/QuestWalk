@@ -23,15 +23,17 @@ data class WeatherModel(
         this.pm10Value = pm10Value
         this.pm25Value = pm25Value
         pm10Grade = when (pm10Value) {
-            in 0..12 -> 1
-            in 13..35 ->2
-            in 36 .. Int.MAX_VALUE -> 3
+            in 0..30 -> 1
+            in 31..80 ->2
+            in 81 .. 150 -> 3
+            in 151 .. Int.MAX_VALUE -> 4
             else -> throw IllegalArgumentException("PM10 값이 유효하지 않습니다.")
         }
         pm25Grade = when (pm25Value) {
             in 0..15 -> 1
             in 16..35 -> 2
-            in 36..Int.MAX_VALUE -> 3
+            in 36 .. 75 -> 3
+            in 76..Int.MAX_VALUE -> 4
             else -> throw IllegalArgumentException("PM25 값이 유효하지 않습니다.")
         }
     }

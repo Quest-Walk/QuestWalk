@@ -25,8 +25,7 @@ class WeatherRepositoryImpl @Inject constructor(
             val weatherResponse = async { weatherRemoteDataSource.getWeatherInfo(currentLocation) }.await()
             val dustResponse = async { dustRemoteDataSource.getDustInfo(currentLocation) }.await()
 
-            val weatherModel = convertToWeatherModel(weatherResponse, dustResponse)
-            weatherModel
+            convertToWeatherModel(weatherResponse, dustResponse)
         }
 
     private fun convertToWeatherModel(
