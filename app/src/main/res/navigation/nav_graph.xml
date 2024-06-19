@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/frag_login">
+    app:startDestination="@id/frag_home">
 
     <fragment
         android:id="@+id/frag_my_info"
@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_frag_home_to_weatherFragment"
             app:destination="@id/frag_weather" />
+        <action
+            android:id="@+id/action_frag_home_to_frag_on_boarding"
+            app:destination="@id/frag_on_boarding" />
     </fragment>
 
     <fragment
@@ -57,44 +60,6 @@
         android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
         android:label="frag_camera"
         tools:layout="@layout/fragment_camera">
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/frag_login"
-        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
-        android:label="frag_login"
-        tools:layout="@layout/fragment_log_in">
-        <action
-            android:id="@+id/action_frag_login_to_frag_sign_up"
-            app:destination="@id/frag_sign_up" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_on_boarding"
-            app:destination="@id/frag_on_boarding" />
-        <action
-            android:id="@+id/action_frag_login_to_frag_home"
-            app:destination="@id/frag_home"
-            app:popUpTo="@id/frag_home" />
-        <action
-            android:id="@+id/action_frag_login_to_findPassWordFragment"
-            app:destination="@id/findPassWordFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/frag_sign_up"
-        android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
-        android:label="frag_sign_up"
-        tools:layout="@layout/fragment_sign_up">
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_home"
-            app:destination="@id/frag_home"
-            app:popUpTo="@id/frag_home" />
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_login"
-            app:destination="@id/frag_login" />
-        <action
-            android:id="@+id/action_frag_sign_up_to_frag_on_boarding"
-            app:destination="@id/frag_on_boarding" />
     </fragment>
 
     <fragment
@@ -137,11 +102,6 @@
             app:destination="@id/dialog_full_image" />
     </fragment>
 
-    <fragment
-        android:id="@+id/findPassWordFragment"
-        android:name="com.example.firebasetestapp.FindPassWordFragment"
-        android:label="FindPassWordFragment"
-        tools:layout="@layout/fragment_find_pass_word" />
 
     <dialog
         android:id="@+id/dialog_full_image"

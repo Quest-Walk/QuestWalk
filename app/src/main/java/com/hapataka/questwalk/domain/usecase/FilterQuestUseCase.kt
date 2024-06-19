@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.domain.usecase
 
 import com.hapataka.questwalk.data.repository.QuestStackRepositoryImpl
-import com.hapataka.questwalk.data.repository.UserRepoImpl
+import com.hapataka.questwalk.data.repository.backup.UserRepoImpl
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.Dispatchers

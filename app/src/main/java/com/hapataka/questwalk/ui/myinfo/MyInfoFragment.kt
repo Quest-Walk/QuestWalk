@@ -1,210 +1,173 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.fragment.app.activityViewModels
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentMyInfoBinding
-import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
-import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
-import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.domain.facade.ACHIEVEMENT_COUNT
+import com.hapataka.questwalk.domain.facade.RESULT_SUCCESS_COUNT
+import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.common.BaseFragment
-import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
+import com.hapataka.questwalk.ui.myinfo.dialog.EditNickNameDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.InputPwDialog
-import com.hapataka.questwalk.ui.myinfo.dialog.NickNameChangeDialog
-import com.hapataka.questwalk.ui.onboarding.CharacterData
-import com.hapataka.questwalk.ui.onboarding.ChooseCharacterDialog
-import com.hapataka.questwalk.ui.onboarding.OnCharacterSelectedListener
-import com.hapataka.questwalk.util.OnSingleClickListener
-import com.hapataka.questwalk.util.UserInfo
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding::inflate) {
     private val viewModel by viewModels<MyInfoViewModel>()
-    private val mainViewModel: MainViewModel by activityViewModels ()
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
-    private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
+    private val inputPwDialog by lazy { InputPwDialog() }
+    private val dropOutDialog by lazy { DropOutDialog() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadInitialSetting()
         initView()
+    }
+
+    private fun loadInitialSetting() {
         setObserver()
-        viewModel.getUserInfo()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(true)
+        viewModel.getCurrentUserInfo()
+        viewModel.getHistoryCount()
     }
 
     private fun initView() {
-        initLogoutButton()
-        initDropOut()
-        initBackButton()
-        changeCharacter()
-        changeName()
+        initButtons()
     }
 
     private fun setObserver() {
         with(viewModel) {
-            snackbarMsg.observe(viewLifecycleOwner) { msg ->
-                mainViewModel.setSnackBarMsg(msg)
+            currentUser.observe(viewLifecycleOwner) { user ->
+                with(binding) {
+                    tvPlayerName.text = user.nickName
+                    tvStepValue.text = "${user.totalStep}걸음"
+                    tvDistanceValue.text = user.totalDistance.convertKm()
+                    tvCalorie.text = user.totalStep.convertKcal()
+                    tvTimeValue.text = user.totalTime.convertTime(DETAIL_TIME)
+                }
             }
-            userInfo.observe(viewLifecycleOwner) { userInfo ->
-                updateViewsWithUserInfo(userInfo)
+            historyCount.observe(viewLifecycleOwner) { countMap ->
+                binding.tvSolveQuestValue.text = countMap[RESULT_SUCCESS_COUNT].toString() + "개"
+                binding.tvAchieveCouunt.text = countMap[ACHIEVEMENT_COUNT].toString() + "개"
+            }
+            logoutSuccess.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess) {
+                    lifecycleScope.launch {
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                        startActivity(intent)
+                        delay(1000L)
+                        requireActivity().finish()
+                    }
+                }
+            }
+            btnState.observe(viewLifecycleOwner) { isEnable ->
+                if (isEnable) {
+                    binding.btnLogout.isEnabled = true
+                }
+            }
+            toastMsg.observe(viewLifecycleOwner) { msg ->
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+            reauthSuccess.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess) {
+                    inputPwDialog.dismiss()
+                    showDropOutDialog()
+                }
+            }
+            dropOutSuccess.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess) {
+                    lifecycleScope.launch {
+                        dropOutDialog.dismiss()
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                        startActivity(intent)
+                        delay(1000L)
+                        requireActivity().finish()
+                    }
+                }
             }
         }
     }
 
-    private fun updateViewsWithUserInfo(userInfo: UserEntity) {
-        val history = userInfo.histories
-        val achieveCount = history.filterIsInstance<AchieveResultEntity>().size
-        val successResultCount =
-            history.filterIsInstance<ResultEntity>().filterNot { it.isSuccess }.size.toString()
-        val time = userInfo.totalTime.toLongOrNull()
-        val defaultNickName = "이름없는 모험가"
-
+    private fun initButtons() {
         with(binding) {
-            tvPlayerName.text =
-                if (userInfo.nickName.isBlank()) defaultNickName else userInfo.nickName
-            tvStepValue.text = userInfo.totalStep.toString() + " 걸음"
-            tvDistanceValue.text = userInfo.totalDistance.convertKm()
-            tvAchieveCouunt.text = "$achieveCount 개"
-            tvSolveQuestValue.text = "$successResultCount 개"
-            tvCalorie.text = userInfo.totalStep.convertKcal()
-
-            when (userInfo.characterId) {
-                1 -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
-                else -> ivPlayerCharacter.setImageResource(R.drawable.character_01)
+            btnBack.setOnClickListener {
+                navController.popBackStack()
             }
-            tvTimeValue.text = time?.convertTime(DETAIL_TIME) ?: "00시간 00분 00초"
+            btnPlayerName.setOnClickListener {
+                showEditNickNameDialog()
+            }
+            btnDropOut.setOnClickListener {
+                showReauthDialog()
+            }
+            btnLogout.setOnClickListener {
+                viewModel.logout()
+                it.isEnabled = false
+            }
         }
     }
 
-    private fun initLogoutButton() {
-        binding.btnLogout.setOnClickListener(object : OnSingleClickListener() {
-            override fun onSingleClick(v: View?) {
-                viewModel.logout {
-                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                    navGraph.setStartDestination(R.id.frag_home)
-                    navController.graph = navGraph
+
+    private fun showEditNickNameDialog() {
+        val currentName = binding.tvPlayerName.text.toString()
+        val dialogFragment = EditNickNameDialog(currentName)
+
+        dialogFragment.onNicknameChanged = { newNickname ->
+            when {
+                newNickname.isEmpty() -> {
+                    Toast.makeText(requireContext(), "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    Result.failure(Exception("No Input Name"))
+                }
+
+                newNickname == currentName -> {
+                    Toast.makeText(requireContext(), "변경된 정보가 없습니다", Toast.LENGTH_SHORT).show()
+                    Result.failure(Exception("Nickname not changed"))
+                }
+
+                else -> {
+                    viewModel.changeUserNickName(newNickname)
+                    binding.tvPlayerName.text = newNickname
+                    Toast.makeText(requireContext(), "유저정보가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    Result.success(true)
                 }
             }
-        })
+        }
+        dialogFragment.show(parentFragmentManager, "EditNickNameDialog")
     }
 
-    lateinit var inputPwDialog: InputPwDialog
-    private fun initDropOut() {
-        binding.btnDropOut.setOnClickListener {
-            inputPwDialog = InputPwDialog(
-                reauthCallback = { pw ->
-                    viewModel.reauthCurrentUser(
-                        pw,
-                        positiveCallback = {
-                            showDropOutDialog()
-                            inputPwDialog.dismiss()
-                        },
-                        negativeCallback = {
-                            mainViewModel.setSnackBarMsg("비밀번호를 확인해주세요.")
-                        }
-                    )
-                },
-
-                snackBarCallback = {
-                    mainViewModel.setSnackBarMsg(it)
-                    Log.i("permission_test", "$it")
+    private fun showReauthDialog() {
+        inputPwDialog.apply {
+            onInputPw = { pw ->
+                if (pw.isEmpty()) {
+                    Toast.makeText(requireContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.reauthCurrentUser(pw)
                 }
-            )
-            inputPwDialog.show(parentFragmentManager, "input_pw_dialog")
-        }
+            }
+        }.show(parentFragmentManager, "InputPwDialog")
     }
 
     private fun showDropOutDialog() {
-        DropOutDialog(
-            dropOutCallback = {
-                viewModel.deleteCurrentUser() {
-                    navController.navigate(R.id.action_frag_my_info_to_frag_login)
-                    navGraph.setStartDestination(R.id.frag_home)
-                    navController.graph = navGraph
-                }
+        dropOutDialog.apply {
+            onConfirm = {
+                viewModel.dropOutCurrentUser()
             }
-        ).show(parentFragmentManager, "dropOut Dialog")
+        }.show(parentFragmentManager, "DropOutDialog")
     }
-
-    private fun initBackButton() {
-        binding.btnBack.setOnClickListener {
-            navController.popBackStack()
-        }
-    }
-
-    private fun changeCharacter() {
-        binding.ivPlayerCharacter.setOnClickListener {
-            startCharacterDialog()
-        }
-    }
-
-    private fun startCharacterDialog() {
-        val dialogFragment = ChooseCharacterDialog().apply {
-            listener = object : OnCharacterSelectedListener {
-                override fun onCharacterSelected(characterData: CharacterData) {
-                    updateCharacterInfo(characterData)
-                }
-            }
-        }
-        dialogFragment.show(requireFragmentManager(), "ChooseCharacterDialog")
-    }
-
-    private fun updateCharacterInfo(characterData: CharacterData) {
-        binding.ivPlayerCharacter.setImageResource(characterData.img)
-        viewModel.getCurrentUserId { userId ->
-            if (userId.isNotEmpty()) {
-                updateUserInfo(userId, characterData.num)
-            } else {
-                mainViewModel.setSnackBarMsg("로그인 상태를 확인할 수 없습니다.")
-            }
-        }
-    }
-
-    private fun updateUserInfo(userId: String, characterNum: Int) {
-        val nickName = binding.tvPlayerName.text.toString()
-        viewModel.setUserInfo(userId, characterNum, nickName,
-            onSuccess = { mainViewModel.setSnackBarMsg("변경완료") },
-            onError = { mainViewModel.setSnackBarMsg("정보 변경에 실패하였습니다.") })
-    }
-
-    private fun changeName() {
-        binding.btnPlayerName.setOnClickListener {
-            startEditNameDialog()
-        }
-    }
-
-    private fun startEditNameDialog() {
-        val currentName = binding.tvPlayerName.text.toString()
-        val dialogFragment = NickNameChangeDialog(currentName).apply {
-            onNicknameChanged = { newNickname ->
-                updateNickName(newNickname)
-            }
-        }
-        dialogFragment.show(parentFragmentManager, "NickNameChangeDialog")
-    }
-
-    private fun updateNickName(newNickname: String) {
-        viewModel.getUserCharacterNum { characterNum ->
-            val uid = UserInfo.uid
-            val charNum = characterNum ?: 1
-            viewModel.setUserInfo(uid, charNum, newNickname,
-                onSuccess = {
-                    mainViewModel.setSnackBarMsg("닉네임이 성공적으로 변경되었습니다.")
-                    binding.tvPlayerName.text = newNickname
-                },
-                onError = { mainViewModel.setSnackBarMsg("정보 변경에 실패하였습니다.") })
-        }
-    }
+    // TODO: 캐릭터 변경 구현
 }

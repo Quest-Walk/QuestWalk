@@ -3,10 +3,10 @@ package com.hapataka.questwalk.data.model
 data class UserModel(
     val userId: String,
     var nickName: String = "",
-    var characterId: Int = -1,
-    var totalTime: Int = 0,
+    var characterId: Int = 1,
+    var totalTime: Long = 0L,
     var totalDistance: Float = 0f,
-    var totalStep: Long = 0,
+    var totalStep: Long = 0L,
 ) {
     fun changeNickName(newNickName: String) {
         this.nickName = newNickName
@@ -16,7 +16,7 @@ data class UserModel(
         this.characterId = newCharacterId
     }
 
-    fun updateTotalInfo(time: Int, distance: Float, step: Long) {
+    fun updateTotalInfo(time: Long, distance: Float, step: Long) {
         this.totalTime += time
         this.totalDistance += distance
         this.totalStep += step

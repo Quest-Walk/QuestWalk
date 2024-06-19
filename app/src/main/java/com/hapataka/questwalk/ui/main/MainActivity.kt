@@ -1,13 +1,13 @@
 package com.hapataka.questwalk.ui.main
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.snackbar.Snackbar
 import com.hapataka.questwalk.R
-import com.hapataka.questwalk.data.repository.AuthRepositoryImpl
+import com.hapataka.questwalk.data.repository.backup.AuthRepoImpl
 import com.hapataka.questwalk.databinding.ActivityMainBinding
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +18,7 @@ import org.opencv.android.OpenCVLoader
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val authRepo by lazy { AuthRepositoryImpl() }
+    private val authRepo by lazy { AuthRepoImpl() }
     private val navHost by lazy { supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment }
     val navController by lazy { navHost.navController }
     private val navGraph by lazy { navController.navInflater.inflate(R.navigation.nav_graph) }
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObserver() {
         mainViewModel.snackBarMsg.observe(this) {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
         }
         mainViewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) {

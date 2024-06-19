@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.data.repository
+package com.hapataka.questwalk.data.repository.backup
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -61,32 +61,24 @@ class UserRepoImpl @Inject constructor() : UserRepo {
     }
 
     override suspend fun getInfo(userId: String): UserEntity = withContext(Dispatchers.IO) {
-        val document = userCollection.document(userId).get().await()
-        var nickName = ""
-        var characterId = 0
-        var totalTime = ""
-        var totalDistance = 0f
-        var totalStep = 0L
-        var histories = mutableListOf<Map<String, Any>>()
-
-        if (document.exists()) {
-            nickName = document.getWithKey("nickName")
-            characterId = document.getWithKey("characterId").toInt()
-            totalTime = document.getWithKey("totalTime")
-            totalDistance = document.getWithKey("totalDistance").toFloat()
-            totalStep = document.getWithKey("totalStep").toLong()
-            histories =
-                document.data?.get("histories") as? MutableList<Map<String, Any>> ?: mutableListOf()
-        }
-        return@withContext UserEntity(
-            userId,
-            nickName,
-            characterId,
-            totalTime,
-            totalDistance,
-            totalStep,
-            convertToHistories(histories)
-        )
+//        val document = userCollection.document(userId).get().await()
+//        var nickName = ""
+//        var characterId = 0
+//        var totalTime = ""
+//        var totalDistance = 0f
+//        var totalStep = 0L
+//        var histories = mutableListOf<Map<String, Any>>()
+//
+//        if (document.exists()) {
+//            nickName = document.getWithKey("nickName")
+//            characterId = document.getWithKey("characterId").toInt()
+//            totalTime = document.getWithKey("totalTime")
+//            totalDistance = document.getWithKey("totalDistance").toFloat()
+//            totalStep = document.getWithKey("totalStep").toLong()
+//            histories =
+//                document.data?.get("histories") as? MutableList<Map<String, Any>> ?: mutableListOf()
+//        }
+        return@withContext UserEntity()
     }
 
     private fun DocumentSnapshot.getWithKey(key: String): String {

@@ -13,9 +13,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingVertical="32dp"
             android:background="@drawable/background_achieve_dialog"
-            android:clipToOutline="true">
+            android:clipToOutline="true"
+            android:paddingVertical="32dp">
 
             <TextView
                 android:id="@+id/tv_change_nickname"
@@ -23,11 +23,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="변경할 닉네임을 입력해 주세요"
+                app:layout_constraintBottom_toTopOf="@id/et_change_nickname"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/et_change_nickname"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <EditText
                 android:id="@+id/et_change_nickname"
@@ -37,6 +37,7 @@
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/background_edit_text"
+                android:inputType="text"
                 android:maxLines="1"
                 android:paddingHorizontal="12dp"
                 app:layout_constraintBottom_toTopOf="@id/btn_cancel"

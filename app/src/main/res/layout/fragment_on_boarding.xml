@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.onboarding.OnBoardingFragment">
+    tools:context=".ui.onboarding.ProfileSetupFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,8 +53,8 @@
             android:background="@drawable/background_edit_text"
             android:gravity="center"
             android:hint="닉네임을 입력해 주세요"
-            android:maxEms="1"
             android:maxLines="1"
+            android:inputType="text"
             app:layout_constraintEnd_toEndOf="@id/cv_profile_image"
             app:layout_constraintStart_toStartOf="@id/cv_profile_image"
             app:layout_constraintTop_toBottomOf="@id/cv_profile_image" />

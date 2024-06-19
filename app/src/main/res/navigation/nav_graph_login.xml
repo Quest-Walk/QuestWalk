@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_login"
+    app:startDestination="@id/frag_login">
+
+    <fragment
+        android:id="@+id/frag_login"
+        android:name="com.hapataka.questwalk.ui.login.LogInFragment"
+        android:label="frag_login"
+        tools:layout="@layout/fragment_log_in" >
+        <action
+            android:id="@+id/action_frag_login_to_frag_sign_up"
+            app:destination="@id/frag_sign_up" />
+        <action
+            android:id="@+id/action_frag_login_to_findPassWordFragment"
+            app:destination="@id/findPassWordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_sign_up"
+        android:name="com.hapataka.questwalk.ui.signup.SignUpFragment"
+        android:label="frag_sign_up"
+        tools:layout="@layout/fragment_sign_up" />
+
+    <fragment
+        android:id="@+id/findPassWordFragment"
+        android:name="com.hapataka.questwalk.ui.resetpassword.ResetPasswordFragment"
+        android:label="FindPassWordFragment"
+        tools:layout="@layout/fragment_reset_password" />
+
+</navigation>
