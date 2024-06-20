@@ -19,7 +19,7 @@ class UserFacade @Inject constructor(
     private val updateUserNameUseCase: UpdateUserNameUseCase,
     private val uploadUserUseCase: UploadUserUseCase,
 ) {
-    suspend fun getLoginUserToken(): UserModel? = withContext(Dispatchers.IO) {
+    suspend fun cacheAndGetCurrentUser(): UserModel? = withContext(Dispatchers.IO) {
         async { cacheCurrentUserUseCase() }.await()
 
         return@withContext getCacheUserUseCase()

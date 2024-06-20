@@ -1,20 +1,33 @@
 package com.hapataka.questwalk.data.datasource.local
 
+import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.data.local.CacheDataSource
 import javax.inject.Inject
 
 class CacheDataSourceImpl @Inject constructor() : CacheDataSource {
-    private var user: UserModel? = null
-    override fun saveUser(user: UserModel) {
-        this.user = user
+    private var currentUser: UserModel? = null
+    private var currentUserHistories: List<HistoryModel>? = null
+    override fun setCurrentUser(user: UserModel) {
+        this.currentUser = user
     }
 
-    override fun getUser(): UserModel? {
-        return if (user == null) null else user
+    override fun setCurrentUserHistories(
+        histories: List<HistoryModel>
+    ) {
+        currentUserHistories = histories.sortedBy { it.registerAt }
     }
 
-    override fun clearUser() {
-        user = null
+    override fun getCurrentUser(): UserModel? {
+        return currentUser
+    }
+
+    override fun getCurrentUserHistories(): List<HistoryModel>? {
+        return currentUserHistories
+    }
+
+    override fun clearCurrentUserInfo() {
+        currentUser = null
+        currentUserHistories = null
     }
 }

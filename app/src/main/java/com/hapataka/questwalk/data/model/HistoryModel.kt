@@ -2,8 +2,11 @@ package com.hapataka.questwalk.data.model
 
 import java.time.LocalDateTime
 
-sealed class HistoryModel(open val userId: String, open val registerAt: LocalDateTime) {
-    data class ResultRecord(
+sealed class HistoryModel(
+    open val userId: String,
+    open val registerAt: LocalDateTime,
+) {
+    data class ResultRecordModel(
         override val userId: String,
         override val registerAt: LocalDateTime,
         val questKeyword: String = "",
@@ -16,7 +19,7 @@ sealed class HistoryModel(open val userId: String, open val registerAt: LocalDat
         val questImg: String? = null
     ) : HistoryModel(userId, registerAt)
 
-    data class AchievementRecord(
+    data class AchievementRecordModel(
         override val userId: String,
         override val registerAt: LocalDateTime,
         val achievementId: Int,

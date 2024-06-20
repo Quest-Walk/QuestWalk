@@ -6,7 +6,6 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -21,7 +20,6 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
-import com.hapataka.questwalk.ui.login.TAG
 import com.hapataka.questwalk.ui.main.MainActivity
 import com.hapataka.questwalk.util.extentions.hideKeyBoard
 import com.hapataka.questwalk.util.extentions.setOnFocusOutListener
@@ -107,7 +105,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(FragmentSignUpBinding
             }
 
             signUpBtnState.observe(viewLifecycleOwner) { state ->
-                Log.d(TAG, "state: $state")
                 if (state) {
                     binding.btnSignUp.isEnabled = true
                 }

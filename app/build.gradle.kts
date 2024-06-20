@@ -8,6 +8,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 
@@ -55,7 +56,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -125,12 +126,16 @@ dependencies {
     implementation("io.github.ParkSangGwon:tedpermission-coroutine:3.3.0")
 
     //ProgressBar
-    implementation ("com.github.MackHartley:RoundedProgressBar:3.0.0")
+    implementation("com.github.MackHartley:RoundedProgressBar:3.0.0")
 
     //Proj4j
-    implementation ("org.locationtech.proj4j:proj4j:1.3.0")
+    implementation("org.locationtech.proj4j:proj4j:1.3.0")
 
     // Data Store
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation ("androidx.datastore:datastore-core:1.1.1")
+    implementation("androidx.datastore:datastore-core:1.1.1")
+
+    // kotlinx serialization json
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+
 }

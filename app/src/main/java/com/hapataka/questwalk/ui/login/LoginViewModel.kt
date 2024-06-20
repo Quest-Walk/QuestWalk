@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.ui.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +9,6 @@ import com.hapataka.questwalk.util.extentions.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.time.delay
 import javax.inject.Inject
 
 const val TAG = "quest_walk_test_tag"
@@ -22,8 +20,8 @@ class LoginViewModel @Inject constructor(
     private var _userId = MutableLiveData<String>()
     val userId: LiveData<String> get() = _userId
 
-    private var _loginResult = MutableLiveData<Boolean>()
-    val loginResult: LiveData<Boolean> get() = _loginResult
+    private var _loginSuccess = MutableLiveData<Boolean>()
+    val loginSuccess: LiveData<Boolean> get() = _loginSuccess
 
     private var _toastMsg = MutableLiveData<String>()
     val toastMsg: LiveData<String> get() = _toastMsg
@@ -41,13 +39,13 @@ class LoginViewModel @Inject constructor(
             val result = authFacade.loginByIdAndPw(id, pw)
 
             if (result.isSuccess) {
-                _loginResult.value = true
+                _loginSuccess.value = true
                 delay(1000)
                 _loginBtnState.value = true
             } else {
                 val exception = result.exceptionOrNull() ?: return@launch
 
-                _loginResult.value = false
+                _loginSuccess.value = false
                 _toastMsg.value = exception.getErrorMessage()
                 _loginBtnState.value = true
             }

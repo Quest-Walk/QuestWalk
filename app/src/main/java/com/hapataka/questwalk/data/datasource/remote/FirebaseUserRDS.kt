@@ -7,7 +7,7 @@ import com.hapataka.questwalk.domain.data.remote.UserRDS
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseUserRDSImpl @Inject constructor() : UserRDS {
+class FirebaseUserRDS @Inject constructor() : UserRDS {
     private val remoteDB by lazy { FirebaseFirestore.getInstance() }
     private val userDB by lazy { remoteDB.collection("users") }
 
@@ -21,5 +21,9 @@ class FirebaseUserRDSImpl @Inject constructor() : UserRDS {
 
     override suspend fun uploadUser(user: UserModel) {
         userDB.document(user.userId).set(user)
+    }
+
+    override suspend fun deleteUserById(userId: String) {
+        userDB.document(userId).delete()
     }
 }

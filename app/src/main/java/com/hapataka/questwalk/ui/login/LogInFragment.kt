@@ -51,7 +51,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::i
                 binding.etLoginId.setText(userId)
             }
 
-            loginResult.observe(viewLifecycleOwner) { loginResult ->
+            loginSuccess.observe(viewLifecycleOwner) { loginResult ->
                 if (loginResult) changeToMain()
             }
 
