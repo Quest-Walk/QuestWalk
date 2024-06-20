@@ -46,6 +46,10 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
             error.observe(viewLifecycleOwner) {error ->
                 if (error) setErrorState()
             }
+
+            isLoading.observe(viewLifecycleOwner) {isLoading ->
+                showLoadingDialog(isLoading)
+            }
         }
     }
 

@@ -26,10 +26,11 @@ class WeatherViewModel @Inject constructor(
     private val _error = MutableLiveData(false)
     val error: LiveData<Boolean> get() = _error
 
-//    private val _isLoading = MutableLiveData<Boolean>()
-//    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun getWeatherModel() {
+        _isLoading.value = true
         viewModelScope.launch {
             val weatherModel = weatherUseCase()
 
@@ -37,11 +38,13 @@ class WeatherViewModel @Inject constructor(
                 onSuccess = {
                     _weatherModel.value = it
                     _error.value = false
+                    _isLoading.value = false
                     getWeatherState(it)
                 },
                 onFailure = {
                     Log.d("WeatherViewModel", "getWeatherModel: ${it.message}")
                     _error.value = true
+                    _isLoading.value = false
                 }
             )
         }
