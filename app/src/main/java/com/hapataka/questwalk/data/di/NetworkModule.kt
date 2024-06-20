@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.data.di
 
-import com.hapataka.questwalk.data.datasource.remote.DustService
-import com.hapataka.questwalk.data.datasource.remote.WeatherService
+import com.hapataka.questwalk.data.retrofit.DustService
+import com.hapataka.questwalk.data.retrofit.WeatherService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,10 +66,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideWeatherService(@Named("weatherRetrofit") retrofit: Retrofit): WeatherService = retrofit.create(WeatherService::class.java)
+    fun provideWeatherService(@Named("weatherRetrofit") retrofit: Retrofit): WeatherService = retrofit.create(
+        WeatherService::class.java)
 
     @Provides
     @Singleton
-    fun provideDustService(@Named("dustRetrofit") retrofit: Retrofit): DustService = retrofit.create(DustService::class.java)
+    fun provideDustService(@Named("dustRetrofit") retrofit: Retrofit): DustService = retrofit.create(
+        DustService::class.java)
 
 }

@@ -1,9 +1,9 @@
 package com.hapataka.questwalk.data.datasource.remote
 
 import android.location.Location
-import android.util.Log
 import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.data.dto.DustDTO
+import com.hapataka.questwalk.data.retrofit.DustService
 import com.hapataka.questwalk.domain.repository.DustRemoteDataSource
 import org.locationtech.proj4j.CRSFactory
 import org.locationtech.proj4j.CoordinateTransformFactory

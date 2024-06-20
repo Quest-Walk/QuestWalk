@@ -2,7 +2,7 @@ package com.hapataka.questwalk.data.datasource.remote
 
 import com.hapataka.questwalk.BuildConfig
 import com.hapataka.questwalk.data.dto.ForecastDTO
-import com.hapataka.questwalk.data.dto.HourlyForecast
+import com.hapataka.questwalk.data.retrofit.WeatherService
 import com.hapataka.questwalk.domain.repository.WeatherRemoteDataSource
 import com.hapataka.questwalk.ui.weather.LatXLngY
 import java.time.LocalDateTime

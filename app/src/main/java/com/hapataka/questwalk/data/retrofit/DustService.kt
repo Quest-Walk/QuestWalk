@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.data.datasource.remote
+package com.hapataka.questwalk.data.retrofit
 
 import com.hapataka.questwalk.data.dto.DustResponse
 import com.hapataka.questwalk.data.dto.StationResponse
