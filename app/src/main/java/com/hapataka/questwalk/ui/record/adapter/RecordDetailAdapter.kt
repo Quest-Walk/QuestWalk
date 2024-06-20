@@ -12,7 +12,9 @@ import com.hapataka.questwalk.databinding.ItemRecordAchievementBinding
 import com.hapataka.questwalk.databinding.ItemRecordHeaderBinding
 import com.hapataka.questwalk.databinding.ItemRecordResultBinding
 import com.hapataka.questwalk.ui.record.model.RecordItem
-import com.hapataka.questwalk.ui.record.model.RecordItem.*
+import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.Header
+import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
 import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.visible
 

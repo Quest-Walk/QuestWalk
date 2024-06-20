@@ -6,10 +6,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestDetailBinding
-import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.quest.QuestData
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailAdapter
 import com.hapataka.questwalk.ui.questdetail.adapter.QuestDetailRecyclerViewDecoration
+import com.hapataka.questwalk.ui.common.BaseFragment
 import kotlin.math.roundToInt
 
 class QuestDetailFragment : BaseFragment<FragmentQuestDetailBinding>(FragmentQuestDetailBinding::inflate) {

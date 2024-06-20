@@ -1,5 +1,7 @@
-package com.hapataka.questwalk.data.datasource.remote
+package com.hapataka.questwalk.data.retrofit
 
+import com.hapataka.questwalk.data.dto.DustResponse
+import com.hapataka.questwalk.data.dto.StationResponse
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
@@ -7,10 +9,10 @@ interface DustService {
     @GET("ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty")
     suspend fun getDust(
         @QueryMap queryMap: Map<String, String>
-    ): com.hapataka.questwalk.data.dto.dust.Dust
+    ): DustResponse
 
     @GET("MsrstnInfoInqireSvc/getNearbyMsrstnList")
     suspend fun getStation(
         @QueryMap queryMap: Map<String, String>
-    ): com.hapataka.questwalk.data.dto.station.StationResponse
+    ): StationResponse
 }

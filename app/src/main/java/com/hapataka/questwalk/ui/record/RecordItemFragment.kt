@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentRecordItemBinding
-import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.record.adapter.HEADER_TYPE
 import com.hapataka.questwalk.ui.record.adapter.RecordDetailAdapter
@@ -21,6 +20,7 @@ import com.hapataka.questwalk.ui.record.model.RecordItem
 import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
 import com.hapataka.questwalk.ui.result.REGISTER_TIME
 import com.hapataka.questwalk.ui.result.USER_ID
+import com.hapataka.questwalk.ui.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

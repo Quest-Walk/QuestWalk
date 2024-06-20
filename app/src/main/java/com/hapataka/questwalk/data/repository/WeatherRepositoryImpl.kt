@@ -1,38 +1,68 @@
 package com.hapataka.questwalk.data.repository
 
-import android.util.Log
-import com.hapataka.questwalk.data.datasource.remote.RetrofitClient
-import com.hapataka.questwalk.domain.entity.WeatherEntity
+import com.hapataka.questwalk.data.dto.DustDTO
+import com.hapataka.questwalk.data.dto.ForecastDTO
+import com.hapataka.questwalk.data.dto.HourlyForecast
+import com.hapataka.questwalk.data.model.WeatherModel
+import com.hapataka.questwalk.domain.repository.DustRemoteDataSource
+import com.hapataka.questwalk.domain.repository.WeatherRemoteDataSource
 import com.hapataka.questwalk.domain.repository.WeatherRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor () : WeatherRepository {
-    private val weatherService = RetrofitClient.weatherApi
+class WeatherRepositoryImpl @Inject constructor(
+    private val weatherRemoteDataSource: WeatherRemoteDataSource,
+    private val dustRemoteDataSource: DustRemoteDataSource
+) : WeatherRepository {
+    override suspend fun getWeatherInfo(currentLocation: Pair<Float, Float>): Result<WeatherModel> =
+        withContext(Dispatchers.IO) {
+            val weatherResponse =
+                async { weatherRemoteDataSource.getWeatherInfo(currentLocation) }.await()
+            val dustResponse = async { dustRemoteDataSource.getDustInfo(currentLocation) }.await()
 
-    override suspend fun getWeatherInfo(quries: Map<String, String>): MutableList<WeatherEntity> {
-        Log.d("WeatherRepositoryImpl:","WeatherRepositoryImpl: $quries")
-        val items = weatherService.getWeatherInfo(quries).response.body.items.item
-        return convertToWeatherEntity(items)
-    }
+            if (weatherResponse != null && dustResponse != null) {
+                return@withContext kotlin.runCatching {
+                    convertToWeatherModel(weatherResponse, dustResponse)
+                }.onFailure { Result.failure<Exception>(it) }
+            } else {
+                return@withContext Result.failure(Exception("weather or dust is null"))
+            }
+        }
 
-    private fun convertToWeatherEntity(items: List<com.hapataka.questwalk.data.dto.weather.Item>): MutableList<WeatherEntity> {
-        val itemsGroup = items.groupBy { "${it.fcstDate}${it.fcstTime}" }
-        val result =  itemsGroup.map { (dateTime, item) ->
-            val sky = item.first { it.category == "SKY" }.fcstValue
-            val pty = item.first { it.category == "PTY" }.fcstValue
-            val tmp = item.first { it.category == "TMP" }.fcstValue
+    private fun convertToWeatherModel(
+        forecastResponse: ForecastDTO,
+        dustResponse: DustDTO
+    ): WeatherModel {
+        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00")).toInt()
+        val requestDay = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
+        val foreCastModelList =
+            forecastResponse.hourlyForecast.groupBy { "${it.fcstDate}${it.fcstTime}" }
+                .map { (_, weatherList) ->
+                    val sky = weatherList.first { it.category == "SKY" }.fcstValue
+                    val pty = weatherList.first { it.category == "PTY" }.fcstValue
+                    val tmp = weatherList.first { it.category == "TMP" }.fcstValue
 
-            WeatherEntity(
-                fcstDate = item[0].fcstDate,
-                fcstTime = item[0].fcstTime,
-                baseDate = item[0].baseDate,
-                sky = sky,
-                precipType = pty,
-                temp = tmp
-            )
-        }.toMutableList()
-        Log.d("WeatherRepository:","$result")
-        return result
+                    WeatherModel.ForecastModel(
+                        fcstDate = weatherList.first().fcstDate,
+                        fcstTime = weatherList.first().fcstTime,
+                        baseDate = weatherList.first().baseDate,
+                        sky = sky,
+                        precipType = pty,
+                        temp = tmp
+                    )
+                }.filter { it.fcstTime.toInt() >= requestTime || it.fcstDate.toInt() > requestDay }.take(10)
+
+        return WeatherModel(
+            forecastList = foreCastModelList,
+        ).apply {
+            setPmInfo(dustResponse.pm10Value.toIntOrNull() ?: -1, dustResponse.pm25Value.toIntOrNull() ?: -1)
+        }
     }
 }
 

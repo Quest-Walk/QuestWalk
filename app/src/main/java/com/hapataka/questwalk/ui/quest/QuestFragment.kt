@@ -7,8 +7,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentQuestBinding
-import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.quest.adapter.QuestListAdapter
+import com.hapataka.questwalk.ui.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

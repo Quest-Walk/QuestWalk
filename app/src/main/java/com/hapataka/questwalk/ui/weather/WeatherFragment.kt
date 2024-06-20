@@ -1,17 +1,25 @@
 package com.hapataka.questwalk.ui.weather
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.hapataka.questwalk.data.model.WeatherModel
 import com.hapataka.questwalk.databinding.FragmentWeatherBinding
 import com.hapataka.questwalk.domain.entity.DustEntity
-import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapter
 import com.hapataka.questwalk.ui.weather.adapter.WeatherAdapterDecoration
+import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.util.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBinding::inflate){
@@ -22,31 +30,37 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataObserve()
-        initRecyclerView()
-        initBackButton()
         binding.innerContainer.setPadding()
         requireActivity().setLightBarColor(false)
+        dataObserve()
+        initViews()
     }
 
     private fun dataObserve() {
-        with(weatherViewModel) {
-            weatherInfo.observe(viewLifecycleOwner) {
-                weatherAdapter.submitList(it)
-            }
-            dustInfo.observe(viewLifecycleOwner) {
-                setDustText(it)
-            }
-            weatherPreview.observe(viewLifecycleOwner) {
-                setWeatherPreview(it)
-            }
-            error.observe(viewLifecycleOwner) {
-                setErrorState(it)
-            }
-            isLoading.observe(viewLifecycleOwner) {isLoading ->
-                showLoadingDialog(isLoading)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                weatherViewModel.weatherUiState.collectLatest { state ->
+                    when(state) {
+                        is WeatherUiState.Loading -> {
+                            showLoadingDialog(state.loading)
+                        }
+                        is WeatherUiState.Success -> {
+                            weatherAdapter.submitList(state.data.forecastList)
+                            initDustViews(state.data)
+                            Log.d("weatherFragment:","weatherState: ${state.level}")
+                        }
+                        is WeatherUiState.Error -> {
+                            setErrorState()
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private fun initViews() {
+        initRecyclerView()
+        initBackButton()
     }
 
     private fun initRecyclerView() {
@@ -56,23 +70,16 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
         }
     }
 
-    private fun initBackButton() {
-        binding.ivArrowBack.setOnClickListener {
-            navHost.popBackStack()
-        }
-    }
-
-    private fun setWeatherPreview(weatherPreview: WeatherPreviewData) {
-        binding.tvMessage.text =
-            "현재 온도는 ${weatherPreview.currentTmp}도 이고, 하늘 상태는 ${weatherPreview.sky} ${weatherPreview.precipType} "+
-                    "미세먼지 상태는 ${weatherPreview.miseState} 초미세 먼지 상태는 ${weatherPreview.choMiseState} 오늘 여행에 참고하라구!!"
-    }
-
-    private fun setDustText(dustInfo: DustEntity) {
+    private fun initDustViews(weathertModel: WeatherModel) {
         with(binding) {
-            tvMiseValue.text = if (dustInfo.pm10Value == -1) "통신 장애" else "${dustInfo.pm10Value} ㎍/㎥"
-            tvChomiseValue.text = if (dustInfo.pm25Value == -1) "통신 장애" else "${dustInfo.pm25Value} ㎍/㎥"
+            tvMiseValue.text = weathertModel.pm10Value.toString()
+            tvChomiseValue.text = weathertModel.pm25Value.toString()
         }
+    }
+
+    private fun setErrorState() {
+        Toast.makeText(requireContext(), "통신 장애로 인해 날씨 정보를 불러오지 못했습니다. 잠시후 다시 시도 해주세요", Toast.LENGTH_SHORT).show()
+        navHost.popBackStack()
     }
 
     private fun showLoadingDialog(isLoading: Boolean) {
@@ -85,16 +92,10 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
         }
     }
 
-    private fun setErrorState(error: String) {
-        with(binding) {
-            tvMessage.text = error
-            tvMise.visibility = View.INVISIBLE
-            tvChomise.visibility = View.INVISIBLE
-            tvWeatherTime.visibility = View.INVISIBLE
-            ivArrowDown.visibility = View.INVISIBLE
-            revWeather.visibility = View.INVISIBLE
+    private fun initBackButton() {
+        binding.ivArrowBack.setOnClickListener {
+            navHost.popBackStack()
         }
-
-
     }
+
 }
