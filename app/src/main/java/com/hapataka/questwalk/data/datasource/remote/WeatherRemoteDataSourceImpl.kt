@@ -12,7 +12,7 @@ import javax.inject.Inject
 class WeatherRemoteDataSourceImpl @Inject constructor(
     private val weatherService: WeatherService
 ): WeatherRemoteDataSource {
-    override suspend fun getWeatherInfo(currentLocation: Pair<Float, Float>):  ForecastDTO {
+    override suspend fun getWeatherInfo(currentLocation: Pair<Float, Float>): ForecastDTO? {
         val convertToXy = convertToXY(currentLocation.first.toDouble(), currentLocation.second.toDouble())
         val resultDateTime = setResultDateTime()
         val queryMap = mapOf(
@@ -25,7 +25,9 @@ class WeatherRemoteDataSourceImpl @Inject constructor(
             "ny" to convertToXy.y.toInt().toString(),
         )
 
-        return weatherService.getWeatherInfo(queryMap).weather.weatherBody.forecastDTO
+        return kotlin.runCatching {
+            weatherService.getWeatherInfo(queryMap).weather.weatherBody.forecastDTO
+        }.getOrNull()
     }
 
     private fun convertToXY(latX: Double, lngY: Double): LatXLngY {

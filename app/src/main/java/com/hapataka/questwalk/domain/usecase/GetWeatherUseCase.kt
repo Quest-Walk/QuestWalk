@@ -9,7 +9,7 @@ class GetWeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val locationRepository: LocationRepository
 ) {
-    suspend operator fun invoke(): WeatherModel {
+    suspend operator fun invoke(): Result<WeatherModel> {
         val currentLocation = locationRepository.getCurrent().location
 
         return weatherRepository.getWeatherInfo(currentLocation)

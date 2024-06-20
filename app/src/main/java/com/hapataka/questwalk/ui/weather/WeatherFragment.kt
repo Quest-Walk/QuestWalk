@@ -3,6 +3,7 @@ package com.hapataka.questwalk.ui.weather
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -41,6 +42,10 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
             weatherState.observe(viewLifecycleOwner) {weatherState ->
                 Log.d("weatherFragment:","weatherState: $weatherState")
             }
+
+            error.observe(viewLifecycleOwner) {error ->
+                if (error) setErrorState()
+            }
         }
     }
 
@@ -48,13 +53,7 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
         initRecyclerView()
         initBackButton()
 
-        // TODO: 예외처리 코드 작성 (Toast Message를 띄우고 날씨 화면을 종료) try-catch OR runCatching
-        // TODO: 날씨정보를 받아오기전까지 로딩 화면을 구성해야댐
-        try {
-            weatherViewModel.getWeatherModel()
-        } catch (e: Exception) {
-            setErrorState(e.message.toString())
-        }
+        weatherViewModel.getWeatherModel()
     }
 
     private fun initRecyclerView() {
@@ -75,6 +74,11 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
             tvMiseValue.text = weathertModel.pm10Value.toString()
             tvChomiseValue.text = weathertModel.pm25Value.toString()
         }
+    }
+
+    private fun setErrorState() {
+        Toast.makeText(requireContext(), "통신 장애로 인해 날씨 정보를 불러오지 못했습니다. 잠시후 다시 시도 해주세요", Toast.LENGTH_SHORT).show()
+        navHost.popBackStack()
     }
 
     private fun setWeatherPreview(weatherPreview: WeatherPreviewData) {
@@ -98,18 +102,5 @@ class WeatherFragment : BaseFragment<FragmentWeatherBinding>(FragmentWeatherBind
                 parentFragmentManager.findFragmentByTag("loadingDialog") as? LoadingDialogFragment
             loadingFragment?.dismiss()
         }
-    }
-
-    private fun setErrorState(error: String) {
-        with(binding) {
-            tvMessage.text = error
-            tvMise.visibility = View.INVISIBLE
-            tvChomise.visibility = View.INVISIBLE
-            tvWeatherTime.visibility = View.INVISIBLE
-            ivArrowDown.visibility = View.INVISIBLE
-            revWeather.visibility = View.INVISIBLE
-        }
-
-
     }
 }

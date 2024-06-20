@@ -13,7 +13,7 @@ import javax.inject.Inject
 class DustRemoteDataSourceImpl @Inject constructor(
     private val dustService: DustService
 ): DustRemoteDataSource {
-    override suspend fun getDustInfo(currentLocation: Pair<Float, Float>): DustDTO {
+    override suspend fun getDustInfo(currentLocation: Pair<Float, Float>): DustDTO? {
         val besselLocation = convertToBesselLocation(currentLocation)
         val stationQueryMap =  mapOf(
             "serviceKey" to BuildConfig.weather_key,
@@ -21,23 +21,29 @@ class DustRemoteDataSourceImpl @Inject constructor(
             "tmX" to besselLocation.latitude.toString(),
             "tmY" to besselLocation.longitude.toString()
         )
-        val stationList = dustService.getStation(stationQueryMap).station.stationBody.stationItems.sortedBy { it.tm }
+        val stationList = kotlin.runCatching {
+            dustService.getStation(stationQueryMap).station.stationBody.stationItems.sortedBy { it.tm }
+        }.getOrNull()
 
-        for (station in stationList) {
-            val dustQueryMap = mapOf(
-                "serviceKey" to BuildConfig.weather_key,
-                "returnType" to "json",
-                "stationName" to station.stationName,
-                "dataTerm" to "DAILY",
-                "ver" to "1.0"
-            )
-            val dustInfo = dustService.getDust(dustQueryMap).dust.dustBody.dustDTO
+        if (stationList != null) {
+            for (station in stationList) {
+                val dustQueryMap = mapOf(
+                    "serviceKey" to BuildConfig.weather_key,
+                    "returnType" to "json",
+                    "stationName" to station.stationName,
+                    "dataTerm" to "DAILY",
+                    "ver" to "1.0"
+                )
+                val dustInfo = kotlin.runCatching {
+                    dustService.getDust(dustQueryMap).dust.dustBody.dustDTO
+                }.getOrNull()
 
-            if (dustInfo.isNotEmpty()) {
-                return dustInfo[0]
+                if (!dustInfo.isNullOrEmpty()) {
+                    return dustInfo[0]
+                }
             }
         }
-        throw Exception("Dust Info Not Found")
+        return null
     }
 
     private fun convertToBesselLocation(location: Pair<Float, Float>): Location {
