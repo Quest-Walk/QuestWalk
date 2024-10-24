@@ -11,8 +11,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val TAG = "quest_walk_test_tag"
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authFacade: AuthFacade,

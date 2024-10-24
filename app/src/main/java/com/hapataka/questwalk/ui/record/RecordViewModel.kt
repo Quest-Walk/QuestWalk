@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
+import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.ui.record.model.RecordItem
@@ -20,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RecordViewModel @Inject constructor(
     private val userRepo: UserRepo,
-    private val achieveItemRepo: AchieveItemRepository
+    private val achieveItemRepo: AchieveItemRepository,
+    private val historyFacade: HistoryFacade
 ) : ViewModel() {
     private var _recordItems = MutableLiveData<List<RecordItem>>()
     val recordItems: LiveData<List<RecordItem>> get() = _recordItems
@@ -28,6 +31,27 @@ class RecordViewModel @Inject constructor(
     private var _achieveItems = MutableLiveData<List<AchieveItem>> ()
     val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
 
+    private var _testCount = MutableLiveData<Int>()
+    val testCount: LiveData<Int> get() = _testCount
+
+    private var _histories = MutableLiveData<List<HistoryModel>>()
+    val histories: LiveData<List<HistoryModel>> get() = _histories
+
+    fun getTestCount() {
+        val count = testCount.value ?: 0
+
+        _testCount.value = count + 1
+    }
+
+    fun getHistories() {
+        historyFacade.getCurrentUserHistories()?.let {
+            _histories.value = it
+        }
+    }
+
+    fun getAchievements() {
+
+    }
     fun getRecordItems() {
         viewModelScope.launch {
             var currentItems = mutableListOf<RecordItem>()
