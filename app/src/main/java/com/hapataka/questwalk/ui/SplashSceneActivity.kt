@@ -34,11 +34,10 @@ class SplashSceneActivity :
                     if (user == null) {
                         changeTo(LoginActivity::class.java)
                     } else {
-                        changeTo(MainActivity::class.java)
                         viewModel.cacheCurrentUserHistories()
+                        changeTo(MainActivity::class.java)
                     }
                 }
-
             }
         }
     }

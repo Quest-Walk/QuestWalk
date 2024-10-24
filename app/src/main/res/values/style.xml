@@ -53,4 +53,5 @@
     <style name="tabTextSize" parent="TextAppearance.Design.Tab">
         <item name="fontFamily">@font/ramche</item>
     </style>
+
 </resources>

@@ -24,7 +24,7 @@ class CacheRepositoryImpl @Inject constructor(
         cacheDataSource.clearCurrentUserInfo()
     }
 
-    override fun caheCurrentUserHistories(histories: List<HistoryModel>) {
+    override fun cacheCurrentUserHistories(histories: List<HistoryModel>) {
         cacheDataSource.setCurrentUserHistories(histories)
     }
 

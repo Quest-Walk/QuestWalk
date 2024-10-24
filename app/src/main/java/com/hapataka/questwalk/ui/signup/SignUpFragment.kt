@@ -20,6 +20,11 @@ import coil.load
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.FragmentSignUpBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
+import com.hapataka.questwalk.ui.common.ValidateState.CONFIRM_PW_EMPTY
+import com.hapataka.questwalk.ui.common.ValidateState.EMPTY_INPUT
+import com.hapataka.questwalk.ui.common.ValidateState.NOT_EMAIL_TYPE
+import com.hapataka.questwalk.ui.common.ValidateState.PW_NOT_MATCH
+import com.hapataka.questwalk.ui.common.ValidateState.SHORT_PW
 import com.hapataka.questwalk.ui.main.MainActivity
 import com.hapataka.questwalk.util.extentions.hideKeyBoard
 import com.hapataka.questwalk.util.extentions.setOnFocusOutListener

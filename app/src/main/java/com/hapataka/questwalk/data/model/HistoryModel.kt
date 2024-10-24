@@ -23,5 +23,9 @@ sealed class HistoryModel(
         override val userId: String,
         override val registerAt: LocalDateTime,
         val achievementId: Int,
+        val description: String = "",
+        val iconUrl: String = "",
+        val title: String = "",
+        var successCount: Int = 0,
     ) : HistoryModel(userId, registerAt)
 }

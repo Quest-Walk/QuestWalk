@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.fragment.record.RecordFragment">
+    tools:context=".ui.record.RecordFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="20dp"
+                    android:layout_width="14dp"
                     android:layout_height="20dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/btn_back"

@@ -6,28 +6,28 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.facade.AuthFacade
+import com.hapataka.questwalk.ui.common.ValidateState
+import com.hapataka.questwalk.ui.common.ValidateState.CONFIRM_PW_EMPTY
+import com.hapataka.questwalk.ui.common.ValidateState.EMPTY_INPUT
+import com.hapataka.questwalk.ui.common.ValidateState.NOT_EMAIL_TYPE
+import com.hapataka.questwalk.ui.common.ValidateState.PW_NOT_MATCH
+import com.hapataka.questwalk.ui.common.ValidateState.SHORT_PW
+import com.hapataka.questwalk.ui.common.ValidateState.VALIDATE_SUCCESS
 import com.hapataka.questwalk.util.extentions.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val VALIDATE_SUCCESS = 0
-const val EMPTY_INPUT = 1
-const val NOT_EMAIL_TYPE = 2
-const val CONFIRM_PW_EMPTY = 2
-const val SHORT_PW = 3
-const val PW_NOT_MATCH = 4
-
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authFacade: AuthFacade
 ) : ViewModel() {
-    private var _isValidId = MutableLiveData<Int>()
-    val isValidId: MutableLiveData<Int> get() = _isValidId
+    private var _isValidId = MutableLiveData<ValidateState>()
+    val isValidId: MutableLiveData<ValidateState> get() = _isValidId
 
-    private var _isValidPw = MutableLiveData<Int>()
-    val isValidPw: MutableLiveData<Int> get() = _isValidPw
+    private var _isValidPw = MutableLiveData<ValidateState>()
+    val isValidPw: MutableLiveData<ValidateState> get() = _isValidPw
 
     private var _isRegisterSuccess = MutableLiveData<Boolean>()
     val isRegisterSuccess: MutableLiveData<Boolean> get() = _isRegisterSuccess
@@ -35,7 +35,7 @@ class SignUpViewModel @Inject constructor(
     private var _toastMsg = MutableLiveData<String>()
     val toastMsg: LiveData<String> get() = _toastMsg
 
-    private var _signUpBtnState = MutableLiveData<Boolean>(false)
+    private var _signUpBtnState = MutableLiveData<Boolean>()
     val signUpBtnState: LiveData<Boolean> get() = _signUpBtnState
 
     fun validateId(id: String) {

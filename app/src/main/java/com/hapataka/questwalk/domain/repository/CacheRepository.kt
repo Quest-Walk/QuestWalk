@@ -10,6 +10,6 @@ interface CacheRepository {
     suspend fun setUserIdToPref(id: String)
     suspend fun getUserIdFromPref(): Flow<String?>
     fun cacheCurrentUser(user: UserModel)
-    fun caheCurrentUserHistories(list: List<HistoryModel>)
+    fun cacheCurrentUserHistories(list: List<HistoryModel>)
     fun getCurrentUserHistories(): List<HistoryModel>?
 }

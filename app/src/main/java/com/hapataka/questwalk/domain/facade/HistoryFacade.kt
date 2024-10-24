@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.domain.facade
 
+import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.data.model.HistoryModel.AchievementRecordModel
 import com.hapataka.questwalk.data.model.HistoryModel.ResultRecordModel
 import com.hapataka.questwalk.domain.usecase.CacheCurrentUserHistoriesUseCase
@@ -23,5 +24,9 @@ class HistoryFacade @Inject constructor(
         result[RESULT_SUCCESS_COUNT] = histories?.filterIsInstance<ResultRecordModel>()?.filter { it.isSuccess }?.size ?: 0
         result[ACHIEVEMENT_COUNT] = histories?.filterIsInstance<AchievementRecordModel>()?.size ?: 0
         return result
+    }
+
+    fun getCurrentUserHistories(): List<HistoryModel>? {
+        return getCurrentUserHistoriesUseCase()
     }
 }

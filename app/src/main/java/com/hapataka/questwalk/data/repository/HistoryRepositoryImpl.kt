@@ -3,6 +3,7 @@ package com.hapataka.questwalk.data.repository
 import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.data.model.HistoryModel.AchievementRecordModel
 import com.hapataka.questwalk.data.model.HistoryModel.ResultRecordModel
+import com.hapataka.questwalk.domain.data.remote.AchievementsDataSource
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
 import com.hapataka.questwalk.domain.repository.HistoryRepository
 import com.hapataka.questwalk.util.extentions.decryptECB
@@ -14,9 +15,12 @@ import javax.inject.Named
 class HistoryRepositoryImpl @Inject constructor(
     @Named("FirebaseHistoryRDS")
     private val firebaseHistoryRDS: HistoryRDS,
+    @Named("FirebaseAchievementsDataSource")
+    private val firebaseAchievementsDataSource: AchievementsDataSource
 ) : HistoryRepository {
     override suspend fun getUserHistory(userId: String): List<HistoryModel> {
         val result = mutableListOf<HistoryModel>()
+        val achievementItems = firebaseAchievementsDataSource.getAchievements()
 
 
         firebaseHistoryRDS.getHistoriesById(userId).let { histories ->
@@ -34,11 +38,17 @@ class HistoryRepositoryImpl @Inject constructor(
                     questImg = it.questImg
                 )
             }
-            histories.achievementRecords.forEach {
+            histories.achievementRecords.forEach { achievementRecord ->
+                val item = achievementItems.find { it.id == achievementRecord.achievementId } ?: return@forEach
+
                 result += AchievementRecordModel(
-                    userId = it.userId,
-                    registerAt = LocalDateTime.parse(it.registerAt),
-                    achievementId = it.achievementId
+                    userId = achievementRecord.userId,
+                    registerAt = LocalDateTime.parse(achievementRecord.registerAt),
+                    achievementId = achievementRecord.achievementId,
+                    description = item.description,
+                    title = item.title,
+                    successCount = item.successCount,
+                    iconUrl = item.iconUrl
                 )
             }
         }

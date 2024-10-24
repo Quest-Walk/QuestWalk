@@ -74,8 +74,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
-
     private var currentDistance = -1f
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,9 +123,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun initNaviButtons() {
         with(binding) {
-//            btnRecord.setOnClickListener {
-//                navController.navigate(R.id.action_frag_home_to_frag_record)
-//            }
+            btnRecord.setOnClickListener {
+                navController.navigate(R.id.action_frag_home_to_frag_record)
+            }
             btnMyPage.setOnClickListener {
                 navController.navigate(R.id.action_frag_home_to_frag_my_info)
             }
@@ -524,7 +524,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 true,
                 "S92jA0tYFTyv6gq33b5FxfanC+OTIppzutqEEIG5plAgJumbyXGQ4KMLJJSjc0o+hYF7t6w8nCqW 7vUzmSC98b4+ihMVXN8Ou+6JZHkaR7g= ",
                 "spOMRx6pxQkwaHHya+wmNCIlmeUWJT2g8XaKphFQOioKrQgm7X+bvmxZG4f+z4rV ",
-                "https://velog.velcdn.com/images/etgt777/post/83eadb2b-025a-403e-a66d-68d52c3f0cd3/image.png",
+                "https://firebasestorage.googleapis.com/v0/b/quest-walk-d261b.appspot.com/o/NQiwtBR2cKc1V1sRy2pd3r8duU9220240323232750.png?alt=media&token=bc26ab25-14ec-4a53-a3c4-8fc134382700",
             )
             val achieveDTO = AchievementRecordDTO(
                 auth.currentUser?.uid ?: return@setOnClickListener,
@@ -538,10 +538,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
         }
 
-        binding.btnRecord.setOnClickListener {
-            lifecycleScope.launch {
-                historyRDS.deleteHistoriesById(auth.currentUser?.uid ?: return@launch)
-            }
-        }
+
+//        val achieveDataSource = FirebaseAchievementsDataSource()
+//        binding.btnRecord.setOnClickListener {
+//            lifecycleScope.launch {
+//                achieveDataSource.getAchievements().forEach {
+//                    Log.d(TAG, it.toString())
+//                }
+//            }
+//        }
     }
 }

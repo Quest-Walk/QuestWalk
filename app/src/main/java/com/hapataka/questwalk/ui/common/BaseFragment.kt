@@ -16,8 +16,8 @@ import androidx.viewbinding.ViewBinding
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
-abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) : Fragment() {
-    private var _binding: VB? = null
+abstract class BaseFragment<T : ViewBinding>(private val inflate: Inflate<T>) : Fragment() {
+    private var _binding: T? = null
     val binding get() = _binding!!
 
     override fun onCreateView(
@@ -35,8 +35,8 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
 
