@@ -1,12 +1,5 @@
-# Quest Walk
+<h1 align="center">✨ 당신의 일상을 모험으로! ✨</h1>
 
-**_스파르타 코딩클럽_** 의 `내일배움캠프 2기` 최종 프로젝트로 진행한 `Quest Walk`입니다.
+![01](https://github.com/user-attachments/assets/8c05ccce-b71b-4c36-8387-a74dd486c8c0)
 
-안드로이드에 대해 공부를 하면 할 수록, 프로젝트에 대해 아쉬움이 남아 공부한 내용을 적용하며 `Migration`을 진행해 보며, 프로젝트를 개선해 보려고합니다.
-- 2024.10.25. 부터 차근차근 개선을 진행중입니다.
-
---- 
-
-## 개선 내역
-
-- **[Version Catalogs 추가](docs/Update001.md)**
+<h3 align="center">지루했던 걷기는 이제 안녕~🖐🖐 <br><br>퀘스트로 주어진 키워드를 찾아 우리동네를 탐험해보자! 🔎🔎</h3>
