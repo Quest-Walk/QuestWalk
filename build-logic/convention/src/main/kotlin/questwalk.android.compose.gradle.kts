@@ -1,0 +1,3 @@
+import questwalk.convention.configureComposeAndroid
+
+configureComposeAndroid()
