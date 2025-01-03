@@ -1,35 +1,32 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
 
 plugins {
     kotlin("kapt")
-    id("dagger.hilt.android.plugin")
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
+    id("questwalk.android.application")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.service.gms)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
-    kotlin("plugin.serialization") version "2.0.0"
 }
 
-
+val properties = Properties()
+properties.load(FileInputStream("local.properties"))
 
 android {
     namespace = "com.hapataka.questwalk"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.hapataka.questwalk"
-        minSdk = 26
-        targetSdk = 34
         versionCode = 12
         versionName = "2.1"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
             "String",
             "weather_key",
-            gradleLocalProperties(rootDir).getProperty("WEATHER_API_KEY")
+            gradleLocalProperties(rootDir, providers).getProperty("WEATHER_API_KEY")
         )
     }
 
@@ -42,20 +39,11 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
     buildFeatures {
+        buildConfig = true
         viewBinding = true
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 }
 
@@ -73,7 +61,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.activity.ktx)
@@ -89,7 +76,6 @@ dependencies {
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
     implementation("androidx.camera:camera-core:1.3.4")
 
-
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -102,10 +88,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-
-
+    implementation(libs.hilt.android)
 
     //spinner
     implementation("com.github.skydoves:powerspinner:1.2.7")
