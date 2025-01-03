@@ -5,6 +5,7 @@ import java.io.FileInputStream
 plugins {
     kotlin("kapt")
     id("questwalk.android.application")
+    id("questwalk.android.compose")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.service.gms)
@@ -129,11 +130,7 @@ dependencies {
     implementation("androidx.datastore:datastore-core:1.1.1")
 
     // kotlinx serialization json
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation(libs.kotlinx.serialization.json)
 
-    implementation("androidx.compose.material3:material3-android:1.3.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
-    implementation("androidx.compose.ui:ui:1.7.4")
-    implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.4")
-    implementation("androidx.compose.ui:ui-tooling-preview-desktop:1.7.0")
 }

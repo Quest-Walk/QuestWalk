@@ -12,6 +12,7 @@ kotlin = "2.0.21"
 
 ## Kotlin Symbol Processing
 # https://github.com/google/ksp/
+kotlinxSerializationJson = "1.7.3"
 ksp = "2.0.21-1.0.25"
 
 
@@ -52,6 +53,7 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
