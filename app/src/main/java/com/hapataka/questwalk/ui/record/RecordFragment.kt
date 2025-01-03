@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import coil.compose.AsyncImage
 import coil.imageLoader
+import coil3.compose.AsyncImage
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
@@ -187,7 +187,6 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
                 }
             },
             contentDescription = null,
-            imageLoader = requireContext().imageLoader,
             contentScale = ContentScale.FillHeight,
         )
     }
@@ -220,7 +219,6 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
                     .width(20.dp),
                 model = R.drawable.btn_back,
                 contentDescription = null,
-                imageLoader = requireContext().imageLoader,
                 contentScale = ContentScale.FillHeight
             )
         }
