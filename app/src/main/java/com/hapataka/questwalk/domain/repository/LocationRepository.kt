@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.domain.repository
 
-import android.location.Address
 import com.hapataka.questwalk.domain.entity.LocationEntity
 
 interface LocationRepository {

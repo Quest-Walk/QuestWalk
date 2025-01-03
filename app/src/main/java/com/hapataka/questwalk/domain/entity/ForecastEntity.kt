@@ -1,7 +1,5 @@
 package com.hapataka.questwalk.domain.entity
 
-import androidx.resourceinspection.annotation.Attribute.IntMap
-
 data class ForecastEntity(
     val fcstData: String,
     val fcstTime: String,

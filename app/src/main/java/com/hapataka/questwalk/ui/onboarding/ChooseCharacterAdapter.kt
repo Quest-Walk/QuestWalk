@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.onboarding
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hapataka.questwalk.R
 import com.hapataka.questwalk.databinding.ItemChooseCharacterBinding
 
 class ChooseCharacterAdapter(val character : List<CharacterData>,
