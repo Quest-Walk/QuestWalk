@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun Quest_Walk_Theme(
+fun QuestWalkTheme(
     lightBar: Boolean,
     content: @Composable () -> Unit
 ) {

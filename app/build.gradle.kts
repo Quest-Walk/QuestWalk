@@ -49,6 +49,10 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.auth)
+    implementation(projects.core.navigation)
+    implementation(projects.core.designsystem)
+
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics:22.1.2")
     implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
@@ -72,6 +76,7 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.activity.compose)
 
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
