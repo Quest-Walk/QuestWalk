@@ -1,6 +1,12 @@
+import questwalk.convention.setNamespace
+
 plugins {
     id("questwalk.android.library")
     alias(libs.plugins.kotlin.serialization)
+}
+
+android {
+    setNamespace("core.navigation")
 }
 
 dependencies {
