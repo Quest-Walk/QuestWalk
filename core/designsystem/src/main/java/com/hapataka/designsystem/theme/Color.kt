@@ -3,6 +3,10 @@ package com.hapataka.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 val MainPurple = Color(0xFF7A5EC8)
+val Surface1 = Color(0xFFB79DFF)
+val ButtonBrown = Color(0xFF553A00)
+
+val White60 = Color(0x3CFFFFFF)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
