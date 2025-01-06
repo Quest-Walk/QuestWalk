@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    setNamespace("feature.auth")
+    setNamespace("feature.login")
 }
 
 dependencies {

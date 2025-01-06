@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.feature.auth)
+    implementation(projects.feature.login)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
 
