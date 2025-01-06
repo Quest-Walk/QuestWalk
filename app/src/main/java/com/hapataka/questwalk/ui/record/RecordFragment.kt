@@ -41,14 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import coil.imageLoader
 import coil3.compose.AsyncImage
+import com.hapataka.designsystem.theme.QuestWalkTheme
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.data.model.HistoryModel
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
-import com.hapataka.questwalk.ui.theme.Quest_Walk_Theme
 import com.hapataka.questwalk.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,7 +65,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
         return ComposeView(requireActivity()).apply {
             requireActivity().enableEdgeToEdge()
             setContent {
-                Quest_Walk_Theme {
+                QuestWalkTheme(lightBar = true) {
                     Scaffold(modifier = Modifier.background(Color.White)) { paddingValues ->
                         RecordRoute(paddingValues)
                     }
@@ -227,7 +226,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
     @Preview(showBackground = true)
     @Composable
     fun RecordScreenPreview() {
-        Quest_Walk_Theme {
+        QuestWalkTheme(lightBar = true) {
             RecordScreen()
         }
     }
