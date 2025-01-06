@@ -1,4 +1,3 @@
-
 import questwalk.convention.configureHiltAndroid
 
 plugins {
@@ -6,19 +5,9 @@ plugins {
     id("questwalk.android.compose")
 }
 
-//android {
-//    packaging {
-//        resources {
-//            excludes.add("META-INF/**")
-//        }
-//    }
-//    defaultConfig {
-//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//    }
-//}
-
 configureHiltAndroid()
 
 dependencies {
     implementation(project(":core:designsystem"))
+    implementation(project(":core:domain"))
 }
