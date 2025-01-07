@@ -22,8 +22,3 @@ internal val Project.androidExtension: CommonExtension<*, *, *, *, *, *>
         .getOrThrow()
 
 internal val Project.libs get() = the<LibrariesForLibs>()
-
-internal fun Project.implementation(dependency: Any) = dependencies.add("implementation", dependency)
-internal fun Project.testImplementation(dependency: Any) = dependencies.add("testImplementation", dependency)
-internal fun Project.androidTestImplementation(dependency: Any) = dependencies.add("androidTestImplementation", dependency)
-internal fun Project.debugImplementation(dependency: Any) = dependencies.add("debugImplementation", dependency)
