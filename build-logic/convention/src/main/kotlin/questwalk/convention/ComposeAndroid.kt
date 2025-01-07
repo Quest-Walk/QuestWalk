@@ -1,5 +1,8 @@
 package questwalk.convention
 
+import gradle.kotlin.dsl.accessors._4b055a01bae563bd2c86a468691a3401.androidTestImplementation
+import gradle.kotlin.dsl.accessors._4b055a01bae563bd2c86a468691a3401.debugImplementation
+import gradle.kotlin.dsl.accessors._4b055a01bae563bd2c86a468691a3401.implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
@@ -8,7 +11,6 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 internal fun Project.configureComposeAndroid() {
     with(plugins) {
         apply("org.jetbrains.kotlin.plugin.compose")
-//        apply("org.jetbrains.kotlin.compose")
     }
 
     androidExtension.apply {
@@ -19,6 +21,8 @@ internal fun Project.configureComposeAndroid() {
             implementation(libs.androidx.compose.material3)
             implementation(libs.androidx.compose.ui)
             implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(libs.hilt.navigation.compose)
+            implementation(libs.androidx.compose.navigation)
 
             debugImplementation(libs.androidx.compose.ui.tooling)
         }
