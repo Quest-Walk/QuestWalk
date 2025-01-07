@@ -5,7 +5,7 @@ labels: ["refactor"]
 
 body:
   - type: textarea
-    id: refactor-contents
+    id: refactor-target
     attributes:
       label: Refactoring대상 기능
       description: 어떤 기능을 refactoring 했는지 설명을 적어주세요.
