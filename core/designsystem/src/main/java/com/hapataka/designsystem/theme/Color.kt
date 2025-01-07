@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val MainPurple = Color(0xFF7A5EC8)
 val Surface1 = Color(0xFFB79DFF)
 val ButtonBrown = Color(0xFF553A00)
+val HighLightYellow = Color(0xFFFEB901)
 
 val White60 = Color(0x3CFFFFFF)
 

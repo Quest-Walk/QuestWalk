@@ -12,8 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.updateBounds
+import com.hapataka.core.designsystem.R
 import com.hapataka.designsystem.theme.ButtonBrown
-import com.hapataka.questwalk.core.designsystem.R
 
 @Composable
 fun PixelButton(
@@ -26,7 +26,7 @@ fun PixelButton(
     val bg = ContextCompat
         .getDrawable(
             context,
-            if (enabled)R.drawable.bg_button_enable else R.drawable.bg_button_disable
+            if (enabled) R.drawable.bg_button_enable else R.drawable.bg_button_disable
         )
 
     TextButton(
