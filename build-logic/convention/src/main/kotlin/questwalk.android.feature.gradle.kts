@@ -1,3 +1,4 @@
+import questwalk.convention.configurationCoroutineAndroid
 import questwalk.convention.configureHiltAndroid
 
 plugins {
@@ -6,6 +7,7 @@ plugins {
 }
 
 configureHiltAndroid()
+configurationCoroutineAndroid()
 
 dependencies {
     implementation(project(":core:designsystem"))
