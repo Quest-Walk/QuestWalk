@@ -1,0 +1,30 @@
+name: Issue Feature 템플릿
+description: 기능 추가할때 사용하는 템플릿
+title: "[Feat]: "
+labels: ["✨ feat"]
+
+body:
+  - type: textarea
+    id: feature-contents
+    attributes:
+      label: Feature 설명
+      description: 작업해야되는 Feature에 대한 설명을 적어주세요.
+      placeholder: ex. 삭제할 때 사용할 공통 다이얼로그를 구현한다.
+    validations:
+      required: true
+  - type: input
+    id: prepare-issue
+    attributes:
+      label: Prepare Issue(Optional)
+      description: 관련된 Prepare가 있다면 적어주세요.
+      placeholder: "ex. #14"
+    validations:
+      required: false
+  - type: textarea
+    id: related-view
+    attributes:
+      label: Related View(Optional)
+      description: 작업하는 사항에 영향을 받는 View(화면)
+      placeholder: ex. HomeView
+    validations:
+      required: false
