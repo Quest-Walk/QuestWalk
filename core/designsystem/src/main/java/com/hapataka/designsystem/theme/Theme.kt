@@ -54,15 +54,14 @@ fun QuestWalkTheme(
         WindowCompat.setDecorFitsSystemWindows(window, false)
         insetsController.isAppearanceLightStatusBars = lightBar
         insetsController.isAppearanceLightNavigationBars = lightBar
-
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
 
-        // todo: 35버전 이상 대응 알아 보기
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
         }
     }
 

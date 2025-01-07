@@ -41,9 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.updateBounds
+import com.hapataka.core.designsystem.R
 import com.hapataka.designsystem.theme.MainPurple
 import com.hapataka.designsystem.theme.Surface1
-import com.hapataka.questwalk.core.designsystem.R
 
 @Composable
 fun PixelTextField(
