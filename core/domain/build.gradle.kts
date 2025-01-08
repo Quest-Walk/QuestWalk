@@ -7,3 +7,7 @@ plugins {
 android {
     setNamespace("core.domain")
 }
+
+dependencies {
+    api(project(":core:model"))
+}
