@@ -31,3 +31,10 @@ include(":feature:login")
 include(":core:designsystem")
 include(":core:navigation")
 include(":core:domain")
+
+include(
+    ":core:designsystem",
+    ":core:navigation",
+    ":core:domain",
+    ":core:model",
+)
