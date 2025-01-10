@@ -5,9 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Scaffold
+import com.hapataka.questwak.feature.MainScreen
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
-import com.hapataka.questwalk.feature.onboarding.LoginRoute
 import com.hapataka.questwalk.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,14 +17,15 @@ class LoginActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            val intent = Intent(this, MainActivity::class.java)
+
             QuestWalkTheme(false) {
-                Scaffold { padding ->
-                    val intent = Intent(this, MainActivity::class.java)
-                    LoginRoute(
-                        navigateToHome = { startActivity(intent) },
-                        padding = padding
-                    )
-                }
+                MainScreen(
+                    navigateToHome = {
+                        startActivity(intent)
+                        finish()
+                    }
+                )
             }
         }
     }
