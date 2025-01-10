@@ -85,8 +85,9 @@ dependencies {
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
     implementation("androidx.camera:camera-core:1.3.4")
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // Retrofit
