@@ -1,0 +1,99 @@
+package com.hapataka.questwalk.ui.record
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.domain.entity.AchieveItemEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
+import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
+import com.hapataka.questwalk.domain.facade.HistoryFacade
+import com.hapataka.questwalk.domain.repository.AchieveItemRepository
+import com.hapataka.questwalk.domain.repository.UserRepo
+import com.hapataka.questwalk.ui.record.model.RecordItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
+import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
+import com.hapataka.questwalk.util.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class RecordViewModel @Inject constructor(
+    private val userRepo: UserRepo,
+    private val achieveItemRepo: AchieveItemRepository,
+    private val historyFacade: HistoryFacade,
+) : ViewModel() {
+    private var _recordItems = MutableLiveData<List<RecordItem>>()
+    val recordItems: LiveData<List<RecordItem>> get() = _recordItems
+
+    private var _achieveItems = MutableLiveData<List<AchieveItem>>()
+    val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
+
+    private var _testCount = MutableLiveData<Int>()
+    val testCount: LiveData<Int> get() = _testCount
+
+    private var _histories = MutableLiveData<List<HistoryModel>>()
+    val histories: LiveData<List<HistoryModel>> get() = _histories
+
+    fun getTestCount() {
+        val count = testCount.value ?: 0
+
+        _testCount.value = count + 1
+    }
+
+    fun getHistories() {
+        historyFacade.getCurrentUserHistories()?.let {
+            _histories.value = it
+        }
+    }
+
+    fun getAchievements() {
+
+    }
+
+    fun getRecordItems() {
+        viewModelScope.launch {
+            var currentItems = mutableListOf<RecordItem>()
+            val histories = userRepo.getUserHistory(UserInfo.uid)
+            val achieveItems = achieveItemRepo.getAchieveItem().map { entity ->
+                convertToRecordItem(entity, histories.filterIsInstance<AchieveResultEntity>())
+            }
+
+            _achieveItems.value = achieveItems
+            histories.forEach { entity ->
+                when (entity) {
+                    is ResultEntity -> {
+                        currentItems += ResultItem(
+                            entity.quest,
+                            entity.questImg,
+                            entity.isSuccess,
+                            entity.registerAt
+                        )
+                    }
+
+                    is AchieveResultEntity -> {
+                        currentItems += achieveItems.filter { it.achieveId == entity.achievementId }
+                    }
+                }
+            }
+            _recordItems.value = currentItems
+        }
+    }
+
+    private fun convertToRecordItem(
+        entity: AchieveItemEntity,
+        history: List<AchieveResultEntity>,
+    ): AchieveItem {
+        return with(entity) {
+            AchieveItem(
+                achieveId,
+                achieveIcon,
+                achieveTitle,
+                achieveDescription,
+                history.any { it.achievementId == entity.achieveId }
+            )
+        }
+    }
+}

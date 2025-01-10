@@ -9,7 +9,7 @@
         android:id="@+id/frag_login"
         android:name="com.hapataka.questwalk.ui.login.LogInFragment"
         android:label="frag_login"
-        tools:layout="@layout/fragment_log_in" >
+        tools:layout="@layout/fragment_log_in">
         <action
             android:id="@+id/action_frag_login_to_frag_sign_up"
             app:destination="@id/frag_sign_up" />

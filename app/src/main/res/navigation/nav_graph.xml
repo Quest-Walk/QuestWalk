@@ -59,8 +59,7 @@
         android:id="@+id/frag_camera"
         android:name="com.hapataka.questwalk.ui.camera.CameraFragment"
         android:label="frag_camera"
-        tools:layout="@layout/fragment_camera">
-    </fragment>
+        tools:layout="@layout/fragment_camera"></fragment>
 
     <fragment
         android:id="@+id/frag_on_boarding"

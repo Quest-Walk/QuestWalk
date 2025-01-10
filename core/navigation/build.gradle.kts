@@ -1,4 +1,4 @@
-import questwalk.convention.setNamespace
+import com.hapataka.questwalk.setNamespace
 
 plugins {
     id("questwalk.android.library")

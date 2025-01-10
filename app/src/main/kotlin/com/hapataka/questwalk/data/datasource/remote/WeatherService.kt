@@ -1,0 +1,13 @@
+package com.hapataka.questwalk.data.datasource.remote
+
+import com.hapataka.questwalk.data.dto.weather.WeatherResponse
+import retrofit2.http.GET
+import retrofit2.http.QueryMap
+
+interface WeatherService {
+    @GET("getVilageFcst")
+    suspend fun getWeatherInfo(
+        @QueryMap queries: Map<String, String>,
+    ): WeatherResponse
+
+}

@@ -1,0 +1,3 @@
+import com.hapataka.questwalk.configureComposeAndroid
+
+configureComposeAndroid()

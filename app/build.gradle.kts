@@ -49,9 +49,12 @@ android {
 }
 
 dependencies {
-    implementation(projects.feature.login)
+    implementation(projects.feature.onboarding)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
+    implementation(projects.core.remote)
 
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics:22.1.2")
@@ -94,7 +97,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     //Hilt
-    implementation(libs.hilt.android)
+//    implementation(libs.hilt.android)
 
     //spinner
     implementation("com.github.skydoves:powerspinner:1.2.7")
