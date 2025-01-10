@@ -1,3 +1,7 @@
+import com.hapataka.questwalk.setNamespace
+
 plugins {
-    id("questwalk.kotlin.library")
+    id("questwalk.android.library")
 }
+
+setNamespace("core.model")

@@ -26,7 +26,7 @@ rootProject.name = "QuestWalk"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 
-include(":feature:login")
+include(":feature:onboarding")
 
 include(
     ":core:designsystem",
@@ -36,3 +36,4 @@ include(
     ":core:remote",
     ":core:model",
 )
+include(":feature:main")

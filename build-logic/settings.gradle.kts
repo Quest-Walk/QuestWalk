@@ -1,6 +1,6 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 dependencyResolutionManagement {
-    repositories  {
+    repositories {
         google()
         mavenCentral()
     }
@@ -10,6 +10,3 @@ dependencyResolutionManagement {
         }
     }
 }
-
-rootProject.name = "build-logic"
-include(":convention")
