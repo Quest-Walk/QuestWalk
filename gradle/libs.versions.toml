@@ -16,6 +16,12 @@ androidDesugarJdkLibs = "2.1.4"
 # https://github.com/JetBrains/kotlin
 kotlin = "2.1.0"
 
+## Test
+# https://github.com/junit-team/junit4
+junit4 = "4.13.2"
+# https://developer.android.com/jetpack/androidx/releases/test?hl=ko
+androidxTestExt = "1.2.1"
+
 ## Kotlin Symbol Processing
 # https://github.com/google/ksp/
 kotlinxSerializationJson = "1.7.3"
@@ -62,12 +68,17 @@ lifecycleLivedataKtxVersion = "2.8.7"
 material = "1.12.0"
 navigationFragmentKtx = "2.8.5"
 jetbrainsKotlinJvm = "1.9.24"
+junit = "4.12"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-compiler-gradle-plugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
+androidx-test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtxVersion" }
@@ -111,6 +122,7 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBoM" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

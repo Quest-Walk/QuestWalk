@@ -1,4 +1,5 @@
 import com.hapataka.questwalk.configureHiltAndroid
+import com.hapataka.questwalk.configureJUnitAndroid
 import com.hapataka.questwalk.configureKotlinAndroid
 
 plugins {
@@ -7,3 +8,4 @@ plugins {
 
 configureKotlinAndroid()
 configureHiltAndroid()
+configureJUnitAndroid()
