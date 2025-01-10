@@ -1,15 +1,12 @@
+import com.hapataka.questwalk.setNamespace
+
 plugins {
-    id("java-library")
-    alias(libs.plugins.kotlin.jvm)
+    id("questwalk.android.feature")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
+setNamespace("feature.main")
 
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
-    }
+dependencies {
+    implementation(projects.core.navigation)
+    implementation(projects.feature.onboarding)
 }

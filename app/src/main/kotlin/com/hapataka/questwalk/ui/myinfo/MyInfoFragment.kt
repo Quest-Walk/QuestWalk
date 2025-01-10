@@ -67,7 +67,10 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
             logoutSuccess.observe(viewLifecycleOwner) { isSuccess ->
                 if (isSuccess) {
                     lifecycleScope.launch {
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        val intent = Intent(
+                            requireContext(),
+                            LoginActivity::class.java
+                        )
 
                         startActivity(intent)
                         delay(1000L)
@@ -93,7 +96,10 @@ class MyInfoFragment : BaseFragment<FragmentMyInfoBinding>(FragmentMyInfoBinding
                 if (isSuccess) {
                     lifecycleScope.launch {
                         dropOutDialog.dismiss()
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        val intent = Intent(
+                            requireContext(),
+                            LoginActivity::class.java
+                        )
 
                         startActivity(intent)
                         delay(1000L)
