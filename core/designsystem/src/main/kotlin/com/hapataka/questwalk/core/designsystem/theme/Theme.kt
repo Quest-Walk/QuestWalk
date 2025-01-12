@@ -22,7 +22,8 @@ import androidx.core.view.WindowCompat
 private val LightColorScheme = lightColorScheme(
     primary = MainPurple,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -38,7 +39,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun QuestWalkTheme(
     lightBar: Boolean,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     val view = LocalView.current

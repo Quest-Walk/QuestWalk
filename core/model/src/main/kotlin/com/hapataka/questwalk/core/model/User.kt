@@ -3,7 +3,7 @@ package com.hapataka.questwalk.core.model
 data class User(
     val id: String,
     var nickName: String,
-    var characterId: Int,
+    var characterType: CharacterType,
     var totalTime: Long,
     var totalDistance: Float,
     var totalStep: Long,

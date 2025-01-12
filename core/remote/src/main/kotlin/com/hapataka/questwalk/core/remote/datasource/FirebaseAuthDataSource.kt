@@ -13,4 +13,8 @@ class FirebaseAuthDataSource @Inject constructor(
             firebaseAuth.signInWithEmailAndPassword(email, password).await().user!!.uid
         }
     }
+
+    override fun getUserId(): String {
+        return firebaseAuth.uid ?: throw NoSuchElementException("no user id")
+    }
 }

@@ -15,7 +15,7 @@ class UserRepositoryImpl @Inject constructor(
 
         return UserModel(
             userDTO.id,
-            userDTO.nickName,
+            userDTO.userName,
             userDTO.characterId,
             userDTO.totalTime,
             userDTO.totalDistance,

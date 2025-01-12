@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.data.datasource.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.hapataka.questwalk.data.dto.UserDTO
+import com.hapataka.questwalk.core.remote.model.UserDto
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.data.remote.UserRDS
 import kotlinx.coroutines.tasks.await
@@ -11,9 +11,9 @@ class FirebaseUserRDS @Inject constructor() : UserRDS {
     private val remoteDB by lazy { FirebaseFirestore.getInstance() }
     private val userDB by lazy { remoteDB.collection("users") }
 
-    override suspend fun getUserById(userId: String): UserDTO? {
+    override suspend fun getUserById(userId: String): UserDto? {
         val userInfo = kotlin.runCatching {
-            userDB.document(userId).get().await().toObject(UserDTO::class.java)
+            userDB.document(userId).get().await().toObject(UserDto::class.java)
         }
 
         return userInfo.getOrNull()

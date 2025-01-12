@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.core.remote.datasource
 
 import com.google.firebase.firestore.CollectionReference
+import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.remote.api.UserDataSource
 import com.hapataka.questwalk.core.remote.model.UserDto
@@ -19,6 +20,24 @@ class FirebaseUserDataSource @Inject constructor(
                 .await()
                 .toObject(UserDto::class.java)!!
                 .toModel()
+        }
+    }
+
+    override suspend fun postUserInfo(
+        userId: String,
+        userName: String,
+        characterType: CharacterType,
+    ): Result<Unit> {
+        return kotlin.runCatching {
+            userCollection
+                .document(userId)
+                .set(
+                    UserDto(
+                        id = userId,
+                        userName = userName,
+                        characterId = characterType.id
+                    )
+                )
         }
     }
 }

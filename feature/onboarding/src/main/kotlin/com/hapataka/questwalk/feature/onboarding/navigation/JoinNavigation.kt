@@ -17,6 +17,8 @@ fun NavGraphBuilder.joinNavGraph(
     padding: PaddingValues,
 ) {
     composable<OnboardingRoute.Join> {
-        JoinRoute()
+        JoinRoute(
+            padding = padding
+        )
     }
 }

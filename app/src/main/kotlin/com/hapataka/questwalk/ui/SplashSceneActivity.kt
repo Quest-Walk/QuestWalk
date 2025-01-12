@@ -5,10 +5,14 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.hapataka.questwalk.core.model.LoginState
+import com.hapataka.questwalk.core.model.UserInfo
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
 import com.hapataka.questwalk.ui.common.BaseActivity
 import com.hapataka.questwalk.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -19,31 +23,40 @@ class SplashSceneActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initBackPressedCallback()
-        loadInitialSetting()
-    }
 
-    private fun loadInitialSetting() {
-        viewModel.getCurrentUser()
-        setObserver()
-    }
+        lifecycleScope.launch {
+            viewModel.userState.collectLatest { userState ->
+                delay(500)
 
-    private fun setObserver() {
-        with(viewModel) {
-            currentUser.observe(this@SplashSceneActivity) { user ->
-                lifecycleScope.launch {
-                    if (user == null) {
-                        changeTo(LoginActivity::class.java)
-                    } else {
-                        viewModel.cacheCurrentUserHistories()
-                        changeTo(MainActivity::class.java)
+                when (userState) {
+                    is LoginState.Success -> {
+                        if (userState.userInfo == UserInfo.EXIST) {
+                            viewModel.cacheCurrentUserHistories()
+                            changeTo(activity = MainActivity::class.java)
+                        } else {
+                            changeTo(
+                                activity = LoginActivity::class.java, isLogin = true
+                            )
+                        }
                     }
+
+                    is LoginState.Failure -> {
+                        changeTo(LoginActivity::class.java)
+                    }
+
+                    else -> {}
                 }
             }
         }
     }
 
-    private fun <T> changeTo(activity: Class<T>) {
-        val intent = Intent(this, activity)
+    private fun <T> changeTo(
+        activity: Class<T>,
+        isLogin: Boolean = false,
+    ) {
+        val intent = Intent(this, activity).apply {
+            putExtra("isLogin", isLogin)
+        }
 
         startActivity(intent)
         finish()
@@ -56,5 +69,4 @@ class SplashSceneActivity :
             onBackPressedDispatcher.addCallback(this, it)
         }
     }
-
 }

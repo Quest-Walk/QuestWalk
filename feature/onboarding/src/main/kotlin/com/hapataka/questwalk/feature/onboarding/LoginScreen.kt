@@ -46,9 +46,9 @@ import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
+import com.hapataka.questwalk.core.model.LoginState
+import com.hapataka.questwalk.core.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.component.LoginContent
-import com.hapataka.questwalk.feature.onboarding.model.LoginState
-import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 
 @Composable
 internal fun LoginRoute(
