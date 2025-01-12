@@ -9,11 +9,15 @@ sealed interface LoginState {
     data object Idle : LoginState
 
     @Immutable
-    data object Success : LoginState
+    data class Success(val userInfo: UserInfo) : LoginState
 
     @Immutable
     data object Loading : LoginState
 
     @Immutable
     data class Failure(val message: String) : LoginState
+}
+
+enum class UserInfo {
+    EXIST, NONE
 }

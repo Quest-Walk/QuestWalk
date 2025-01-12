@@ -9,7 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.hapataka.questwak.feature.navigation.MainNavigator
 import com.hapataka.questwak.feature.navigation.rememberMainNavigator
+import com.hapataka.questwalk.core.navigation.OnboardingRoute
+import com.hapataka.questwalk.feature.onboarding.navigation.joinNavGraph
 import com.hapataka.questwalk.feature.onboarding.navigation.loginNavGraph
+import com.hapataka.questwalk.feature.onboarding.navigation.setupNavGraph
 
 @Composable
 fun MainScreen(
@@ -42,6 +45,18 @@ internal fun MainNavHost(
             startDestination = navigator.startDestination
         ) {
             loginNavGraph(
+                navigateToHome = navigateToHome,
+                navigateToJoin = { navigator.navigate(OnboardingRoute.Join) },
+                navigateToSetup = { navigator.navigate(OnboardingRoute.Setup) },
+                padding = padding
+            )
+
+            joinNavGraph(
+                popBackStack = navigator::popBackStack,
+                padding = padding
+            )
+
+            setupNavGraph(
                 navigateToHome = navigateToHome,
                 padding = padding
             )

@@ -6,23 +6,19 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.hapataka.questwalk.core.navigation.OnboardingRoute
-import com.hapataka.questwalk.feature.onboarding.LoginRoute
+import com.hapataka.questwalk.feature.onboarding.SetupRoute
 
-fun NavController.navigateLogin(navOptions: NavOptions) {
-    navigate(OnboardingRoute.Login, navOptions)
+fun NavController.navigateSetup(navOptions: NavOptions) {
+    navigate(OnboardingRoute.Setup, navOptions)
 }
 
-fun NavGraphBuilder.loginNavGraph(
+fun NavGraphBuilder.setupNavGraph(
     navigateToHome: () -> Unit,
-    navigateToSetup: () -> Unit,
-    navigateToJoin: () -> Unit,
     padding: PaddingValues,
 ) {
-    composable<OnboardingRoute.Login> {
-        LoginRoute(
+    composable<OnboardingRoute.Setup> {
+        SetupRoute(
             navigateToHome = navigateToHome,
-            navigateToSetup = navigateToSetup,
-            navigateToJoin = navigateToJoin,
             padding = padding
         )
     }

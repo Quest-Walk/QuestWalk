@@ -68,23 +68,26 @@ fun PixelTextField(
     LaunchedEffect(isError) { onErrorChange(isError) }
 
     BasicTextField(
-        modifier = modifier.fillMaxWidth().onFocusChanged {
-            if (isInitial) {
-                validator?.let { validate ->
-                    if (it.hasFocus.not()) {
-                        isError = validate(value)
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged {
+                if (isInitial) {
+                    validator?.let { validate ->
+                        if (it.hasFocus.not()) {
+                            isError = validate(value)
+                        }
                     }
+                } else {
+                    isInitial = true
                 }
-            } else {
-                isInitial = true
-            }
-        },
+            },
         value = value,
         onValueChange = {
             onValueChange(it)
             isError = false
         },
         maxLines = maxLine,
+        singleLine = maxLine == 1,
         cursorBrush = SolidColor(MainPurple),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -95,16 +98,18 @@ fun PixelTextField(
         textStyle = Typography.bodyLarge.copy(color = MainPurple),
         decorationBox = { innerTextField ->
             val bg = ContextCompat.getDrawable(LocalContext.current, R.drawable.bg_text_field)
+                ?: return@BasicTextField
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp, max = maxHeight)
-                    .drawBehind {
-                        bg?.updateBounds(0, 0, size.width.toInt(), size.height.toInt())
-                        bg?.draw(drawContext.canvas.nativeCanvas)
-                    }
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.run {
+                    fillMaxWidth()
+                        .heightIn(min = 56.dp, max = maxHeight)
+                        .drawBehind {
+                            bg.updateBounds(0, 0, size.width.toInt(), size.height.toInt())
+                            bg.draw(drawContext.canvas.nativeCanvas)
+                        }
+                        .padding(horizontal = 16.dp)
+                },
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -119,7 +124,9 @@ fun PixelTextField(
                 }
 
                 Box(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (value.isEmpty()) {
