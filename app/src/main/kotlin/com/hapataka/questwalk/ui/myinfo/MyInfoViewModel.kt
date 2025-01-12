@@ -43,7 +43,7 @@ class MyInfoViewModel @Inject constructor(
 
     fun getCurrentUserInfo() {
         viewModelScope.launch {
-            userFacade.getCacheUser()?.let {
+            userFacade.getUserInfo()?.let {
                 _currentUser.value = it
             }
         }

@@ -1,5 +1,7 @@
 package com.hapataka.questwalk.domain.facade
 
+import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
+import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.usecase.CacheCurrentUserUserCase
 import com.hapataka.questwalk.domain.usecase.CheckCurrentUserNameUseCase
@@ -18,6 +20,8 @@ class UserFacade @Inject constructor(
     private val checkCurrentUserNameUseCase: CheckCurrentUserNameUseCase,
     private val updateUserNameUseCase: UpdateUserNameUseCase,
     private val uploadUserUseCase: UploadUserUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
 ) {
     suspend fun cacheAndGetCurrentUser(): UserModel? = withContext(Dispatchers.IO) {
         async { cacheCurrentUserUseCase() }.await()
@@ -37,7 +41,20 @@ class UserFacade @Inject constructor(
         }
     }
 
-    suspend fun getCacheUser(): UserModel? {
-        return getCacheUserUseCase()
+    suspend fun getUserInfo(): UserModel {
+        val cacheUser = getCacheUserUseCase()
+
+        if (cacheUser != null) return cacheUser
+
+        val userId = getLoginUserIdUseCase().getOrThrow()
+        val userInfo = getUserInfoUseCase(userId = userId).getOrThrow()
+
+        return UserModel(
+            userId = userId,
+            nickName = userInfo.userName,
+            characterId = userInfo.characterType.id,
+            totalTime = userInfo.totalTime,
+            totalDistance = userInfo.totalDistance,
+        )
     }
 }

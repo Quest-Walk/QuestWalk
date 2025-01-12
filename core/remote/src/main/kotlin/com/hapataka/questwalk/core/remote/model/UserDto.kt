@@ -16,7 +16,7 @@ data class UserDto(
 fun UserDto.toModel(): User {
     return User(
         id = this.id,
-        nickName = this.userName,
+        userName = this.userName,
         characterType = CharacterType.entries.find { it.id == this.characterId }
             ?: CharacterType.BEAR,
         totalTime = this.totalTime,
