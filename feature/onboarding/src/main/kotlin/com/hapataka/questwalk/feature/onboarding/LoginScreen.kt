@@ -110,7 +110,7 @@ private fun LoginScreen(
                 modifier = maxWidthModifier.padding(top = 40.dp)
             )
 
-            if (loginState is LoginState.Loading) {
+            if (loginState is LoginState.Loading || (loginState is LoginState.Success && loginState.userInfo == UserInfo.EXIST)) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(52.dp)

@@ -14,12 +14,12 @@ class UserRepositoryImpl @Inject constructor(
         val userDTO = firebaseUserRDS.getUserById(id) ?: return null
 
         return UserModel(
-            userDTO.id,
-            userDTO.userName,
-            userDTO.characterId,
-            userDTO.totalTime,
-            userDTO.totalDistance,
-            userDTO.totalStep
+            userId = userDTO.id,
+            nickName = userDTO.userName,
+            characterId = userDTO.characterId,
+            totalTime = userDTO.totalTime,
+            totalDistance = userDTO.totalDistance,
+            totalStep = userDTO.totalStep
         )
     }
 
