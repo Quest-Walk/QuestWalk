@@ -6,11 +6,11 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseAuthDataSource @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
 ) : AuthDataSource {
-    override suspend fun loginWithEmail(email: String, password: String): Result<Unit> {
+    override suspend fun loginWithEmail(email: String, password: String): Result<String> {
         return kotlin.runCatching {
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            firebaseAuth.signInWithEmailAndPassword(email, password).await().user!!.uid
         }
     }
 }

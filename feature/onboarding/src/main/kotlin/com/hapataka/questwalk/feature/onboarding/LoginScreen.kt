@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.feature.onboarding
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,13 +24,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -49,10 +48,13 @@ import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
 import com.hapataka.questwalk.feature.onboarding.component.LoginContent
 import com.hapataka.questwalk.feature.onboarding.model.LoginState
+import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 
 @Composable
-fun LoginRoute(
+internal fun LoginRoute(
     navigateToHome: () -> Unit,
+    navigateToSetup: () -> Unit,
+    navigateToJoin: () -> Unit,
     padding: PaddingValues,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -60,13 +62,17 @@ fun LoginRoute(
 
     LaunchedEffect(loginState) {
         if (loginState is LoginState.Success) {
-            navigateToHome()
+            when ((loginState as LoginState.Success).userInfo) {
+                UserInfo.EXIST -> navigateToHome()
+                UserInfo.NONE -> navigateToSetup()
+            }
         }
     }
 
     LoginScreen(
         loginState = loginState,
         loginWithEmail = viewModel::loginWithEmail,
+        navigateToJoin = navigateToJoin,
         padding = padding
     )
 }
@@ -75,8 +81,14 @@ fun LoginRoute(
 private fun LoginScreen(
     loginState: LoginState = LoginState.Idle,
     loginWithEmail: (String, String) -> Unit = { _, _ -> },
+    navigateToJoin: () -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
+    var id by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    val (focusId, focusPassword) = remember { FocusRequester.createRefs() }
+
     LoginContent(
         modifier = Modifier
             .fillMaxSize()
@@ -84,11 +96,6 @@ private fun LoginScreen(
             .padding(top = padding.calculateTopPadding()),
     ) {
         val maxWidthModifier = Modifier.fillMaxWidth()
-        var id by rememberSaveable { mutableStateOf("") }
-        var password by rememberSaveable { mutableStateOf("") }
-        var buttonEnabled by rememberSaveable { mutableStateOf(false) }
-        val focusManager = LocalFocusManager.current
-        val (focusId, focusPassword) = FocusRequester.createRefs()
 
         Column(
             modifier = Modifier
@@ -107,8 +114,7 @@ private fun LoginScreen(
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(52.dp)
-                        .padding(top = 40.dp),
-                    color = HighLightYellow
+                        .padding(top = 40.dp), color = HighLightYellow
                 )
             } else {
                 Column(
@@ -117,10 +123,7 @@ private fun LoginScreen(
                 ) {
                     PixelTextField(
                         value = id,
-                        onValueChange = {
-                            id = it
-                            buttonEnabled = id.isNotBlank() && password.isNotBlank()
-                        },
+                        onValueChange = { id = it },
                         hint = "아이디를 입력해 주세요",
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -129,33 +132,28 @@ private fun LoginScreen(
                         keyboardActions = KeyboardActions(
                             onNext = { focusPassword.requestFocus() }
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .focusRequester(focusId)
                     )
 
                     PixelTextField(
                         value = password,
-                        onValueChange = {
-                            password = it
-                            buttonEnabled = id.isNotBlank() && password.isNotBlank()
-                        },
+                        onValueChange = { password = it },
                         hint = "비밀번호를 입력해 주세요",
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { focusManager.clearFocus(force = true) }
+                            onDone = { focusManager.clearFocus() }
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .focusRequester(focusPassword)
-                            .onFocusChanged { focusState ->
-                                if (!focusState.isFocused) {
-                                    Log.w("loginFocusTest", "Password TextField: 포커스 해제됨")
-                                }
-                            }
                     )
                 }
+
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,11 +163,11 @@ private fun LoginScreen(
                         onClick = { loginWithEmail(id, password) },
                         text = "로그인",
                         modifier = maxWidthModifier,
-                        enabled = buttonEnabled
+                        enabled = id.isNotBlank() && password.isNotBlank()
                     )
 
                     TextButton(
-                        onClick = {},
+                        onClick = navigateToJoin,
                     ) {
                         Text(
                             style = Typography.labelLarge, text = "회원가입", color = Color.White
@@ -183,13 +181,19 @@ private fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
-                        modifier = Modifier.height(1.dp).weight(1f).background(White60)
+                        modifier = Modifier
+                            .height(1.dp)
+                            .weight(1f)
+                            .background(White60)
                     )
                     Text(
                         style = Typography.labelLarge, text = "또는", color = White60
                     )
                     Box(
-                        modifier = Modifier.height(1.dp).weight(1f).background(White60)
+                        modifier = Modifier
+                            .height(1.dp)
+                            .weight(1f)
+                            .background(White60)
                     )
                 }
 

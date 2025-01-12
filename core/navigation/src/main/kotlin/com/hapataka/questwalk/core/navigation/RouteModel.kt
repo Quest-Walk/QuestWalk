@@ -9,5 +9,11 @@ sealed interface Route {
 
 sealed interface OnboardingRoute : Route {
     @Serializable
-    data object Login : Route
+    data object Login : OnboardingRoute
+
+    @Serializable
+    data object Join : OnboardingRoute
+
+    @Serializable
+    data object Setup : OnboardingRoute
 }

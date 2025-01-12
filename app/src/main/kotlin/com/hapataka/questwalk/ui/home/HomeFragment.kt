@@ -140,11 +140,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
-        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
-            if (isInput.not()) {
-                navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
-            }
-        }
+//        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
+//            if (isInput.not()) {
+//                navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
+//            }
+//        }
 
 
         with(viewModel) {

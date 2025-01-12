@@ -6,9 +6,9 @@ import javax.inject.Named
 
 class LoginUseCase @Inject constructor(
     @Named("DefaultAuthRepository")
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) {
-    suspend operator fun invoke(email: String, password: String): Result<Unit> {
+    suspend operator fun invoke(email: String, password: String): Result<String> {
         return when {
             email.isBlank() -> return Result.failure(IllegalArgumentException("이메일을 입력해 주세요"))
             password.isBlank() -> return Result.failure(IllegalArgumentException("비밀번호를 입력해 주세요"))

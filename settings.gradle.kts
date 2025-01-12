@@ -35,5 +35,7 @@ include(
     ":core:data",
     ":core:remote",
     ":core:model",
+    ":core:common",
 )
+
 include(":feature:main")
