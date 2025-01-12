@@ -6,9 +6,14 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class DefaultAuthRepository @Inject constructor(
-    @Named("FirebaseAuth") private val googleAuthDataSource: AuthDataSource,
+    @Named("FirebaseAuth") private val firebaseAuthDataSource: AuthDataSource,
 ) : AuthRepository {
     override suspend fun loginWithEmail(email: String, password: String): Result<String> {
-        return googleAuthDataSource.loginWithEmail(email, password)
+        return firebaseAuthDataSource.loginWithEmail(email, password)
+    }
+
+    override fun getUserId(): String {
+        return firebaseAuthDataSource.getUserId()
+        // TODO: 캐시 레포 구성 후 이관해야함
     }
 }

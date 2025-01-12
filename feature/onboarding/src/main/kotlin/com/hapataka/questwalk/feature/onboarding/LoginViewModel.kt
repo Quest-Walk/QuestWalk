@@ -3,10 +3,11 @@ package com.hapataka.questwalk.feature.onboarding
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LoginUseCase
-import com.hapataka.questwalk.feature.onboarding.model.LoginState
-import com.hapataka.questwalk.feature.onboarding.model.UserInfo
+import com.hapataka.questwalk.core.model.LoginState
+import com.hapataka.questwalk.core.model.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
 ) : ViewModel() {
     private val _loginState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState.Idle)
@@ -31,7 +33,7 @@ class LoginViewModel @Inject constructor(
 
             loginUseCase(email, password)
                 .onSuccess { uid ->
-                    getUserInfo(uid)
+                    checkUserInfo(uid)
                 }
                 .onFailure { e ->
                     _loginState.update { LoginState.Failure(e.message.orEmpty()) }
@@ -40,8 +42,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun getUserInfo(uid: String) {
-        Log.i("LoginViewModel", uid)
+    private fun checkUserInfo(uid: String) {
         viewModelScope.launch {
             getUserInfoUseCase(uid)
                 .onSuccess {
@@ -49,9 +50,7 @@ class LoginViewModel @Inject constructor(
                 }
                 .onFailure {
                     _loginState.update { LoginState.Success(UserInfo.NONE) }
-//                    Log.e("LoginViewModel", it.message.orEmpty())
                 }
-
         }
     }
 }
