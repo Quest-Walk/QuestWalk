@@ -6,35 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <ImageView
-        android:id="@+id/iv_bg_layer_3"
-        android:layout_width="0dp"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/cv_bg"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:layout_constraintDimensionRatio="4:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:src="@drawable/background_day_layer3" />
-
-    <ImageView
-        android:id="@+id/iv_bg_layer_2"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:layout_constraintDimensionRatio="2:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:src="@drawable/background_day_layer2" />
-
-    <ImageView
-        android:id="@+id/iv_bg_layer_1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:layout_constraintDimensionRatio="4:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:src="@drawable/background_day_layer1" />
+        tools:src="@drawable/bg_landscape_day" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/inner_container"
@@ -202,7 +178,7 @@
 
         </LinearLayout>
 
-        <androidx.constraintlayout.motion.widget.MotionLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/motion_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -243,32 +219,19 @@
                 app:layout_constraintTop_toTopOf="@id/btn_toggle_quest_state" />
 
             <ImageView
-                android:id="@+id/iv_chr_image"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:adjustViewBounds="true"
-                android:elevation="5dp"
-                android:src="@drawable/character_01"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/ib_camera"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="44dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_camera"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_toggle_quest_state" />
 
-        </androidx.constraintlayout.motion.widget.MotionLayout>
-
-        <ImageView
-            android:id="@+id/ib_camera"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="44dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/btn_camera"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

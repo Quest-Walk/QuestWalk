@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.hapataka.questwalk.core.designsystem.component.HorizontalScrollingBackground
-import com.hapataka.questwalk.feature.onboarding.R
+import com.hapataka.questwalk.core.ui.R.drawable
+import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
 
 @Composable
 internal fun SetupContent(
@@ -18,8 +18,11 @@ internal fun SetupContent(
         modifier = modifier, contentAlignment = Alignment.Center
     ) {
         HorizontalScrollingBackground(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f).align(Alignment.TopCenter),
-            imgId = R.drawable.bg_starts,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f)
+                .align(Alignment.TopCenter),
+            imgId = drawable.bg_starts,
             duration = 300000
         )
 
