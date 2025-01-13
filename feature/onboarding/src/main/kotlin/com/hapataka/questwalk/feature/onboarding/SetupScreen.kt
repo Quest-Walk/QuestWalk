@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hapataka.questwalk.core.designsystem.component.Character
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
@@ -40,6 +39,7 @@ import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.LoginState
+import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.feature.onboarding.component.SetupContent
 
 @Composable

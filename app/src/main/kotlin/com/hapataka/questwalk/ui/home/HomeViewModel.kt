@@ -3,14 +3,12 @@ package com.hapataka.questwalk.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -30,11 +28,11 @@ class HomeViewModel @Inject constructor(
     private var _charNum = MutableLiveData<Int>()
     private var time = -1
 
-    fun checkCurrentUserName() {
-        viewModelScope.launch {
-            _inputUserName.value = userFacade.checkCurrentUserName()
-        }
-    }
+//    fun checkCurrentUserName() {
+//        viewModelScope.launch {
+//            _inputUserName.value = userFacade.checkCurrentUserName()
+//        }
+//    }
 
     fun checkCurrentTime() {
         time = LocalTime.now().hour

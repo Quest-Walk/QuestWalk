@@ -8,28 +8,37 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.LinearInterpolator
-import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import coil.load
-import coil.request.ImageRequest
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.core.ui.R.drawable
+import com.hapataka.questwalk.core.ui.component.Character
+import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
 import com.hapataka.questwalk.databinding.FragmentHomeBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.home.dialog.PermissionDialog
@@ -49,7 +58,6 @@ import com.hapataka.questwalk.util.extentions.gone
 import com.hapataka.questwalk.util.extentions.invisible
 import com.hapataka.questwalk.util.extentions.visible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -82,7 +90,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun loadInitialSetting() {
         setObserver()
-        viewModel.checkCurrentUserName()
     }
 
     override fun onResume() {
@@ -105,9 +112,54 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun initBackground() {
-        with(binding) {
-            ivBgLayer1.load(R.drawable.background_day_layer1)
-            setBackgroundPosition(STOP_POSITION)
+        binding.cvBg.setContent {
+            val playState by mainViewModel.playState.observeAsState()
+            val isNight by viewModel.isNight.observeAsState(false)
+            var animState by remember { mutableStateOf(false) }
+
+            LaunchedEffect(playState) {
+                animState = playState != QUEST_STOP
+            }
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                HorizontalScrollingBackground(
+                    isAnimate = animState,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    imgId = if (isNight) drawable.bg_landscape_night else drawable.bg_landscape_day,
+                    duration = 160000
+                )
+                HorizontalScrollingBackground(
+                    isAnimate = animState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
+                        .align(Alignment.TopCenter)
+                        .padding(top = 80.dp),
+                    imgId = if (isNight) drawable.bg_starts else R.drawable.background_day_layer2,
+                    duration = 40000
+                )
+                HorizontalScrollingBackground(
+                    isAnimate = animState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.4f)
+                        .align(Alignment.BottomCenter),
+                    imgId = drawable.bg_ground,
+                    duration = 15000
+                )
+
+                Character(
+                    character = Character.BEAR,
+                    isAnimate = animState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxHeight(0.35f)
+                        .padding(bottom = 100.dp)
+                )
+            }
         }
     }
 
@@ -140,24 +192,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
-//        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
-//            if (isInput.not()) {
-//                navController.navigate(R.id.action_frag_home_to_frag_on_boarding)
+        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
+
+        }
+
+
+//        with(viewModel) {
+//            isNight.observe(viewLifecycleOwner) { night ->
+//                if (night) {
+//                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
+//                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
+//                } else {
+//                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
+//                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
+//                }
 //            }
 //        }
-
-
-        with(viewModel) {
-            isNight.observe(viewLifecycleOwner) { night ->
-                if (night) {
-                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
-                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
-                } else {
-                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
-                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
-                }
-            }
-        }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
@@ -222,7 +272,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 tvQuestChange.visible()
                 tvToggleQuestState.text = "모험 시작하기"
                 btnToggleQuestState.load(R.drawable.btn_quest_default)
-                endBackgroundAnim()
                 btnQuestChange.isEnabled = true
                 return
             }
@@ -233,7 +282,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 tvQuestChange.invisible()
                 tvToggleQuestState.text = "포기하기"
                 btnToggleQuestState.load(R.drawable.btn_quest_give_up)
-                startBackgroundAnim()
                 btnQuestChange.isEnabled = false
                 return
             }
@@ -244,7 +292,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 tvQuestChange.invisible()
                 tvToggleQuestState.text = "완료하기"
                 btnToggleQuestState.load(R.drawable.btn_quest_success)
-                startBackgroundAnim()
                 btnQuestChange.isEnabled = false
                 mainViewModel.setSnackBarMsg("퀘스트 성공!")
                 return
@@ -262,73 +309,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             sensorManager.unregisterListener(sensorListener, stepSensor)
             return
         }
-    }
-
-    private var characterMove: Job? = null
-    private fun startBackgroundAnim() {
-        characterMove = lifecycleScope.launch {
-            while (true) {
-                val imageLoader = ImageLoader.Builder(requireContext())
-                    .components {
-                        if (SDK_INT >= 28) {
-                            add(ImageDecoderDecoder.Factory())
-                        } else {
-                            add(GifDecoder.Factory())
-                        }
-                    }.build()
-                val requestCharacter = ImageRequest.Builder(requireContext())
-                    .data(R.drawable.character_move_01)
-                    .target(binding.ivChrImage)
-                    .placeholder(R.drawable.character_01)
-                    .build()
-
-                imageLoader.enqueue(requestCharacter)
-                binding.motionLayout.scene.duration = 2000
-                binding.motionLayout.transitionToEnd()
-                delay(7000L)
-                binding.motionLayout.scene.duration = 3000
-                binding.motionLayout.transitionToStart()
-                delay(3000L)
-            }
-        }
-        setBackgroundPosition(ANIM_POSITION)
-        with(binding) {
-            ivBgLayer1.startAnimation(setAnimator(0.25f, -0.25f, 10000))
-            ivBgLayer2.startAnimation(setAnimator(0.7f, -0.7f, 40000))
-            ivBgLayer3.startAnimation(setAnimator(0.25f, -0.25f, 80000))
-        }
-    }
-
-    private fun endBackgroundAnim() {
-        with(binding) {
-            ivBgLayer1.clearAnimation()
-            ivBgLayer2.clearAnimation()
-            ivBgLayer3.clearAnimation()
-            setBackgroundPosition(STOP_POSITION)
-            ivBgLayer1.translationX = 2115f
-            ivBgLayer2.translationX = -2800f
-            ivBgLayer3.translationX = 2115f
-        }
-        characterMove?.cancel()
-        characterMove = lifecycleScope.launch {
-            binding.motionLayout.scene.duration = 0
-            binding.motionLayout.transitionToStart()
-            binding.ivChrImage.load(R.drawable.character_01)
-        }
-    }
-
-    private fun setAnimator(fromX: Float, toX: Float, duration: Long): TranslateAnimation {
-        val animation = TranslateAnimation(
-            Animation.RELATIVE_TO_SELF, fromX,
-            Animation.RELATIVE_TO_SELF, toX,
-            Animation.RELATIVE_TO_SELF, 0f,
-            Animation.RELATIVE_TO_SELF, 0f
-        )
-
-        animation.repeatCount = Animation.INFINITE
-        animation.interpolator = LinearInterpolator()
-        animation.duration = duration
-        return animation
     }
 
     private fun initBackPressedCallback() {
@@ -379,21 +359,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setBackgroundPosition(positionState: Int) {
-        with(binding) {
-            when (positionState) {
-                STOP_POSITION -> {
-                    ivBgLayer1.translationX = 2115f
-                    ivBgLayer2.translationX = -2800f
-                    ivBgLayer3.translationX = 2115f
-                }
-
-                ANIM_POSITION -> {
-                    ivBgLayer1.translationX = 0f
-                    ivBgLayer2.translationX = 0f
-                    ivBgLayer3.translationX = 0f
-                }
-            }
-        }
+//        with(binding) {
+//            when (positionState) {
+//                STOP_POSITION -> {
+//                    ivBgLayer1.translationX = 2115f
+//                    ivBgLayer2.translationX = -2800f
+//                    ivBgLayer3.translationX = 2115f
+//                }
+//
+//                ANIM_POSITION -> {
+//                    ivBgLayer1.translationX = 0f
+//                    ivBgLayer2.translationX = 0f
+//                    ivBgLayer3.translationX = 0f
+//                }
+//            }
+//        }
     }
 
     private fun makeResultLauncher() {
@@ -487,6 +467,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     override fun onDestroyView() {
         super.onDestroyView()
-        characterMove?.cancel()
     }
 }

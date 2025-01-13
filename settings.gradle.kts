@@ -39,3 +39,4 @@ include(
 )
 
 include(":feature:main")
+include(":core:ui")
