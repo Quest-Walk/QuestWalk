@@ -1,19 +1,19 @@
 package com.hapataka.questwalk.data.datasource.local
 
-import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.data.local.CacheDataSource
 import javax.inject.Inject
 
 class CacheDataSourceImpl @Inject constructor() : CacheDataSource {
     private var currentUser: UserModel? = null
-    private var currentUserHistories: List<HistoryModel>? = null
+    private var currentUserHistories: List<History>? = null
     override fun setCurrentUser(user: UserModel) {
         this.currentUser = user
     }
 
     override fun setCurrentUserHistories(
-        histories: List<HistoryModel>,
+        histories: List<History>,
     ) {
         currentUserHistories = histories.sortedBy { it.registerAt }
     }
@@ -22,7 +22,7 @@ class CacheDataSourceImpl @Inject constructor() : CacheDataSource {
         return currentUser
     }
 
-    override fun getCurrentUserHistories(): List<HistoryModel>? {
+    override fun getCurrentUserHistories(): List<History>? {
         return currentUserHistories
     }
 

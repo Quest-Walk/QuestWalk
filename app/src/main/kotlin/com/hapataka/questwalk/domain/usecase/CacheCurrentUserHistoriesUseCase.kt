@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.domain.usecase
 
+import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.domain.repository.CacheRepository
-import com.hapataka.questwalk.domain.repository.HistoryRepository
 import javax.inject.Inject
 
 class CacheCurrentUserHistoriesUseCase @Inject constructor(
@@ -12,6 +12,6 @@ class CacheCurrentUserHistoriesUseCase @Inject constructor(
         val currentUserId = cacheRepository.getCurrentUser()?.userId ?: return
         val histories = historyRepository.getUserHistory(currentUserId)
 
-        cacheRepository.cacheCurrentUserHistories(histories)
+        cacheRepository.cacheCurrentUserHistories(histories.getOrThrow())
     }
 }

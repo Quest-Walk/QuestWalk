@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.core.remote.datasource
 
 import com.google.firebase.firestore.CollectionReference
-import com.hapataka.questwalk.core.model.CharacterType
+import com.hapataka.questwalk.core.common.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.remote.api.UserDataSource
 import com.hapataka.questwalk.core.remote.model.UserDto
@@ -33,7 +33,7 @@ class FirebaseUserDataSource @Inject constructor(
                 .document(userId)
                 .set(
                     UserDto(
-                        id = userId,
+                        userId = userId,
                         userName = userName,
                         characterId = characterType.id
                     )

@@ -28,12 +28,6 @@ class HomeViewModel @Inject constructor(
     private var _charNum = MutableLiveData<Int>()
     private var time = -1
 
-//    fun checkCurrentUserName() {
-//        viewModelScope.launch {
-//            _inputUserName.value = userFacade.checkCurrentUserName()
-//        }
-//    }
-
     fun checkCurrentTime() {
         time = LocalTime.now().hour
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
@@ -34,8 +34,8 @@ class RecordViewModel @Inject constructor(
     private var _testCount = MutableLiveData<Int>()
     val testCount: LiveData<Int> get() = _testCount
 
-    private var _histories = MutableLiveData<List<HistoryModel>>()
-    val histories: LiveData<List<HistoryModel>> get() = _histories
+    private var _histories = MutableLiveData<List<History>>()
+    val histories: LiveData<List<History>> get() = _histories
 
     fun getTestCount() {
         val count = testCount.value ?: 0

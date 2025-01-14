@@ -1,12 +1,13 @@
 package com.hapataka.questwalk.data.repository
 
-import com.hapataka.questwalk.data.model.HistoryModel
-import com.hapataka.questwalk.data.model.HistoryModel.AchievementRecordModel
-import com.hapataka.questwalk.data.model.HistoryModel.ResultRecordModel
+import com.hapataka.questwalk.core.domain.repository.HistoryRepository
+import com.hapataka.questwalk.core.model.History
+import com.hapataka.questwalk.core.model.History.Achievement
+import com.hapataka.questwalk.core.model.History.QuestResult
+import com.hapataka.questwalk.core.remote.util.decryptECB
 import com.hapataka.questwalk.domain.data.remote.AchievementsDataSource
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
-import com.hapataka.questwalk.domain.repository.HistoryRepository
-import com.hapataka.questwalk.util.extentions.decryptECB
+import com.hapataka.questwalk.util.UserInfo
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -18,42 +19,46 @@ class HistoryRepositoryImpl @Inject constructor(
     @Named("FirebaseAchievementsDataSource")
     private val firebaseAchievementsDataSource: AchievementsDataSource,
 ) : HistoryRepository {
-    override suspend fun getUserHistory(userId: String): List<HistoryModel> {
-        val result = mutableListOf<HistoryModel>()
-        val achievementItems = firebaseAchievementsDataSource.getAchievements()
+    override suspend fun getUserHistory(userId: String): Result<List<History>> {
+        return kotlin.runCatching {
+
+            val result = mutableListOf<History>()
+            val achievementItems = firebaseAchievementsDataSource.getAchievements()
 
 
-        firebaseHistoryRDS.getHistoriesById(userId).let { histories ->
-            histories.resultRecords.forEach {
-                result += ResultRecordModel(
-                    userId = it.userId,
-                    registerAt = LocalDateTime.parse(it.registerAt),
-                    questKeyword = it.questKeyword,
-                    duration = it.duration,
-                    distance = it.distance,
-                    step = it.step,
-                    isSuccess = it.isSuccess,
-                    route = it.route.toRoute(),
-                    successLocation = it.successLocation?.toSuccessLocation(),
-                    questImg = it.questImg
-                )
+            firebaseHistoryRDS.getHistoriesById(userId).let { histories ->
+                histories.resultRecords.forEach {
+                    result += QuestResult(
+                        userId = it.userId,
+                        registerAt = LocalDateTime.parse(it.registerAt),
+                        questKeyword = it.questKeyword,
+                        duration = it.duration,
+                        distance = it.distance,
+                        step = it.step,
+                        isSuccess = it.isSuccess,
+                        route = it.route.toRoute(),
+                        successLocation = it.successLocation?.toSuccessLocation(),
+                        imageUrl = it.questImg
+                    )
+                }
+                histories.achievementRecords.forEach { achievementRecord ->
+                    val item = achievementItems.find { it.id == achievementRecord.achievementId }
+                        ?: return@forEach
+
+                    result += Achievement(
+                        userId = achievementRecord.userId,
+                        registerAt = LocalDateTime.parse(achievementRecord.registerAt),
+                        achievementId = achievementRecord.achievementId,
+                        description = item.description,
+                    )
+                }
             }
-            histories.achievementRecords.forEach { achievementRecord ->
-                val item = achievementItems.find { it.id == achievementRecord.achievementId }
-                    ?: return@forEach
-
-                result += AchievementRecordModel(
-                    userId = achievementRecord.userId,
-                    registerAt = LocalDateTime.parse(achievementRecord.registerAt),
-                    achievementId = achievementRecord.achievementId,
-                    description = item.description,
-                    title = item.title,
-                    successCount = item.successCount,
-                    iconUrl = item.iconUrl
-                )
-            }
+            result
         }
-        return result
+    }
+
+    override suspend fun postHistory(userId: String, history: History): Result<Unit> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun deleteHistoriesById(userId: String): Result<Unit> {
@@ -61,10 +66,10 @@ class HistoryRepositoryImpl @Inject constructor(
     }
 
     private fun String.toRoute(): MutableList<Pair<Float, Float>> {
-        return Json.decodeFromString(this.decryptECB())
+        return Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
     }
 
     private fun String.toSuccessLocation(): Pair<Float, Float> {
-        return Json.decodeFromString(this.decryptECB())
+        return Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
     }
 }

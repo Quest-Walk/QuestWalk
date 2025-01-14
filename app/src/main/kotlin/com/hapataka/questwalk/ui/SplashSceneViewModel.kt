@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.common.model.LoginState
+import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
-import com.hapataka.questwalk.core.model.LoginState
-import com.hapataka.questwalk.core.model.UserInfo
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.facade.UserFacade

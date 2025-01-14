@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.domain.repository
 
-import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.data.model.UserModel
 import kotlinx.coroutines.flow.Flow
 
@@ -10,6 +10,6 @@ interface CacheRepository {
     suspend fun setUserIdToPref(id: String)
     suspend fun getUserIdFromPref(): Flow<String?>
     fun cacheCurrentUser(user: UserModel)
-    fun cacheCurrentUserHistories(list: List<HistoryModel>)
-    fun getCurrentUserHistories(): List<HistoryModel>?
+    fun cacheCurrentUserHistories(list: List<History>)
+    fun getCurrentUserHistories(): List<History>?
 }

@@ -98,7 +98,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun initViews() {
-        initBackground()
+        initAnimedImage()
         initNaviButtons()
         initQuestButton()
         checkPermissions()
@@ -111,7 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         setUid()
     }
 
-    private fun initBackground() {
+    private fun initAnimedImage() {
         binding.cvBg.setContent {
             val playState by mainViewModel.playState.observeAsState()
             val isNight by viewModel.isNight.observeAsState(false)
@@ -192,22 +192,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun setObserver() {
-        viewModel.inputUserName.observe(viewLifecycleOwner) { isInput ->
-
-        }
-
-
-//        with(viewModel) {
-//            isNight.observe(viewLifecycleOwner) { night ->
-//                if (night) {
-//                    binding.ivBgLayer2.load(R.drawable.background_night_layer2)
-//                    binding.ivBgLayer3.load(R.drawable.background_night_layer3)
-//                } else {
-//                    binding.ivBgLayer2.load(R.drawable.background_day_layer2)
-//                    binding.ivBgLayer3.load(R.drawable.background_day_layer3)
-//                }
-//            }
-//        }
         with(mainViewModel) {
             currentKeyword.observe(viewLifecycleOwner) {
                 binding.tvQuestKeyword.text = it
@@ -356,24 +340,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun String.showToast() {
         Toast.makeText(requireContext(), this, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setBackgroundPosition(positionState: Int) {
-//        with(binding) {
-//            when (positionState) {
-//                STOP_POSITION -> {
-//                    ivBgLayer1.translationX = 2115f
-//                    ivBgLayer2.translationX = -2800f
-//                    ivBgLayer3.translationX = 2115f
-//                }
-//
-//                ANIM_POSITION -> {
-//                    ivBgLayer1.translationX = 0f
-//                    ivBgLayer2.translationX = 0f
-//                    ivBgLayer3.translationX = 0f
-//                }
-//            }
-//        }
     }
 
     private fun makeResultLauncher() {

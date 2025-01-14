@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.core.remote.api
 
-import com.hapataka.questwalk.core.model.CharacterType
+import com.hapataka.questwalk.core.common.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 
 interface UserDataSource {
