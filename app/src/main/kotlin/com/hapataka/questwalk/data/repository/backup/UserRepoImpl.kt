@@ -1,10 +1,12 @@
 package com.hapataka.questwalk.data.repository.backup
 
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hapataka.questwalk.core.model.History
+import com.hapataka.questwalk.core.remote.util.decryptECB
+import com.hapataka.questwalk.core.remote.util.encryptECB
 import com.hapataka.questwalk.domain.entity.ACHIEVE_TYPE
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
@@ -12,8 +14,7 @@ import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.RESULT_TYPE
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.UserRepo
-import com.hapataka.questwalk.util.extentions.decryptECB
-import com.hapataka.questwalk.util.extentions.encryptECB
+import com.hapataka.questwalk.util.UserInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 class UserRepoImpl @Inject constructor() : UserRepo {
     private val remoteDb by lazy { FirebaseFirestore.getInstance() }
-    private val userCollection by lazy { remoteDb.collection("user") }
+    private val userCollection by lazy { remoteDb.collection("users") }
 
     override suspend fun setUserInfo(userId: String, profileId: Int, name: String) {
         val document = userCollection.document(userId)
@@ -30,26 +31,26 @@ class UserRepoImpl @Inject constructor() : UserRepo {
         document.set(user)
     }
 
-    override suspend fun updateHistoryInfo(userId: String, result: HistoryEntity) {
+    override suspend fun updateHistoryInfo(userId: String, result: History) {
         withContext(Dispatchers.IO) {
             val currentDocument = userCollection.document(userId)
             val currentInfo = getInfo(userId)
             var userStack = hashMapOf<String, Any>()
 
-            if (result is ResultEntity) {
+            if (result is History.QuestResult) {
                 val totalTime =
                     if (currentInfo.totalTime.isEmpty()) 0L else currentInfo.totalTime.toLong()
 
                 userStack = hashMapOf(
-                    "histories" to FieldValue.arrayUnion(covertToUploadObject(result)),
                     "totalDistance" to currentInfo.totalDistance + result.distance,
                     "totalStep" to currentInfo.totalStep + result.step,
-                    "totalTime" to totalTime + result.time
+                    "totalTime" to totalTime + result.duration
                 )
             }
 
-            if (result is AchieveResultEntity) {
-                userStack = hashMapOf("histories" to FieldValue.arrayUnion(result))
+            if (result is History.Achievement) {
+                return@withContext
+//                userStack = hashMapOf("histories" to FieldValue.arrayUnion(result))
             }
             currentDocument.update(userStack).await()
         }
@@ -130,8 +131,8 @@ class UserRepoImpl @Inject constructor() : UserRepo {
             result.distance,
             result.step,
             result.isSuccess,
-            locations.encryptECB(),
-            questLocation?.encryptECB(),
+            locations.encryptECB(com.hapataka.questwalk.util.UserInfo.encryptionKey),
+            questLocation?.encryptECB(com.hapataka.questwalk.util.UserInfo.encryptionKey),
             result.questImg
         )
     }
@@ -167,7 +168,8 @@ class UserRepoImpl @Inject constructor() : UserRepo {
                 get("questLocation").toString(),
                 get("questImg").toString(),
             )
-            val locationsJson = dto.locations.decryptECB()
+            val locationsJson =
+                dto.locations.decryptECB(com.hapataka.questwalk.util.UserInfo.encryptionKey)
             val locations: MutableList<Pair<Float, Float>> =
                 Gson().fromJson(
                     locationsJson,
@@ -178,7 +180,8 @@ class UserRepoImpl @Inject constructor() : UserRepo {
 
             if (questLocationJson != null && questLocationJson != "null") {
                 val type = object : TypeToken<Pair<Float, Float>>() {}.type
-                questLocation = Gson().fromJson(questLocationJson.decryptECB(), type)
+                questLocation =
+                    Gson().fromJson(questLocationJson.decryptECB(UserInfo.encryptionKey), type)
             }
 
             return ResultEntity(

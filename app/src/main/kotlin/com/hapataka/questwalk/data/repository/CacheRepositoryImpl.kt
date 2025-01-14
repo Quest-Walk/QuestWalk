@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.data.repository
 
-import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.data.local.CacheDataSource
 import com.hapataka.questwalk.domain.repository.CacheRepository
@@ -24,11 +24,11 @@ class CacheRepositoryImpl @Inject constructor(
         cacheDataSource.clearCurrentUserInfo()
     }
 
-    override fun cacheCurrentUserHistories(histories: List<HistoryModel>) {
+    override fun cacheCurrentUserHistories(histories: List<History>) {
         cacheDataSource.setCurrentUserHistories(histories)
     }
 
-    override fun getCurrentUserHistories(): List<HistoryModel>? {
+    override fun getCurrentUserHistories(): List<History>? {
         return cacheDataSource.getCurrentUserHistories()
     }
 

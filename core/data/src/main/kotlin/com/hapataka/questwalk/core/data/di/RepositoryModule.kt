@@ -1,8 +1,10 @@
 package com.hapataka.questwalk.core.data.di
 
 import com.hapataka.questwalk.core.data.repository.DefaultAuthRepository
+import com.hapataka.questwalk.core.data.repository.DefaultHistoryRepository
 import com.hapataka.questwalk.core.data.repository.DefaultUserRepository
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
+import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
 import dagger.Binds
 import dagger.Module
@@ -23,4 +25,9 @@ abstract class RepositoryModule {
     @Named("DefaultUserRepository")
     @Singleton
     abstract fun bindsUserRepository(userRepository: DefaultUserRepository): UserRepositoryNew
+
+    @Binds
+    @Named("DefaultHistoryRepository")
+    @Singleton
+    abstract fun bindsHistoryRepository(historyRepository: DefaultHistoryRepository): HistoryRepository
 }

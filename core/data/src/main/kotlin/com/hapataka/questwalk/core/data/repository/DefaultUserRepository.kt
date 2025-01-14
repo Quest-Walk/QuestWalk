@@ -1,7 +1,7 @@
 package com.hapataka.questwalk.core.data.repository
 
+import com.hapataka.questwalk.core.common.model.CharacterType
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
-import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.remote.api.UserDataSource
 import javax.inject.Inject

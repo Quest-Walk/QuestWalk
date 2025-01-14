@@ -1,9 +1,9 @@
 package com.hapataka.questwalk.data.di
 
+import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.data.datasource.remote.FirebaseHistoryRDS
 import com.hapataka.questwalk.data.repository.HistoryRepositoryImpl
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
-import com.hapataka.questwalk.domain.repository.HistoryRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

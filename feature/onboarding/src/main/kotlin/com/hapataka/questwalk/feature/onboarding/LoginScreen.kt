@@ -40,14 +40,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import com.hapataka.questwalk.core.common.model.LoginState
+import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
-import com.hapataka.questwalk.core.model.LoginState
-import com.hapataka.questwalk.core.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.component.LoginContent
 
 @Composable

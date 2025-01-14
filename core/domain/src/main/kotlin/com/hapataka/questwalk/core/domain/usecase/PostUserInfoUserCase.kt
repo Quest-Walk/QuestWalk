@@ -1,8 +1,8 @@
 package com.hapataka.questwalk.core.domain.usecase
 
+import com.hapataka.questwalk.core.common.model.CharacterType
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
-import com.hapataka.questwalk.core.model.CharacterType
 import javax.inject.Inject
 import javax.inject.Named
 

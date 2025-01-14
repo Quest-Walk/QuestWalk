@@ -166,14 +166,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCameraBinding
                 )
                 cameraViewModel.imageProxyToBitmap(image)
 
-                mainViewModel.setCaptureImage(image,
-                    cameraViewModel.getCroppedBitmap(),
-                    { navController.popBackStack() },
-                    {
+                mainViewModel.setCaptureImage(
+                    image = image,
+                    croppedImage = cameraViewModel.getCroppedBitmap(),
+                    navigateCallback = { navController.popBackStack() },
+                    visibleImageCallback = {
                         binding.ivCapturedImage.load(it)
                         binding.ivCapturedImage.visible()
                     },
-                    { binding.ivCapturedImage.gone() })
+                    invisibleImageCallback = { binding.ivCapturedImage.gone() })
 
                 image.close()
             }

@@ -43,7 +43,7 @@ import androidx.navigation.fragment.findNavController
 import coil3.compose.AsyncImage
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
-import com.hapataka.questwalk.data.model.HistoryModel
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.databinding.FragmentRecordBinding
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
@@ -91,7 +91,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
     @Composable
     fun RecordScreen(
         paddingValues: PaddingValues = PaddingValues(),
-        histories: List<HistoryModel>? = emptyList(),
+        histories: List<History>? = emptyList(),
     ) {
         Column(
             modifier = Modifier
@@ -118,7 +118,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun RecordContent(histories: List<HistoryModel>?) {
+    fun RecordContent(histories: List<History>?) {
         val pagerState = rememberPagerState(pageCount = { 2 })
 
         HorizontalPager(
@@ -135,7 +135,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
     }
 
     @Composable
-    fun HistoryScreen(histories: List<HistoryModel>) {
+    fun HistoryScreen(histories: List<History>) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top
@@ -156,7 +156,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
     }
 
     @Composable
-    fun GridList(histories: List<HistoryModel>) {
+    fun GridList(histories: List<History>) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -168,7 +168,7 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
     }
 
     @Composable
-    fun ContentItem(item: HistoryModel) {
+    fun ContentItem(item: History) {
         AsyncImage(
             modifier = Modifier
                 .height(92.dp)
@@ -176,12 +176,12 @@ class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding
                 .clip(RoundedCornerShape(12.dp))
                 .clickable { Log.d(TAG, "ContentItem: $item") },
             model = when (item) {
-                is HistoryModel.ResultRecordModel -> {
-                    item.questImg ?: R.drawable.image_empty
+                is History.QuestResult -> {
+                    item.imageUrl ?: R.drawable.image_empty
                 }
 
-                is HistoryModel.AchievementRecordModel -> {
-                    item.iconUrl
+                is History.Achievement -> {
+//                    item.iconUrl
                 }
             },
             contentDescription = null,

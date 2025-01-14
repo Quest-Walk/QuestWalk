@@ -3,11 +3,11 @@ package com.hapataka.questwalk.feature.onboarding
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.common.model.LoginState
+import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LoginUseCase
-import com.hapataka.questwalk.core.model.LoginState
-import com.hapataka.questwalk.core.model.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

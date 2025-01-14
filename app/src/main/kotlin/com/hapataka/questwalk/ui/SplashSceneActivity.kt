@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.hapataka.questwalk.core.model.LoginState
-import com.hapataka.questwalk.core.model.UserInfo
+import com.hapataka.questwalk.core.common.model.LoginState
+import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
 import com.hapataka.questwalk.ui.common.BaseActivity
 import com.hapataka.questwalk.ui.main.MainActivity

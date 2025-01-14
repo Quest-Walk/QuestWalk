@@ -52,7 +52,7 @@ class UserFacade @Inject constructor(
         return UserModel(
             userId = userId,
             nickName = userInfo.userName,
-            characterId = userInfo.characterType.id,
+            characterId = userInfo.characterType,
             totalTime = userInfo.totalTime,
             totalDistance = userInfo.totalDistance,
         )

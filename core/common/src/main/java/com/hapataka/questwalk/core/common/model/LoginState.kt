@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.core.model
+package com.hapataka.questwalk.core.common.model
 
 sealed interface LoginState {
     data object Idle : LoginState

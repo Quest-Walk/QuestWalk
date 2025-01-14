@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.domain.usecase
 
-import com.hapataka.questwalk.domain.repository.HistoryRepository
+import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.domain.repository.UserRepository
 import javax.inject.Inject
 

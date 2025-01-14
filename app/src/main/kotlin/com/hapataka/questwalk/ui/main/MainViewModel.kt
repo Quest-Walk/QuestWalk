@@ -6,8 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
+import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.ImageRepository
@@ -40,6 +42,8 @@ class MainViewModel @Inject constructor(
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
     private val imageUtil: ImageUtil,
+    private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
+    private val postHistoryUseCase: PostHistoryUseCase,
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -83,7 +87,6 @@ class MainViewModel @Inject constructor(
         visibleImageCallback: (Bitmap) -> Unit,
         invisibleImageCallback: () -> Unit,
     ) {
-
         if (croppedImage == null) return
         visibleLoading(SHOW_LOADING)
 
@@ -143,7 +146,7 @@ class MainViewModel @Inject constructor(
         val distance = totalDistance.value ?: 0f
         val playState = playState.value ?: 0
 
-        if (distance > 10f) {
+        if (distance > -1f) {
             setCurrentLocationInfo(locationRepo.getCurrent())
 
             _isStop.value = false
@@ -231,42 +234,45 @@ class MainViewModel @Inject constructor(
         val result = makeResult(isSuccess)
 
         if (isSuccess) {
-            updateQuestStack(result.questImg.toString())
+            updateQuestStack(result.imageUrl.toString())
         }
         userRepo.updateHistoryInfo(UserInfo.uid, result)
+        postHistoryUseCase(result)
         visibleLoading(HIDE_LOADING)
         resetRecord()
-        checkAchievement(userRepo.getInfo(UserInfo.uid))
+        checkAchievement(userRepo.getInfo(getLoginUserIdUseCase().getOrThrow()))
         setRandomKeyword()
         moveToResult { uid, registerAt ->
             navigateCallback(uid, registerAt)
         }
     }
 
-    private suspend fun makeResult(isSuccess: Boolean): ResultEntity {
+    private suspend fun makeResult(isSuccess: Boolean): History.QuestResult {
         val localImage = imageUtil.getImageUri()
-        val imageUri = if (isSuccess) {
-            imageRepo.setImage(localImage, UserInfo.uid).toString()
+        val userId = getLoginUserIdUseCase().getOrThrow()
+        val imageUrl = if (isSuccess) {
+            imageRepo.setImage(localImage, userId).toString()
         } else {
             null
         }
 
-        currentTime = LocalDateTime.now().toString()
-        return ResultEntity(
-            currentTime,
-            currentKeyword.value ?: "",
-            durationTime.value ?: 0L,
-            totalDistance.value ?: 0f,
-            totalStep.value ?: 0L,
-            isSuccess,
-            locationHistory,
-            questLocation,
-            imageUri,
+        return History.QuestResult(
+            userId = userId,
+            registerAt = LocalDateTime.now(),
+            questKeyword = currentKeyword.value ?: "",
+            duration = durationTime.value ?: 0L,
+            distance = totalDistance.value ?: 0f,
+            step = totalStep.value ?: 0L,
+            isSuccess = isSuccess,
+            route = locationHistory,
+            successLocation = questLocation,
+            imageUrl = imageUrl,
         )
     }
 
     private suspend fun checkAchievement(user: UserEntity) {
         val achieveId = AchievementListener(user)
+        val userId = getLoginUserIdUseCase().getOrThrow()
 
         achieveId.forEach { id ->
             val userAchieveResults =
@@ -274,10 +280,12 @@ class MainViewModel @Inject constructor(
 
             if (userAchieveResults.none() { it.achievementId == id }) {
                 userRepo.updateHistoryInfo(
-                    UserInfo.uid,
-                    HistoryEntity.AchieveResultEntity(
-                        currentTime,
-                        id
+                    userId,
+                    History.Achievement(
+                        userId = userId,
+                        registerAt = LocalDateTime.now(),
+                        achievementId = id,
+                        description = "",
                     )
                 )
                 _snackBarMsg.value = "업적달성"
