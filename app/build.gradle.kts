@@ -122,7 +122,8 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.3.4")
 
     //openCV
-    implementation("com.quickbirdstudios:opencv:4.5.3")
+//    implementation(libs.opencv)
+    implementation(projects.opencv)
 
     // Normal
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
