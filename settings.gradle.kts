@@ -40,3 +40,4 @@ include(
 
 include(":feature:main")
 include(":core:ui")
+include(":opencv")
