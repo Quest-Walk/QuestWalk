@@ -15,4 +15,8 @@ class LoginUseCase @Inject constructor(
             else -> return authRepository.loginWithEmail(email, password)
         }
     }
+
+    suspend operator fun invoke(idToken: String): Result<String> {
+        return authRepository.loginWithGoogle(idToken)
+    }
 }

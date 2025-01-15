@@ -12,6 +12,10 @@ class DefaultAuthRepository @Inject constructor(
         return firebaseAuthDataSource.loginWithEmail(email, password)
     }
 
+    override suspend fun loginWithGoogle(idToken: String): Result<String> {
+        return firebaseAuthDataSource.loginWithGoogle(idToken)
+    }
+
     override fun getUserId(): String {
         return firebaseAuthDataSource.getUserId()
         // TODO: 캐시 레포 구성 후 이관해야함
