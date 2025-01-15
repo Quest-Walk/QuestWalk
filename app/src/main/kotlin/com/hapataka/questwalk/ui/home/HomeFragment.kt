@@ -47,9 +47,7 @@ import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.main.QUEST_START
 import com.hapataka.questwalk.ui.main.QUEST_STOP
 import com.hapataka.questwalk.ui.main.QUEST_SUCCESS
-import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
-import com.hapataka.questwalk.ui.result.REGISTER_TIME
-import com.hapataka.questwalk.ui.result.USER_ID
+import com.hapataka.questwalk.ui.result.RESULT_ID
 import com.hapataka.questwalk.util.OnSingleClickListener
 import com.hapataka.questwalk.util.extentions.SIMPLE_TIME
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -98,7 +96,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     private fun initViews() {
-        initAnimedImage()
+        initAnimationImage()
         initNaviButtons()
         initQuestButton()
         checkPermissions()
@@ -111,7 +109,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         setUid()
     }
 
-    private fun initAnimedImage() {
+    private fun initAnimationImage() {
         binding.cvBg.setContent {
             val playState by mainViewModel.playState.observeAsState()
             val isNight by viewModel.isNight.observeAsState(false)
@@ -228,11 +226,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private fun activePositive() {
         lifecycleScope.launch {
-            mainViewModel.stopPlay { uid, registerAt ->
+            mainViewModel.stopPlay { resultId ->
                 val bundle = Bundle().apply {
-                    putString(USER_ID, uid)
-                    putString(REGISTER_TIME, registerAt)
-                    putString(QUEST_KEYWORD, binding.tvQuestKeyword.text.toString())
+                    putString(RESULT_ID, resultId)
                 }
                 navController.navigate(R.id.action_frag_home_to_frag_result, bundle)
             }

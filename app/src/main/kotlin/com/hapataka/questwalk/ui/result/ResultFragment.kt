@@ -17,31 +17,26 @@ import com.hapataka.questwalk.util.extentions.convertKm
 import com.hapataka.questwalk.util.extentions.convertTime
 import dagger.hilt.android.AndroidEntryPoint
 
-const val USER_ID = "user_id"
-const val QUEST_KEYWORD = "quest_keyword"
-const val REGISTER_TIME = "register_time"
+const val RESULT_ID = "user_id"
 
 @AndroidEntryPoint
 class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding::inflate) {
     private val viewModel: ResultViewModel by viewModels()
-    private var userId: String? = null
-    private var keyword: String? = null
-    private var registerAt: String? = null
+    private var resultId: String? = null
     private val mapRepo by lazy { GoogleMapRepositoryImpl() }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            userId = it.getString(USER_ID)
-            keyword = it.getString(QUEST_KEYWORD)
-            registerAt = it.getString(REGISTER_TIME)
+            resultId = it.getString(RESULT_ID)
         }
+        getInfo()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMapView(savedInstanceState)
-        getInfo()
         setObserver()
         initBackButton()
         binding.innerContainer.setPadding()
@@ -54,8 +49,8 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
     }
 
     private fun getInfo() {
-        if (userId != null && keyword != null && registerAt != null) {
-            viewModel.getResult(userId!!, keyword!!, registerAt!!)
+        resultId?.let {
+            viewModel.getResult(resultId!!)
         }
     }
 

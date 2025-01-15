@@ -10,11 +10,15 @@ class DefaultHistoryRepository @Inject constructor(
     @Named("FirestoreHistory")
     private val historyDataSource: HistoryDataSource,
 ) : HistoryRepository {
-    override suspend fun getUserHistory(userId: String): Result<List<History>> {
+    override suspend fun getUserHistories(userId: String): Result<List<History>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun postHistory(userId: String, history: History): Result<Unit> {
+    override suspend fun getQuestResult(resultId: String): Result<History.QuestResult> {
+        return historyDataSource.getQuestResult(resultId)
+    }
+
+    override suspend fun postHistory(userId: String, history: History): Result<String> {
         return historyDataSource.postHistory(userId, history)
     }
 

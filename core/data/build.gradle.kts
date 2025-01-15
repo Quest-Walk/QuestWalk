@@ -12,6 +12,6 @@ dependencies {
     implementation(projects.core.remote)
 
     implementation(libs.firebase.auth)
-    testImplementation(libs.junit)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
 }

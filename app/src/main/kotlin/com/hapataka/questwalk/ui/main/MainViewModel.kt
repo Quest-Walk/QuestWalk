@@ -142,7 +142,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    suspend fun stopPlay(callback: (String, String) -> Unit) {
+    suspend fun stopPlay(callback: (String) -> Unit) {
         val distance = totalDistance.value ?: 0f
         val playState = playState.value ?: 0
 
@@ -159,9 +159,9 @@ class MainViewModel @Inject constructor(
         initPlayInfo()
     }
 
-    fun moveToResult(callback: (uid: String, registerAt: String) -> Unit) {
+    fun moveToResult(callback: (resultId: String) -> Unit) {
         viewModelScope.launch {
-            callback(UserInfo.uid, currentTime)
+            callback(UserInfo.uid)
         }
     }
 
@@ -228,7 +228,7 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun setResultHistory(
-        navigateCallback: (String, String) -> Unit,
+        navigateCallback: (String) -> Unit,
         isSuccess: Boolean,
     ) {
         val result = makeResult(isSuccess)
@@ -236,15 +236,24 @@ class MainViewModel @Inject constructor(
         if (isSuccess) {
             updateQuestStack(result.imageUrl.toString())
         }
-        userRepo.updateHistoryInfo(UserInfo.uid, result)
-        postHistoryUseCase(result)
+
+        viewModelScope.launch {
+            launch { userRepo.updateHistoryInfo(UserInfo.uid, result) }
+            launch {
+                postHistoryUseCase(result)
+                    .onSuccess { resultId ->
+                        moveToResult { navigateCallback(resultId) }
+                    }
+            }
+
+
+        }.join()
+
         visibleLoading(HIDE_LOADING)
         resetRecord()
         checkAchievement(userRepo.getInfo(getLoginUserIdUseCase().getOrThrow()))
         setRandomKeyword()
-        moveToResult { uid, registerAt ->
-            navigateCallback(uid, registerAt)
-        }
+
     }
 
     private suspend fun makeResult(isSuccess: Boolean): History.QuestResult {

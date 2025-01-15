@@ -1,8 +1,8 @@
 package com.hapataka.questwalk.core.remote.util
 
 import android.util.Base64
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
@@ -20,26 +20,28 @@ fun String.encryptECB(encryptKey: String): String {
 }
 
 fun <T> List<T>.encryptECB(encryptKey: String): String {
-    val json = Json.encodeToString(this.toString())
+    val json = Json { ignoreUnknownKeys = true }
+    val jsonString = json.encodeToJsonElement(this).toString()
     val keySpec = SecretKeySpec(encryptKey.toByteArray(), "AES")
     val cipher = Cipher.getInstance("AES/ECB/PKCS7PADDING")
 
     cipher.init(Cipher.ENCRYPT_MODE, keySpec)
 
-    val cipherText = cipher.doFinal(json.toByteArray())
+    val cipherText = cipher.doFinal(jsonString.toByteArray())
     val encodeByte = Base64.encode(cipherText, Base64.DEFAULT)
 
     return String(encodeByte)
 }
 
 fun <T> Pair<T, T>.encryptECB(encryptKey: String): String {
-    val json = Json.encodeToString(this.toString())
+    val json = Json { ignoreUnknownKeys = true }
+    val jsonString = json.encodeToJsonElement(this).toString()
     val keySpec = SecretKeySpec(encryptKey.toByteArray(), "AES")
     val cipher = Cipher.getInstance("AES/ECB/PKCS7PADDING")
 
     cipher.init(Cipher.ENCRYPT_MODE, keySpec)
 
-    val cipherText = cipher.doFinal(json.toByteArray())
+    val cipherText = cipher.doFinal(jsonString.toByteArray())
     val encodeByte = Base64.encode(cipherText, Base64.DEFAULT)
 
     return String(encodeByte)
