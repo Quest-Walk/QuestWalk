@@ -18,9 +18,7 @@ import com.hapataka.questwalk.ui.main.MainViewModel
 import com.hapataka.questwalk.ui.record.adapter.HEADER_TYPE
 import com.hapataka.questwalk.ui.record.adapter.RecordDetailAdapter
 import com.hapataka.questwalk.ui.record.model.RecordItem
-import com.hapataka.questwalk.ui.result.QUEST_KEYWORD
-import com.hapataka.questwalk.ui.result.REGISTER_TIME
-import com.hapataka.questwalk.ui.result.USER_ID
+import com.hapataka.questwalk.ui.result.RESULT_ID
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -73,11 +71,9 @@ class RecordItemFragment(private val items: List<RecordItem>) :
                 }
 
                 if (item is RecordItem.ResultItem) {
-                    mainViewModel.moveToResult { uid, _ ->
+                    mainViewModel.moveToResult { resultId ->
                         val bundle = Bundle().apply {
-                            putString(USER_ID, uid)
-                            putString(QUEST_KEYWORD, item.keyword)
-                            putString(REGISTER_TIME, item.registerAt)
+                            putString(RESULT_ID, resultId)
                         }
                         navController.navigate(R.id.action_frag_record_to_frag_result, bundle)
                     }

@@ -10,7 +10,7 @@ class CacheCurrentUserHistoriesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke() {
         val currentUserId = cacheRepository.getCurrentUser()?.userId ?: return
-        val histories = historyRepository.getUserHistory(currentUserId)
+        val histories = historyRepository.getUserHistories(currentUserId)
 
         cacheRepository.cacheCurrentUserHistories(histories.getOrThrow())
     }

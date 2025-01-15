@@ -12,7 +12,7 @@ class PostHistoryUseCase @Inject constructor(
     @Named("DefaultHistoryRepository")
     private val historyRepository: HistoryRepository,
 ) {
-    suspend operator fun invoke(history: History): Result<Unit> {
+    suspend operator fun invoke(history: History): Result<String> {
         val userId = authRepository.getUserId()
 
         return historyRepository.postHistory(userId, history)

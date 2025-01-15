@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.GetQuestResultUseCase
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
@@ -18,6 +19,7 @@ import kotlin.math.round
 class ResultViewModel @Inject constructor(
     private val userRepo: UserRepo,
     private val questRepo: QuestStackRepository,
+    private val getQuestResultUseCase: GetQuestResultUseCase,
 ) : ViewModel() {
     private val _resultItem = MutableLiveData<HistoryEntity.ResultEntity>()
     val resultItem: LiveData<HistoryEntity.ResultEntity> = _resultItem
@@ -26,14 +28,22 @@ class ResultViewModel @Inject constructor(
     private val _completeRate = MutableLiveData<Double>()
     val completeRate: LiveData<Double> get() = _completeRate
 
-    fun getResult(userId: String, keyword: String, registerAt: String) {
+    fun getResult(resultId: String) {
         viewModelScope.launch {
-            val userResults = userRepo.getResultHistory(userId)
+            val questResult = getQuestResultUseCase(resultId).getOrThrow()
 
-            _resultItem.value = userResults.find {
-                it.quest == keyword && it.registerAt == registerAt
-            }
-            getQuestByKeyword(keyword)
+            _resultItem.value = HistoryEntity.ResultEntity(
+                registerAt = questResult.registerAt.toString(),
+                quest = questResult.questKeyword,
+                time = questResult.duration,
+                distance = questResult.distance,
+                step = questResult.step,
+                isSuccess = questResult.isSuccess,
+                locations = questResult.route,
+                questLocation = questResult.successLocation,
+                questImg = questResult.imageUrl,
+            )
+            getQuestByKeyword(questResult.questKeyword)
         }
     }
 

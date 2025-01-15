@@ -19,7 +19,7 @@ class HistoryRepositoryImpl @Inject constructor(
     @Named("FirebaseAchievementsDataSource")
     private val firebaseAchievementsDataSource: AchievementsDataSource,
 ) : HistoryRepository {
-    override suspend fun getUserHistory(userId: String): Result<List<History>> {
+    override suspend fun getUserHistories(userId: String): Result<List<History>> {
         return kotlin.runCatching {
 
             val result = mutableListOf<History>()
@@ -57,7 +57,11 @@ class HistoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postHistory(userId: String, history: History): Result<Unit> {
+    override suspend fun getQuestResult(resultId: String): Result<QuestResult> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun postHistory(userId: String, history: History): Result<String> {
         TODO("Not yet implemented")
     }
 
