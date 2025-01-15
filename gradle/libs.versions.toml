@@ -56,6 +56,11 @@ firebaseBoM = "33.7.0"
 coil = "3.0.4"
 coilLegacy = "2.7.0"
 
+## Google identity
+# https://developers.google.com/identity/android-credential-manager/releases?hl=ko
+googleIdentity = "1.1.1"
+
+
 
 
 activityKtx = "1.9.3"
@@ -106,7 +111,6 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 
-
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -124,6 +128,8 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBoM" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
+
+google-android-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdentity" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 opencv = { module = "com.quickbirdstudios:opencv", version.ref = "opencv" }

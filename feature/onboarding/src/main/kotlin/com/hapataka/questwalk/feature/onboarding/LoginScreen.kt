@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -39,7 +40,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.hapataka.questwalk.core.common.model.LoginState
 import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
@@ -49,6 +53,8 @@ import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
 import com.hapataka.questwalk.feature.onboarding.component.LoginContent
+import com.hapataka.questwalk.feature.onboarding.util.getCredential
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun LoginRoute(
@@ -72,6 +78,7 @@ internal fun LoginRoute(
     LoginScreen(
         loginState = loginState,
         loginWithEmail = viewModel::loginWithEmail,
+        loginWithIdToken = viewModel::loginWithIdToken,
         navigateToJoin = navigateToJoin,
         padding = padding
     )
@@ -81,6 +88,7 @@ internal fun LoginRoute(
 private fun LoginScreen(
     loginState: LoginState = LoginState.Idle,
     loginWithEmail: (String, String) -> Unit = { _, _ -> },
+    loginWithIdToken: (String) -> Unit = { _ -> },
     navigateToJoin: () -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
@@ -96,6 +104,8 @@ private fun LoginScreen(
             .padding(top = padding.calculateTopPadding()),
     ) {
         val maxWidthModifier = Modifier.fillMaxWidth()
+        val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
 
         Column(
             modifier = Modifier
@@ -154,7 +164,6 @@ private fun LoginScreen(
                     )
                 }
 
-
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -197,9 +206,30 @@ private fun LoginScreen(
                     )
                 }
 
+
+
                 IconButton(
                     modifier = Modifier.size(52.dp),
-                    onClick = { },
+                    onClick = {
+                        lifecycleOwner.lifecycleScope.launch {
+                            getCredential(context)
+                                .onSuccess {
+                                    when (it.type) {
+                                        GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                                            val idToken =
+                                                GoogleIdTokenCredential.createFrom(it.data).idToken
+
+                                            loginWithIdToken(idToken)
+                                        }
+
+                                        else -> {}
+                                    }
+                                }
+                                .onFailure {
+                                    // TODO: 구글 인증정보 가져오기 실패 구현
+                                }
+                        }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_google),

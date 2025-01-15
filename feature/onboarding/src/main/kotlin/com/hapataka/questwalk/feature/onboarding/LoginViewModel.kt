@@ -29,9 +29,26 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginState.update { LoginState.Loading }
 
-            delay(1000)
+            delay(500)
 
             loginUseCase(email, password)
+                .onSuccess { uid ->
+                    checkUserInfo(uid)
+                }
+                .onFailure { e ->
+                    _loginState.update { LoginState.Failure(e.message.orEmpty()) }
+                    Log.e(javaClass.name, "Fatal: " + e.message.orEmpty())
+                }
+        }
+    }
+
+    fun loginWithIdToken(idToken: String) {
+        viewModelScope.launch {
+            _loginState.update { LoginState.Loading }
+
+            delay(500)
+
+            loginUseCase(idToken)
                 .onSuccess { uid ->
                     checkUserInfo(uid)
                 }
