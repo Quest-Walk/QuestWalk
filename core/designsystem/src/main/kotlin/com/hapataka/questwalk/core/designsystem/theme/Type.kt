@@ -10,7 +10,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.hapataka.questwalk.core.designsystem.R
 
-val PixelTextStyle = TextStyle.Default.copy(
+private val GalmuriTextStyle = TextStyle.Default.copy(
     fontFamily = FontFamily(Font(R.font.galmuri14)),
     fontWeight = FontWeight.Bold,
     lineHeightStyle = LineHeightStyle(
@@ -19,19 +19,28 @@ val PixelTextStyle = TextStyle.Default.copy(
     ),
     baselineShift = BaselineShift(-0.15f)
 )
+private val NeoDunggeunmoTextStyle = TextStyle.Default.copy(
+    fontFamily = FontFamily(Font(R.font.neo_dunggeunmo_pro_r)),
+    fontWeight = FontWeight.Medium,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    ),
+//    baselineShift = BaselineShift(-0.15f)
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = PixelTextStyle.copy(
+    bodyLarge = GalmuriTextStyle.copy(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    titleLarge = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
+    titleLarge = NeoDunggeunmoTextStyle.copy(
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
     ),
-    labelLarge = PixelTextStyle.copy(
+    labelLarge = GalmuriTextStyle.copy(
         fontSize = 14.sp,
     )
     /* Other default text styles to override

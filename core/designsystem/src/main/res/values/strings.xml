@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_btn_back">뒤로가기 버튼</string>
+    <string name="string_btn_expand">확장메뉴 버튼</string>
+</resources>

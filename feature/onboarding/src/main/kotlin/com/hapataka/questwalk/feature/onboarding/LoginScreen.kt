@@ -1,10 +1,10 @@
 package com.hapataka.questwalk.feature.onboarding
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,15 +44,13 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.hapataka.questwalk.core.common.model.LoginState
 import com.hapataka.questwalk.core.common.model.UserInfo
+import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
-import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
-import com.hapataka.questwalk.feature.onboarding.component.LoginContent
 import com.hapataka.questwalk.feature.onboarding.util.getCredential
 import kotlinx.coroutines.launch
 
@@ -61,14 +59,13 @@ internal fun LoginRoute(
     navigateToHome: () -> Unit,
     navigateToSetup: () -> Unit,
     navigateToJoin: () -> Unit,
-    padding: PaddingValues,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val loginState by viewModel.loginState.collectAsState()
+    val userState by viewModel.userState.collectAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
-            when ((loginState as LoginState.Success).userInfo) {
+    LaunchedEffect(userState) {
+        if (userState is UserState.LoggedIn) {
+            when ((userState as UserState.LoggedIn).userInfo) {
                 UserInfo.EXIST -> navigateToHome()
                 UserInfo.NONE -> navigateToSetup()
             }
@@ -76,168 +73,160 @@ internal fun LoginRoute(
     }
 
     LoginScreen(
-        loginState = loginState,
+        userState = userState,
         loginWithEmail = viewModel::loginWithEmail,
         loginWithIdToken = viewModel::loginWithIdToken,
         navigateToJoin = navigateToJoin,
-        padding = padding
     )
 }
 
 @Composable
-private fun LoginScreen(
-    loginState: LoginState = LoginState.Idle,
+internal fun LoginScreen(
+    userState: UserState = UserState.Idle,
     loginWithEmail: (String, String) -> Unit = { _, _ -> },
     loginWithIdToken: (String) -> Unit = { _ -> },
     navigateToJoin: () -> Unit = {},
-    padding: PaddingValues = PaddingValues(),
 ) {
     var id by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val (focusId, focusPassword) = remember { FocusRequester.createRefs() }
 
-    LoginContent(
+    val maxWidthModifier = Modifier.fillMaxWidth()
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MainPurple)
-            .padding(top = padding.calculateTopPadding()),
+            .fillMaxWidth(0.8f)
+            .fillMaxHeight()
+            .focusable(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        val maxWidthModifier = Modifier.fillMaxWidth()
-        val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
+        AsyncImage(
+            model = R.drawable.img_title,
+            contentDescription = null,
+            modifier = maxWidthModifier.padding(top = 40.dp)
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            AsyncImage(
-                model = R.drawable.img_title,
-                contentDescription = null,
-                modifier = maxWidthModifier.padding(top = 40.dp)
+        if (userState is UserState.Loading || (userState is UserState.LoggedIn && userState.userInfo == UserInfo.EXIST)) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(52.dp)
+                    .padding(top = 40.dp), color = HighLightYellow
             )
-
-            if (loginState is LoginState.Loading || (loginState is LoginState.Success && loginState.userInfo == UserInfo.EXIST)) {
-                CircularProgressIndicator(
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                PixelTextField(
+                    value = id,
+                    onValueChange = { id = it },
+                    hint = "아이디를 입력해 주세요",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusPassword.requestFocus() }
+                    ),
                     modifier = Modifier
-                        .size(52.dp)
-                        .padding(top = 40.dp), color = HighLightYellow
+                        .fillMaxWidth()
+                        .focusRequester(focusId)
                 )
-            } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    PixelTextField(
-                        value = id,
-                        onValueChange = { id = it },
-                        hint = "아이디를 입력해 주세요",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusPassword.requestFocus() }
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusId)
-                    )
 
-                    PixelTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        hint = "비밀번호를 입력해 주세요",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { focusManager.clearFocus() }
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusPassword)
-                    )
-                }
+                PixelTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    hint = "비밀번호를 입력해 주세요",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { focusManager.clearFocus() }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusPassword)
+                )
+            }
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    PixelButton(
-                        onClick = { loginWithEmail(id, password) },
-                        text = "로그인",
-                        modifier = maxWidthModifier,
-                        enabled = id.isNotBlank() && password.isNotBlank()
-                    )
-
-                    TextButton(
-                        onClick = navigateToJoin,
-                    ) {
-                        Text(
-                            style = Typography.labelLarge, text = "회원가입", color = Color.White
-                        )
-                    }
-                }
-
-                Row(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                PixelButton(
+                    onClick = { loginWithEmail(id, password) },
+                    text = "로그인",
                     modifier = maxWidthModifier,
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    enabled = id.isNotBlank() && password.isNotBlank()
+                )
+
+                TextButton(
+                    onClick = navigateToJoin,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .weight(1f)
-                            .background(White60)
-                    )
                     Text(
-                        style = Typography.labelLarge, text = "또는", color = White60
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .weight(1f)
-                            .background(White60)
+                        style = Typography.labelLarge, text = "회원가입", color = Color.White
                     )
                 }
+            }
+
+            Row(
+                modifier = maxWidthModifier,
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .weight(1f)
+                        .background(White60)
+                )
+                Text(
+                    style = Typography.labelLarge, text = "또는", color = White60
+                )
+                Box(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .weight(1f)
+                        .background(White60)
+                )
+            }
 
 
 
-                IconButton(
-                    modifier = Modifier.size(52.dp),
-                    onClick = {
-                        lifecycleOwner.lifecycleScope.launch {
-                            getCredential(context)
-                                .onSuccess {
-                                    when (it.type) {
-                                        GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
-                                            val idToken =
-                                                GoogleIdTokenCredential.createFrom(it.data).idToken
+            IconButton(
+                modifier = Modifier.size(52.dp),
+                onClick = {
+                    lifecycleOwner.lifecycleScope.launch {
+                        getCredential(context)
+                            .onSuccess {
+                                when (it.type) {
+                                    GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                                        val idToken =
+                                            GoogleIdTokenCredential.createFrom(it.data).idToken
 
-                                            loginWithIdToken(idToken)
-                                        }
-
-                                        else -> {}
+                                        loginWithIdToken(idToken)
                                     }
+
+                                    else -> {}
                                 }
-                                .onFailure {
-                                    // TODO: 구글 인증정보 가져오기 실패 구현
-                                }
-                        }
-                    },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_google),
-                        modifier = Modifier.fillMaxSize(),
-                        tint = Color.Unspecified,
-                        contentDescription = "구글 로그인 버튼",
-                    )
-                }
+                            }
+                            .onFailure {
+                                // TODO: 구글 인증정보 가져오기 실패 구현
+                            }
+                    }
+                },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_google),
+                    modifier = Modifier.fillMaxSize(),
+                    tint = Color.Unspecified,
+                    contentDescription = "구글 로그인 버튼",
+                )
             }
         }
     }

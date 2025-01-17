@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.hapataka.questwalk.core.common.model.LoginState
 import com.hapataka.questwalk.core.common.model.UserInfo
+import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
 import com.hapataka.questwalk.ui.common.BaseActivity
 import com.hapataka.questwalk.ui.main.MainActivity
@@ -29,18 +29,20 @@ class SplashSceneActivity :
                 delay(500)
 
                 when (userState) {
-                    is LoginState.Success -> {
+                    is UserState.LoggedIn -> {
                         if (userState.userInfo == UserInfo.EXIST) {
                             viewModel.cacheCurrentUserHistories()
-                            changeTo(activity = MainActivity::class.java)
+                            changeTo(
+                                activity = MainActivity::class.java
+                            )
                         } else {
                             changeTo(
-                                activity = LoginActivity::class.java, isLogin = true
+                                activity = LoginActivity::class.java, noUserInfo = true
                             )
                         }
                     }
 
-                    is LoginState.Failure -> {
+                    is UserState.LoggedOut -> {
                         changeTo(LoginActivity::class.java)
                     }
 
@@ -52,10 +54,10 @@ class SplashSceneActivity :
 
     private fun <T> changeTo(
         activity: Class<T>,
-        isLogin: Boolean = false,
+        noUserInfo: Boolean = false,
     ) {
         val intent = Intent(this, activity).apply {
-            putExtra("isLogin", isLogin)
+            putExtra("noUserInfo", noUserInfo)
         }
 
         startActivity(intent)

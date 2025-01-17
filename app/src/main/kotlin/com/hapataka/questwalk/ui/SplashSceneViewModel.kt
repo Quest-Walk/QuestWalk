@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.common.model.LoginState
 import com.hapataka.questwalk.core.common.model.UserInfo
+import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.data.model.UserModel
@@ -31,17 +31,11 @@ class SplashSceneViewModel @Inject constructor(
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> = _currentUser
 
-    private val _userState = MutableStateFlow<LoginState>(LoginState.Loading)
-    val userState: StateFlow<LoginState> = _userState
+    private val _userState = MutableStateFlow<UserState>(UserState.Loading)
+    val userState: StateFlow<UserState> = _userState
 
     init {
         checkUserState()
-    }
-
-    fun getCurrentUser() {
-        viewModelScope.launch {
-            _currentUser.value = userFacade.cacheAndGetCurrentUser()
-        }
     }
 
     private fun checkUserState() {
@@ -50,7 +44,7 @@ class SplashSceneViewModel @Inject constructor(
                 .onSuccess { userId -> checkUserInfo(userId) }
                 .onFailure { e ->
                     Log.e(this.javaClass.name, "Fatal: ${e.message}")
-                    _userState.update { LoginState.Failure("로그인 정보가 없습니다.") }
+                    _userState.update { UserState.LoggedOut }
                 }
         }
     }
@@ -59,10 +53,10 @@ class SplashSceneViewModel @Inject constructor(
         viewModelScope.launch {
             getUserInfoUseCase(userId)
                 .onSuccess {
-                    _userState.update { LoginState.Success(UserInfo.EXIST) }
+                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
                 }
                 .onFailure {
-                    _userState.update { LoginState.Success(UserInfo.NONE) }
+                    _userState.update { UserState.LoggedIn(UserInfo.NONE) }
                 }
         }
     }

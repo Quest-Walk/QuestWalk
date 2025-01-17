@@ -5,15 +5,19 @@ import kotlinx.serialization.Serializable
 sealed interface Route {
     @Serializable
     data object Home : Route
+
+    @Serializable
+    data class Onboarding(val onboardingStep: OnboardingStep) : Route
 }
 
-sealed interface OnboardingRoute : Route {
+@Serializable
+sealed interface OnboardingStep {
     @Serializable
-    data object Login : OnboardingRoute
+    data object Login : OnboardingStep
 
     @Serializable
-    data object Join : OnboardingRoute
+    data object Join : OnboardingStep
 
     @Serializable
-    data object Setup : OnboardingRoute
+    data object Setup : OnboardingStep
 }

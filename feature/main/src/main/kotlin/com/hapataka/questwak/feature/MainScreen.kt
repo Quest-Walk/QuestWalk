@@ -14,23 +14,21 @@ import androidx.navigation.compose.NavHost
 import com.hapataka.questwak.feature.navigation.MainNavigator
 import com.hapataka.questwak.feature.navigation.rememberMainNavigator
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
-import com.hapataka.questwalk.core.navigation.OnboardingRoute
+import com.hapataka.questwalk.core.navigation.OnboardingStep
 import com.hapataka.questwalk.core.navigation.Route
-import com.hapataka.questwalk.feature.onboarding.navigation.joinNavGraph
-import com.hapataka.questwalk.feature.onboarding.navigation.loginNavGraph
-import com.hapataka.questwalk.feature.onboarding.navigation.setupNavGraph
+import com.hapataka.questwalk.feature.onboarding.navigation.onboardingNavGraph
 
 @Composable
 fun MainScreen(
     navigateToHome: () -> Unit,
-    startDestination: Route = OnboardingRoute.Login,
+    startDestination: Route = Route.Onboarding(OnboardingStep.Login),
     navigator: MainNavigator = rememberMainNavigator(),
 ) {
     var lightBarEnable by rememberSaveable { mutableStateOf(false) }
 
     navigator.navController.addOnDestinationChangedListener { _, destination, _ ->
         lightBarEnable =
-            destination.route?.substringAfterLast(".") == OnboardingRoute.Join.toString()
+            destination.route?.substringAfterLast(".") == OnboardingStep.Join.toString()
     }
 
     QuestWalkTheme(lightBarEnable) {
@@ -50,7 +48,7 @@ fun MainScreen(
 
 @Composable
 private fun MainContent(
-    startDestination: Route = OnboardingRoute.Login,
+    startDestination: Route = Route.Onboarding(OnboardingStep.Login),
     navigateToHome: () -> Unit = {},
     navigator: MainNavigator = rememberMainNavigator(),
     padding: PaddingValues = PaddingValues(),
@@ -63,22 +61,20 @@ private fun MainContent(
             navController = navigator.navController,
             startDestination = startDestination,
         ) {
-            loginNavGraph(
-                navigateToHome = navigateToHome,
-                navigateToJoin = { navigator.navigate(OnboardingRoute.Join) },
-                navigateToSetup = { navigator.navigate(OnboardingRoute.Setup) },
-                padding = padding
-            )
-
-            joinNavGraph(
-                popBackStack = navigator::popBackStack,
-                padding = padding
-            )
-
-            setupNavGraph(
+            onboardingNavGraph(
                 navigateToHome = navigateToHome,
                 padding = padding
             )
+//
+//            joinNavGraph(
+//                popBackStack = navigator::popBackStack,
+//                padding = padding
+//            )
+//
+//            setupNavGraph(
+//                navigateToHome = navigateToHome,
+//                padding = padding
+//            )
         }
     }
 }

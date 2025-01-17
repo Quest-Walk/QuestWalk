@@ -3,8 +3,8 @@ package com.hapataka.questwalk.feature.onboarding
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.common.model.LoginState
 import com.hapataka.questwalk.core.common.model.UserInfo
+import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LoginUseCase
@@ -22,12 +22,12 @@ class LoginViewModel @Inject constructor(
     private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
 ) : ViewModel() {
-    private val _loginState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState.Idle)
-    val loginState = _loginState.asStateFlow()
+    private val _userState: MutableStateFlow<UserState> = MutableStateFlow(UserState.Idle)
+    val userState = _userState.asStateFlow()
 
     fun loginWithEmail(email: String, password: String) {
         viewModelScope.launch {
-            _loginState.update { LoginState.Loading }
+            _userState.update { UserState.Loading }
 
             delay(500)
 
@@ -36,7 +36,7 @@ class LoginViewModel @Inject constructor(
                     checkUserInfo(uid)
                 }
                 .onFailure { e ->
-                    _loginState.update { LoginState.Failure(e.message.orEmpty()) }
+                    _userState.update { UserState.LoginFail(e.message.orEmpty()) }
                     Log.e(javaClass.name, "Fatal: " + e.message.orEmpty())
                 }
         }
@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginWithIdToken(idToken: String) {
         viewModelScope.launch {
-            _loginState.update { LoginState.Loading }
+            _userState.update { UserState.Loading }
 
             delay(500)
 
@@ -53,7 +53,7 @@ class LoginViewModel @Inject constructor(
                     checkUserInfo(uid)
                 }
                 .onFailure { e ->
-                    _loginState.update { LoginState.Failure(e.message.orEmpty()) }
+                    _userState.update { UserState.LoginFail(e.message.orEmpty()) }
                     Log.e(javaClass.name, "Fatal: " + e.message.orEmpty())
                 }
         }
@@ -63,10 +63,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             getUserInfoUseCase(uid)
                 .onSuccess {
-                    _loginState.update { LoginState.Success(UserInfo.EXIST) }
+                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
                 }
                 .onFailure {
-                    _loginState.update { LoginState.Success(UserInfo.NONE) }
+                    _userState.update { UserState.LoggedIn(UserInfo.NONE) }
                 }
         }
     }
