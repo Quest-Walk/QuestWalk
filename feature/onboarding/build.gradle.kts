@@ -20,4 +20,5 @@ android {
 dependencies {
     implementation(libs.coil.compose)
     implementation(libs.google.android.identity.googleid)
+    implementation(libs.kotlinx.serialization.json)
 }

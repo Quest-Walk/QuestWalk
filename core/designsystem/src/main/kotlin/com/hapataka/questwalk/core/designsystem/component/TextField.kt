@@ -52,6 +52,7 @@ fun PixelTextField(
     onValueChange: (String) -> Unit = {},
     hint: String? = null,
     label: String? = null,
+    isError: Boolean = false,
     validator: ((String) -> Boolean)? = null,
     onErrorChange: (Boolean) -> Unit = {},
     leadingIcon: ImageVector? = null,
@@ -61,21 +62,20 @@ fun PixelTextField(
     maxLine: Int = 1,
     modifier: Modifier = Modifier,
 ) {
-    var isError by remember { mutableStateOf(false) }
+    var errorState by remember { mutableStateOf(false) }
     var isInitial by remember { mutableStateOf(false) }
     var maxHeight by remember { mutableStateOf(0.dp) }
 
-    LaunchedEffect(isError) { onErrorChange(isError) }
+    LaunchedEffect(isError) { errorState = isError }
+    LaunchedEffect(errorState) { onErrorChange(errorState) }
 
     BasicTextField(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged {
                 if (isInitial) {
-                    validator?.let { validate ->
-                        if (it.hasFocus.not()) {
-                            isError = validate(value)
-                        }
+                    if (it.hasFocus.not()) {
+                        validator?.let { validate -> errorState = validate(value) }
                     }
                 } else {
                     isInitial = true
@@ -84,7 +84,7 @@ fun PixelTextField(
         value = value,
         onValueChange = {
             onValueChange(it)
-            isError = false
+            errorState = false
         },
         maxLines = maxLine,
         singleLine = maxLine == 1,
@@ -97,7 +97,10 @@ fun PixelTextField(
         visualTransformation = if (keyboardOptions.keyboardType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None,
         textStyle = Typography.bodyLarge.copy(color = MainPurple),
         decorationBox = { innerTextField ->
-            val bg = ContextCompat.getDrawable(LocalContext.current, R.drawable.bg_text_field)
+            val bg = ContextCompat.getDrawable(
+                LocalContext.current,
+                if (errorState) R.drawable.bg_text_field_error else R.drawable.bg_text_field
+            )
                 ?: return@BasicTextField
 
             Row(
@@ -118,7 +121,7 @@ fun PixelTextField(
                         modifier = Modifier.size(24.dp),
                         imageVector = leadingIcon,
                         contentDescription = null,
-                        tint = if (isError) Color.Red else MainPurple
+                        tint = if (errorState) Color.Red else MainPurple
                     )
                     Spacer(modifier = Modifier.size(16.dp))
                 }
@@ -133,7 +136,7 @@ fun PixelTextField(
                         hint?.let { h ->
                             Text(
                                 text = h,
-                                color = if (isError) Color.Red else Surface1,
+                                color = if (errorState) Color.Red else Surface1,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -151,7 +154,7 @@ fun PixelTextField(
                                 Text(
                                     text = l,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = if (isError) Color.Red else MainPurple,
+                                    color = if (errorState) Color.Red else MainPurple,
                                 )
                             }
                         }
