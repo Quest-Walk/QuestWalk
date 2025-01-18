@@ -23,6 +23,19 @@ class FirebaseAuthDataSource @Inject constructor(
         }
     }
 
+    override suspend fun joinWithEmail(email: String, password: String): Result<String> {
+        return kotlin.runCatching {
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .await()
+                .user!!.uid
+                .also { firebaseAuth.signOut() }
+        }
+    }
+
+    override fun logout() {
+        firebaseAuth.signOut()
+    }
+
     override fun getUserId(): String {
         return firebaseAuth.uid ?: throw NoSuchElementException("no user id")
     }

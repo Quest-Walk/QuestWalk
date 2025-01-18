@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,6 +43,7 @@ import com.hapataka.questwalk.core.ui.component.Character
 @Composable
 internal fun SetupRoute(
     navigateToHome: () -> Unit,
+    navigateToLogin: () -> Unit,
     setupViewModel: SetupViewModel = hiltViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
@@ -49,10 +52,7 @@ internal fun SetupRoute(
     }
     val keyboardActions = remember {
         KeyboardActions(
-            onDone = {
-                Log.d("loginFocusTest", "onDoneClick")
-                focusManager.clearFocus()
-            }
+            onDone = { focusManager.clearFocus() }
         )
     }
     val loginState by setupViewModel.loginState.collectAsState()
@@ -66,6 +66,8 @@ internal fun SetupRoute(
     SetupScreen(
         ko = keyboardOptions,
         ka = keyboardActions,
+        navigateToLogin = navigateToLogin,
+        logout = setupViewModel::logout,
         postUserInfo = setupViewModel::postUserInfo,
     )
 }
@@ -74,6 +76,8 @@ internal fun SetupRoute(
 internal fun SetupScreen(
     ko: KeyboardOptions = KeyboardOptions.Default,
     ka: KeyboardActions = KeyboardActions.Default,
+    navigateToLogin: () -> Unit = {},
+    logout: () -> Unit = {},
     postUserInfo: (String, CharacterType) -> Unit = { _, _ -> },
 ) {
     var nickname by rememberSaveable { mutableStateOf("") }
@@ -127,10 +131,27 @@ internal fun SetupScreen(
             enabled = nickname.isNotBlank(),
             modifier = Modifier.fillMaxWidth(0.8f),
         )
+
+        TextButton(
+            onClick = {
+                navigateToLogin()
+                logout()
+                Log.d("logoutTest", "눌렸다")
+            },
+        ) {
+            Text(
+                style = Typography.labelLarge,
+                text = "로그아웃", color =
+                Color.White
+            )
+        }
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(
+    showSystemUi = true,
+    showBackground = true,
+)
 @Composable
 private fun SetupScreenPreview() {
     SetupScreen()

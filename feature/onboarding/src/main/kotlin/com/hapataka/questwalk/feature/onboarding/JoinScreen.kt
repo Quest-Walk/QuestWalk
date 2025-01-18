@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.feature.onboarding
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,30 +29,44 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.designsystem.R.drawable
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.component.QuestWalkTopAppBar
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
+import com.hapataka.questwalk.feature.onboarding.model.JoinState
 import com.hapataka.questwalk.feature.onboarding.util.isEmailPattern
 import com.hapataka.questwalk.feature.onboarding.util.isPasswordPattern
 
 @Composable
 internal fun JoinRoute(
     navigateToLogin: () -> Unit,
+    viewModel: JoinViewModel = hiltViewModel(),
 ) {
+    val joinState by viewModel.joinState.collectAsStateWithLifecycle()
+
     BackHandler(enabled = true) {
         navigateToLogin()
     }
 
+    LaunchedEffect(joinState) {
+        if (joinState is JoinState.Success) navigateToLogin()
+    }
+
     JoinScreen(
+        joinState = joinState,
+        joinWithEmail = viewModel::joinWithEmail,
         navigateToLogin = navigateToLogin,
     )
 }
 
 @Composable
 internal fun JoinScreen(
+    joinState: JoinState = JoinState.Idle,
+    joinWithEmail: (String, String) -> Unit = { _, _ -> },
     navigateToLogin: () -> Unit = {},
 ) {
     Column(
@@ -63,12 +79,34 @@ internal fun JoinScreen(
             onClickLeadingIcon = navigateToLogin
         )
 
-        JoinContent()
+        when (joinState) {
+            is JoinState.Success -> {
+                navigateToLogin()
+            }
+
+            is JoinState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .padding(top = 40.dp)
+                        .align(Alignment.CenterHorizontally),
+                    color = HighLightYellow,
+                )
+            }
+
+            else -> {
+                JoinContent(
+                    joinWithEmail = joinWithEmail
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun JoinContent() {
+fun JoinContent(
+    joinWithEmail: (String, String) -> Unit = { _, _ -> },
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,8 +115,6 @@ fun JoinContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val fillWidthModifier = Modifier.fillMaxWidth(0.8f)
-
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
         var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -167,14 +203,50 @@ fun JoinContent() {
         PixelButton(
             text = "가입하기",
             enabled = emailError.not() && passwordError.not() && confirmPasswordError.not() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank(),
-            onClick = { focusManager.clearFocus() },
-            modifier = fillWidthModifier
+            onClick = {
+                checkInputValidate()
+
+                when {
+                    emailError -> focusEmail.requestFocus()
+                    passwordError -> focusPassword.requestFocus()
+                    confirmPasswordError -> focusConfirmPassword.requestFocus()
+                }
+                focusManager.clearFocus()
+
+                if (emailError.not() && passwordError.not() && confirmPasswordError.not()) {
+                    joinWithEmail(email, password)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
 
-        Log.e(
-            "JoinScreen",
-            "emailError: $emailError, passwordError: $passwordError, confirmPasswordError: $confirmPasswordError"
+        ErrorMessage(
+            email = email,
+            password = password,
+            confirmPassword = confirmPassword,
+            emailError = emailError,
+            passwordError = passwordError,
+            confirmPasswordError = confirmPasswordError,
         )
+
+    }
+}
+
+@Composable
+private fun ErrorMessage(
+    email: String,
+    password: String,
+    confirmPassword: String,
+    emailError: Boolean,
+    passwordError: Boolean,
+    confirmPasswordError: Boolean,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .wrapContentHeight(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         if (emailError) {
             if (email.isBlank()) {
                 Text(

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.common.model.CharacterType
 import com.hapataka.questwalk.core.common.model.UserInfo
 import com.hapataka.questwalk.core.common.model.UserState
+import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostUserInfoUserCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SetupViewModel @Inject constructor(
     private val postUserInfoUserCase: PostUserInfoUserCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
     private val _userState = MutableStateFlow<UserState>(UserState.Idle)
     val loginState = _userState.asStateFlow()
@@ -31,6 +33,12 @@ class SetupViewModel @Inject constructor(
                 .onFailure { e ->
                     Log.e(this.javaClass.name, "fatal: ${e.message}")
                 }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
         }
     }
 }
