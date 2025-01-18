@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
@@ -59,9 +60,11 @@ internal fun OnboardingRoute(
 
         OnboardingScreen(
             currentStep = currentStep,
+            navigateToLogin = { viewModel.setCurrentStep(OnboardingStep.Login) },
+            navigateToJoin = { viewModel.setCurrentStep(OnboardingStep.Join) },
+            navigateToSetup = { viewModel.setCurrentStep(OnboardingStep.Setup) },
             navigateToHome = navigateToHome,
             padding = padding,
-            viewModel = viewModel
         )
     }
 }
@@ -69,14 +72,17 @@ internal fun OnboardingRoute(
 @Composable
 private fun OnboardingScreen(
     currentStep: OnboardingStep = OnboardingStep.Login,
+    navigateToLogin: () -> Unit = {},
+    navigateToJoin: () -> Unit = {},
+    navigateToSetup: () -> Unit = {},
     navigateToHome: () -> Unit = {},
     padding: PaddingValues = PaddingValues(),
-    viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = padding.calculateBottomPadding())
+            .padding(bottom = padding.calculateBottomPadding()),
+        contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
             visible = currentStep is OnboardingStep.Login,
@@ -89,8 +95,8 @@ private fun OnboardingScreen(
         ) {
             LoginRoute(
                 navigateToHome = navigateToHome,
-                navigateToSetup = { viewModel.setCurrentStep(OnboardingStep.Setup) },
-                navigateToJoin = { viewModel.setCurrentStep(OnboardingStep.Join) },
+                navigateToSetup = navigateToSetup,
+                navigateToJoin = navigateToJoin,
             )
         }
 
@@ -102,14 +108,27 @@ private fun OnboardingScreen(
             exit = slideOutHorizontally(tween(500), targetOffsetX = { it + (it / 2) })
         ) {
             JoinRoute(
-                navigateToLogin = { viewModel.setCurrentStep(OnboardingStep.Login) },
+                navigateToLogin = navigateToLogin,
             )
         }
 
-        if (currentStep is OnboardingStep.Setup) {
+        AnimatedVisibility(
+            visible = currentStep is OnboardingStep.Setup,
+            enter = slideInHorizontally(
+                animationSpec = tween(500),
+                initialOffsetX = { it + (it / 2) }),
+            exit = slideOutHorizontally(tween(500), targetOffsetX = { it + (it / 2) })
+        ) {
             SetupRoute(
+                navigateToLogin = navigateToLogin,
                 navigateToHome = navigateToHome,
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingScreenPreview() {
+    OnboardingScreen()
 }
