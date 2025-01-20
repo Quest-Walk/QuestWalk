@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.feature.onboarding
+package com.hapataka.questwalk.feature.onboarding.screen.join
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -31,5 +31,10 @@ class JoinViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("logoutTest", "JoinViewModel Cleared")
     }
 }

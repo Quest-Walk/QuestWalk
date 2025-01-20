@@ -5,13 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.common.model.UserInfo
-import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.facade.UserFacade
+import com.hapataka.questwalk.feature.onboarding.model.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +30,10 @@ class SplashSceneViewModel @Inject constructor(
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> = _currentUser
 
-    private val _userState = MutableStateFlow<UserState>(UserState.Loading)
+    private val _userState =
+        MutableStateFlow<UserState>(
+            UserState.Loading
+        )
     val userState: StateFlow<UserState> = _userState
 
     init {
@@ -53,10 +55,18 @@ class SplashSceneViewModel @Inject constructor(
         viewModelScope.launch {
             getUserInfoUseCase(userId)
                 .onSuccess {
-                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
+                    _userState.update {
+                        UserState.LoggedIn(
+                            com.hapataka.questwalk.feature.onboarding.model.UserInfo.EXIST
+                        )
+                    }
                 }
                 .onFailure {
-                    _userState.update { UserState.LoggedIn(UserInfo.NONE) }
+                    _userState.update {
+                        UserState.LoggedIn(
+                            com.hapataka.questwalk.feature.onboarding.model.UserInfo.NONE
+                        )
+                    }
                 }
         }
     }

@@ -1,13 +1,13 @@
-package com.hapataka.questwalk.feature.onboarding
+package com.hapataka.questwalk.feature.onboarding.screen.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.common.model.UserInfo
-import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LoginUseCase
+import com.hapataka.questwalk.feature.onboarding.model.UserInfo
+import com.hapataka.questwalk.feature.onboarding.model.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,6 +68,12 @@ class LoginViewModel @Inject constructor(
                 .onFailure {
                     _userState.update { UserState.LoggedIn(UserInfo.NONE) }
                 }
+            this@LoginViewModel.onCleared()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("navigationTest", "onCleared")
     }
 }

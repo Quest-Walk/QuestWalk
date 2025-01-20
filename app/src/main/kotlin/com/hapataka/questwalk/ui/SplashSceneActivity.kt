@@ -5,8 +5,6 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.hapataka.questwalk.core.common.model.UserInfo
-import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.databinding.ActivitySplashSceneBinding
 import com.hapataka.questwalk.ui.common.BaseActivity
 import com.hapataka.questwalk.ui.main.MainActivity
@@ -29,20 +27,20 @@ class SplashSceneActivity :
                 delay(500)
 
                 when (userState) {
-                    is UserState.LoggedIn -> {
-                        if (userState.userInfo == UserInfo.EXIST) {
+                    is com.hapataka.questwalk.feature.onboarding.model.UserState.LoggedIn -> {
+                        if (userState.userInfo == com.hapataka.questwalk.feature.onboarding.model.UserInfo.EXIST) {
                             viewModel.cacheCurrentUserHistories()
                             changeTo(
                                 activity = MainActivity::class.java
                             )
                         } else {
                             changeTo(
-                                activity = LoginActivity::class.java, noUserInfo = true
+                                activity = LoginActivity::class.java, isLoggedIn = true
                             )
                         }
                     }
 
-                    is UserState.LoggedOut -> {
+                    is com.hapataka.questwalk.feature.onboarding.model.UserState.LoggedOut -> {
                         changeTo(LoginActivity::class.java)
                     }
 
@@ -54,10 +52,10 @@ class SplashSceneActivity :
 
     private fun <T> changeTo(
         activity: Class<T>,
-        noUserInfo: Boolean = false,
+        isLoggedIn: Boolean = false,
     ) {
         val intent = Intent(this, activity).apply {
-            putExtra("noUserInfo", noUserInfo)
+            putExtra("isLoggedIn", isLoggedIn)
         }
 
         startActivity(intent)

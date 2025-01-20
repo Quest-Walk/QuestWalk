@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.feature.onboarding
+package com.hapataka.questwalk.feature.onboarding.screen.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,13 +43,14 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.hapataka.questwalk.core.common.model.UserInfo
-import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
+import com.hapataka.questwalk.feature.onboarding.R
+import com.hapataka.questwalk.feature.onboarding.model.UserInfo
+import com.hapataka.questwalk.feature.onboarding.model.UserState
 import com.hapataka.questwalk.feature.onboarding.util.getCredential
 import kotlinx.coroutines.launch
 
@@ -92,14 +92,12 @@ internal fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val (focusId, focusPassword) = remember { FocusRequester.createRefs() }
 
-    val maxWidthModifier = Modifier.fillMaxWidth()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .fillMaxHeight()
+            .fillMaxSize()
             .focusable(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -107,7 +105,9 @@ internal fun LoginScreen(
         AsyncImage(
             model = R.drawable.img_title,
             contentDescription = null,
-            modifier = maxWidthModifier.padding(top = 40.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 40.dp)
         )
 
         if (userState is UserState.Loading || (userState is UserState.LoggedIn && userState.userInfo == UserInfo.EXIST)) {
@@ -117,10 +117,15 @@ internal fun LoginScreen(
                     .padding(top = 40.dp), color = HighLightYellow
             )
         } else {
+            val maxWidthModifier = Modifier.fillMaxWidth()
+
             Column(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+
                 PixelTextField(
                     value = id,
                     onValueChange = { id = it },
@@ -132,8 +137,7 @@ internal fun LoginScreen(
                     keyboardActions = KeyboardActions(
                         onNext = { focusPassword.requestFocus() }
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = maxWidthModifier
                         .focusRequester(focusId)
                 )
 
@@ -148,20 +152,21 @@ internal fun LoginScreen(
                     keyboardActions = KeyboardActions(
                         onDone = { focusManager.clearFocus() }
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = maxWidthModifier
                         .focusRequester(focusPassword)
                 )
             }
 
             Column(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 PixelButton(
                     onClick = { loginWithEmail(id, password) },
                     text = "로그인",
-                    modifier = maxWidthModifier,
+                    modifier = Modifier.fillMaxWidth(),
                     enabled = id.isNotBlank() && password.isNotBlank()
                 )
 

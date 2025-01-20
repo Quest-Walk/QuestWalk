@@ -1,13 +1,13 @@
 package com.hapataka.questwalk.core.remote.datasource
 
 import com.google.firebase.firestore.CollectionReference
-import com.hapataka.questwalk.core.common.extention.generateUid
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.remote.api.HistoryDataSource
 import com.hapataka.questwalk.core.remote.mapper.toModel
 import com.hapataka.questwalk.core.remote.model.AchievementDto
 import com.hapataka.questwalk.core.remote.model.QuestResultDto
 import com.hapataka.questwalk.core.remote.util.encryptECB
+import com.hapataka.questwalk.core.remote.util.generateUid
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

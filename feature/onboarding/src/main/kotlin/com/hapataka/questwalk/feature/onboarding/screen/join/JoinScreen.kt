@@ -1,6 +1,5 @@
-package com.hapataka.questwalk.feature.onboarding
+package com.hapataka.questwalk.feature.onboarding.screen.join
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,23 +42,19 @@ import com.hapataka.questwalk.feature.onboarding.util.isPasswordPattern
 
 @Composable
 internal fun JoinRoute(
-    navigateToLogin: () -> Unit,
+    popBackStack: () -> Unit,
     viewModel: JoinViewModel = hiltViewModel(),
 ) {
     val joinState by viewModel.joinState.collectAsStateWithLifecycle()
 
-    BackHandler(enabled = true) {
-        navigateToLogin()
-    }
-
     LaunchedEffect(joinState) {
-        if (joinState is JoinState.Success) navigateToLogin()
+        if (joinState is JoinState.Success) popBackStack()
     }
 
     JoinScreen(
         joinState = joinState,
         joinWithEmail = viewModel::joinWithEmail,
-        navigateToLogin = navigateToLogin,
+        popBackStack = popBackStack,
     )
 }
 
@@ -67,7 +62,7 @@ internal fun JoinRoute(
 internal fun JoinScreen(
     joinState: JoinState = JoinState.Idle,
     joinWithEmail: (String, String) -> Unit = { _, _ -> },
-    navigateToLogin: () -> Unit = {},
+    popBackStack: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -76,12 +71,12 @@ internal fun JoinScreen(
         QuestWalkTopAppBar(
             title = "회원가입",
             leadingIcon = ImageVector.vectorResource(drawable.ic_back),
-            onClickLeadingIcon = navigateToLogin
+            onClickLeadingIcon = popBackStack
         )
 
         when (joinState) {
             is JoinState.Success -> {
-                navigateToLogin()
+                popBackStack()
             }
 
             is JoinState.Loading -> {
@@ -228,7 +223,6 @@ fun JoinContent(
             passwordError = passwordError,
             confirmPasswordError = confirmPasswordError,
         )
-
     }
 }
 

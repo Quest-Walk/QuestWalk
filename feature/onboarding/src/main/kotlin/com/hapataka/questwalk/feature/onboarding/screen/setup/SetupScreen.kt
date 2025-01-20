@@ -1,6 +1,7 @@
-package com.hapataka.questwalk.feature.onboarding
+package com.hapataka.questwalk.feature.onboarding.screen.setup
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,13 +33,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hapataka.questwalk.core.common.model.CharacterType
-import com.hapataka.questwalk.core.common.model.UserState
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
+import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.ui.component.Character
+import com.hapataka.questwalk.feature.onboarding.model.UserState
 
 @Composable
 internal fun SetupRoute(
@@ -55,7 +56,13 @@ internal fun SetupRoute(
             onDone = { focusManager.clearFocus() }
         )
     }
+
     val loginState by setupViewModel.loginState.collectAsState()
+
+    BackHandler {
+        navigateToLogin()
+        setupViewModel.logout()
+    }
 
     LaunchedEffect(loginState) {
         if (loginState is UserState.LoggedIn) {

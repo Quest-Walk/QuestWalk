@@ -1,4 +1,4 @@
-package com.hapataka.questwak.feature.navigation
+package com.hapataka.questwak.feature.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,13 +25,7 @@ class MainNavigator(
 
     fun navigate(menu: Route) {
         when (menu) {
-            is Route.Onboarding -> navController.navigateOnboarding(
-                menu.onboardingStep,
-                singleTopOptions
-            )
-//            is OnboardingStep.Login -> navController.navigateLogin(navOptions = singleTopOptions)
-//            is OnboardingStep.Join -> navController.navigateJoin(navOptions = singleTopOptions)
-//            is OnboardingStep.Setup -> navController.navigateSetup(navOptions = singleTopOptions)
+            is Route.Onboarding -> navController.navigateOnboarding(singleTopOptions)
             else -> throw IllegalArgumentException("존재하지 않는 메뉴입니다.")
         }
     }
