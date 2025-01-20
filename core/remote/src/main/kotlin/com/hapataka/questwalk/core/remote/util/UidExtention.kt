@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.core.common.extention
+package com.hapataka.questwalk.core.remote.util
 
 import java.math.BigInteger
 import java.security.MessageDigest

@@ -7,7 +7,7 @@ sealed interface Route {
     data object Home : Route
 
     @Serializable
-    data class Onboarding(val onboardingStep: OnboardingStep) : Route
+    data object Onboarding : Route
 }
 
 @Serializable

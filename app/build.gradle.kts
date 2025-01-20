@@ -50,6 +50,7 @@ android {
 
 dependencies {
     implementation(projects.feature.main)
+    implementation(projects.feature.onboarding)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
