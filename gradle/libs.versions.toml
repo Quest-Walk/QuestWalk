@@ -60,6 +60,10 @@ coilLegacy = "2.7.0"
 # https://developers.google.com/identity/android-credential-manager/releases?hl=ko
 googleIdentity = "1.1.1"
 
+## OpenCV
+# https://github.com/opencv/opencv/releases
+opencv = "4.11.0"
+
 
 
 
@@ -74,7 +78,6 @@ material = "1.12.0"
 navigationFragmentKtx = "2.8.5"
 jetbrainsKotlinJvm = "1.9.24"
 junit = "4.13.2"
-opencv = "4.5.5"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -132,7 +135,7 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
 google-android-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdentity" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-opencv = { module = "com.quickbirdstudios:opencv", version.ref = "opencv" }
+opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
