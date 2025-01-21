@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +37,7 @@ import com.hapataka.questwalk.core.designsystem.component.PixelTextField
 import com.hapataka.questwalk.core.designsystem.component.QuestWalkTopAppBar
 import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
+import com.hapataka.questwalk.feature.onboarding.component.PasswordVisibilityButton
 import com.hapataka.questwalk.feature.onboarding.model.JoinState
 import com.hapataka.questwalk.feature.onboarding.util.isEmailPattern
 import com.hapataka.questwalk.feature.onboarding.util.isPasswordPattern
@@ -127,6 +129,9 @@ fun JoinContent(
             if (confirmPassword.isNotBlank()) confirmPasswordError = password != confirmPassword
         }
 
+        var isPasswordShow by remember { mutableStateOf(false) }
+        var isConfirmShow by remember { mutableStateOf(false) }
+
         PixelTextField(
             value = email,
             hint = "이메일을 입력해 주세요",
@@ -158,9 +163,15 @@ fun JoinContent(
                 checkInputValidate()
                 if (it.isNotBlank()) passwordError else true
             },
+            trailingIcon = {
+                PasswordVisibilityButton(
+                    isPasswordShow = isPasswordShow,
+                    onChangePasswordVisibility = { isPasswordShow = it }
+                )
+            },
             onErrorChange = { passwordError = it },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
+                keyboardType = if (isPasswordShow) KeyboardType.Text else KeyboardType.Password,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
@@ -180,9 +191,15 @@ fun JoinContent(
                 checkInputValidate()
                 if (it.isNotBlank()) confirmPasswordError else true
             },
+            trailingIcon = {
+                PasswordVisibilityButton(
+                    isPasswordShow = isConfirmShow,
+                    onChangePasswordVisibility = { isConfirmShow = it }
+                )
+            },
             onErrorChange = { confirmPasswordError = it },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
+                keyboardType = if (isConfirmShow) KeyboardType.Text else KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(

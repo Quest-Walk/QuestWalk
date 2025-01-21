@@ -49,6 +49,7 @@ import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
 import com.hapataka.questwalk.feature.onboarding.R
+import com.hapataka.questwalk.feature.onboarding.component.PasswordVisibilityButton
 import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.model.UserState
 import com.hapataka.questwalk.feature.onboarding.util.getCredential
@@ -92,6 +93,8 @@ internal fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val (focusId, focusPassword) = remember { FocusRequester.createRefs() }
 
+    var isPasswordShow by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -125,7 +128,6 @@ internal fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
                 PixelTextField(
                     value = id,
                     onValueChange = { id = it },
@@ -146,12 +148,18 @@ internal fun LoginScreen(
                     onValueChange = { password = it },
                     hint = "비밀번호를 입력해 주세요",
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
+                        keyboardType = if (isPasswordShow) KeyboardType.Text else KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = { focusManager.clearFocus() }
                     ),
+                    trailingIcon = {
+                        PasswordVisibilityButton(
+                            isPasswordShow = isPasswordShow,
+                            onChangePasswordVisibility = { isPasswordShow = it }
+                        )
+                    },
                     modifier = maxWidthModifier
                         .focusRequester(focusPassword)
                 )
