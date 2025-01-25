@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -62,6 +61,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.core.designsystem.component.ImageButton
 import com.hapataka.questwalk.core.designsystem.component.PixelChipButton
 import com.hapataka.questwalk.core.designsystem.theme.Black
 import com.hapataka.questwalk.core.designsystem.theme.SystemCyan
@@ -107,7 +107,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadInitialSetting()
-        initViews()
+        initComposeView()
+        checkPermissions()
         setup()
     }
 
@@ -115,28 +116,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         setObserver()
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.checkCurrentTime()
-    }
-
-    private fun initViews() {
-        initAnimationImage()
-        checkPermissions()
-        requireActivity().setLightBarColor(false)
-    }
-
     private fun setup() {
         initBackPressedCallback()
         setUid()
     }
 
-    private fun initAnimationImage() {
+    private fun initComposeView() {
         binding.cvBg.setContent {
             val currentKeyword by mainViewModel.currentKeyword.observeAsState()
             val keywordLevel by mainViewModel.keywordLevel.collectAsStateWithLifecycle()
             val playState by mainViewModel.playState.observeAsState()
-            val isNight by viewModel.isNight.observeAsState(false)
+            val currentTime by viewModel.timeState.collectAsStateWithLifecycle()
             var animState by remember { mutableStateOf(false) }
 
             LaunchedEffect(playState) {
@@ -166,7 +156,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                         isAnimate = animState,
                         modifier = Modifier
                             .fillMaxSize(),
-                        imgId = if (isNight) drawable.bg_landscape_night else drawable.bg_landscape_day,
+                        imgId = when (currentTime) {
+                            in 7..18 -> drawable.bg_landscape_day
+                            else -> drawable.bg_landscape_night
+                        },
                         duration = 160000
                     )
                     HorizontalScrollingBackground(
@@ -176,7 +169,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                             .fillMaxHeight(0.5f)
                             .align(Alignment.TopCenter)
                             .padding(top = 80.dp),
-                        imgId = if (isNight) drawable.bg_starts else R.drawable.background_day_layer2,
+                        imgId = when (currentTime) {
+                            in 7..18 -> R.drawable.background_day_layer2
+                            else -> drawable.bg_starts
+                        },
                         duration = 40000
                     )
                     HorizontalScrollingBackground(
@@ -319,7 +315,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                         contentScale = ContentScale.FillHeight
                     )
 
-                    val time by mainViewModel.durationTime.observeAsState()
+                    val duration by mainViewModel.durationTime.observeAsState()
                     val distance by mainViewModel.totalDistance.observeAsState()
                     val step by mainViewModel.totalStep.observeAsState()
 
@@ -343,7 +339,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                             )
                         } else {
                             Text(
-                                text = time?.convertTime(SIMPLE_TIME) ?: "",
+                                text = duration?.convertTime(SIMPLE_TIME) ?: "",
                                 style = Typography.bodyLarge,
                                 color = Color.White
                             )
@@ -421,35 +417,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    fun ImageButton(
-        releasedPainterResource: Painter,
-        contentDescription: String?,
-        pressedPainterResource: Painter? = null,
-        modifier: Modifier = Modifier,
-        onClick: () -> Unit
-    ) {
-        val interactionSource = remember { MutableInteractionSource() }
-        val isPressed by interactionSource.collectIsPressedAsState()
-
-        Box(
-            modifier = modifier
-                .background(color = Color.Transparent)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = interactionSource,
-                ),
-        ) {
-            Image(
-                painter = if (isPressed) pressedPainterResource
-                    ?: releasedPainterResource else releasedPainterResource,
-                contentDescription = contentDescription,
-                modifier = Modifier.fillMaxSize()
-            )
         }
     }
 
@@ -640,7 +607,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         activityResultLauncher.launch(requestList)
     }
 
-    val contract = ActivityResultContracts.RequestMultiplePermissions()
+    private val contract = ActivityResultContracts.RequestMultiplePermissions()
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Array<String>>
 
@@ -676,9 +643,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         lifecycleScope.launch {
             viewModel.setUserInfo()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
     }
 }
