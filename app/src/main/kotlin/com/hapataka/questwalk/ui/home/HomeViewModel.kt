@@ -3,12 +3,18 @@ package com.hapataka.questwalk.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.facade.UserFacade
 import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -19,21 +25,18 @@ class HomeViewModel @Inject constructor(
     private val userRepo: UserRepo,
     private val encryptRepo: EncryptionKeyRepository,
 ) : ViewModel() {
-    private var _inputUserName = MutableLiveData(true)
-    val inputUserName: LiveData<Boolean> get() = _inputUserName
+    private val _timeState = MutableStateFlow(-1)
+    val timeState = _timeState.asStateFlow()
 
     private var _isNight = MutableLiveData(false)
     val isNight: LiveData<Boolean> get() = _isNight
 
-    private var _charNum = MutableLiveData<Int>()
-    private var time = -1
-
-    fun checkCurrentTime() {
-        time = LocalTime.now().hour
-
-        when (time) {
-            in 7..18 -> _isNight.value = false
-            else -> _isNight.value = true
+    init {
+        viewModelScope.launch {
+            while (true) {
+                _timeState.update { LocalTime.now().hour }
+                delay(1000L)
+            }
         }
     }
 
