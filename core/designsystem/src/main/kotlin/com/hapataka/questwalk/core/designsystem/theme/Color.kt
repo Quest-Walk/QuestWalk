@@ -6,6 +6,10 @@ val MainPurple = Color(0xFF7A5EC8)
 val Surface1 = Color(0xFFB79DFF)
 val ButtonBrown = Color(0xFF553A00)
 val HighLightYellow = Color(0xFFFEB901)
+val SystemGray = Color(0XFF4A4453)
+val SystemCyan = Color(0XFF00D2F9)
+val SystemLemon = Color(0XFFF9F871)
+val Black = Color(0XFF262626)
 
 val White60 = Color(0x3CFFFFFF)
 

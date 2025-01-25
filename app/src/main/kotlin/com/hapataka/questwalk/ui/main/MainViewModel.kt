@@ -24,6 +24,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -47,6 +50,9 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
+
+    private val _keywordLevel = MutableStateFlow(0)
+    val keywordLevel = _keywordLevel.asStateFlow()
 
     private var _imageBitmap = MutableLiveData<Bitmap>()
     val imageBitmap: LiveData<Bitmap> get() = _imageBitmap
@@ -331,14 +337,21 @@ class MainViewModel @Inject constructor(
 
     fun setRandomKeyword() {
         viewModelScope.launch {
-            val remainingKeyword = QuestFilteringUseCase().invoke().map { it.keyWord }
+            val newQuest = QuestFilteringUseCase().invoke().random()
 
-            _currentKeyword.value = remainingKeyword.random()
+            _keywordLevel.update { newQuest.level }
+            _currentKeyword.value = newQuest.keyWord
         }
     }
 
     fun setSelectKeyword(keyword: String) {
-        _currentKeyword.value = keyword
+        viewModelScope.launch {
+            val newQuest =
+                QuestFilteringUseCase().invoke().find { it.keyWord == keyword } ?: return@launch
+
+            _keywordLevel.update { newQuest.level }
+            _currentKeyword.value = newQuest.keyWord
+        }
     }
 
     private fun validationResponseByMLKit(keyword: String, elements: List<String>): Boolean {

@@ -42,6 +42,13 @@ val Typography = Typography(
     ),
     labelLarge = GalmuriTextStyle.copy(
         fontSize = 14.sp,
+    ),
+    labelMedium = GalmuriTextStyle.copy(
+        fontSize = 12.sp,
+    ),
+    displayMedium = NeoDunggeunmoTextStyle.copy(
+        fontSize = 48.sp,
+        lineHeight = 56.sp,
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
