@@ -96,7 +96,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private val sensorManager by lazy {
         requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
-    private var currentDistance = -1f
+    private var currentDistance = 0f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -318,6 +318,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     val duration by mainViewModel.durationTime.observeAsState()
                     val distance by mainViewModel.totalDistance.observeAsState()
                     val step by mainViewModel.totalStep.observeAsState()
+
+                    LaunchedEffect(distance) {
+                        currentDistance = distance ?: -1f
+                    }
 
                     Row(
                         modifier = Modifier

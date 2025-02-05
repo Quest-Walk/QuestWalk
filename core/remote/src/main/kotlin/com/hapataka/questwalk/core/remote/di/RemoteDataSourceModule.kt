@@ -19,7 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RemoteDataSourceModule {
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
 
     @Provides
     @Named("FirebaseAuth")
@@ -32,13 +31,13 @@ object RemoteDataSourceModule {
     @Named("FirestoreUser")
     @Singleton
     fun providesUserDataSource(): UserDataSource {
-        return FirebaseUserDataSource(firestore.collection("users"))
+        return FirebaseUserDataSource(FirebaseFirestore.getInstance().collection("users"))
     }
 
     @Provides
     @Named("FirestoreHistory")
     @Singleton
     fun providesHistoryDataSource(): HistoryDataSource {
-        return FirebaseHistoryDataSource(firestore.collection("histories"))
+        return FirebaseHistoryDataSource(FirebaseFirestore.getInstance().collection("histories"))
     }
 }

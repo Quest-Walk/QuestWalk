@@ -11,17 +11,17 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
-import com.hapataka.questwalk.domain.entity.HistoryEntity
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.domain.repository.MapRepository
 
 class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
-    private lateinit var locationList: MutableList<LatLng>
+    private lateinit var locationList: List<LatLng>
 
-    override fun drawPath(result: HistoryEntity.ResultEntity) {
-        locationList = result.locations?.map {
+    override fun drawPath(result: History.QuestResult) {
+        locationList = result.route.map {
             LatLng(it.first.toDouble(), it.second.toDouble())
-        }?.toMutableList() ?: mutableListOf()
+        }.toList()
 
         while (locationList.size > 1000) {
             locationList =
@@ -63,9 +63,9 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
         controlCamera()
     }
 
-    private fun addMarker(result: HistoryEntity.ResultEntity) {
-        val questLatitude = result.questLocation?.first?.toDouble() ?: 0.0
-        val questLongitude = result.questLocation?.second?.toDouble() ?: 0.0
+    private fun addMarker(result: History.QuestResult) {
+        val questLatitude = result.successLocation?.first?.toDouble() ?: 0.0
+        val questLongitude = result.successLocation?.second?.toDouble() ?: 0.0
 
         googleMap?.addMarker(
             MarkerOptions()

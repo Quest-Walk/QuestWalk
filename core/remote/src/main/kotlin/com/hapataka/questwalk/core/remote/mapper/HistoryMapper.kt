@@ -1,9 +1,18 @@
 package com.hapataka.questwalk.core.remote.mapper
 
-import android.util.Log
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.remote.model.QuestResultDto
 import com.hapataka.questwalk.core.remote.util.decryptECB
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
 
@@ -22,14 +31,13 @@ internal fun QuestResultDto.toModel(key: String): History.QuestResult {
     )
 }
 
-private fun String.toRoute(key: String): MutableList<Pair<Float, Float>> {
+private fun String.toRoute(key: String): List<Pair<Float, Float>> {
     val json = Json {
         ignoreUnknownKeys = true
     }
 
-    Log.w("fatal", this.decryptECB(key).replace("\"", ""))
 
-    return json.decodeFromString(this.decryptECB(key).replace("\"", ""))
+    return json.decodeFromString(ListSerializer(FloatPairSerializer), this.decryptECB(key))
 }
 
 private fun String.toLocation(key: String): Pair<Float, Float> {
@@ -37,5 +45,38 @@ private fun String.toLocation(key: String): Pair<Float, Float> {
         ignoreUnknownKeys = true
     }
 
-    return json.decodeFromString(this.decryptECB(key).replace("\"", ""))
+    return json.decodeFromString(FloatPairSerializer, this.decryptECB(key))
+}
+
+object FloatPairSerializer : KSerializer<Pair<Float, Float>> {
+    override val descriptor: SerialDescriptor
+        get() = buildClassSerialDescriptor("FloatPair") {
+            element<Float>("first")
+            element<Float>("second")
+        }
+
+    override fun serialize(encoder: Encoder, value: Pair<Float, Float>) {
+        encoder.encodeStructure(descriptor) {
+            encodeFloatElement(descriptor, 0, value.first)
+            encodeFloatElement(descriptor, 1, value.second)
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): Pair<Float, Float> {
+        var f = 0f
+        var s = 0f
+
+        decoder.decodeStructure(descriptor) {
+            while (true) {
+                when (val i = decodeElementIndex(descriptor)) {
+                    0 -> f = decodeFloatElement(descriptor, 0)
+                    1 -> s = decodeFloatElement(descriptor, 1)
+                    CompositeDecoder.DECODE_DONE -> break
+                    else -> error("Unexpected index: $i")
+                }
+            }
+        }
+
+        return f to s
+    }
 }

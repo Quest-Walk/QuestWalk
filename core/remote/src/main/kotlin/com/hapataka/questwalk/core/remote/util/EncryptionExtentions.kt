@@ -19,7 +19,7 @@ fun String.encryptECB(encryptKey: String): String {
     return String(encodeByte)
 }
 
-fun <T> List<T>.encryptECB(encryptKey: String): String {
+fun List<Pair<Float, Float>>.encryptECB(encryptKey: String): String {
     val json = Json { ignoreUnknownKeys = true }
     val jsonString = json.encodeToJsonElement(this).toString()
     val keySpec = SecretKeySpec(encryptKey.toByteArray(), "AES")
@@ -33,7 +33,7 @@ fun <T> List<T>.encryptECB(encryptKey: String): String {
     return String(encodeByte)
 }
 
-fun <T> Pair<T, T>.encryptECB(encryptKey: String): String {
+fun Pair<Float, Float>.encryptECB(encryptKey: String): String {
     val json = Json { ignoreUnknownKeys = true }
     val jsonString = json.encodeToJsonElement(this).toString()
     val keySpec = SecretKeySpec(encryptKey.toByteArray(), "AES")
