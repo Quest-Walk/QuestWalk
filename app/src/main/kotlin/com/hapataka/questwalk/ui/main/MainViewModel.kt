@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.ui.main
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -249,6 +250,9 @@ class MainViewModel @Inject constructor(
                 postHistoryUseCase(result)
                     .onSuccess { resultId ->
                         moveToResult { navigateCallback(resultId) }
+                    }
+                    .onFailure { e ->
+                        Log.e(this.javaClass.simpleName, e.message.orEmpty())
                     }
             }
 

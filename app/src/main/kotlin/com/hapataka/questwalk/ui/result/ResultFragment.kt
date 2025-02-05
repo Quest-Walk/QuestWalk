@@ -6,11 +6,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.hapataka.questwalk.R
+import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.data.repository.GoogleMapRepositoryImpl
 import com.hapataka.questwalk.databinding.FragmentResultBinding
-import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.ui.common.BaseFragment
 import com.hapataka.questwalk.ui.quest.QuestData
+import com.hapataka.questwalk.ui.result.model.UiState
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm
@@ -56,9 +57,11 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
 
     private fun setObserver() {
         with(viewModel) {
-            resultItem.observe(viewLifecycleOwner) {
-                initViews(it)
-                mapRepo.drawPath(it)
+            questResult.observe(viewLifecycleOwner) {
+                if (it is UiState.Success) {
+                    initViews(it.data)
+                    mapRepo.drawPath(it.data)
+                }
             }
             questItem.observe(viewLifecycleOwner) {
                 initImageViews(it)
@@ -69,22 +72,22 @@ class ResultFragment : BaseFragment<FragmentResultBinding>(FragmentResultBinding
         }
     }
 
-    private fun initViews(result: HistoryEntity.ResultEntity) {
+    private fun initViews(result: History.QuestResult) {
         with(binding) {
             if (result.isSuccess) {
-                ivQuestImage.load(result.questImg) {
+                ivQuestImage.load(result.imageUrl) {
                     placeholder(R.drawable.image_empty)
                     crossfade(true)
-                    memoryCacheKey(result.questImg)
+                    memoryCacheKey(result.imageUrl)
                 }
             } else {
                 ivQuestImage.visibility = View.GONE
             }
-            tvAdvTime.text = result.time.convertTime(DETAIL_TIME)
+            tvAdvTime.text = result.duration.convertTime(DETAIL_TIME)
             tvAdvDistance.text = result.distance.convertKm()
             tvTotalSteps.text = result.step.toString() + "걸음"
             tvCalories.text = result.step.convertKcal()
-            tvQuestKeyword.text = result.quest
+            tvQuestKeyword.text = result.questKeyword
         }
     }
 

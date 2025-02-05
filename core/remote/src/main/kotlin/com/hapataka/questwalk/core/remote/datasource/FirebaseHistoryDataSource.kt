@@ -32,7 +32,10 @@ class FirebaseHistoryDataSource @Inject constructor(
         }
     }
 
-    private fun postQuestResult(userId: String, history: History.QuestResult): Result<String> {
+    private fun postQuestResult(
+        userId: String,
+        history: History.QuestResult
+    ): Result<String> {
         return kotlin.runCatching {
             val resultId = (userId + System.currentTimeMillis()).generateUid()
 
