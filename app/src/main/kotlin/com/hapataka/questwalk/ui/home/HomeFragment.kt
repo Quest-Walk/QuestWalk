@@ -338,25 +338,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                         if (playState == QUEST_STOP) {
                             Text(
                                 text = "시작하려면, START버튼을 눌러주세요",
-                                style = Typography.bodyLarge,
+                                style = Typography.bodyMedium,
                                 color = SystemGray
                             )
                         } else {
                             Text(
                                 text = duration?.convertTime(SIMPLE_TIME) ?: "",
-                                style = Typography.bodyLarge,
+                                style = Typography.bodyMedium,
                                 color = Color.White
                             )
 
                             Text(
                                 text = "${step ?: "0"} 걸음",
-                                style = Typography.bodyLarge,
+                                style = Typography.bodyMedium,
                                 color = SystemCyan
                             )
 
                             Text(
                                 text = distance?.convertKm() ?: "0m",
-                                style = Typography.bodyLarge,
+                                style = Typography.bodyMedium,
                                 color = SystemLemon
                             )
                         }

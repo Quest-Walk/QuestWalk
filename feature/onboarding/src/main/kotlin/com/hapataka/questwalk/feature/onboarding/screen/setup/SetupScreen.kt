@@ -100,7 +100,7 @@ internal fun SetupScreen(
     ) {
         Text(
             text = "캐릭터를 선택해 주세요",
-            style = Typography.bodyLarge,
+            style = Typography.bodyMedium,
             color = HighLightYellow,
             modifier = Modifier
                 .padding(top = 40.dp)
