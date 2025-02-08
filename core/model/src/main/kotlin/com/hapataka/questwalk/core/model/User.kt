@@ -2,9 +2,11 @@ package com.hapataka.questwalk.core.model
 
 data class User(
     val userId: String,
-    var userName: String,
-    var characterType: Int,
-    var totalTime: Long,
-    var totalDistance: Float,
-    var totalStep: Long,
+    val userName: String,
+    val characterType: Int,
+    val totalTime: Long,
+    val totalDistance: Float,
+    val totalStep: Long,
+    val successCount: Int,
+    val achievementCount: Int,
 )
