@@ -14,7 +14,7 @@ androidDesugarJdkLibs = "2.1.4"
 
 ## Kotlin
 # https://github.com/JetBrains/kotlin
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 
 ## Test
 # https://github.com/junit-team/junit4
@@ -24,8 +24,9 @@ androidxTestExt = "1.2.1"
 
 ## Kotlin Symbol Processing
 # https://github.com/google/ksp/
+ksp = "2.1.10-1.0.30"
+
 kotlinxSerializationJson = "1.7.3"
-ksp = "2.1.0-1.0.29"
 
 ## Coroutine
 # https://github.com/Kotlin/kotlinx.coroutines
@@ -50,6 +51,10 @@ hiltNavigationCompose = "1.2.0"
 googleGms = "4.4.2"
 # https://firebase.google.com/docs/android/learn-more?authuser=0&hl=ko&_gl=1#bom
 firebaseBoM = "33.7.0"
+
+## Room
+# https://developer.android.com/jetpack/androidx/releases/room
+room = "2.6.1"
 
 ## Coil
 # https://coil-kt.github.io/coil/
@@ -114,12 +119,19 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 
+# Room
+androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# hilt
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
+# coil
 coil = { module = "io.coil-kt:coil", version.ref = "coilLegacy" }
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilLegacy" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
