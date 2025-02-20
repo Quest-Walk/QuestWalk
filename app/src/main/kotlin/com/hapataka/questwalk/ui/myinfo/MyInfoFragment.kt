@@ -1,26 +1,32 @@
 package com.hapataka.questwalk.ui.myinfo
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,12 +42,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.hapataka.questwalk.core.designsystem.R.drawable
+import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.QuestWalkTopAppBar
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.ui.component.Character
+import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.myinfo.component.InfoContent
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.InputPwDialog
@@ -75,6 +83,12 @@ class MyInfoFragment : Fragment() {
                     ) { padding ->
                         MyInfoScreen(
                             popBackStack = navController::popBackStack,
+                            navigateToLogin = {
+                                val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                                startActivity(intent)
+                                requireActivity().finish()
+                            },
                             padding = padding
                         )
                     }
@@ -87,10 +101,16 @@ class MyInfoFragment : Fragment() {
 @Composable
 private fun MyInfoScreen(
     popBackStack: () -> Unit = {},
+    navigateToLogin: () -> Unit = {},
     padding: PaddingValues = PaddingValues(),
     viewModel: MyInfoViewModel = hiltViewModel()
 ) {
     val userState by viewModel.user.collectAsStateWithLifecycle()
+    val loginState by viewModel.loginState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(loginState) {
+        if (loginState.not()) navigateToLogin()
+    }
 
     Column(
         modifier = Modifier
@@ -118,7 +138,7 @@ private fun MyInfoScreen(
             is UiState.Success -> {
                 MyInfoContent(
                     user = (userState as UiState.Success<User>).data,
-                    onLogout = viewModel::logout
+                    onLogoutClick = viewModel::logout
                 )
             }
 
@@ -132,9 +152,10 @@ private fun MyInfoScreen(
 @Composable
 private fun MyInfoContent(
     user: User,
-    onLogout: () -> Unit = {}
+    onLogoutClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    var animationState by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -150,10 +171,13 @@ private fun MyInfoContent(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Character(
-                isAnimate = false,
+                isAnimate = animationState,
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .aspectRatio(1f)
+                    .clickable {
+                        animationState = animationState.not()
+                    }
             )
             Text(
                 text = user.userName,
@@ -184,9 +208,29 @@ private fun MyInfoContent(
                 label = user.totalStep.convertKcal()
             )
 
-            Button(onClick = onLogout) {
-                Text("로그아웃")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                InfoContent(
+                    title = "해결한 퀘스트",
+                    content = "${user.successKeywords.size}개",
+                    modifier = Modifier.weight(1f)
+                )
+
+                InfoContent(
+                    title = "달성한 업적",
+                    content = "${user.achievementIds.size}개",
+                    modifier = Modifier.weight(1f)
+                )
             }
+
+            PixelButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onLogoutClick,
+                text = "로그아웃"
+            )
         }
     }
 }

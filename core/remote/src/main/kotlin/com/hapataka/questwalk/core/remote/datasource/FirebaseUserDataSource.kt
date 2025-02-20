@@ -1,12 +1,12 @@
 package com.hapataka.questwalk.core.remote.datasource
 
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.remote.api.UserDataSource
-import com.hapataka.questwalk.core.remote.model.UserDto
+import com.hapataka.questwalk.core.remote.model.UserDefaultInfoDto
 import com.hapataka.questwalk.core.remote.model.getDefaultInfo
 import com.hapataka.questwalk.core.remote.model.toModel
 import kotlinx.coroutines.tasks.await
@@ -18,15 +18,30 @@ class FirebaseUserDataSource @Inject constructor(
 ) : UserDataSource {
     override suspend fun getUserInfo(userId: String): Result<User> {
         return kotlin.runCatching {
-            val userInfo = userCollection
-                .document(userId)
-                .get()
-                .await()
-                .toObject(UserDto::class.java)
-                ?: return Result.failure(IllegalArgumentException("유저 정보를 찾을 수 없습니다."))
+            val userDocument = userCollection.document(userId)
+            val userDefaultInfo =
+                userDocument.get().await().toObject(UserDefaultInfoDto::class.java)
+                    ?: throw IllegalStateException("유저를 찾을 수 없습니다.")
 
-            userInfo.toModel()
+            userDefaultInfo.toModel(
+                successKeywords = userDocument.getSuccessKeywords(),
+                achievementIds = userDocument.getAchievements()
+            )
         }
+    }
+
+    private suspend fun DocumentReference.getSuccessKeywords(): List<String> {
+        return this.collection("successKeywords").get()
+            .await()
+            .documents
+            .mapNotNull { it.getString("keyword") }
+    }
+
+    private suspend fun DocumentReference.getAchievements(): List<Int> {
+        return this.collection("achievements").get()
+            .await()
+            .documents
+            .mapNotNull { it.getLong("achievementId")?.toInt() }
     }
 
     override suspend fun postUserInfo(
@@ -38,7 +53,7 @@ class FirebaseUserDataSource @Inject constructor(
             userCollection
                 .document(userId)
                 .set(
-                    UserDto(
+                    UserDefaultInfoDto(
                         userId = userId,
                         userName = userName,
                         characterId = characterType.id
@@ -48,6 +63,7 @@ class FirebaseUserDataSource @Inject constructor(
     }
 
     override suspend fun updateUserInfo(user: User) {
+        val batch = firestore.batch()
         val userDefaultInfo = user.getDefaultInfo()
         val userDocument = userCollection.document(user.userId)
 
@@ -64,7 +80,7 @@ class FirebaseUserDataSource @Inject constructor(
 
             keywordSnapshots.forEach { (keyword, snapshot) ->
                 if (snapshot.exists().not()) {
-                    transaction.set(
+                    batch.set(
                         userDocument.collection("successKeywords").document(keyword),
                         hashMapOf("keyword" to keyword)
                     )
@@ -72,13 +88,15 @@ class FirebaseUserDataSource @Inject constructor(
             }
             achievementSnapshots.forEach { (achievementId, snapshot) ->
                 if (snapshot.exists().not()) {
-                    transaction.set(
+                    batch.set(
                         userDocument.collection("achievements").document(achievementId.toString()),
                         hashMapOf("achievementId" to achievementId)
                     )
                 }
             }
-            transaction.set(userDocument, userDefaultInfo, SetOptions.merge())
+            batch.update(userDocument, userDefaultInfo)
         }
+
+        batch.commit()
     }
 }

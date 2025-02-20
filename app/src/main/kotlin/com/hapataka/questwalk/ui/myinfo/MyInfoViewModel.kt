@@ -36,6 +36,9 @@ class MyInfoViewModel @Inject constructor(
     private val _user = MutableStateFlow<UiState<User>>(UiState.Idle)
     val user = _user.asStateFlow()
 
+    private val _loginState = MutableStateFlow(true)
+    val loginState = _loginState.asStateFlow()
+
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> get() = _currentUser
 
@@ -59,18 +62,22 @@ class MyInfoViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            fetchUserInfoUseCase()
+            _user.update { UiState.Loading }
+
             getUserInfoUseCase()
                 .onStart { _user.update { UiState.Loading } }
                 .catch { e -> _user.update { UiState.Failure(e) } }
-                .first().let { userInfo -> _user.update { UiState.Success(userInfo) } }
-
+                .first().let { userInfo ->
+                    _loginState.update { true }
+                    _user.update { UiState.Success(userInfo) }
+                }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+            _loginState.update { false }
             _toastMsg.value = "로그아웃 완료!"
         }
     }
