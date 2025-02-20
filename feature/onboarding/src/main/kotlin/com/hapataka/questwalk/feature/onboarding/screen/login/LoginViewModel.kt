@@ -3,6 +3,7 @@ package com.hapataka.questwalk.feature.onboarding.screen.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LoginUseCase
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
+    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
 ) : ViewModel() {
     private val _userState: MutableStateFlow<UserState> = MutableStateFlow(UserState.Idle)
@@ -32,9 +34,7 @@ class LoginViewModel @Inject constructor(
             delay(500)
 
             loginUseCase(email, password)
-                .onSuccess { uid ->
-                    checkUserInfo(uid)
-                }
+                .onSuccess { checkUserInfo() }
                 .onFailure { e ->
                     _userState.update { UserState.LoginFail(e.message.orEmpty()) }
                     Log.e(javaClass.name, "Fatal: " + e.message.orEmpty())
@@ -49,9 +49,7 @@ class LoginViewModel @Inject constructor(
             delay(500)
 
             loginUseCase(idToken)
-                .onSuccess { uid ->
-                    checkUserInfo(uid)
-                }
+                .onSuccess { checkUserInfo() }
                 .onFailure { e ->
                     _userState.update { UserState.LoginFail(e.message.orEmpty()) }
                     Log.e(javaClass.name, "Fatal: " + e.message.orEmpty())
@@ -59,21 +57,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun checkUserInfo(uid: String) {
+    private fun checkUserInfo() {
         viewModelScope.launch {
-            getUserInfoUseCase(uid)
-                .onSuccess {
-                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
-                }
-                .onFailure {
-                    _userState.update { UserState.LoggedIn(UserInfo.NONE) }
-                }
-            this@LoginViewModel.onCleared()
+            fetchUserInfoUseCase()
+                .onSuccess { _userState.update { UserState.LoggedIn(UserInfo.EXIST) } }
+                .onFailure { _userState.update { UserState.LoggedIn(UserInfo.NONE) } }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("navigationTest", "onCleared")
     }
 }

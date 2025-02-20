@@ -31,7 +31,10 @@ object RemoteDataSourceModule {
     @Named("FirestoreUser")
     @Singleton
     fun providesUserDataSource(): UserDataSource {
-        return FirebaseUserDataSource(FirebaseFirestore.getInstance().collection("users"))
+        return FirebaseUserDataSource(
+            FirebaseFirestore.getInstance(),
+            FirebaseFirestore.getInstance().collection("users"),
+        )
     }
 
     @Provides

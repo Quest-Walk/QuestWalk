@@ -10,4 +10,6 @@ interface UserDataSource {
         userName: String,
         characterType: CharacterType,
     ): Result<Unit>
+
+    suspend fun updateUserInfo(user: User)
 }

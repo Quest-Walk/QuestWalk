@@ -1,20 +1,16 @@
 package com.hapataka.questwalk.ui
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
-import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
-import com.hapataka.questwalk.data.model.UserModel
+import com.hapataka.questwalk.core.domain.usecase.CheckUserLoggedInUseCase
+import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
 import com.hapataka.questwalk.domain.facade.HistoryFacade
-import com.hapataka.questwalk.domain.facade.UserFacade
+import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.model.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,52 +18,32 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashSceneViewModel @Inject constructor(
-    private val userFacade: UserFacade,
     private val historyFacade: HistoryFacade,
-    private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
-    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
+    private val checkUserLoggedInUseCase: CheckUserLoggedInUseCase,
 ) : ViewModel() {
-    private var _currentUser = MutableLiveData<UserModel>()
-    val currentUser: LiveData<UserModel> = _currentUser
-
-    private val _userState =
-        MutableStateFlow<UserState>(
-            UserState.Loading
-        )
-    val userState: StateFlow<UserState> = _userState
+    private val _loginState = MutableStateFlow<UserState>(UserState.Loading)
+    val loginState = _loginState.asStateFlow()
 
     init {
-        checkUserState()
+        checkLoggedIn()
     }
 
-    private fun checkUserState() {
+    private fun checkLoggedIn() {
         viewModelScope.launch {
-            getLoginUserIdUseCase()
-                .onSuccess { userId -> checkUserInfo(userId) }
-                .onFailure { e ->
-                    Log.e(this.javaClass.name, "Fatal: ${e.message}")
-                    _userState.update { UserState.LoggedOut }
-                }
+            if (checkUserLoggedInUseCase()) {
+                checkUserInfo()
+            } else {
+                _loginState.update { UserState.LoggedOut }
+            }
         }
     }
 
-    private fun checkUserInfo(userId: String) {
+    private fun checkUserInfo() {
         viewModelScope.launch {
-            getUserInfoUseCase(userId)
-                .onSuccess {
-                    _userState.update {
-                        UserState.LoggedIn(
-                            com.hapataka.questwalk.feature.onboarding.model.UserInfo.EXIST
-                        )
-                    }
-                }
-                .onFailure {
-                    _userState.update {
-                        UserState.LoggedIn(
-                            com.hapataka.questwalk.feature.onboarding.model.UserInfo.NONE
-                        )
-                    }
-                }
+            fetchUserInfoUseCase()
+                .onSuccess { _loginState.update { UserState.LoggedIn(UserInfo.EXIST) } }
+                .onFailure { _loginState.update { UserState.LoggedIn(UserInfo.NONE) } }
         }
     }
 

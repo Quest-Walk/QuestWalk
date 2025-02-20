@@ -9,6 +9,8 @@ data class UserDto(
     var totalTime: Long = 0,
     var totalDistance: Float = 0f,
     var totalStep: Long = 0,
+    val successKeywords: List<String> = emptyList(),
+    val achievementIds: List<Int> = emptyList(),
 )
 
 fun UserDto.toModel(): User {
@@ -19,5 +21,16 @@ fun UserDto.toModel(): User {
         totalTime = this.totalTime,
         totalDistance = this.totalDistance,
         totalStep = this.totalStep,
+        successKeywords = this.successKeywords,
+        achievementIds = this.achievementIds,
     )
 }
+
+fun User.getDefaultInfo() = hashMapOf(
+    "userId" to this.userId,
+    "userName" to this.userName,
+    "characterId" to this.characterType,
+    "totalTime" to this.totalTime,
+    "totalDistance" to this.totalDistance,
+    "totalStep" to this.totalStep,
+)

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
+import com.hapataka.questwalk.core.domain.usecase.UpdateUserInfoUseCase
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.LocationEntity
@@ -48,6 +49,7 @@ class MainViewModel @Inject constructor(
     private val imageUtil: ImageUtil,
     private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
     private val postHistoryUseCase: PostHistoryUseCase,
+    private val updateUserInfoUseCase: UpdateUserInfoUseCase,
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -245,7 +247,14 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            launch { userRepo.updateHistoryInfo(UserInfo.uid, result) }
+            launch {
+                updateUserInfoUseCase(
+                    time = durationTime.value ?: 0L,
+                    distance = totalDistance.value ?: 0f,
+                    step = totalStep.value ?: 0L,
+                    keyword = currentKeyword.value ?: "",
+                )
+            }
             launch {
                 postHistoryUseCase(result)
                     .onSuccess { resultId ->

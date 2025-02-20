@@ -41,20 +41,20 @@ class UserFacade @Inject constructor(
         }
     }
 
-    suspend fun getUserInfo(): UserModel {
-        val cacheUser = getCacheUserUseCase()
-
-        if (cacheUser != null) return cacheUser
-
-        val userId = getLoginUserIdUseCase().getOrThrow()
-        val userInfo = getUserInfoUseCase(userId = userId).getOrThrow()
-
-        return UserModel(
-            userId = userId,
-            nickName = userInfo.userName,
-            characterId = userInfo.characterType,
-            totalTime = userInfo.totalTime,
-            totalDistance = userInfo.totalDistance,
-        )
-    }
+//    suspend fun getUserInfo(): UserModel {
+//        val cacheUser = getCacheUserUseCase()
+//
+//        if (cacheUser != null) return cacheUser
+//
+////        val userId = getLoginUserIdUseCase().getOrThrow()
+////        val userInfo = getUserInfoUseCase(userId = userId).getOrThrow()
+//
+//        return UserModel(
+//            userId = userId,
+//            nickName = userInfo.userName,
+//            characterId = userInfo.characterType,
+//            totalTime = userInfo.totalTime,
+//            totalDistance = userInfo.totalDistance,
+//        )
+//    }
 }

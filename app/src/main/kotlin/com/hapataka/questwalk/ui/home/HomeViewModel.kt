@@ -3,7 +3,6 @@ package com.hapataka.questwalk.ui.home
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.domain.data.remote.EncryptionKeyRepository
 import com.hapataka.questwalk.domain.repository.AuthRepo
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-    private val encryptRepo: EncryptionKeyRepository,
+//    private val encryptRepo: EncryptionKeyRepository,
 ) : ViewModel() {
     private val _timeState = MutableStateFlow(-1)
     val timeState = _timeState.asStateFlow()
@@ -36,6 +35,6 @@ class HomeViewModel @Inject constructor(
 
     suspend fun setUserInfo() {
         UserInfo.uid = authRepo.getCurrentUserUid()
-        UserInfo.encryptionKey = encryptRepo.getKey(UserInfo.uid)
+//        UserInfo.encryptionKey = encryptRepo.getKey(UserInfo.uid)
     }
 }

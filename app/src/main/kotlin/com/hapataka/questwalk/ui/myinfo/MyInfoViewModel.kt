@@ -4,13 +4,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
+import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
+import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
+import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.facade.AuthFacade
 import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.facade.UserFacade
+import com.hapataka.questwalk.ui.result.model.UiState
 import com.hapataka.questwalk.util.extentions.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +29,13 @@ class MyInfoViewModel @Inject constructor(
     private val userFacade: UserFacade,
     private val authFacade: AuthFacade,
     private val historyFacade: HistoryFacade,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
 ) : ViewModel() {
+    private val _user = MutableStateFlow<UiState<User>>(UiState.Idle)
+    val user = _user.asStateFlow()
+
     private var _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> get() = _currentUser
 
@@ -41,28 +57,21 @@ class MyInfoViewModel @Inject constructor(
     private var _dropOutSuccess = MutableLiveData<Boolean>(false)
     val dropOutSuccess: LiveData<Boolean> get() = _dropOutSuccess
 
-    fun getCurrentUserInfo() {
+    init {
         viewModelScope.launch {
-            userFacade.getUserInfo()?.let {
-                _currentUser.value = it
-            }
+            fetchUserInfoUseCase()
+            getUserInfoUseCase()
+                .onStart { _user.update { UiState.Loading } }
+                .catch { e -> _user.update { UiState.Failure(e) } }
+                .first().let { userInfo -> _user.update { UiState.Success(userInfo) } }
+
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            _btnState.value = false
-            val result = authFacade.logout()
-
-            if (result.isSuccess) {
-                _logoutSuccess.value = true
-                delay(500L)
-                _toastMsg.value = "로그아웃 완료!"
-            } else {
-                _logoutSuccess.value = false
-                _toastMsg.value = "잠시후 다시 시도해주세요"
-            }
-            _btnState.value = true
+            logoutUseCase()
+            _toastMsg.value = "로그아웃 완료!"
         }
     }
 
