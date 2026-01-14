@@ -29,6 +29,7 @@ class HistoryRepositoryImpl @Inject constructor(
             firebaseHistoryRDS.getHistoriesById(userId).let { histories ->
                 histories.resultRecords.forEach {
                     result += QuestResult(
+                        id = "${it.userId}_${it.registerAt}",
                         userId = it.userId,
                         registerAt = LocalDateTime.parse(it.registerAt),
                         questKeyword = it.questKeyword,
@@ -46,6 +47,7 @@ class HistoryRepositoryImpl @Inject constructor(
                         ?: return@forEach
 
                     result += Achievement(
+                        id = "${achievementRecord.userId}_${achievementRecord.registerAt}",
                         userId = achievementRecord.userId,
                         registerAt = LocalDateTime.parse(achievementRecord.registerAt),
                         achievementId = achievementRecord.achievementId,

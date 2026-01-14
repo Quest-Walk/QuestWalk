@@ -42,21 +42,21 @@ class RecordViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { UiState.Loading }
 
-            val userId = getLoginUserIdUseCase().getOrElse {
-                _uiState.update { UiState.Failure(it) }
+            val userId = getLoginUserIdUseCase().getOrElse { error ->
+                _uiState.update { UiState.Failure(error) }
                 return@launch
             }
 
             val historiesDeferred = async { getUserHistoriesUseCase(userId) }
             val achieveItemsDeferred = async { getAchieveItemsUseCase() }
 
-            val histories = historiesDeferred.await().getOrElse {
-                _uiState.update { UiState.Failure(it) }
+            val histories = historiesDeferred.await().getOrElse { error ->
+                _uiState.update { UiState.Failure(error) }
                 return@launch
             }
 
-            val achieveItems = achieveItemsDeferred.await().getOrElse {
-                _uiState.update { UiState.Failure(it) }
+            val achieveItems = achieveItemsDeferred.await().getOrElse { error ->
+                _uiState.update { UiState.Failure(error) }
                 return@launch
             }
 

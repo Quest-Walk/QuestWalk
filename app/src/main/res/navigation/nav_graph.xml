@@ -9,13 +9,7 @@
         android:id="@+id/frag_my_info"
         android:name="com.hapataka.questwalk.ui.myinfo.MyInfoFragment"
         android:label="frag_my_info"
-        tools:layout="@layout/fragment_my_info">
-        <action
-            android:id="@+id/action_frag_my_info_to_frag_login"
-            app:destination="@id/frag_login"
-            app:popUpTo="@id/frag_login"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_my_info" />
 
     <fragment
         android:id="@+id/frag_record"

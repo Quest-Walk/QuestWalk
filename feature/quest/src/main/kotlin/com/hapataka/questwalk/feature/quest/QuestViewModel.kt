@@ -48,8 +48,8 @@ class QuestViewModel @Inject constructor(
             val questsDeferred = async { getAllQuestsUseCase() }
             val keywordsDeferred = async { getSuccessKeywordsUseCase() }
 
-            val quests = questsDeferred.await().getOrElse {
-                _uiState.update { UiState.Failure(it) }
+            val quests = questsDeferred.await().getOrElse { error ->
+                _uiState.update { UiState.Failure(error) }
                 return@launch
             }
 

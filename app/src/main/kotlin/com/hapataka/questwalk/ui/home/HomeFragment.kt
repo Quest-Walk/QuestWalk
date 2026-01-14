@@ -117,7 +117,7 @@ class HomeFragment : Fragment() {
                     navigationBarHeight = navigationBarHeight,
                 )
 
-                QuestWalkTheme {
+                QuestWalkTheme(lightBar = false) {
                     HomeRoute(
                         uiState = uiState,
                         onStartClick = { mainViewModel.togglePlay() },
