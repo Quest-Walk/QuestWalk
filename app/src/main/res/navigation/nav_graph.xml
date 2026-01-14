@@ -30,8 +30,7 @@
     <fragment
         android:id="@+id/frag_home"
         android:name="com.hapataka.questwalk.ui.home.HomeFragment"
-        android:label="frag_home"
-        tools:layout="@layout/fragment_home">
+        android:label="frag_home">
         <action
             android:id="@+id/action_frag_home_to_frag_my_info"
             app:destination="@id/frag_my_info" />
