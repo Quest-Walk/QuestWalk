@@ -1,8 +1,10 @@
 package com.hapataka.questwalk.core.data.di
 
+import com.hapataka.questwalk.core.data.repository.DefaultAchieveItemRepository
 import com.hapataka.questwalk.core.data.repository.DefaultAuthRepository
 import com.hapataka.questwalk.core.data.repository.DefaultHistoryRepository
 import com.hapataka.questwalk.core.data.repository.DefaultUserRepository
+import com.hapataka.questwalk.core.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
 import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
@@ -30,4 +32,8 @@ abstract class RepositoryModule {
     @Named("DefaultHistoryRepository")
     @Singleton
     abstract fun bindsHistoryRepository(historyRepository: DefaultHistoryRepository): HistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsAchieveItemRepository(repository: DefaultAchieveItemRepository): AchieveItemRepository
 }
