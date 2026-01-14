@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.ui.result.model
+package com.hapataka.questwalk.core.ui
 
 sealed class UiState<out T> {
     data object Idle : UiState<Nothing>()

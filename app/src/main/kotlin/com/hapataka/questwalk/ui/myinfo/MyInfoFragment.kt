@@ -53,7 +53,7 @@ import com.hapataka.questwalk.ui.LoginActivity
 import com.hapataka.questwalk.ui.myinfo.component.InfoContent
 import com.hapataka.questwalk.ui.myinfo.dialog.DropOutDialog
 import com.hapataka.questwalk.ui.myinfo.dialog.InputPwDialog
-import com.hapataka.questwalk.ui.result.model.UiState
+import com.hapataka.questwalk.core.ui.UiState
 import com.hapataka.questwalk.util.extentions.DETAIL_TIME
 import com.hapataka.questwalk.util.extentions.convertKcal
 import com.hapataka.questwalk.util.extentions.convertKm

@@ -12,7 +12,7 @@ import com.hapataka.questwalk.data.model.UserModel
 import com.hapataka.questwalk.domain.facade.AuthFacade
 import com.hapataka.questwalk.domain.facade.HistoryFacade
 import com.hapataka.questwalk.domain.facade.UserFacade
-import com.hapataka.questwalk.ui.result.model.UiState
+import com.hapataka.questwalk.core.ui.UiState
 import com.hapataka.questwalk.util.extentions.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

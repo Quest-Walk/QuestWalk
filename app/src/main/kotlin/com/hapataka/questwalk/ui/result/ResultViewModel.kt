@@ -11,7 +11,7 @@ import com.hapataka.questwalk.domain.entity.QuestStackEntity
 import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.ui.quest.QuestData
-import com.hapataka.questwalk.ui.result.model.UiState
+import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
