@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -44,17 +45,13 @@ import coil3.compose.AsyncImage
 import com.hapataka.questwalk.R
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
 import com.hapataka.questwalk.core.model.History
-import com.hapataka.questwalk.databinding.FragmentRecordBinding
-import com.hapataka.questwalk.ui.common.BaseFragment
-import com.hapataka.questwalk.ui.record.adapter.RecordItemAdapter
 import com.hapataka.questwalk.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RecordFragment : BaseFragment<FragmentRecordBinding>(FragmentRecordBinding::inflate) {
+class RecordFragment : Fragment() {
     private val navController by lazy { (parentFragment as NavHostFragment).findNavController() }
     private val viewModel by viewModels<RecordViewModel>()
-    private lateinit var recordItemAdapter: RecordItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
