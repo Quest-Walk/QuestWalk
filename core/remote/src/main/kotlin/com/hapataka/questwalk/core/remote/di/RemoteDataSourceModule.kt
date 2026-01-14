@@ -5,10 +5,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.core.remote.api.AchieveItemDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
 import com.hapataka.questwalk.core.remote.api.HistoryDataSource
+import com.hapataka.questwalk.core.remote.api.QuestDataSource
 import com.hapataka.questwalk.core.remote.api.UserDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseAchieveItemDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseAuthDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseHistoryDataSource
+import com.hapataka.questwalk.core.remote.datasource.FirebaseQuestDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseUserDataSource
 import dagger.Module
 import dagger.Provides
@@ -50,5 +52,11 @@ object RemoteDataSourceModule {
     @Singleton
     fun providesAchieveItemDataSource(): AchieveItemDataSource {
         return FirebaseAchieveItemDataSource(FirebaseFirestore.getInstance())
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuestDataSource(): QuestDataSource {
+        return FirebaseQuestDataSource(FirebaseFirestore.getInstance())
     }
 }

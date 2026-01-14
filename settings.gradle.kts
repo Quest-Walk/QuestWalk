@@ -28,6 +28,7 @@ include(":app")
 
 include(":feature:onboarding")
 include(":feature:record")
+include(":feature:quest")
 
 include(
     ":core:designsystem",
