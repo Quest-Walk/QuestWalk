@@ -5,11 +5,13 @@ import com.hapataka.questwalk.core.data.repository.DefaultAuthRepository
 import com.hapataka.questwalk.core.data.repository.DefaultHistoryRepository
 import com.hapataka.questwalk.core.data.repository.DefaultQuestRepository
 import com.hapataka.questwalk.core.data.repository.DefaultUserRepository
+import com.hapataka.questwalk.core.data.repository.DefaultWeatherRepository
 import com.hapataka.questwalk.core.domain.repository.AchieveItemRepository
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
 import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.domain.repository.QuestRepository
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
+import com.hapataka.questwalk.core.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -42,4 +44,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsQuestRepository(repository: DefaultQuestRepository): QuestRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsWeatherRepository(repository: DefaultWeatherRepository): WeatherRepository
 }

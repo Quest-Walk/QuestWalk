@@ -29,6 +29,7 @@ include(":app")
 include(":feature:onboarding")
 include(":feature:record")
 include(":feature:quest")
+include(":feature:weather")
 
 include(
     ":core:designsystem",

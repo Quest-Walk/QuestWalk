@@ -103,7 +103,6 @@
     <fragment
         android:id="@+id/frag_weather"
         android:name="com.hapataka.questwalk.ui.weather.WeatherFragment"
-        android:label="fragment_weather"
-        tools:layout="@layout/fragment_weather" />
+        android:label="fragment_weather" />
 
 </navigation>

@@ -1,6 +1,6 @@
-package com.hapataka.questwalk.ui.weather
+package com.hapataka.questwalk.core.model
 
-data class WeatherData(
+data class Weather(
     val fcstDate: String,
     val fcstTime: String,
     val sky: String,

@@ -53,6 +53,7 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.record)
     implementation(projects.feature.quest)
+    implementation(projects.feature.weather)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
