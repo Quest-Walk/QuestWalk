@@ -1,10 +1,9 @@
 package com.hapataka.questwalk.ui.record
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.model.History
+import com.hapataka.questwalk.core.ui.UiState
 import com.hapataka.questwalk.domain.entity.AchieveItemEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.AchieveResultEntity
 import com.hapataka.questwalk.domain.entity.HistoryEntity.ResultEntity
@@ -16,6 +15,9 @@ import com.hapataka.questwalk.ui.record.model.RecordItem.AchieveItem
 import com.hapataka.questwalk.ui.record.model.RecordItem.ResultItem
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,60 +27,47 @@ class RecordViewModel @Inject constructor(
     private val achieveItemRepo: AchieveItemRepository,
     private val historyFacade: HistoryFacade,
 ) : ViewModel() {
-    private var _recordItems = MutableLiveData<List<RecordItem>>()
-    val recordItems: LiveData<List<RecordItem>> get() = _recordItems
 
-    private var _achieveItems = MutableLiveData<List<AchieveItem>>()
-    val achieveItems: LiveData<List<AchieveItem>> get() = _achieveItems
+    private val _uiState = MutableStateFlow<UiState<RecordUiState>>(UiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
-    private var _testCount = MutableLiveData<Int>()
-    val testCount: LiveData<Int> get() = _testCount
-
-    private var _histories = MutableLiveData<List<History>>()
-    val histories: LiveData<List<History>> get() = _histories
-
-    fun getTestCount() {
-        val count = testCount.value ?: 0
-
-        _testCount.value = count + 1
+    init {
+        loadRecords()
     }
 
-    fun getHistories() {
-        historyFacade.getCurrentUserHistories()?.let {
-            _histories.value = it
+    fun onAction(action: RecordAction) {
+        when (action) {
+            is RecordAction.Refresh -> loadRecords()
+            is RecordAction.ClickHistory -> { /* Navigation handled in Route */ }
         }
     }
 
-    fun getAchievements() {
+    private fun loadRecords() {
+        viewModelScope.launch {
+            _uiState.update { UiState.Loading }
 
+            try {
+                val histories = historyFacade.getCurrentUserHistories() ?: emptyList()
+                val achieveItems = loadAchieveItems()
+
+                _uiState.update {
+                    UiState.Success(
+                        RecordUiState(
+                            histories = histories,
+                            achieveItems = achieveItems
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { UiState.Failure(e) }
+            }
+        }
     }
 
-    fun getRecordItems() {
-        viewModelScope.launch {
-            var currentItems = mutableListOf<RecordItem>()
-            val histories = userRepo.getUserHistory(UserInfo.uid)
-            val achieveItems = achieveItemRepo.getAchieveItem().map { entity ->
-                convertToRecordItem(entity, histories.filterIsInstance<AchieveResultEntity>())
-            }
-
-            _achieveItems.value = achieveItems
-            histories.forEach { entity ->
-                when (entity) {
-                    is ResultEntity -> {
-                        currentItems += ResultItem(
-                            entity.quest,
-                            entity.questImg,
-                            entity.isSuccess,
-                            entity.registerAt
-                        )
-                    }
-
-                    is AchieveResultEntity -> {
-                        currentItems += achieveItems.filter { it.achieveId == entity.achievementId }
-                    }
-                }
-            }
-            _recordItems.value = currentItems
+    private suspend fun loadAchieveItems(): List<AchieveItem> {
+        val histories = userRepo.getUserHistory(UserInfo.uid)
+        return achieveItemRepo.getAchieveItem().map { entity ->
+            convertToRecordItem(entity, histories.filterIsInstance<AchieveResultEntity>())
         }
     }
 
@@ -96,4 +85,14 @@ class RecordViewModel @Inject constructor(
             )
         }
     }
+}
+
+data class RecordUiState(
+    val histories: List<History> = emptyList(),
+    val achieveItems: List<AchieveItem> = emptyList(),
+)
+
+sealed interface RecordAction {
+    data object Refresh : RecordAction
+    data class ClickHistory(val historyId: String) : RecordAction
 }

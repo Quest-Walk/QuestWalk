@@ -18,6 +18,7 @@ import java.time.LocalDateTime
 
 internal fun QuestResultDto.toModel(key: String): History.QuestResult {
     return History.QuestResult(
+        id = this.resultId,
         userId = this.userId,
         registerAt = LocalDateTime.parse(this.registerAt),
         questKeyword = this.questKeyword,

@@ -285,6 +285,7 @@ class MainViewModel @Inject constructor(
         }
 
         return History.QuestResult(
+            id = "quest_${userId}_${System.currentTimeMillis()}",
             userId = userId,
             registerAt = LocalDateTime.now(),
             questKeyword = currentKeyword.value ?: "",
@@ -310,6 +311,7 @@ class MainViewModel @Inject constructor(
                 userRepo.updateHistoryInfo(
                     userId,
                     History.Achievement(
+                        id = "achievement_${userId}_${id}_${System.currentTimeMillis()}",
                         userId = userId,
                         registerAt = LocalDateTime.now(),
                         achievementId = id,
