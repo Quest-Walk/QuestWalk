@@ -69,6 +69,13 @@ class MainNavigator(
     fun popBackStack() {
         navController.popBackStack()
     }
+
+    fun navigateToOnboarding() {
+        navController.navigate(Route.Onboarding) {
+            popUpTo(0) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
 }
 
 @Composable

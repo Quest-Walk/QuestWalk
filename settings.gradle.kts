@@ -31,6 +31,7 @@ include(":feature:record")
 include(":feature:quest")
 include(":feature:weather")
 include(":feature:home")
+include(":feature:myinfo")
 
 include(
     ":core:designsystem",

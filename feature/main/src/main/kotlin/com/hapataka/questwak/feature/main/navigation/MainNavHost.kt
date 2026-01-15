@@ -11,6 +11,7 @@ import com.hapataka.questwalk.feature.quest.navigation.questDetailScreen
 import com.hapataka.questwalk.feature.quest.navigation.questScreen
 import com.hapataka.questwalk.feature.record.navigation.recordScreen
 import com.hapataka.questwalk.feature.weather.navigation.weatherScreen
+import com.hapataka.questwalk.feature.myinfo.navigation.myInfoScreen
 
 @Composable
 internal fun MainNavHost(
@@ -69,6 +70,12 @@ internal fun MainNavHost(
             },
         )
 
-        // TODO: MyInfo, Camera, Result screens
+        // MyInfo
+        myInfoScreen(
+            onBackClick = { navigator.popBackStack() },
+            onLogoutSuccess = { navigator.navigateToOnboarding() },
+        )
+
+        // TODO: Camera, Result screens
     }
 }

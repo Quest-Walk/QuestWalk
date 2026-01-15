@@ -13,4 +13,5 @@ dependencies {
     implementation(projects.feature.quest)
     implementation(projects.feature.record)
     implementation(projects.feature.weather)
+    implementation(projects.feature.myinfo)
 }
