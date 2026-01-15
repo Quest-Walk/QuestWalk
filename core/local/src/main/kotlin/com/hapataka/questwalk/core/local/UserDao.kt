@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM current_user")
-    fun getCurrentUser(): Flow<UserEntity>
+    @Query("SELECT * FROM current_user LIMIT 1")
+    fun getCurrentUser(): Flow<UserEntity?>
 
     @Query("SELECT EXISTS(SELECT * FROM current_user)")
     fun existLoginUser(): Boolean

@@ -6,7 +6,7 @@ import com.hapataka.questwalk.core.remote.model.DustDto
 import com.hapataka.questwalk.core.remote.model.WeatherDto
 import com.hapataka.questwalk.data.dto.weather.Item
 import com.hapataka.questwalk.domain.repository.LocationRepository
-import com.hapataka.questwalk.ui.weather.LatXLngY
+import com.hapataka.questwalk.data.model.LatXLngY
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

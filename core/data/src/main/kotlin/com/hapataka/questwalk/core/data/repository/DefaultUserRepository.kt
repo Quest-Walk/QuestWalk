@@ -35,7 +35,7 @@ class DefaultUserRepository @Inject constructor(
         keyword: String,
         achievementId: Int?,
     ) = withContext(Dispatchers.IO) {
-        val user = localUserDataSource.getCurrentUser().first()
+        val user = localUserDataSource.getCurrentUser().first() ?: return@withContext
         val new = if (achievementId != null) {
             user.copy(
                 totalTime = user.totalTime + time,
@@ -56,7 +56,7 @@ class DefaultUserRepository @Inject constructor(
         firebaseUserDataSource.updateUserInfo(new)
     }
 
-    override fun getUserInfo(): Flow<User> {
+    override fun getUserInfo(): Flow<User?> {
         return localUserDataSource.getCurrentUser()
     }
 
@@ -66,11 +66,11 @@ class DefaultUserRepository @Inject constructor(
 
     override suspend fun fetchUserInfo(): Result<Unit> {
         return kotlin.runCatching {
-            localUserDataSource.getCurrentUser().first().let { user ->
-                firebaseUserDataSource.getUserInfo(user.userId)
-                    .onSuccess { userInfo -> localUserDataSource.insertUser(userInfo) }
-                    .onFailure { e -> throw e }
-            }
+            val user = localUserDataSource.getCurrentUser().first()
+                ?: throw IllegalStateException("No user found in local DB")
+            firebaseUserDataSource.getUserInfo(user.userId)
+                .onSuccess { userInfo -> localUserDataSource.insertUser(userInfo) }
+                .onFailure { e -> throw e }
         }
     }
 

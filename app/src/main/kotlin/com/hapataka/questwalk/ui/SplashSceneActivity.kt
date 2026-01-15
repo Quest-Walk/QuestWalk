@@ -28,17 +28,19 @@ class SplashSceneActivity :
                         if (userState.userInfo == com.hapataka.questwalk.feature.onboarding.model.UserInfo.EXIST) {
                             viewModel.cacheCurrentUserHistories()
                             changeTo(
-                                activity = MainActivity::class.java
+                                activity = MainActivity::class.java,
+                                isLoggedIn = true
                             )
                         } else {
                             changeTo(
-                                activity = LoginActivity::class.java, isLoggedIn = true
+                                activity = MainActivity::class.java,
+                                isLoggedIn = true
                             )
                         }
                     }
 
                     is com.hapataka.questwalk.feature.onboarding.model.UserState.LoggedOut -> {
-                        changeTo(LoginActivity::class.java)
+                        changeTo(MainActivity::class.java)
                     }
 
                     else -> {}

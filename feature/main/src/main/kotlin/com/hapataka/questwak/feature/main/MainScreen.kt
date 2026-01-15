@@ -1,8 +1,11 @@
 package com.hapataka.questwak.feature.main
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -12,35 +15,36 @@ import com.hapataka.questwak.feature.main.navigation.MainNavHost
 import com.hapataka.questwak.feature.main.navigation.MainNavigator
 import com.hapataka.questwak.feature.main.navigation.rememberMainNavigator
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
+import com.hapataka.questwalk.core.navigation.MainRoute
 import com.hapataka.questwalk.core.navigation.OnboardingStep
+import com.hapataka.questwalk.core.navigation.Route
+import com.hapataka.questwalk.core.ui.LocalPaddingValues
 
 @Composable
 fun MainScreen(
-    navigateToHome: () -> Unit,
     isLoggedIn: Boolean = false,
-    navigator: MainNavigator = rememberMainNavigator(),
+    navigator: MainNavigator = rememberMainNavigator(isLoggedIn = isLoggedIn),
 ) {
     var lightBarEnable by rememberSaveable { mutableStateOf(false) }
 
     navigator.navController.addOnDestinationChangedListener { _, destination, _ ->
-        lightBarEnable =
-            destination.route?.substringAfterLast(".") == OnboardingStep.Join.toString()
+        val route = destination.route?.substringAfterLast(".")
+        lightBarEnable = route == OnboardingStep.Join::class.simpleName
     }
 
-    QuestWalkTheme(lightBarEnable) {
+    QuestWalkTheme(lightBar = lightBarEnable) {
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-        ) { padding ->
-
-            MainNavHost(
-                isLoggedIn = isLoggedIn,
-                navigateToHome = navigateToHome,
-                navigator = navigator,
-                padding = padding,
-            )
+            modifier = Modifier.fillMaxSize(),
+            contentWindowInsets = WindowInsets.systemBars,
+        ) { paddingValues ->
+            CompositionLocalProvider(
+                LocalPaddingValues provides paddingValues
+            ) {
+                MainNavHost(
+                    navigator = navigator,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
     }
 }
-
-

@@ -9,4 +9,8 @@ setNamespace("feature.main")
 dependencies {
     implementation(projects.core.navigation)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.home)
+    implementation(projects.feature.quest)
+    implementation(projects.feature.record)
+    implementation(projects.feature.weather)
 }

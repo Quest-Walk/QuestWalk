@@ -1,4 +1,4 @@
-package com.hapataka.questwalk.ui.weather
+package com.hapataka.questwalk.data.model
 
 data class LatXLngY(
     var lat: Double = 0.0,

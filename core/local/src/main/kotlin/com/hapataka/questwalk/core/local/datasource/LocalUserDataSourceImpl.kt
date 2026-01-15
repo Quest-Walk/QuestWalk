@@ -12,8 +12,8 @@ import javax.inject.Inject
 class LocalUserDataSourceImpl @Inject constructor(
     private val userDao: UserDao
 ) : LocalUserDataSource {
-    override fun getCurrentUser(): Flow<User> {
-        return userDao.getCurrentUser().map { it.toModel() }
+    override fun getCurrentUser(): Flow<User?> {
+        return userDao.getCurrentUser().map { it?.toModel() }
     }
 
     override suspend fun existLoginUser() = userDao.existLoginUser()

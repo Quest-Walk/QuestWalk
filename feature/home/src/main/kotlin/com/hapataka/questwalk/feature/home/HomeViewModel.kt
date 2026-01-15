@@ -14,13 +14,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor() : ViewModel() {
 
-    private val _timeState = MutableStateFlow(LocalTime.now().hour)
-    val timeState = _timeState.asStateFlow()
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             while (true) {
-                _timeState.update { LocalTime.now().hour }
+                _uiState.update { it.copy(currentTime = LocalTime.now().hour) }
                 delay(60000L) // Update every minute
             }
         }

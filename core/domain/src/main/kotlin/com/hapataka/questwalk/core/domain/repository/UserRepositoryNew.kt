@@ -8,7 +8,7 @@ interface UserRepositoryNew {
     suspend fun checkUserLoggedIn(): Boolean
     suspend fun insertUser(userId: String)
     suspend fun clearUserInfo()
-    fun getUserInfo(): Flow<User>
+    fun getUserInfo(): Flow<User?>
     suspend fun fetchUserInfo(): Result<Unit>
     suspend fun postUserInfo(
         userId: String,

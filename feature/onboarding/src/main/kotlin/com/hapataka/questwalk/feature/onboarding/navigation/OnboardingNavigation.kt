@@ -1,6 +1,5 @@
 package com.hapataka.questwalk.feature.onboarding.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -15,13 +14,11 @@ fun NavController.navigateOnboarding(navOptions: NavOptions) {
 fun NavGraphBuilder.onboardingNavGraph(
     isLoggedIn: Boolean,
     navigateToHome: () -> Unit,
-    padding: PaddingValues,
 ) {
     composable<Route.Onboarding> {
         OnboardingScreen(
             isLoggedIn = isLoggedIn,
             navigateToHome = navigateToHome,
-            padding = padding
         )
     }
 }

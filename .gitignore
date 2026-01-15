@@ -4,7 +4,7 @@
 .kotlin
 .DS_Store
 .github
-/build
+build/
 /captures
 .externalNativeBuild
 .cxx
@@ -13,3 +13,13 @@ adminapp
 private_key.pepk
 quest_walk_keypath.jks
 app/google-services.json
+
+# Claude Code
+.claude/
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.bak

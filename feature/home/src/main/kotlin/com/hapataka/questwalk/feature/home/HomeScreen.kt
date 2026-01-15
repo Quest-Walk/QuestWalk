@@ -47,6 +47,8 @@ import com.hapataka.questwalk.core.designsystem.theme.SystemCyan
 import com.hapataka.questwalk.core.designsystem.theme.SystemGray
 import com.hapataka.questwalk.core.designsystem.theme.SystemLemon
 import com.hapataka.questwalk.core.designsystem.theme.Typography
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
@@ -57,9 +59,9 @@ const val QUEST_START = 1
 const val QUEST_SUCCESS = 2
 
 @Composable
-fun HomeRoute(
+internal fun HomeRoute(
     padding: PaddingValues = LocalPaddingValues.current,
-    uiState: HomeUiState,
+    viewModel: HomeViewModel = hiltViewModel(),
     onStartClick: () -> Unit = {},
     onStopClick: () -> Unit = {},
     onCameraClick: () -> Unit = {},
@@ -69,6 +71,8 @@ fun HomeRoute(
     onMyInfoClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     HomeScreen(
         uiState = uiState,
         padding = padding,

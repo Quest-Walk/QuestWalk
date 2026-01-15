@@ -10,7 +10,7 @@ class GetUserInfoUseCase @Inject constructor(
     @Named("DefaultUserRepository")
     private val userRepository: UserRepositoryNew,
 ) {
-    suspend operator fun invoke(): Flow<User> {
+    suspend operator fun invoke(): Flow<User?> {
         return userRepository.getUserInfo()
     }
 }

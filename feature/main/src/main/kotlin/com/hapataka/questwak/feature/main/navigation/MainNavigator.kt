@@ -9,14 +9,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.hapataka.questwalk.core.navigation.HomeRoute
 import com.hapataka.questwalk.core.navigation.MainRoute
-import com.hapataka.questwalk.core.navigation.OnboardingStep
 import com.hapataka.questwalk.core.navigation.Route
-import com.hapataka.questwalk.feature.onboarding.navigation.navigateOnboarding
 
 class MainNavigator(
     val navController: NavHostController,
+    val isLoggedIn: Boolean,
 ) {
-    val startDestination = OnboardingStep.Login
+    val startDestination: Any = if (isLoggedIn) MainRoute.Home else Route.Onboarding
+
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
@@ -25,16 +25,16 @@ class MainNavigator(
         restoreState = true
     }
 
-    fun navigate(menu: Route) {
-        when (menu) {
-            is Route.Onboarding -> navController.navigateOnboarding(singleTopOptions)
-            else -> throw IllegalArgumentException("존재하지 않는 메뉴입니다.")
+    // Main Navigation
+    fun navigateToHome(clearBackStack: Boolean = false) {
+        if (clearBackStack) {
+            navController.navigate(MainRoute.Home) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        } else {
+            navController.navigate(MainRoute.Home, singleTopOptions)
         }
-    }
-
-    // MainRoute Navigation
-    fun navigateToHome() {
-        navController.navigate(MainRoute.Home, singleTopOptions)
     }
 
     fun navigateToQuest() {
@@ -57,7 +57,7 @@ class MainNavigator(
         navController.navigate(MainRoute.Camera, singleTopOptions)
     }
 
-    // HomeRoute Navigation
+    // Detail Navigation
     fun navigateToQuestDetail(keyword: String) {
         navController.navigate(HomeRoute.QuestDetail(keyword), singleTopOptions)
     }
@@ -74,6 +74,7 @@ class MainNavigator(
 @Composable
 fun rememberMainNavigator(
     navController: NavHostController = rememberNavController(),
-): MainNavigator = remember(navController) {
-    MainNavigator(navController)
+    isLoggedIn: Boolean = false,
+): MainNavigator = remember(navController, isLoggedIn) {
+    MainNavigator(navController, isLoggedIn)
 }
