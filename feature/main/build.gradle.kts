@@ -8,6 +8,7 @@ setNamespace("feature.main")
 
 dependencies {
     implementation(projects.core.navigation)
+    implementation(projects.feature.splash)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)
     implementation(projects.feature.quest)

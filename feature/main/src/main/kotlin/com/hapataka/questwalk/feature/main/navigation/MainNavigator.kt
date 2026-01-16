@@ -1,4 +1,4 @@
-package com.hapataka.questwak.feature.main.navigation
+package com.hapataka.questwalk.feature.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,9 +13,8 @@ import com.hapataka.questwalk.core.navigation.Route
 
 class MainNavigator(
     val navController: NavHostController,
-    val isLoggedIn: Boolean,
 ) {
-    val startDestination: Any = if (isLoggedIn) MainRoute.Home else Route.Onboarding
+    val startDestination: Any = Route.Splash
 
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -81,7 +80,6 @@ class MainNavigator(
 @Composable
 fun rememberMainNavigator(
     navController: NavHostController = rememberNavController(),
-    isLoggedIn: Boolean = false,
-): MainNavigator = remember(navController, isLoggedIn) {
-    MainNavigator(navController, isLoggedIn)
+): MainNavigator = remember(navController) {
+    MainNavigator(navController)
 }

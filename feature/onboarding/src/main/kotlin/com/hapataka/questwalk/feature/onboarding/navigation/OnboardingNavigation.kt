@@ -12,12 +12,11 @@ fun NavController.navigateOnboarding(navOptions: NavOptions) {
 }
 
 fun NavGraphBuilder.onboardingNavGraph(
-    isLoggedIn: Boolean,
     navigateToHome: () -> Unit,
 ) {
     composable<Route.Onboarding> {
         OnboardingScreen(
-            isLoggedIn = isLoggedIn,
+            isLoggedIn = false,
             navigateToHome = navigateToHome,
         )
     }

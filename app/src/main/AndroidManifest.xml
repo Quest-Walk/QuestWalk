@@ -33,20 +33,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuestWalk"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.SplashSceneActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -55,9 +41,6 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="ocr_korean" />
 
-        <service
-            android:name=".ui.main.MainActivity"
-            android:foregroundServiceType="location" />
     </application>
 
 </manifest>

@@ -1,17 +1,16 @@
-package com.hapataka.questwak.feature.main.navigation
+package com.hapataka.questwalk.feature.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import com.hapataka.questwalk.core.navigation.MainRoute
-import com.hapataka.questwalk.core.navigation.Route
 import com.hapataka.questwalk.feature.home.navigation.homeScreen
+import com.hapataka.questwalk.feature.myinfo.navigation.myInfoScreen
 import com.hapataka.questwalk.feature.onboarding.navigation.onboardingNavGraph
 import com.hapataka.questwalk.feature.quest.navigation.questDetailScreen
 import com.hapataka.questwalk.feature.quest.navigation.questScreen
 import com.hapataka.questwalk.feature.record.navigation.recordScreen
+import com.hapataka.questwalk.feature.splash.navigation.splashScreen
 import com.hapataka.questwalk.feature.weather.navigation.weatherScreen
-import com.hapataka.questwalk.feature.myinfo.navigation.myInfoScreen
 
 @Composable
 internal fun MainNavHost(
@@ -23,9 +22,14 @@ internal fun MainNavHost(
         startDestination = navigator.startDestination,
         modifier = modifier,
     ) {
+        // Splash
+        splashScreen(
+            onNavigateToHome = { navigator.navigateToHome(clearBackStack = true) },
+            onNavigateToOnboarding = { navigator.navigateToOnboarding() },
+        )
+
         // Onboarding (Login -> Join -> Setup -> Home)
         onboardingNavGraph(
-            isLoggedIn = navigator.isLoggedIn,
             navigateToHome = {
                 navigator.navigateToHome(clearBackStack = true)
             },
@@ -33,10 +37,10 @@ internal fun MainNavHost(
 
         // Home
         homeScreen(
-            onStartClick = { /* TODO: MainViewModel.togglePlay */ },
-            onStopClick = { /* TODO: MainViewModel.togglePlay */ },
+            onStartClick = { /* TODO: PlaySessionRepository.startSession */ },
+            onStopClick = { /* TODO: PlaySessionRepository.stopSession */ },
             onCameraClick = { navigator.navigateToCamera() },
-            onCompleteClick = { /* TODO: MainViewModel.togglePlay */ },
+            onCompleteClick = { /* TODO: PlaySessionRepository.stopSession */ },
             onQuestChangeClick = { navigator.navigateToQuest() },
             onWeatherClick = { navigator.navigateToWeather() },
             onMyInfoClick = { navigator.navigateToMyInfo() },
@@ -48,7 +52,7 @@ internal fun MainNavHost(
             onBackClick = { navigator.popBackStack() },
             onQuestDetailClick = { keyword -> navigator.navigateToQuestDetail(keyword) },
             onQuestSelected = { keyword ->
-                // TODO: MainViewModel.setSelectKeyword(keyword)
+                // TODO: PlaySessionRepository.setKeyword
                 navigator.popBackStack()
             },
         )

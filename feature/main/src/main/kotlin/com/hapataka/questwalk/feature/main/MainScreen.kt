@@ -1,4 +1,4 @@
-package com.hapataka.questwak.feature.main
+package com.hapataka.questwalk.feature.main
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,19 +11,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.hapataka.questwak.feature.main.navigation.MainNavHost
-import com.hapataka.questwak.feature.main.navigation.MainNavigator
-import com.hapataka.questwak.feature.main.navigation.rememberMainNavigator
+import com.hapataka.questwalk.feature.main.navigation.MainNavHost
+import com.hapataka.questwalk.feature.main.navigation.MainNavigator
+import com.hapataka.questwalk.feature.main.navigation.rememberMainNavigator
 import com.hapataka.questwalk.core.designsystem.theme.QuestWalkTheme
-import com.hapataka.questwalk.core.navigation.MainRoute
 import com.hapataka.questwalk.core.navigation.OnboardingStep
-import com.hapataka.questwalk.core.navigation.Route
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 
 @Composable
 fun MainScreen(
-    isLoggedIn: Boolean = false,
-    navigator: MainNavigator = rememberMainNavigator(isLoggedIn = isLoggedIn),
+    navigator: MainNavigator = rememberMainNavigator(),
 ) {
     var lightBarEnable by rememberSaveable { mutableStateOf(false) }
 
