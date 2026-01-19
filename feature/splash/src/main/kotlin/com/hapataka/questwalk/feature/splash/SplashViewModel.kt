@@ -30,10 +30,12 @@ class SplashViewModel @Inject constructor(
 
             if (isLoggedIn) {
                 fetchUserInfoUseCase()
-                _uiState.update { SplashUiState.NavigateToMain(isLoggedIn = true) }
-            } else {
-                _uiState.update { SplashUiState.NavigateToMain(isLoggedIn = false) }
             }
+
+            // 애니메이션이 보이도록 최소 2초 대기
+            kotlinx.coroutines.delay(2000L)
+
+            _uiState.update { SplashUiState.NavigateToMain(isLoggedIn = isLoggedIn) }
         }
     }
 }

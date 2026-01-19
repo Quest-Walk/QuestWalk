@@ -5,6 +5,8 @@ androidGradlePlugin = "8.8.0"
 ## AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
 androidxActivity = "1.9.3"
+# https://developer.android.com/jetpack/androidx/releases/core
+androidxCoreSplashscreen = "1.0.1"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 androidxLifecycle = "2.8.7"
 
@@ -101,6 +103,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 

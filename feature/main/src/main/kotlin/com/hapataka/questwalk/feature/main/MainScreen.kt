@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,9 +25,15 @@ fun MainScreen(
 ) {
     var lightBarEnable by rememberSaveable { mutableStateOf(false) }
 
-    navigator.navController.addOnDestinationChangedListener { _, destination, _ ->
-        val route = destination.route?.substringAfterLast(".")
-        lightBarEnable = route == OnboardingStep.Join::class.simpleName
+    DisposableEffect(navigator.navController) {
+        val listener = androidx.navigation.NavController.OnDestinationChangedListener { _, destination, _ ->
+            val route = destination.route?.substringAfterLast(".")
+            lightBarEnable = route == OnboardingStep.Join::class.simpleName
+        }
+        navigator.navController.addOnDestinationChangedListener(listener)
+        onDispose {
+            navigator.navController.removeOnDestinationChangedListener(listener)
+        }
     }
 
     QuestWalkTheme(lightBar = lightBarEnable) {

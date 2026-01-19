@@ -7,6 +7,7 @@ plugins {
 setNamespace("feature.main")
 
 dependencies {
+    implementation(libs.androidx.core.splashscreen)
     implementation(projects.core.navigation)
     implementation(projects.feature.splash)
     implementation(projects.feature.onboarding)

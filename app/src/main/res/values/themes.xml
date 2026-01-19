@@ -3,12 +3,13 @@
     <style name="Base.Theme.QuestWalk" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="android:statusBarColor">@color/main_purple</item>
-        <item name="android:navigationBarColor">@color/main_purple</item>
-        <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.QuestWalk" parent="Base.Theme.QuestWalk" />
+
+    <!-- Splash screen theme -->
+    <style name="Theme.QuestWalk.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/main_purple</item>
+        <item name="postSplashScreenTheme">@style/Theme.QuestWalk</item>
+    </style>
 </resources>
