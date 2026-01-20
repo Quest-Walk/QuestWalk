@@ -7,8 +7,8 @@ data class PlaySession(
     val duration: Long = 0L,
     val distance: Float = 0f,
     val steps: Long = 0L,
-    val route: List<Pair<Float, Float>> = emptyList(),
-    val successLocation: Pair<Float, Float>? = null,
+    val route: List<Location> = emptyList(),
+    val successLocation: Location? = null,
 ) {
     val isPlaying: Boolean get() = playState == PlayState.PLAYING
     val isStopped: Boolean get() = playState == PlayState.STOPPED

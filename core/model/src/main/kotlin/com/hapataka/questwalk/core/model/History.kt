@@ -16,8 +16,8 @@ sealed class History(
         val distance: Float,
         val step: Long,
         val isSuccess: Boolean,
-        val route: List<Pair<Float, Float>>,
-        val successLocation: Pair<Float, Float>?,
+        val route: List<Location>,
+        val successLocation: Location?,
         val imageUrl: String? = null,
     ) : History(id, userId, registerAt)
 
