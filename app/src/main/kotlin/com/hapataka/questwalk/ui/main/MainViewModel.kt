@@ -11,6 +11,7 @@ import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateUserInfoUseCase
 import com.hapataka.questwalk.core.model.History
+import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
@@ -83,8 +84,8 @@ class MainViewModel @Inject constructor(
     val isStop: LiveData<Boolean> get() = _isStop
 
     private var timer: Job? = null
-    private var locationHistory = mutableListOf<Pair<Float, Float>>()
-    private var questLocation: Pair<Float, Float>? = null
+    private var locationHistory = mutableListOf<Location>()
+    private var questLocation: Location? = null
     private var currentTime: String = ""
 
     private var isPreProcess = false
@@ -122,7 +123,8 @@ class MainViewModel @Inject constructor(
         delay(1500L)
 
         if (checkFail) {
-            questLocation = locationRepo.getCurrent().location
+            val loc = locationRepo.getCurrent().location
+            questLocation = Location(latitude = loc.first, longitude = loc.second)
             _playState.value = QUEST_SUCCESS
             visibleLoading(HIDE_LOADING)
             visibleImageCallback()
@@ -179,7 +181,8 @@ class MainViewModel @Inject constructor(
     }
 
     private fun setCurrentLocationInfo(locationInfo: LocationEntity) {
-        locationHistory += locationInfo.location
+        val loc = locationInfo.location
+        locationHistory += Location(latitude = loc.first, longitude = loc.second)
         _totalDistance.value = _totalDistance.value?.plus(locationInfo.distance)
     }
 
@@ -216,7 +219,8 @@ class MainViewModel @Inject constructor(
             questLocation = null
             locationRepo.startRequest {
                 setDistance(it.distance)
-                locationHistory += it.location
+                val loc = it.location
+                locationHistory += Location(latitude = loc.first, longitude = loc.second)
             }
         } else {
             locationRepo.finishRequest()

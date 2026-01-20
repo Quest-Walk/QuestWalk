@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -224,9 +222,9 @@ private fun WeatherContent(state: WeatherUiState) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Hourly Weather
+        // Current Weather
         Text(
-            text = "시간대별 날씨",
+            text = "현재 날씨",
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = Color.DarkGray
@@ -234,14 +232,7 @@ private fun WeatherContent(state: WeatherUiState) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 4.dp)
-        ) {
-            items(state.weatherItems, key = { it.time }) { item ->
-                WeatherItemCard(item = item)
-            }
-        }
+        WeatherItemCard(item = state.weatherItem)
 
         Spacer(modifier = Modifier.height(24.dp))
     }
@@ -292,20 +283,19 @@ private fun formatTime(time: String): String {
 }
 
 private fun getWeatherEmoji(sky: String, precipType: String): String {
-    val precip = precipType.toIntOrNull() ?: 0
-    if (precip > 0) {
-        return when (precip) {
-            1, 4 -> "🌧️"
-            2 -> "🌨️"
-            3 -> "❄️"
+    if (precipType != "없음") {
+        return when (precipType) {
+            "비", "소나기" -> "🌧️"
+            "비/눈" -> "🌨️"
+            "눈" -> "❄️"
             else -> "🌧️"
         }
     }
 
-    val skyValue = sky.toIntOrNull() ?: 0
-    return when {
-        skyValue <= 5 -> "☀️"
-        skyValue <= 8 -> "⛅"
-        else -> "☁️"
+    return when (sky) {
+        "맑음" -> "☀️"
+        "구름많음" -> "⛅"
+        "흐림" -> "☁️"
+        else -> "☀️"
     }
 }

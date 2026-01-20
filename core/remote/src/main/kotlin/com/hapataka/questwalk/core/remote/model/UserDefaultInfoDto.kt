@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.core.remote.model
 
+import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 
 data class UserDefaultInfoDto(
@@ -14,7 +15,7 @@ data class UserDefaultInfoDto(
 fun User.getDefaultInfo() = hashMapOf(
     "userId" to this.userId,
     "userName" to this.userName,
-    "characterId" to this.characterType,
+    "characterId" to this.characterType.id,
     "totalTime" to this.totalTime,
     "totalDistance" to this.totalDistance,
     "totalStep" to this.totalStep,
@@ -26,7 +27,7 @@ fun UserDefaultInfoDto.toModel(
 ) = User(
     userId = this.userId,
     userName = this.userName,
-    characterType = this.characterId,
+    characterType = CharacterType.entries.find { it.id == this.characterId } ?: CharacterType.BEAR,
     totalTime = this.totalTime,
     totalDistance = this.totalDistance,
     totalStep = this.totalStep,

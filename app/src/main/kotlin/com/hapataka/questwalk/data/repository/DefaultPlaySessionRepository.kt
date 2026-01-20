@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.data.repository
 
 import com.hapataka.questwalk.core.domain.repository.PlaySessionRepository
+import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.model.PlaySession
 import com.hapataka.questwalk.core.model.PlayState
 import com.hapataka.questwalk.data.di.ApplicationScope
@@ -51,7 +52,7 @@ class DefaultPlaySessionRepository @Inject constructor(
         _sessionState.update { it.copy(playState = PlayState.STOPPED) }
     }
 
-    override fun markSuccess(location: Pair<Float, Float>) {
+    override fun markSuccess(location: Location) {
         _sessionState.update {
             it.copy(
                 playState = PlayState.SUCCESS,
@@ -88,7 +89,11 @@ class DefaultPlaySessionRepository @Inject constructor(
     private fun startLocationTracking() {
         locationRepository.startRequest { locationEntity ->
             val currentRoute = _sessionState.value.route
-            val newRoute = currentRoute + locationEntity.location
+            val newLocation = Location(
+                latitude = locationEntity.location.first,
+                longitude = locationEntity.location.second,
+            )
+            val newRoute = currentRoute + newLocation
             val newDistance = _sessionState.value.distance + locationEntity.distance.coerceAtMost(30f)
 
             _sessionState.update {

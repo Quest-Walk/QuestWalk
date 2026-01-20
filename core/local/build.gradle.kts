@@ -9,9 +9,13 @@ plugins {
 setNamespace("core.local")
 
 dependencies {
+    implementation(projects.core.dataApi)
     implementation(projects.core.domain)
 
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    implementation(libs.play.services.location)
+    implementation(libs.coroutines.play.services)
 }

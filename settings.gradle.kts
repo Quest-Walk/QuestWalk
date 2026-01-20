@@ -39,6 +39,7 @@ include(
     ":core:navigation",
     ":core:domain",
     ":core:data",
+    ":core:data-api",
     ":core:remote",
     ":core:model",
     ":core:common",

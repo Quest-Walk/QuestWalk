@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.core.remote.mapper
 
 import com.hapataka.questwalk.core.model.History
+import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.remote.model.QuestResultDto
 import com.hapataka.questwalk.core.remote.util.decryptECB
 import kotlinx.serialization.KSerializer
@@ -32,21 +33,22 @@ internal fun QuestResultDto.toModel(key: String): History.QuestResult {
     )
 }
 
-private fun String.toRoute(key: String): List<Pair<Float, Float>> {
+private fun String.toRoute(key: String): List<Location> {
     val json = Json {
         ignoreUnknownKeys = true
     }
 
-
-    return json.decodeFromString(ListSerializer(FloatPairSerializer), this.decryptECB(key))
+    val pairs = json.decodeFromString(ListSerializer(FloatPairSerializer), this.decryptECB(key))
+    return pairs.map { Location(latitude = it.first, longitude = it.second) }
 }
 
-private fun String.toLocation(key: String): Pair<Float, Float> {
+private fun String.toLocation(key: String): Location {
     val json = Json {
         ignoreUnknownKeys = true
     }
 
-    return json.decodeFromString(FloatPairSerializer, this.decryptECB(key))
+    val pair = json.decodeFromString(FloatPairSerializer, this.decryptECB(key))
+    return Location(latitude = pair.first, longitude = pair.second)
 }
 
 object FloatPairSerializer : KSerializer<Pair<Float, Float>> {

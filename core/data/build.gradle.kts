@@ -8,6 +8,7 @@ plugins {
 setNamespace("core.data")
 
 dependencies {
+    implementation(projects.core.dataApi)
     implementation(projects.core.domain)
     implementation(projects.core.remote)
     implementation(projects.core.local)

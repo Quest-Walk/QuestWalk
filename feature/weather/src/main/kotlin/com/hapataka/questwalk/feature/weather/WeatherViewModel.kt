@@ -2,25 +2,21 @@ package com.hapataka.questwalk.feature.weather
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.domain.usecase.GetDustInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetWeatherInfoUseCase
-import com.hapataka.questwalk.core.model.Dust
+import com.hapataka.questwalk.core.model.PrecipType
+import com.hapataka.questwalk.core.model.SkyType
 import com.hapataka.questwalk.core.model.Weather
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val getWeatherInfoUseCase: GetWeatherInfoUseCase,
-    private val getDustInfoUseCase: GetDustInfoUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<WeatherUiState>>(UiState.Loading)
@@ -40,77 +36,57 @@ class WeatherViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { UiState.Loading }
 
-            val weatherDeferred = async { getWeatherInfoUseCase() }
-            val dustDeferred = async { getDustInfoUseCase() }
-
-            val weatherResult = weatherDeferred.await()
-            val dustResult = dustDeferred.await()
-
-            if (weatherResult.isFailure || dustResult.isFailure) {
-                _uiState.update {
-                    UiState.Failure(
-                        weatherResult.exceptionOrNull()
-                            ?: dustResult.exceptionOrNull()
-                            ?: Exception("Unknown error")
-                    )
+            getWeatherInfoUseCase()
+                .onSuccess { weather ->
+                    _uiState.update {
+                        UiState.Success(createUiState(weather))
+                    }
                 }
-                return@launch
-            }
-
-            val weatherList = weatherResult.getOrNull() ?: emptyList()
-            val dust = dustResult.getOrNull() ?: Dust(-1, -1)
-
-            _uiState.update {
-                UiState.Success(
-                    createUiState(weatherList, dust)
-                )
-            }
+                .onFailure { e ->
+                    _uiState.update { UiState.Failure(e) }
+                }
         }
     }
 
-    private fun createUiState(weatherList: List<Weather>, dust: Dust): WeatherUiState {
-        val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00"))
-        val currentWeather = weatherList.firstOrNull { it.fcstTime == requestTime }
-
+    private fun createUiState(weather: Weather): WeatherUiState {
         val preview = WeatherPreviewUiModel(
-            currentTemp = currentWeather?.temp ?: "0",
-            skyState = getSkyState(currentWeather?.sky ?: "0"),
-            precipState = getPrecipTypeState(currentWeather?.precipType ?: "0"),
-            miseState = getMiseState(dust.pm10Value),
-            choMiseState = getChoMiseState(dust.pm25Value),
+            currentTemp = "${weather.temp}",
+            skyState = getSkyState(weather.sky),
+            precipState = getPrecipTypeState(weather.precipType),
+            miseState = getMiseState(weather.pm10),
+            choMiseState = getChoMiseState(weather.pm25),
         )
 
         return WeatherUiState(
             preview = preview,
             dust = DustUiModel(
-                pm10Value = if (dust.pm10Value == -1) "통신 장애" else "${dust.pm10Value} ㎍/㎥",
-                pm25Value = if (dust.pm25Value == -1) "통신 장애" else "${dust.pm25Value} ㎍/㎥",
+                pm10Value = if (weather.pm10 == -1) "통신 장애" else "${weather.pm10} ㎍/㎥",
+                pm25Value = if (weather.pm25 == -1) "통신 장애" else "${weather.pm25} ㎍/㎥",
             ),
-            weatherItems = weatherList.map { weather ->
-                WeatherItemUiModel(
-                    time = weather.fcstTime,
-                    temp = weather.temp,
-                    sky = weather.sky,
-                    precipType = weather.precipType,
-                )
-            }
+            region = weather.region.name,
+            weatherItem = WeatherItemUiModel(
+                time = weather.fcstTime,
+                temp = "${weather.temp}",
+                sky = weather.sky.toDisplayString(),
+                precipType = weather.precipType.toDisplayString(),
+            )
         )
     }
 
-    private fun getSkyState(sky: String): String {
-        return when (sky.toIntOrNull() ?: 0) {
-            in 0..5 -> "맑음 이구먼"
-            in 6..8 -> "구름이 많구먼"
-            else -> "많이 흐리겠구먼"
+    private fun getSkyState(sky: SkyType): String {
+        return when (sky) {
+            SkyType.CLEAR -> "맑음 이구먼"
+            SkyType.CLOUDY -> "구름이 많구먼"
+            SkyType.OVERCAST -> "많이 흐리겠구먼"
         }
     }
 
-    private fun getPrecipTypeState(precipType: String): String {
-        return when (precipType.toIntOrNull() ?: 0) {
-            1, 4 -> "비가 올 수도 있겠어"
-            2 -> "비 나 눈이 내릴 수도 있겠어"
-            3 -> "눈이 올 수도 있겠어"
-            else -> ""
+    private fun getPrecipTypeState(precipType: PrecipType): String {
+        return when (precipType) {
+            PrecipType.NONE -> ""
+            PrecipType.RAIN, PrecipType.SHOWER -> "비가 올 수도 있겠어"
+            PrecipType.RAIN_SNOW -> "비나 눈이 내릴 수도 있겠어"
+            PrecipType.SNOW -> "눈이 올 수도 있겠어"
         }
     }
 
@@ -133,12 +109,31 @@ class WeatherViewModel @Inject constructor(
             else -> "매우 나쁨 이구먼"
         }
     }
+
+    private fun SkyType.toDisplayString(): String {
+        return when (this) {
+            SkyType.CLEAR -> "맑음"
+            SkyType.CLOUDY -> "구름많음"
+            SkyType.OVERCAST -> "흐림"
+        }
+    }
+
+    private fun PrecipType.toDisplayString(): String {
+        return when (this) {
+            PrecipType.NONE -> "없음"
+            PrecipType.RAIN -> "비"
+            PrecipType.SNOW -> "눈"
+            PrecipType.RAIN_SNOW -> "비/눈"
+            PrecipType.SHOWER -> "소나기"
+        }
+    }
 }
 
 data class WeatherUiState(
     val preview: WeatherPreviewUiModel = WeatherPreviewUiModel(),
     val dust: DustUiModel = DustUiModel(),
-    val weatherItems: List<WeatherItemUiModel> = emptyList(),
+    val region: String = "",
+    val weatherItem: WeatherItemUiModel = WeatherItemUiModel(),
 )
 
 data class WeatherPreviewUiModel(

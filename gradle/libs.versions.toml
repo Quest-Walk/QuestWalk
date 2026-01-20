@@ -67,6 +67,18 @@ coilLegacy = "2.7.0"
 # https://developers.google.com/identity/android-credential-manager/releases?hl=ko
 googleIdentity = "1.1.1"
 
+## Play Services Location
+# https://developers.google.com/android/guides/releases
+playServicesLocation = "21.3.0"
+
+## Retrofit
+# https://github.com/square/retrofit
+retrofit = "2.11.0"
+okhttp = "4.12.0"
+
+## Proj4j (좌표 변환)
+proj4j = "1.3.0"
+
 ## OpenCV
 # https://github.com/opencv/opencv/releases
 opencv = "4.11.0"
@@ -142,15 +154,22 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine" }
+coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutine" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBoM" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
 
 google-android-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdentity" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+proj4j = { group = "org.locationtech.proj4j", name = "proj4j", version.ref = "proj4j" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

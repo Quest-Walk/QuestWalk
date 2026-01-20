@@ -20,7 +20,7 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
 
     override fun drawPath(result: History.QuestResult) {
         locationList = result.route.map {
-            LatLng(it.first.toDouble(), it.second.toDouble())
+            LatLng(it.latitude.toDouble(), it.longitude.toDouble())
         }.toList()
 
         while (locationList.size > 1000) {
@@ -64,8 +64,8 @@ class GoogleMapRepositoryImpl : MapRepository, OnMapReadyCallback {
     }
 
     private fun addMarker(result: History.QuestResult) {
-        val questLatitude = result.successLocation?.first?.toDouble() ?: 0.0
-        val questLongitude = result.successLocation?.second?.toDouble() ?: 0.0
+        val questLatitude = result.successLocation?.latitude?.toDouble() ?: 0.0
+        val questLongitude = result.successLocation?.longitude?.toDouble() ?: 0.0
 
         googleMap?.addMarker(
             MarkerOptions()

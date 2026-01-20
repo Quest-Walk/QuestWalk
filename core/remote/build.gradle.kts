@@ -8,10 +8,19 @@ plugins {
 setNamespace("core.remote")
 
 dependencies {
+    implementation(projects.core.dataApi)
     implementation(projects.core.domain)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.kotlinx.serialization.json)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging)
+
+    // Proj4j (좌표 변환)
+    implementation(libs.proj4j)
 }

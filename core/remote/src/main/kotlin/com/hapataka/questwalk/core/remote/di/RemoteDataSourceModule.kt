@@ -2,16 +2,22 @@ package com.hapataka.questwalk.core.remote.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.hapataka.questwalk.core.dataapi.datasource.DustRemoteDataSource
+import com.hapataka.questwalk.core.dataapi.datasource.WeatherRemoteDataSource
 import com.hapataka.questwalk.core.remote.api.AchieveItemDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
+import com.hapataka.questwalk.core.remote.api.DustApi
 import com.hapataka.questwalk.core.remote.api.HistoryDataSource
 import com.hapataka.questwalk.core.remote.api.QuestDataSource
 import com.hapataka.questwalk.core.remote.api.UserDataSource
+import com.hapataka.questwalk.core.remote.api.WeatherApi
 import com.hapataka.questwalk.core.remote.datasource.FirebaseAchieveItemDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseAuthDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseHistoryDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseQuestDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseUserDataSource
+import com.hapataka.questwalk.core.remote.datasource.HttpDustDataSource
+import com.hapataka.questwalk.core.remote.datasource.HttpWeatherDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,5 +64,23 @@ object RemoteDataSourceModule {
     @Singleton
     fun providesQuestDataSource(): QuestDataSource {
         return FirebaseQuestDataSource(FirebaseFirestore.getInstance())
+    }
+
+    @Provides
+    @Singleton
+    fun providesWeatherRemoteDataSource(
+        weatherApi: WeatherApi,
+        @Named("weatherApiKey") apiKey: String,
+    ): WeatherRemoteDataSource {
+        return HttpWeatherDataSource(weatherApi, apiKey)
+    }
+
+    @Provides
+    @Singleton
+    fun providesDustRemoteDataSource(
+        dustApi: DustApi,
+        @Named("weatherApiKey") apiKey: String,
+    ): DustRemoteDataSource {
+        return HttpDustDataSource(dustApi, apiKey)
     }
 }

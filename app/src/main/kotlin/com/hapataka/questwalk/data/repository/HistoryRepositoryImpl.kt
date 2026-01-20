@@ -4,6 +4,7 @@ import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.model.History.Achievement
 import com.hapataka.questwalk.core.model.History.QuestResult
+import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.remote.util.decryptECB
 import com.hapataka.questwalk.domain.data.remote.AchievementsDataSource
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
@@ -71,11 +72,13 @@ class HistoryRepositoryImpl @Inject constructor(
         return firebaseHistoryRDS.deleteHistoriesById(userId)
     }
 
-    private fun String.toRoute(): MutableList<Pair<Float, Float>> {
-        return Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
+    private fun String.toRoute(): List<Location> {
+        val pairs: List<Pair<Float, Float>> = Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
+        return pairs.map { Location(latitude = it.first, longitude = it.second) }
     }
 
-    private fun String.toSuccessLocation(): Pair<Float, Float> {
-        return Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
+    private fun String.toSuccessLocation(): Location {
+        val pair: Pair<Float, Float> = Json.decodeFromString(this.decryptECB(UserInfo.encryptionKey))
+        return Location(latitude = pair.first, longitude = pair.second)
     }
 }

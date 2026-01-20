@@ -66,7 +66,7 @@ class MyInfoViewModel @Inject constructor(
 
         return MyInfoUiState(
             userName = userName,
-            characterType = characterType,
+            characterType = characterType.id,
             totalTimeFormatted = "${hours}시간 ${minutes}분 ${seconds}초",
             totalDistanceFormatted = if (totalDistance >= 1000) {
                 String.format("%.1fkm", totalDistance / 1000)
