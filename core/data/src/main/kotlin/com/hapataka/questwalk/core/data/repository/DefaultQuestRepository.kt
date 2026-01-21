@@ -1,25 +1,25 @@
 package com.hapataka.questwalk.core.data.repository
 
+import com.hapataka.questwalk.core.dataapi.datasource.QuestRemoteDataSource
+import com.hapataka.questwalk.core.dataapi.model.QuestDto
+import com.hapataka.questwalk.core.dataapi.model.SuccessItemDto
 import com.hapataka.questwalk.core.domain.repository.QuestRepository
 import com.hapataka.questwalk.core.model.Quest
-import com.hapataka.questwalk.core.remote.api.QuestDataSource
-import com.hapataka.questwalk.core.remote.model.QuestDto
 import javax.inject.Inject
 
 class DefaultQuestRepository @Inject constructor(
-    private val questDataSource: QuestDataSource,
+    private val questRemoteDataSource: QuestRemoteDataSource,
 ) : QuestRepository {
 
     override suspend fun getAllQuests(): Result<List<Quest>> {
-        return runCatching {
-            questDataSource.getAllQuests().map { it.toModel() }
+        return questRemoteDataSource.getAllQuests().map { dtos ->
+            dtos.map { it.toModel() }
         }
     }
 
     override suspend fun getQuestByKeyword(keyword: String): Result<Quest> {
-        return runCatching {
-            questDataSource.getQuestByKeyword(keyword)?.toModel()
-                ?: throw NoSuchElementException("Quest not found: $keyword")
+        return questRemoteDataSource.getQuestByKeyword(keyword).map { dto ->
+            dto?.toModel() ?: throw NoSuchElementException("Quest not found: $keyword")
         }
     }
 
@@ -29,24 +29,23 @@ class DefaultQuestRepository @Inject constructor(
         imageUrl: String,
         registerAt: String,
     ): Result<Unit> {
-        return runCatching {
-            questDataSource.updateQuestSuccess(keyword, userId, imageUrl, registerAt)
-        }
-    }
-
-    private fun QuestDto.toModel(): Quest {
-        return Quest(
-            keyword = keyWord,
-            level = level,
-            successItems = successItems.map { it.toModel() }
-        )
-    }
-
-    private fun QuestDto.SuccessItemDto.toModel(): Quest.SuccessItem {
-        return Quest.SuccessItem(
+        val successItem = SuccessItemDto(
             userId = userId,
             imageUrl = imageUrl,
-            registerAt = registerAt
+            registerAt = registerAt,
         )
+        return questRemoteDataSource.updateQuestSuccess(keyword, successItem)
     }
+
+    private fun QuestDto.toModel(): Quest = Quest(
+        keyword = keyword,
+        level = level,
+        successItems = successItems.map { it.toModel() },
+    )
+
+    private fun SuccessItemDto.toModel(): Quest.SuccessItem = Quest.SuccessItem(
+        userId = userId,
+        imageUrl = imageUrl,
+        registerAt = registerAt,
+    )
 }

@@ -7,21 +7,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.GetAvailableQuestsUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
+import com.hapataka.questwalk.core.domain.usecase.UpdateQuestSuccessUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateUserInfoUseCase
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.model.Location
+import com.hapataka.questwalk.core.model.Quest
 import com.hapataka.questwalk.domain.entity.HistoryEntity
 import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
-import com.hapataka.questwalk.domain.repository.QuestStackRepository
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.domain.usecase.AchievementListener
-import com.hapataka.questwalk.domain.usecase.QuestFilteringUseCase
 import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.debatty.java.stringsimilarity.RatcliffObershelp
@@ -43,7 +44,6 @@ const val HIDE_LOADING = false
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val userRepo: UserRepo,
-    private val questRepo: QuestStackRepository,
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
@@ -51,6 +51,8 @@ class MainViewModel @Inject constructor(
     private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
     private val postHistoryUseCase: PostHistoryUseCase,
     private val updateUserInfoUseCase: UpdateUserInfoUseCase,
+    private val updateQuestSuccessUseCase: UpdateQuestSuccessUseCase,
+    private val getAvailableQuestsUseCase: GetAvailableQuestsUseCase,
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -330,11 +332,11 @@ class MainViewModel @Inject constructor(
     private suspend fun updateQuestStack(uri: String) {
         val keyword = currentKeyword.value ?: ""
 
-        questRepo.updateQuest(
-            keyword,
-            UserInfo.uid,
-            uri,
-            currentTime
+        updateQuestSuccessUseCase(
+            keyword = keyword,
+            userId = UserInfo.uid,
+            imageUrl = uri,
+            registerAt = currentTime,
         )
     }
 
@@ -356,20 +358,31 @@ class MainViewModel @Inject constructor(
 
     fun setRandomKeyword() {
         viewModelScope.launch {
-            val newQuest = QuestFilteringUseCase().invoke().random()
-
-            _keywordLevel.update { newQuest.level }
-            _currentKeyword.value = newQuest.keyWord
+            getAvailableQuestsUseCase()
+                .onSuccess { quests ->
+                    if (quests.isNotEmpty()) {
+                        val newQuest = quests.random()
+                        _keywordLevel.update { newQuest.level }
+                        _currentKeyword.value = newQuest.keyword
+                    }
+                }
+                .onFailure { e ->
+                    Log.e(this.javaClass.simpleName, "Failed to get available quests: ${e.message}")
+                }
         }
     }
 
     fun setSelectKeyword(keyword: String) {
         viewModelScope.launch {
-            val newQuest =
-                QuestFilteringUseCase().invoke().find { it.keyWord == keyword } ?: return@launch
-
-            _keywordLevel.update { newQuest.level }
-            _currentKeyword.value = newQuest.keyWord
+            getAvailableQuestsUseCase()
+                .onSuccess { quests ->
+                    val newQuest = quests.find { it.keyword == keyword } ?: return@onSuccess
+                    _keywordLevel.update { newQuest.level }
+                    _currentKeyword.value = newQuest.keyword
+                }
+                .onFailure { e ->
+                    Log.e(this.javaClass.simpleName, "Failed to get available quests: ${e.message}")
+                }
         }
     }
 
