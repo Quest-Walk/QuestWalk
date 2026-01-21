@@ -7,7 +7,7 @@ import com.hapataka.questwalk.core.dataapi.datasource.WeatherRemoteDataSource
 import com.hapataka.questwalk.core.remote.api.AchieveItemDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
 import com.hapataka.questwalk.core.remote.api.DustApi
-import com.hapataka.questwalk.core.remote.api.HistoryDataSource
+import com.hapataka.questwalk.core.dataapi.datasource.HistoryRemoteDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.QuestRemoteDataSource
 import com.hapataka.questwalk.core.remote.api.UserDataSource
 import com.hapataka.questwalk.core.remote.api.WeatherApi
@@ -48,9 +48,8 @@ object RemoteDataSourceModule {
     }
 
     @Provides
-    @Named("FirestoreHistory")
     @Singleton
-    fun providesHistoryDataSource(): HistoryDataSource {
+    fun providesHistoryRemoteDataSource(): HistoryRemoteDataSource {
         return FirebaseHistoryDataSource(FirebaseFirestore.getInstance().collection("histories"))
     }
 

@@ -1,8 +1,6 @@
 package com.hapataka.questwalk.data.di
 
-import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.data.datasource.remote.FirebaseHistoryRDS
-import com.hapataka.questwalk.data.repository.HistoryRepositoryImpl
 import com.hapataka.questwalk.domain.data.remote.HistoryRDS
 import dagger.Binds
 import dagger.Module
@@ -16,7 +14,4 @@ abstract class HistoryModule {
     @Binds
     @Named("FirebaseHistoryRDS")
     abstract fun provideHistoryRDS(historyRDS: FirebaseHistoryRDS): HistoryRDS
-
-    @Binds
-    abstract fun provideHistoryRepository(historyRepository: HistoryRepositoryImpl): HistoryRepository
 }

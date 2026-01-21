@@ -33,7 +33,6 @@ abstract class RepositoryModule {
     abstract fun bindsUserRepository(userRepository: DefaultUserRepository): UserRepositoryNew
 
     @Binds
-    @Named("DefaultHistoryRepository")
     @Singleton
     abstract fun bindsHistoryRepository(historyRepository: DefaultHistoryRepository): HistoryRepository
 
