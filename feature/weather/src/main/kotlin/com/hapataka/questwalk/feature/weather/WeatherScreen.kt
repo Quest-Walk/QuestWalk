@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -138,101 +140,110 @@ private fun WeatherContent(state: WeatherUiState) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
     ) {
-        // Weather Preview Message
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White.copy(alpha = 0.9f))
-                .padding(horizontal = 12.dp, vertical = 24.dp)
-        ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            // Weather Preview Message
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White.copy(alpha = 0.9f))
+                    .padding(horizontal = 12.dp, vertical = 24.dp)
+            ) {
+                Text(
+                    text = buildPreviewMessage(state.preview),
+                    fontSize = 14.sp,
+                    lineHeight = 22.sp,
+                    color = Color.DarkGray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Weather Icon placeholder
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "🧙",
+                    fontSize = 80.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Arrow down
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "▼",
+                    fontSize = 24.sp,
+                    color = Purple
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Dust Info
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "미세먼지",
+                        fontSize = 14.sp,
+                        color = GrayText
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = state.dust.pm10Value,
+                        fontSize = 14.sp,
+                        color = GrayText
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "초미세먼지",
+                        fontSize = 14.sp,
+                        color = GrayText
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = state.dust.pm25Value,
+                        fontSize = 14.sp,
+                        color = GrayText
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Hourly Forecast Title
             Text(
-                text = buildPreviewMessage(state.preview),
+                text = "시간별 날씨",
                 fontSize = 14.sp,
-                lineHeight = 22.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color.DarkGray
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
-
-        // Weather Icon placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            contentAlignment = Alignment.Center
+        // Hourly Forecast List (horizontal scroll)
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(
-                text = "🧙",
-                fontSize = 80.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        // Arrow down
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "▼",
-                fontSize = 24.sp,
-                color = Purple
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Dust Info
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "미세먼지",
-                    fontSize = 14.sp,
-                    color = GrayText
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = state.dust.pm10Value,
-                    fontSize = 14.sp,
-                    color = GrayText
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "초미세먼지",
-                    fontSize = 14.sp,
-                    color = GrayText
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = state.dust.pm25Value,
-                    fontSize = 14.sp,
-                    color = GrayText
-                )
+            items(state.forecasts) { item ->
+                WeatherItemCard(item = item)
             }
         }
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        // Current Weather
-        Text(
-            text = "현재 날씨",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.DarkGray
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        WeatherItemCard(item = state.weatherItem)
 
         Spacer(modifier = Modifier.height(24.dp))
     }
@@ -242,7 +253,7 @@ private fun WeatherContent(state: WeatherUiState) {
 private fun WeatherItemCard(item: WeatherItemUiModel) {
     Column(
         modifier = Modifier
-            .width(80.dp)
+            .width(72.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(Color.White.copy(alpha = 0.8f))
             .padding(12.dp),

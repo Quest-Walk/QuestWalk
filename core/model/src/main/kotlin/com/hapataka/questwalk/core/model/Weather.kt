@@ -3,14 +3,19 @@ package com.hapataka.questwalk.core.model
 data class Weather(
     val baseDate: String,
     val baseTime: String,
+    val current: Forecast,
+    val forecasts: List<Forecast>,
+    val pm10: Int,
+    val pm25: Int,
+    val region: Region,
+)
+
+data class Forecast(
     val fcstDate: String,
     val fcstTime: String,
     val sky: SkyType,
     val precipType: PrecipType,
     val temp: Int,
-    val pm10: Int,
-    val pm25: Int,
-    val region: Region,
 )
 
 data class Region(

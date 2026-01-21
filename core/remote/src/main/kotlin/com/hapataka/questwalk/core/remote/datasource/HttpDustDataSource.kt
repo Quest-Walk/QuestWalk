@@ -14,10 +14,8 @@ class HttpDustDataSource @Inject constructor(
 ) : DustRemoteDataSource {
 
     override suspend fun getDust(location: LocationDto): Result<DustDto> = runCatching {
-        // 1. 위경도를 TM 좌표로 변환
         val (tmX, tmY) = CoordinateConverter.toBesselTM(location.latitude, location.longitude)
 
-        // 2. 가장 가까운 측정소 조회
         val stationQueries = mapOf(
             "serviceKey" to apiKey,
             "returnType" to "json",
@@ -27,9 +25,8 @@ class HttpDustDataSource @Inject constructor(
 
         val stationResponse = dustApi.getStation(stationQueries)
         val station = stationResponse.response.body.items.firstOrNull()
-            ?: throw Exception("측정소를 찾을 수 없습니다")
+            ?: throw StationNotFoundException()
 
-        // 3. 측정소의 미세먼지 정보 조회
         val dustQueries = mapOf(
             "serviceKey" to apiKey,
             "returnType" to "json",
@@ -49,3 +46,5 @@ class HttpDustDataSource @Inject constructor(
         )
     }
 }
+
+class StationNotFoundException : Exception("측정소를 찾을 수 없습니다")

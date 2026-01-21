@@ -1,6 +1,7 @@
 package com.hapataka.questwalk.core.remote.datasource
 
 import com.hapataka.questwalk.core.dataapi.datasource.WeatherRemoteDataSource
+import com.hapataka.questwalk.core.dataapi.model.ForecastDto
 import com.hapataka.questwalk.core.dataapi.model.LocationDto
 import com.hapataka.questwalk.core.dataapi.model.WeatherDto
 import com.hapataka.questwalk.core.remote.api.WeatherApi
@@ -36,32 +37,35 @@ class HttpWeatherDataSource @Inject constructor(
         val currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00")).toInt()
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
 
-        // 시간별로 그룹핑
         val groupedItems = items.groupBy { "${it.fcstDate}${it.fcstTime}" }
 
-        // 현재 시간 이후의 첫 번째 예보 선택
-        val targetGroup = groupedItems.entries
+        val forecasts = groupedItems.entries
             .filter { (key, _) ->
                 val fcstDate = key.substring(0, 8).toInt()
                 val fcstTime = key.substring(8).toInt()
                 fcstDate > currentDate || (fcstDate == currentDate && fcstTime >= currentTime)
             }
-            .minByOrNull { it.key }
-            ?.value ?: items.take(12)
+            .sortedBy { it.key }
+            .take(FORECAST_HOURS)
+            .map { (_, groupItems) ->
+                val sky = groupItems.firstOrNull { it.category == "SKY" }?.fcstValue ?: "1"
+                val pty = groupItems.firstOrNull { it.category == "PTY" }?.fcstValue ?: "0"
+                val tmp = groupItems.firstOrNull { it.category == "TMP" }?.fcstValue ?: "0"
+                val firstItem = groupItems.firstOrNull()
 
-        val sky = targetGroup.firstOrNull { it.category == "SKY" }?.fcstValue ?: "1"
-        val pty = targetGroup.firstOrNull { it.category == "PTY" }?.fcstValue ?: "0"
-        val tmp = targetGroup.firstOrNull { it.category == "TMP" }?.fcstValue ?: "0"
-        val firstItem = targetGroup.firstOrNull()
+                ForecastDto(
+                    fcstDate = firstItem?.fcstDate ?: baseDate,
+                    fcstTime = firstItem?.fcstTime ?: baseTime,
+                    sky = sky,
+                    precipType = pty,
+                    temp = tmp,
+                )
+            }
 
         WeatherDto(
-            baseDate = firstItem?.baseDate ?: baseDate,
-            baseTime = firstItem?.baseTime ?: baseTime,
-            fcstDate = firstItem?.fcstDate ?: baseDate,
-            fcstTime = firstItem?.fcstTime ?: baseTime,
-            sky = sky,
-            precipType = pty,
-            temp = tmp,
+            baseDate = baseDate,
+            baseTime = baseTime,
+            forecasts = forecasts,
         )
     }
 
@@ -81,5 +85,9 @@ class HttpWeatherDataSource @Inject constructor(
             requestTime < "2359" -> Pair(today, "2000")
             else -> Pair(yesterday, "2300")
         }
+    }
+
+    companion object {
+        private const val FORECAST_HOURS = 12
     }
 }

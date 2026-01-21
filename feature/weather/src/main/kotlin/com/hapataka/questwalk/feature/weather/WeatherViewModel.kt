@@ -3,6 +3,7 @@ package com.hapataka.questwalk.feature.weather
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.domain.usecase.GetWeatherInfoUseCase
+import com.hapataka.questwalk.core.model.Forecast
 import com.hapataka.questwalk.core.model.PrecipType
 import com.hapataka.questwalk.core.model.SkyType
 import com.hapataka.questwalk.core.model.Weather
@@ -49,13 +50,25 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun createUiState(weather: Weather): WeatherUiState {
+        val current = weather.current
+        val isWeatherAvailable = current.temp != WEATHER_UNAVAILABLE
+
         val preview = WeatherPreviewUiModel(
-            currentTemp = "${weather.temp}",
-            skyState = getSkyState(weather.sky),
-            precipState = getPrecipTypeState(weather.precipType),
+            currentTemp = if (isWeatherAvailable) "${current.temp}" else "-",
+            skyState = if (isWeatherAvailable) getSkyState(current.sky) else "날씨 정보를 가져올 수 없구먼",
+            precipState = if (isWeatherAvailable) getPrecipTypeState(current.precipType) else "",
             miseState = getMiseState(weather.pm10),
             choMiseState = getChoMiseState(weather.pm25),
         )
+
+        val forecastItems = weather.forecasts.map { forecast ->
+            WeatherItemUiModel(
+                time = forecast.fcstTime,
+                temp = if (forecast.temp != WEATHER_UNAVAILABLE) "${forecast.temp}" else "-",
+                sky = if (forecast.temp != WEATHER_UNAVAILABLE) forecast.sky.toDisplayString() else "통신 장애",
+                precipType = if (forecast.temp != WEATHER_UNAVAILABLE) forecast.precipType.toDisplayString() else "-",
+            )
+        }
 
         return WeatherUiState(
             preview = preview,
@@ -64,12 +77,7 @@ class WeatherViewModel @Inject constructor(
                 pm25Value = if (weather.pm25 == -1) "통신 장애" else "${weather.pm25} ㎍/㎥",
             ),
             region = weather.region.name,
-            weatherItem = WeatherItemUiModel(
-                time = weather.fcstTime,
-                temp = "${weather.temp}",
-                sky = weather.sky.toDisplayString(),
-                precipType = weather.precipType.toDisplayString(),
-            )
+            forecasts = forecastItems,
         )
     }
 
@@ -127,13 +135,17 @@ class WeatherViewModel @Inject constructor(
             PrecipType.SHOWER -> "소나기"
         }
     }
+
+    companion object {
+        private const val WEATHER_UNAVAILABLE = -99
+    }
 }
 
 data class WeatherUiState(
     val preview: WeatherPreviewUiModel = WeatherPreviewUiModel(),
     val dust: DustUiModel = DustUiModel(),
     val region: String = "",
-    val weatherItem: WeatherItemUiModel = WeatherItemUiModel(),
+    val forecasts: List<WeatherItemUiModel> = emptyList(),
 )
 
 data class WeatherPreviewUiModel(
