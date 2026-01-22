@@ -38,7 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
 
@@ -183,7 +183,7 @@ private fun QuestDetailContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(state.successImages, key = { "${it.userId}_${it.registerAt}" }) { image ->
+                items(state.successImages, key = { "${it.userId}_${it.imageUrl.hashCode()}" }) { image ->
                     SuccessImageItem(
                         image = image,
                         onClick = { onImageClick(image.imageUrl) }
@@ -212,7 +212,7 @@ private fun SuccessImageItem(
     image: SuccessImageUiModel,
     onClick: () -> Unit,
 ) {
-    AsyncImage(
+    SubcomposeAsyncImage(
         model = image.imageUrl,
         contentDescription = null,
         modifier = Modifier
@@ -220,6 +220,20 @@ private fun SuccessImageItem(
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick),
         contentScale = ContentScale.Crop,
+        loading = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.fillMaxSize(0.3f),
+                    color = Purple,
+                    strokeWidth = 2.dp
+                )
+            }
+        }
     )
 }
 
@@ -241,13 +255,16 @@ private fun FullImageDialog(
                 .clickable(onClick = onDismiss),
             contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = imageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 contentScale = ContentScale.Fit,
+                loading = {
+                    CircularProgressIndicator(color = Color.White)
+                }
             )
         }
     }

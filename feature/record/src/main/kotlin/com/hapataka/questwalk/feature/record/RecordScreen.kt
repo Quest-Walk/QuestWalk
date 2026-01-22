@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,7 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
@@ -187,7 +188,7 @@ private fun HistoryItem(
     item: History,
     onClick: () -> Unit,
 ) {
-    AsyncImage(
+    SubcomposeAsyncImage(
         modifier = Modifier
             .height(92.dp)
             .width(92.dp)
@@ -199,6 +200,19 @@ private fun HistoryItem(
         },
         contentDescription = null,
         contentScale = ContentScale.FillHeight,
+        loading = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp
+                )
+            }
+        }
     )
 }
 
@@ -232,7 +246,7 @@ private fun AchievementItem(item: AchieveItemUiModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             modifier = Modifier
                 .height(92.dp)
                 .width(92.dp)
@@ -241,6 +255,19 @@ private fun AchievementItem(item: AchieveItemUiModel) {
             contentDescription = item.achieveTitle,
             contentScale = ContentScale.FillHeight,
             alpha = if (item.isAchieved) 1f else 0.3f,
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
         )
         Text(
             text = item.achieveTitle,
