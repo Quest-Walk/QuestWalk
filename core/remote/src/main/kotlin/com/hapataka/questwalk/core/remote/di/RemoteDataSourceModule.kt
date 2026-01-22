@@ -3,6 +3,7 @@ package com.hapataka.questwalk.core.remote.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.core.dataapi.datasource.DustRemoteDataSource
+import com.hapataka.questwalk.core.dataapi.datasource.LocationDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.WeatherRemoteDataSource
 import com.hapataka.questwalk.core.remote.api.AchieveItemDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
@@ -16,6 +17,7 @@ import com.hapataka.questwalk.core.remote.datasource.FirebaseAuthDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseHistoryDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseQuestDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseUserDataSource
+import com.hapataka.questwalk.core.remote.datasource.FusedLocationDataSource
 import com.hapataka.questwalk.core.remote.datasource.HttpDustDataSource
 import com.hapataka.questwalk.core.remote.datasource.HttpWeatherDataSource
 import dagger.Module
@@ -81,5 +83,13 @@ object RemoteDataSourceModule {
         @Named("weatherApiKey") apiKey: String,
     ): DustRemoteDataSource {
         return HttpDustDataSource(dustApi, apiKey)
+    }
+
+    @Provides
+    @Singleton
+    fun providesLocationDataSource(
+        fusedLocationDataSource: FusedLocationDataSource,
+    ): LocationDataSource {
+        return fusedLocationDataSource
     }
 }

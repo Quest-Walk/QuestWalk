@@ -23,4 +23,8 @@ dependencies {
 
     // Proj4j (좌표 변환)
     implementation(libs.proj4j)
+
+    // Location
+    implementation(libs.play.services.location)
+    implementation(libs.coroutines.play.services)
 }

@@ -12,14 +12,14 @@ import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateQuestSuccessUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateUserInfoUseCase
+import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.model.Location
+import com.hapataka.questwalk.core.model.LocationUpdate
 import com.hapataka.questwalk.core.model.Quest
 import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.LocationEntity
 import com.hapataka.questwalk.domain.entity.UserEntity
 import com.hapataka.questwalk.domain.repository.ImageRepository
-import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
 import com.hapataka.questwalk.domain.repository.UserRepo
 import com.hapataka.questwalk.domain.usecase.AchievementListener
@@ -86,6 +86,7 @@ class MainViewModel @Inject constructor(
     val isStop: LiveData<Boolean> get() = _isStop
 
     private var timer: Job? = null
+    private var locationTrackingJob: Job? = null
     private var locationHistory = mutableListOf<Location>()
     private var questLocation: Location? = null
     private var currentTime: String = ""
@@ -125,8 +126,8 @@ class MainViewModel @Inject constructor(
         delay(1500L)
 
         if (checkFail) {
-            val loc = locationRepo.getCurrent().location
-            questLocation = Location(latitude = loc.first, longitude = loc.second)
+            val loc = locationRepo.getCurrentLocation()
+            questLocation = loc
             _playState.value = QUEST_SUCCESS
             visibleLoading(HIDE_LOADING)
             visibleImageCallback()
@@ -144,7 +145,9 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val playState = playState.value ?: 0
 
-            setCurrentLocationInfo(locationRepo.getCurrent())
+            locationRepo.getCurrentLocation()?.let { loc ->
+                locationHistory += loc
+            }
 
             if (playState == QUEST_STOP) {
                 _playState.value = QUEST_START
@@ -160,7 +163,9 @@ class MainViewModel @Inject constructor(
         val playState = playState.value ?: 0
 
         if (distance > -1f) {
-            setCurrentLocationInfo(locationRepo.getCurrent())
+            locationRepo.getCurrentLocation()?.let { loc ->
+                locationHistory += loc
+            }
 
             _isStop.value = false
             _playState.value = QUEST_STOP
@@ -182,10 +187,9 @@ class MainViewModel @Inject constructor(
         _isLoading.value = show
     }
 
-    private fun setCurrentLocationInfo(locationInfo: LocationEntity) {
-        val loc = locationInfo.location
-        locationHistory += Location(latitude = loc.first, longitude = loc.second)
-        _totalDistance.value = _totalDistance.value?.plus(locationInfo.distance)
+    private fun handleLocationUpdate(locationUpdate: LocationUpdate) {
+        locationHistory += locationUpdate.location
+        setDistance(locationUpdate.distance)
     }
 
     fun resumePlay() {
@@ -219,13 +223,15 @@ class MainViewModel @Inject constructor(
         if (playState.value != QUEST_STOP) {
             locationHistory.clear()
             questLocation = null
-            locationRepo.startRequest {
-                setDistance(it.distance)
-                val loc = it.location
-                locationHistory += Location(latitude = loc.first, longitude = loc.second)
+            locationTrackingJob?.cancel()
+            locationTrackingJob = viewModelScope.launch {
+                locationRepo.getLocationUpdates().collect { locationUpdate ->
+                    handleLocationUpdate(locationUpdate)
+                }
             }
         } else {
-            locationRepo.finishRequest()
+            locationTrackingJob?.cancel()
+            locationTrackingJob = null
         }
     }
 

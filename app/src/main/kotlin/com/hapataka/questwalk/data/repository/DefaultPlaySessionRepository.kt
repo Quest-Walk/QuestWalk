@@ -1,11 +1,11 @@
 package com.hapataka.questwalk.data.repository
 
+import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.domain.repository.PlaySessionRepository
 import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.model.PlaySession
 import com.hapataka.questwalk.core.model.PlayState
 import com.hapataka.questwalk.data.di.ApplicationScope
-import com.hapataka.questwalk.domain.repository.LocationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO: LocationRepository가 core 모듈로 이동하면 이 클래스도 core/data로 이동
+// TODO: 이 클래스를 core/data로 이동
 @Singleton
 class DefaultPlaySessionRepository @Inject constructor(
     private val locationRepository: LocationRepository,
@@ -28,6 +28,7 @@ class DefaultPlaySessionRepository @Inject constructor(
     override val sessionState: StateFlow<PlaySession> = _sessionState.asStateFlow()
 
     private var timerJob: Job? = null
+    private var locationTrackingJob: Job? = null
 
     override fun startSession(keyword: String, level: Int) {
         _sessionState.update {
@@ -87,25 +88,25 @@ class DefaultPlaySessionRepository @Inject constructor(
     }
 
     private fun startLocationTracking() {
-        locationRepository.startRequest { locationEntity ->
-            val currentRoute = _sessionState.value.route
-            val newLocation = Location(
-                latitude = locationEntity.location.first,
-                longitude = locationEntity.location.second,
-            )
-            val newRoute = currentRoute + newLocation
-            val newDistance = _sessionState.value.distance + locationEntity.distance.coerceAtMost(30f)
+        locationTrackingJob?.cancel()
+        locationTrackingJob = externalScope.launch {
+            locationRepository.getLocationUpdates().collect { locationUpdate ->
+                val currentRoute = _sessionState.value.route
+                val newRoute = currentRoute + locationUpdate.location
+                val newDistance = _sessionState.value.distance + locationUpdate.distance.coerceAtMost(30f)
 
-            _sessionState.update {
-                it.copy(
-                    route = newRoute,
-                    distance = newDistance,
-                )
+                _sessionState.update {
+                    it.copy(
+                        route = newRoute,
+                        distance = newDistance,
+                    )
+                }
             }
         }
     }
 
     private fun stopLocationTracking() {
-        locationRepository.finishRequest()
+        locationTrackingJob?.cancel()
+        locationTrackingJob = null
     }
 }

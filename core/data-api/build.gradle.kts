@@ -8,4 +8,5 @@ setNamespace("core.dataapi")
 
 dependencies {
     implementation(projects.core.model)
+    implementation(libs.coroutines.core)
 }

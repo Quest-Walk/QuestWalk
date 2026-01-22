@@ -1,5 +1,11 @@
 package com.hapataka.questwalk.feature.home
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
+import com.hapataka.questwalk.feature.home.component.PermissionDialog
 import com.hapataka.questwalk.feature.home.R as HomeR
 
 const val QUEST_STOP = 0
@@ -71,7 +79,53 @@ internal fun HomeRoute(
     onMyInfoClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val permissionGranted = permissions.values.any { it }
+        if (!permissionGranted) {
+            showPermissionDialog = true
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val fineLocation = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val coarseLocation = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+        if (!fineLocation && !coarseLocation) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    if (showPermissionDialog) {
+        PermissionDialog(
+            message = "위치 권한이 필요합니다.\n설정에서 권한을 허용해주세요.",
+            onConfirm = {
+                showPermissionDialog = false
+                context.startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                )
+            },
+            onDismiss = {
+                (context as? android.app.Activity)?.finish()
+            }
+        )
+    }
 
     HomeScreen(
         uiState = uiState,

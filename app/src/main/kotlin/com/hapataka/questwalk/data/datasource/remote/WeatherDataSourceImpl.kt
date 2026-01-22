@@ -1,11 +1,11 @@
 package com.hapataka.questwalk.data.datasource.remote
 
 import com.hapataka.questwalk.BuildConfig
+import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.remote.api.WeatherDataSource
 import com.hapataka.questwalk.core.remote.model.DustDto
 import com.hapataka.questwalk.core.remote.model.WeatherDto
 import com.hapataka.questwalk.data.dto.weather.Item
-import com.hapataka.questwalk.domain.repository.LocationRepository
 import com.hapataka.questwalk.data.model.LatXLngY
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -20,8 +20,9 @@ class WeatherDataSourceImpl @Inject constructor(
     private val dustService = RetrofitClient.dustApi
 
     override suspend fun getWeatherInfo(): List<WeatherDto> {
-        val currentLocation = locationRepository.getCurrent().location
-        val convertXy = convertToXY(currentLocation.first.toDouble(), currentLocation.second.toDouble())
+        val currentLocation = locationRepository.getCurrentLocation()
+            ?: throw IllegalStateException("위치를 가져올 수 없습니다")
+        val convertXy = convertToXY(currentLocation.latitude.toDouble(), currentLocation.longitude.toDouble())
         val requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH00")).toInt()
         val requestDay = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
         val requestDateTime = setRequestDateTime()
@@ -45,7 +46,8 @@ class WeatherDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getDustInfo(): DustDto {
-        val currentLocation = locationRepository.getCurrent()
+        val currentLocation = locationRepository.getCurrentLocation()
+            ?: throw IllegalStateException("위치를 가져올 수 없습니다")
         val besselLocation = convertToBesselLocation(currentLocation)
 
         val stationQueryMap = mapOf(
@@ -132,7 +134,7 @@ class WeatherDataSourceImpl @Inject constructor(
         return rs
     }
 
-    private fun convertToBesselLocation(location: com.hapataka.questwalk.domain.entity.LocationEntity): Pair<Double, Double> {
+    private fun convertToBesselLocation(location: com.hapataka.questwalk.core.model.Location): Pair<Double, Double> {
         val wgs84Proj = "+proj=longlat +ellps=bessel +no_defs"
         val wgs84System = org.locationtech.proj4j.CRSFactory().createFromParameters("WGS84", wgs84Proj)
 
@@ -141,8 +143,8 @@ class WeatherDataSourceImpl @Inject constructor(
         val besselSystem = org.locationtech.proj4j.CRSFactory().createFromParameters("Bessel", besselProj)
 
         val currentLocation = org.locationtech.proj4j.ProjCoordinate(
-            location.location.second.toDouble(),
-            location.location.first.toDouble()
+            location.longitude.toDouble(),
+            location.latitude.toDouble()
         )
         val transformLocation = org.locationtech.proj4j.ProjCoordinate()
 
