@@ -1,11 +1,11 @@
-package com.hapataka.questwalk.data.repository
+package com.hapataka.questwalk.core.data.repository
 
+import com.hapataka.questwalk.core.data.di.ApplicationScope
 import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.domain.repository.PlaySessionRepository
 import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.model.PlaySession
 import com.hapataka.questwalk.core.model.PlayState
-import com.hapataka.questwalk.data.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO: 이 클래스를 core/data로 이동
 @Singleton
 class DefaultPlaySessionRepository @Inject constructor(
     private val locationRepository: LocationRepository,

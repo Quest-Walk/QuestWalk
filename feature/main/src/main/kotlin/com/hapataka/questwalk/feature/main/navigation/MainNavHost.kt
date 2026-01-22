@@ -37,10 +37,7 @@ internal fun MainNavHost(
 
         // Home
         homeScreen(
-            onStartClick = { /* TODO: PlaySessionRepository.startSession */ },
-            onStopClick = { /* TODO: PlaySessionRepository.stopSession */ },
             onCameraClick = { navigator.navigateToCamera() },
-            onCompleteClick = { /* TODO: PlaySessionRepository.stopSession */ },
             onQuestChangeClick = { navigator.navigateToQuest() },
             onWeatherClick = { navigator.navigateToWeather() },
             onMyInfoClick = { navigator.navigateToMyInfo() },

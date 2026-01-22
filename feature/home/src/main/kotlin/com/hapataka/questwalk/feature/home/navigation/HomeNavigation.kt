@@ -12,10 +12,7 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-    onStartClick: () -> Unit,
-    onStopClick: () -> Unit,
     onCameraClick: () -> Unit,
-    onCompleteClick: () -> Unit,
     onQuestChangeClick: () -> Unit,
     onWeatherClick: () -> Unit,
     onMyInfoClick: () -> Unit,
@@ -23,10 +20,7 @@ fun NavGraphBuilder.homeScreen(
 ) {
     composable<MainRoute.Home> {
         HomeRoute(
-            onStartClick = onStartClick,
-            onStopClick = onStopClick,
             onCameraClick = onCameraClick,
-            onCompleteClick = onCompleteClick,
             onQuestChangeClick = onQuestChangeClick,
             onWeatherClick = onWeatherClick,
             onMyInfoClick = onMyInfoClick,
