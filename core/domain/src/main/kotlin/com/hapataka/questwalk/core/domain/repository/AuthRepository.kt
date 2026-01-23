@@ -1,5 +1,7 @@
 package com.hapataka.questwalk.core.domain.repository
 
+import kotlinx.coroutines.flow.Flow
+
 interface AuthRepository {
     suspend fun loginWithEmail(email: String, password: String): Result<String>
     fun getUserId(): String
@@ -9,4 +11,6 @@ interface AuthRepository {
     suspend fun reauthenticate(password: String): Result<Unit>
     suspend fun deleteAccount(): Result<Unit>
     fun getUserEmail(): String?
+    suspend fun setLastEmail(email: String)
+    fun getLastEmail(): Flow<String?>
 }

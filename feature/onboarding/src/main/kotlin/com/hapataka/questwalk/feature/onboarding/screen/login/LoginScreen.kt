@@ -63,6 +63,7 @@ internal fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val userState by viewModel.userState.collectAsState()
+    val lastEmail by viewModel.lastEmail.collectAsState()
 
     LaunchedEffect(userState) {
         if (userState is UserState.LoggedIn) {
@@ -75,6 +76,7 @@ internal fun LoginRoute(
 
     LoginScreen(
         userState = userState,
+        initialEmail = lastEmail.orEmpty(),
         loginWithEmail = viewModel::loginWithEmail,
         loginWithIdToken = viewModel::loginWithIdToken,
         navigateToJoin = navigateToJoin,
@@ -84,11 +86,12 @@ internal fun LoginRoute(
 @Composable
 internal fun LoginScreen(
     userState: UserState = UserState.Idle,
+    initialEmail: String = "",
     loginWithEmail: (String, String) -> Unit = { _, _ -> },
     loginWithIdToken: (String) -> Unit = { _ -> },
     navigateToJoin: () -> Unit = {},
 ) {
-    var id by rememberSaveable { mutableStateOf("") }
+    var id by rememberSaveable(initialEmail) { mutableStateOf(initialEmail) }
     var password by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val (focusId, focusPassword) = remember { FocusRequester.createRefs() }

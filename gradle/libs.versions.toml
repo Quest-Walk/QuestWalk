@@ -58,6 +58,10 @@ firebaseBoM = "33.7.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.6.1"
 
+## DataStore
+# https://developer.android.com/jetpack/androidx/releases/datastore
+datastore = "1.1.1"
+
 ## Coil
 # https://coil-kt.github.io/coil/
 coil = "3.0.4"
@@ -138,6 +142,9 @@ androidx-compose-navigation = { group = "androidx.navigation", name = "navigatio
 androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# DataStore
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # hilt
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }

@@ -77,10 +77,6 @@ internal fun JoinScreen(
         )
 
         when (joinState) {
-            is JoinState.Success -> {
-                popBackStack()
-            }
-
             is JoinState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -93,7 +89,8 @@ internal fun JoinScreen(
 
             else -> {
                 JoinContent(
-                    joinWithEmail = joinWithEmail
+                    joinWithEmail = joinWithEmail,
+                    errorMessage = (joinState as? JoinState.Failure)?.message,
                 )
             }
         }
@@ -103,6 +100,7 @@ internal fun JoinScreen(
 @Composable
 fun JoinContent(
     joinWithEmail: (String, String) -> Unit = { _, _ -> },
+    errorMessage: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -239,6 +237,7 @@ fun JoinContent(
             emailError = emailError,
             passwordError = passwordError,
             confirmPasswordError = confirmPasswordError,
+            serverErrorMessage = errorMessage,
         )
     }
 }
@@ -251,6 +250,7 @@ private fun ErrorMessage(
     emailError: Boolean,
     passwordError: Boolean,
     confirmPasswordError: Boolean,
+    serverErrorMessage: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -322,6 +322,17 @@ private fun ErrorMessage(
                         .wrapContentHeight()
                 )
             }
+        }
+
+        if (serverErrorMessage != null) {
+            Text(
+                text = "- $serverErrorMessage",
+                style = Typography.labelLarge,
+                color = HighLightYellow,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .wrapContentHeight()
+            )
         }
     }
 }
