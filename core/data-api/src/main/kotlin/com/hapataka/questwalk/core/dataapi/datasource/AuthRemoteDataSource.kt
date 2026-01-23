@@ -6,4 +6,7 @@ interface AuthRemoteDataSource {
     suspend fun loginWithGoogle(idToken: String): Result<String>
     fun getUserId(): String?
     fun logout()
+    suspend fun reauthenticate(password: String): Result<Unit>
+    suspend fun deleteAccount(): Result<Unit>
+    fun getUserEmail(): String?
 }

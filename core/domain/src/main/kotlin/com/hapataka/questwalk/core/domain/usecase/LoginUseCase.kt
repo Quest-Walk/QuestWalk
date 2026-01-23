@@ -11,23 +11,20 @@ class LoginUseCase @Inject constructor(
     @Named("DefaultUserRepository")
     private val userRepository: UserRepositoryNew,
 ) {
-    suspend operator fun invoke(email: String, password: String): Result<Unit> {
-        return kotlin.runCatching {
-            when {
-                email.isBlank() -> throw IllegalArgumentException("이메일을 입력해 주세요")
-                password.isBlank() -> throw IllegalArgumentException("비밀번호를 입력해 주세요")
-                else -> {
-                    authRepository.loginWithEmail(email, password)
-                        .onSuccess { uid -> saveUserId(uid) }
-                }
-            }
+    suspend fun withEmail(email: String, password: String): Result<Unit> {
+        return runCatching {
+            require(email.isNotBlank()) { "이메일을 입력해 주세요" }
+            require(password.isNotBlank()) { "비밀번호를 입력해 주세요" }
+
+            val uid = authRepository.loginWithEmail(email, password).getOrThrow()
+            saveUserId(uid)
         }
     }
 
-    suspend operator fun invoke(idToken: String): Result<Unit> {
-        return kotlin.runCatching {
-            authRepository.loginWithGoogle(idToken)
-                .onSuccess { uid -> saveUserId(uid) }
+    suspend fun withGoogle(idToken: String): Result<Unit> {
+        return runCatching {
+            val uid = authRepository.loginWithGoogle(idToken).getOrThrow()
+            saveUserId(uid)
         }
     }
 

@@ -28,4 +28,16 @@ class DefaultAuthRepository @Inject constructor(
         return firebaseAuthDataSource.getUserId()
         // TODO: 캐시 레포 구성 후 이관해야함
     }
+
+    override suspend fun reauthenticate(password: String): Result<Unit> {
+        return firebaseAuthDataSource.reauthenticate(password)
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return firebaseAuthDataSource.deleteAccount()
+    }
+
+    override fun getUserEmail(): String? {
+        return firebaseAuthDataSource.getUserEmail()
+    }
 }
