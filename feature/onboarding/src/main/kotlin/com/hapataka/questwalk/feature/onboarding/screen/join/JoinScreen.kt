@@ -45,12 +45,13 @@ import com.hapataka.questwalk.feature.onboarding.util.isPasswordPattern
 @Composable
 internal fun JoinRoute(
     popBackStack: () -> Unit,
+    navigateToSetup: () -> Unit,
     viewModel: JoinViewModel = hiltViewModel(),
 ) {
     val joinState by viewModel.joinState.collectAsStateWithLifecycle()
 
     LaunchedEffect(joinState) {
-        if (joinState is JoinState.Success) popBackStack()
+        if (joinState is JoinState.Success) navigateToSetup()
     }
 
     JoinScreen(

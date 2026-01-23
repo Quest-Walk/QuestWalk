@@ -76,7 +76,17 @@ internal fun OnboardingNavHost(
 
             composable<OnboardingStep.Join> {
                 JoinRoute(
-                    popBackStack = navController::popBackStack
+                    popBackStack = navController::popBackStack,
+                    navigateToSetup = {
+                        navController.navigate(
+                            route = OnboardingStep.Setup,
+                            navOptions = navOptions {
+                                popUpTo(OnboardingStep.Login) {
+                                    inclusive = false
+                                }
+                            }
+                        )
+                    },
                 )
             }
         }

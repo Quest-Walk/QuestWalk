@@ -69,8 +69,8 @@ class MainNavigator(
         navController.popBackStack()
     }
 
-    fun navigateToOnboarding() {
-        navController.navigate(Route.Onboarding) {
+    fun navigateToOnboarding(isLoggedIn: Boolean = false) {
+        navController.navigate(Route.Onboarding(isLoggedIn = isLoggedIn)) {
             popUpTo(0) { inclusive = true }
             launchSingleTop = true
         }

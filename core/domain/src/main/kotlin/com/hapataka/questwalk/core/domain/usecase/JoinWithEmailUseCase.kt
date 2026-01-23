@@ -1,21 +1,26 @@
 package com.hapataka.questwalk.core.domain.usecase
 
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
+import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
 import javax.inject.Inject
 import javax.inject.Named
 
 class JoinWithEmailUseCase @Inject constructor(
     @Named("DefaultAuthRepository")
     private val authRepository: AuthRepository,
+    @Named("DefaultUserRepository")
+    private val userRepository: UserRepositoryNew,
 ) {
-    suspend operator fun invoke(email: String, password: String): Result<String> {
+    suspend operator fun invoke(email: String, password: String): Result<Unit> {
         return runCatching {
             require(email.isNotBlank()) { "이메일을 입력해 주세요" }
             require(password.isNotBlank()) { "비밀번호를 입력해 주세요" }
 
-            authRepository.joinWithEmail(email, password).getOrElse { e ->
+            val uid = authRepository.joinWithEmail(email, password).getOrElse { e ->
                 throw Exception(e.message?.toKoreanMessage() ?: "회원가입에 실패했습니다")
             }
+            authRepository.setLastEmail(email)
+            userRepository.insertUser(uid)
         }
     }
 

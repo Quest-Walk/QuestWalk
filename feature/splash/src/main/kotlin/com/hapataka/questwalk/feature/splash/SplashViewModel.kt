@@ -27,20 +27,29 @@ class SplashViewModel @Inject constructor(
     private fun checkLoggedIn() {
         viewModelScope.launch {
             val isLoggedIn = checkUserLoggedInUseCase()
+            var hasUserInfo = false
 
             if (isLoggedIn) {
-                fetchUserInfoUseCase()
+                hasUserInfo = fetchUserInfoUseCase().isSuccess
             }
 
             // 애니메이션이 보이도록 최소 2초 대기
             kotlinx.coroutines.delay(2000L)
 
-            _uiState.update { SplashUiState.NavigateToMain(isLoggedIn = isLoggedIn) }
+            _uiState.update {
+                SplashUiState.NavigateToMain(
+                    isLoggedIn = isLoggedIn,
+                    hasUserInfo = hasUserInfo,
+                )
+            }
         }
     }
 }
 
 sealed interface SplashUiState {
     data object Loading : SplashUiState
-    data class NavigateToMain(val isLoggedIn: Boolean) : SplashUiState
+    data class NavigateToMain(
+        val isLoggedIn: Boolean,
+        val hasUserInfo: Boolean,
+    ) : SplashUiState
 }

@@ -25,7 +25,7 @@ internal fun MainNavHost(
         // Splash
         splashScreen(
             onNavigateToHome = { navigator.navigateToHome(clearBackStack = true) },
-            onNavigateToOnboarding = { navigator.navigateToOnboarding() },
+            onNavigateToOnboarding = { isLoggedIn -> navigator.navigateToOnboarding(isLoggedIn) },
         )
 
         // Onboarding (Login -> Join -> Setup -> Home)

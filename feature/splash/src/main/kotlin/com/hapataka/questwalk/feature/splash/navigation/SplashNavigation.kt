@@ -13,7 +13,7 @@ import com.hapataka.questwalk.feature.splash.SplashViewModel
 
 fun NavGraphBuilder.splashScreen(
     onNavigateToHome: () -> Unit,
-    onNavigateToOnboarding: () -> Unit,
+    onNavigateToOnboarding: (isLoggedIn: Boolean) -> Unit,
 ) {
     composable<Route.Splash> {
         val viewModel: SplashViewModel = hiltViewModel()
@@ -22,10 +22,10 @@ fun NavGraphBuilder.splashScreen(
         LaunchedEffect(uiState) {
             when (val state = uiState) {
                 is SplashUiState.NavigateToMain -> {
-                    if (state.isLoggedIn) {
+                    if (state.isLoggedIn && state.hasUserInfo) {
                         onNavigateToHome()
                     } else {
-                        onNavigateToOnboarding()
+                        onNavigateToOnboarding(state.isLoggedIn)
                     }
                 }
                 else -> {}

@@ -10,7 +10,7 @@ sealed interface Route {
     data object Home : Route
 
     @Serializable
-    data object Onboarding : Route
+    data class Onboarding(val isLoggedIn: Boolean = false) : Route
 }
 
 @Serializable

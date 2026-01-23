@@ -29,7 +29,6 @@ class FirebaseAuthDataSource @Inject constructor(
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .await()
                 .user!!.uid
-                .also { firebaseAuth.signOut() }
         }
     }
 
