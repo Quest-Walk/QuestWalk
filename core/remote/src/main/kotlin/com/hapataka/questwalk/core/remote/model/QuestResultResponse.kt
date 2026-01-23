@@ -1,9 +1,12 @@
 package com.hapataka.questwalk.core.remote.model
 
+import androidx.annotation.Keep
+
 /**
  * Firebase Firestore 응답 모델 (histories 컬렉션)
  * Firebase 필드명과 일치해야 함
  */
+@Keep
 data class QuestResultResponse(
     val userId: String = "",
     val registerAt: String = "",

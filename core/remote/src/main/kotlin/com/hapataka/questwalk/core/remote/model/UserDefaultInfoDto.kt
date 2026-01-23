@@ -1,8 +1,10 @@
 package com.hapataka.questwalk.core.remote.model
 
+import androidx.annotation.Keep
 import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.model.User
 
+@Keep
 data class UserDefaultInfoDto(
     val userId: String = "",
     var userName: String = "",
