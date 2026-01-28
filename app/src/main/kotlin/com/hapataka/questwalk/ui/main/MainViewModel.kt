@@ -7,29 +7,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.repository.LocationRepository
+import com.hapataka.questwalk.core.domain.usecase.CheckAchievementUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetAvailableQuestsUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetLoginUserIdUseCase
+import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostHistoryUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateQuestSuccessUseCase
 import com.hapataka.questwalk.core.domain.usecase.UpdateUserInfoUseCase
-import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.model.LocationUpdate
-import com.hapataka.questwalk.core.model.Quest
-import com.hapataka.questwalk.domain.entity.HistoryEntity
-import com.hapataka.questwalk.domain.entity.UserEntity
+import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.domain.repository.ImageRepository
 import com.hapataka.questwalk.domain.repository.OcrRepository
-import com.hapataka.questwalk.domain.repository.UserRepo
-import com.hapataka.questwalk.domain.usecase.AchievementListener
-import com.hapataka.questwalk.util.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.debatty.java.stringsimilarity.RatcliffObershelp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -43,16 +41,17 @@ const val HIDE_LOADING = false
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userRepo: UserRepo,
     private val imageRepo: ImageRepository,
     private val ocrRepo: OcrRepository,
     private val locationRepo: LocationRepository,
     private val imageUtil: ImageUtil,
     private val getLoginUserIdUseCase: GetLoginUserIdUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
     private val postHistoryUseCase: PostHistoryUseCase,
     private val updateUserInfoUseCase: UpdateUserInfoUseCase,
     private val updateQuestSuccessUseCase: UpdateQuestSuccessUseCase,
     private val getAvailableQuestsUseCase: GetAvailableQuestsUseCase,
+    private val checkAchievementUseCase: CheckAchievementUseCase,
 ) : ViewModel() {
     private var _currentKeyword = MutableLiveData<String>()
     val currentKeyword: LiveData<String> get() = _currentKeyword
@@ -179,7 +178,8 @@ class MainViewModel @Inject constructor(
 
     fun moveToResult(callback: (resultId: String) -> Unit) {
         viewModelScope.launch {
-            callback(UserInfo.uid)
+            val userId = getLoginUserIdUseCase().getOrElse { "" }
+            callback(userId)
         }
     }
 
@@ -282,7 +282,9 @@ class MainViewModel @Inject constructor(
 
         visibleLoading(HIDE_LOADING)
         resetRecord()
-        checkAchievement(userRepo.getInfo(getLoginUserIdUseCase().getOrThrow()))
+        getUserInfoUseCase().first()?.let { user ->
+            checkAchievement(user)
+        }
         setRandomKeyword()
 
     }
@@ -311,17 +313,13 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private suspend fun checkAchievement(user: UserEntity) {
-        val achieveId = AchievementListener(user)
+    private suspend fun checkAchievement(user: User) {
+        val achieveIds = checkAchievementUseCase(user)
         val userId = getLoginUserIdUseCase().getOrThrow()
 
-        achieveId.forEach { id ->
-            val userAchieveResults =
-                user.histories.filterIsInstance<HistoryEntity.AchieveResultEntity>()
-
-            if (userAchieveResults.none() { it.achievementId == id }) {
-                userRepo.updateHistoryInfo(
-                    userId,
+        achieveIds.forEach { id ->
+            if (id !in user.achievementIds) {
+                postHistoryUseCase(
                     History.Achievement(
                         id = "achievement_${userId}_${id}_${System.currentTimeMillis()}",
                         userId = userId,
@@ -337,10 +335,11 @@ class MainViewModel @Inject constructor(
 
     private suspend fun updateQuestStack(uri: String) {
         val keyword = currentKeyword.value ?: ""
+        val userId = getLoginUserIdUseCase().getOrElse { "" }
 
         updateQuestSuccessUseCase(
             keyword = keyword,
-            userId = UserInfo.uid,
+            userId = userId,
             imageUrl = uri,
             registerAt = currentTime,
         )
