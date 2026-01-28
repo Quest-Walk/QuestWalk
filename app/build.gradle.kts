@@ -61,6 +61,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.remote)
     implementation(projects.core.ui)
+    implementation(projects.core.service)
 
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics:22.1.2")

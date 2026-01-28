@@ -2,7 +2,9 @@ package com.hapataka.questwalk.feature.home
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -80,7 +82,7 @@ internal fun HomeRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val permissionGranted = permissions.values.any { it }
@@ -89,21 +91,51 @@ internal fun HomeRoute(
         }
     }
 
+    val activityRecognitionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ -> }
+
+    val notificationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ -> }
+
     LaunchedEffect(Unit) {
         val fineLocation = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
         val coarseLocation = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
 
         if (!fineLocation && !coarseLocation) {
-            permissionLauncher.launch(
+            locationPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
+        }
+
+        // ACTIVITY_RECOGNITION (Android 10+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val hasActivityRecognition = ContextCompat.checkSelfPermission(
+                context, Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasActivityRecognition) {
+                activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+        }
+
+        // POST_NOTIFICATIONS (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasNotificationPermission = ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasNotificationPermission) {
+                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 

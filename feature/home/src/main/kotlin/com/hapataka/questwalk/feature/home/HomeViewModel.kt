@@ -1,7 +1,9 @@
 package com.hapataka.questwalk.feature.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.service.PlaySessionService
 import com.hapataka.questwalk.core.domain.usecase.GetCurrentQuestUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetPlaySessionUseCase
 import com.hapataka.questwalk.core.domain.usecase.IncrementStepUseCase
@@ -12,6 +14,7 @@ import com.hapataka.questwalk.core.domain.usecase.StartPlaySessionUseCase
 import com.hapataka.questwalk.core.domain.usecase.StopPlaySessionUseCase
 import com.hapataka.questwalk.core.model.PlayState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +35,7 @@ class HomeViewModel @Inject constructor(
     private val stopPlaySessionUseCase: StopPlaySessionUseCase,
     private val incrementStepUseCase: IncrementStepUseCase,
     private val resetPlaySessionUseCase: ResetPlaySessionUseCase,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -82,10 +86,12 @@ class HomeViewModel @Inject constructor(
 
     fun startSession() {
         runCatching { startPlaySessionUseCase() }
+        PlaySessionService.start(context)
     }
 
     fun stopSession() {
         stopPlaySessionUseCase()
+        PlaySessionService.stop(context)
     }
 
     fun resetSession() {
@@ -93,6 +99,7 @@ class HomeViewModel @Inject constructor(
             resetPlaySessionUseCase()
             selectRandomQuestUseCase()
         }
+        PlaySessionService.stop(context)
     }
 
     fun incrementStep() {
