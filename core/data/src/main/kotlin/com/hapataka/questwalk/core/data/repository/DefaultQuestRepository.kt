@@ -5,11 +5,27 @@ import com.hapataka.questwalk.core.dataapi.model.QuestDto
 import com.hapataka.questwalk.core.dataapi.model.SuccessItemDto
 import com.hapataka.questwalk.core.domain.repository.QuestRepository
 import com.hapataka.questwalk.core.model.Quest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DefaultQuestRepository @Inject constructor(
     private val questRemoteDataSource: QuestRemoteDataSource,
 ) : QuestRepository {
+
+    private val _currentQuest = MutableStateFlow<Quest?>(null)
+    override val currentQuest: StateFlow<Quest?> = _currentQuest.asStateFlow()
+
+    override fun setCurrentQuest(quest: Quest) {
+        _currentQuest.value = quest
+    }
+
+    override fun clearCurrentQuest() {
+        _currentQuest.value = null
+    }
 
     override suspend fun getAllQuests(): Result<List<Quest>> {
         return questRemoteDataSource.getAllQuests().map { dtos ->
