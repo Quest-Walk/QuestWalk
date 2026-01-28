@@ -12,6 +12,7 @@ local.properties
 adminapp
 private_key.pepk
 quest_walk_keypath.jks
+upload_certificate.pem
 app/google-services.json
 
 # Claude Code
