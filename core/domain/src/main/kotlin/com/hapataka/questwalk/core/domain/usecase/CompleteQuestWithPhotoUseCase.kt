@@ -2,15 +2,16 @@ package com.hapataka.questwalk.core.domain.usecase
 
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
 import com.hapataka.questwalk.core.domain.repository.KeywordMatchResult
+import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.domain.repository.PlaySessionRepository
 import com.hapataka.questwalk.core.domain.repository.QuestRepository
-import com.hapataka.questwalk.core.model.Location
 import javax.inject.Inject
 import javax.inject.Named
 
 class CompleteQuestWithPhotoUseCase @Inject constructor(
     private val questRepository: QuestRepository,
     private val playSessionRepository: PlaySessionRepository,
+    private val locationRepository: LocationRepository,
     @Named("DefaultAuthRepository")
     private val authRepository: AuthRepository,
 ) {
@@ -48,7 +49,7 @@ class CompleteQuestWithPhotoUseCase @Inject constructor(
         val userId = authRepository.getUserId()
         questRepository.startBackgroundUpload(filePath, userId, keyword)
 
-        val currentLocation = session.route.lastOrNull() ?: Location(0f, 0f)
+        val currentLocation = session.route.lastOrNull() ?: locationRepository.getCurrentLocation()
         playSessionRepository.markSuccess(currentLocation)
 
         return QuestCompletionResult.Success(

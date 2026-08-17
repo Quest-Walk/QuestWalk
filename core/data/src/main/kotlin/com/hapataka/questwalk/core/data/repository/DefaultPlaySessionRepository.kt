@@ -52,7 +52,7 @@ class DefaultPlaySessionRepository @Inject constructor(
         _sessionState.update { it.copy(playState = PlayState.STOPPED) }
     }
 
-    override fun markSuccess(location: Location) {
+    override fun markSuccess(location: Location?) {
         _sessionState.update {
             it.copy(
                 playState = PlayState.SUCCESS,
@@ -92,7 +92,7 @@ class DefaultPlaySessionRepository @Inject constructor(
             locationRepository.getLocationUpdates().collect { locationUpdate ->
                 val currentRoute = _sessionState.value.route
                 val newRoute = currentRoute + locationUpdate.location
-                val newDistance = _sessionState.value.distance + locationUpdate.distance.coerceAtMost(30f)
+                val newDistance = _sessionState.value.distance + locationUpdate.distance
 
                 _sessionState.update {
                     it.copy(

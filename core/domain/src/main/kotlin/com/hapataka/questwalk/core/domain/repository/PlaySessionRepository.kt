@@ -9,7 +9,7 @@ interface PlaySessionRepository {
 
     fun startSession(keyword: String, level: Int)
     fun stopSession()
-    fun markSuccess(location: Location)
+    fun markSuccess(location: Location?)
     fun incrementStep()
     fun resetSession()
 }

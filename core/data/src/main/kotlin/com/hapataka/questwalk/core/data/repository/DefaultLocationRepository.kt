@@ -36,10 +36,6 @@ class DefaultLocationRepository @Inject constructor(
     private fun filterLocation(current: LocationDto): LocationUpdate? {
         val prev = prevLocationDto
 
-        if (current.speed < MIN_SPEED) {
-            return null
-        }
-
         if (current.accuracy > MAX_ACCURACY) {
             return null
         }
@@ -54,7 +50,11 @@ class DefaultLocationRepository @Inject constructor(
 
         val distance = calculateDistance(prev, current)
 
-        if (current.accuracy * ACCURACY_MULTIPLIER < distance) {
+        if (distance < MIN_DISTANCE) {
+            return null
+        }
+
+        if (distance > MAX_DISTANCE_BETWEEN_UPDATES) {
             return null
         }
 
@@ -84,8 +84,8 @@ class DefaultLocationRepository @Inject constructor(
     }
 
     companion object {
-        private const val MIN_SPEED = 1f
-        private const val MAX_ACCURACY = 12f
-        private const val ACCURACY_MULTIPLIER = 1.5f
+        private const val MIN_DISTANCE = 3f
+        private const val MAX_ACCURACY = 50f
+        private const val MAX_DISTANCE_BETWEEN_UPDATES = 100f
     }
 }
