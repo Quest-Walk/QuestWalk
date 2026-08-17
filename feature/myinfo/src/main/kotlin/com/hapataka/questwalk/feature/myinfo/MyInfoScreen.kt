@@ -21,13 +21,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,6 +61,7 @@ fun MyInfoRoute(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showWithdrawDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.event.collectLatest { event ->
@@ -69,8 +76,24 @@ fun MyInfoRoute(
         uiState = uiState,
         padding = padding,
         onBackClick = onBackClick,
-        onIntent = viewModel::onIntent,
+        onIntent = { intent ->
+            if (intent == MyInfoIntent.WithdrawClicked) {
+                showWithdrawDialog.value = true
+            } else {
+                viewModel.onIntent(intent)
+            }
+        },
     )
+
+    if (showWithdrawDialog.value) {
+        WithdrawConfirmDialog(
+            onConfirm = {
+                showWithdrawDialog.value = false
+                viewModel.onIntent(MyInfoIntent.WithdrawConfirmed)
+            },
+            onDismiss = { showWithdrawDialog.value = false },
+        )
+    }
 }
 
 @Composable
@@ -259,6 +282,7 @@ private fun MyInfoContent(
         PixelPurpleButton(
             onClick = onLogoutClick,
             text = "로그아웃",
+            enabled = !state.isDeletingAccount,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 21.dp)
@@ -272,12 +296,41 @@ private fun MyInfoContent(
             style = Typography.bodyMedium,
             color = DangerRed,
             modifier = Modifier
-                .clickable(onClick = onWithdrawClick)
+                .clickable(enabled = !state.isDeletingAccount, onClick = onWithdrawClick)
                 .padding(vertical = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
     }
+}
+
+@Composable
+private fun WithdrawConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "탈퇴하기")
+        },
+        text = {
+            Text(text = "계정과 기록이 삭제됩니다. 계속하시겠습니까?")
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = DangerRed),
+            ) {
+                Text(text = "탈퇴")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "취소")
+            }
+        },
+    )
 }
 
 @Composable

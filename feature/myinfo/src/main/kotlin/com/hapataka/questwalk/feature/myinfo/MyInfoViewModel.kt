@@ -2,6 +2,7 @@ package com.hapataka.questwalk.feature.myinfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hapataka.questwalk.core.domain.usecase.DeleteAccountUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.core.model.User
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class MyInfoViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<MyInfoUiState>>(UiState.Loading)
@@ -48,6 +50,14 @@ class MyInfoViewModel @Inject constructor(
             MyInfoIntent.WithdrawClicked,
             -> state
 
+            MyInfoIntent.WithdrawConfirmed -> {
+                if (state is UiState.Success) {
+                    UiState.Success(state.data.copy(isDeletingAccount = true))
+                } else {
+                    state
+                }
+            }
+
             MyInfoIntent.Refresh -> UiState.Loading
         }
     }
@@ -56,11 +66,8 @@ class MyInfoViewModel @Inject constructor(
         when (intent) {
             MyInfoIntent.Refresh -> loadUserInfo()
             MyInfoIntent.LogoutClicked -> logout()
-            MyInfoIntent.WithdrawClicked -> {
-                viewModelScope.launch {
-                    _event.emit(MyInfoEvent.ShowMessage("탈퇴 기능은 아직 준비 중입니다"))
-                }
-            }
+            MyInfoIntent.WithdrawClicked -> Unit
+            MyInfoIntent.WithdrawConfirmed -> deleteAccount()
         }
     }
 
@@ -88,6 +95,26 @@ class MyInfoViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = UiState.Failure(e)
             }
+        }
+    }
+
+    private fun deleteAccount() {
+        viewModelScope.launch {
+            deleteAccountUseCase()
+                .onSuccess {
+                    _event.emit(MyInfoEvent.ShowMessage("탈퇴가 완료되었습니다"))
+                    _event.emit(MyInfoEvent.LogoutSuccess)
+                }
+                .onFailure { error ->
+                    _event.emit(MyInfoEvent.ShowMessage(error.message ?: "탈퇴에 실패했습니다"))
+                    _uiState.update { state ->
+                        if (state is UiState.Success) {
+                            UiState.Success(state.data.copy(isDeletingAccount = false))
+                        } else {
+                            state
+                        }
+                    }
+                }
         }
     }
 
@@ -123,12 +150,14 @@ data class MyInfoUiState(
     val totalKcalFormatted: String = "0.0Kcal",
     val questCount: Int = 0,
     val achievementCount: Int = 0,
+    val isDeletingAccount: Boolean = false,
 )
 
 sealed interface MyInfoIntent {
     data object Refresh : MyInfoIntent
     data object LogoutClicked : MyInfoIntent
     data object WithdrawClicked : MyInfoIntent
+    data object WithdrawConfirmed : MyInfoIntent
 }
 
 sealed interface MyInfoEvent {
