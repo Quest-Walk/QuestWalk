@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -60,13 +61,14 @@ fun QuestRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var selectedKeyword by rememberSaveable { mutableStateOf<String?>(null) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(viewModel) {
         viewModel.event.collectLatest { event ->
             when (event) {
                 QuestEvent.QuestSelected -> onQuestSelected()
                 is QuestEvent.ShowQuestDetail -> onQuestDetailClick(event.keyword)
-                is QuestEvent.Error -> Unit
+                is QuestEvent.Error -> errorMessage = event.message
             }
         }
     }
@@ -90,9 +92,14 @@ fun QuestRoute(
     QuestScreen(
         uiState = uiState,
         padding = padding,
+        errorMessage = errorMessage,
         onBackClick = onBackClick,
+        onErrorDismiss = { errorMessage = null },
         onFilterLevel = { viewModel.onIntent(QuestIntent.FilterLevel(it)) },
-        onQuestClick = { selectedKeyword = it },
+        onQuestClick = {
+            errorMessage = null
+            selectedKeyword = it
+        },
         onQuestDetailClick = { viewModel.onIntent(QuestIntent.ShowQuestDetail(it)) },
     )
 }
@@ -101,7 +108,9 @@ fun QuestRoute(
 private fun QuestScreen(
     uiState: UiState<QuestUiState>,
     padding: PaddingValues,
+    errorMessage: String?,
     onBackClick: () -> Unit,
+    onErrorDismiss: () -> Unit,
     onFilterLevel: (Int) -> Unit,
     onQuestClick: (String) -> Unit,
     onQuestDetailClick: (String) -> Unit,
@@ -113,6 +122,12 @@ private fun QuestScreen(
             .padding(padding)
     ) {
         TopBar(onBackClick = onBackClick)
+        errorMessage?.let { message ->
+            QuestErrorBanner(
+                message = message,
+                onDismiss = onErrorDismiss,
+            )
+        }
 
         when (uiState) {
             is UiState.Loading -> LoadingContent()
@@ -125,6 +140,29 @@ private fun QuestScreen(
             is UiState.Failure -> ErrorContent(error = uiState.error)
             is UiState.Idle -> Unit
         }
+    }
+}
+
+@Composable
+private fun QuestErrorBanner(
+    message: String,
+    onDismiss: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFFFEEF0))
+            .clickable(onClick = onDismiss)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Text(
+            text = message,
+            color = Color(0xFFD32F2F),
+            fontSize = 14.sp,
+        )
     }
 }
 
@@ -192,7 +230,12 @@ private fun QuestContent(
             items(state.quests, key = { it.keyword }) { quest ->
                 QuestItem(
                     quest = quest,
-                    onClick = { onQuestClick(quest.keyword) },
+                    isSelecting = state.selectingKeyword == quest.keyword,
+                    onClick = {
+                        if (state.selectingKeyword == null) {
+                            onQuestClick(quest.keyword)
+                        }
+                    },
                     onMoreClick = { onQuestDetailClick(quest.keyword) }
                 )
             }
@@ -236,6 +279,7 @@ private fun LevelTabs(
 @Composable
 private fun QuestItem(
     quest: QuestItemUiModel,
+    isSelecting: Boolean,
     onClick: () -> Unit,
     onMoreClick: () -> Unit,
 ) {
@@ -296,7 +340,13 @@ private fun QuestItem(
         }
 
         // More Button
-        if (quest.successCount > 0) {
+        if (isSelecting) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = Purple,
+                strokeWidth = 2.dp,
+            )
+        } else if (quest.successCount > 0) {
             TextButton(onClick = onMoreClick) {
                 Text(text = "더보기", color = Purple)
             }
