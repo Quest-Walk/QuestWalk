@@ -43,7 +43,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-        viewBinding = true
         compose = true
     }
 }
@@ -68,30 +67,13 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
     implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
-    implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
-    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
-
-    implementation("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.1")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.activity.ktx)
-    implementation(libs.fragment.ktx)
-    implementation(libs.material)
-    implementation(libs.constraintlayout)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.activity.compose)
 
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
-    implementation("androidx.camera:camera-core:1.3.4")
-
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -107,9 +89,6 @@ dependencies {
     //Hilt
 //    implementation(libs.hilt.android)
 
-    //spinner
-    implementation("com.github.skydoves:powerspinner:1.2.7")
-
     // coil
     implementation(libs.coil)
     implementation(libs.coil.gif)
@@ -121,22 +100,8 @@ dependencies {
     //java-string-similarity
     implementation("info.debatty:java-string-similarity:2.0.0")
 
-    //cameraX
-    implementation("androidx.camera:camera-camera2:1.3.4")
-    implementation("androidx.camera:camera-lifecycle:1.3.4")
-    implementation("androidx.camera:camera-view:1.3.4")
-    implementation("androidx.camera:camera-extensions:1.3.4")
-
     //openCV
     implementation(libs.opencv)
-
-    // Normal
-    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
-    // Coroutine
-    implementation("io.github.ParkSangGwon:tedpermission-coroutine:3.3.0")
-
-    //ProgressBar
-    implementation("com.github.MackHartley:RoundedProgressBar:3.0.0")
 
     //Proj4j
     implementation("org.locationtech.proj4j:proj4j:1.3.0")
