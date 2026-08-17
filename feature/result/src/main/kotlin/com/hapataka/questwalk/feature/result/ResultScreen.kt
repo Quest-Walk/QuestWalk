@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -210,6 +211,16 @@ private fun ResultMapSection(
         LatLng(it.latitude.toDouble(), it.longitude.toDouble())
     }
 
+    if (routeLatLngs.isEmpty() && successLatLng == null) {
+        ResultPlaceholder(
+            text = "이동 경로가 없습니다.",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(356.dp),
+        )
+        return
+    }
+
     val cameraPositionState = rememberCameraPositionState {
         position = if (routeLatLngs.isNotEmpty()) {
             val bounds = LatLngBounds.builder().apply {
@@ -217,6 +228,8 @@ private fun ResultMapSection(
                 successLatLng?.let { include(it) }
             }.build()
             CameraPosition.fromLatLngZoom(bounds.center, 15f)
+        } else if (successLatLng != null) {
+            CameraPosition.fromLatLngZoom(successLatLng, 16f)
         } else {
             CameraPosition.fromLatLngZoom(LatLng(37.5665, 126.9780), 15f)
         }
@@ -247,6 +260,16 @@ private fun ResultMapSection(
 
 @Composable
 private fun ResultQuestImageSection(imageUrl: String) {
+    if (imageUrl.isBlank()) {
+        ResultPlaceholder(
+            text = "인증 사진이 없습니다.",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+        )
+        return
+    }
+
     SubcomposeAsyncImage(
         model = imageUrl,
         contentDescription = "Quest Image",
@@ -266,21 +289,30 @@ private fun ResultQuestImageSection(imageUrl: String) {
                 )
             }
         },
+        error = {
+            ResultPlaceholder(
+                text = "사진을 불러오지 못했습니다.",
+                modifier = Modifier.fillMaxSize(),
+            )
+        },
     )
 }
 
 @Composable
 private fun ResultOtherImagesSection(images: List<String>) {
+    val displayImages = images.filter { it.isNotBlank() }.take(4)
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        images.forEach { imageUrl ->
+        displayImages.forEach { imageUrl ->
             SubcomposeAsyncImage(
                 model = imageUrl,
                 contentDescription = "Other User Image",
                 modifier = Modifier
                     .weight(0.23f)
+                    .height(76.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
                 loading = {
@@ -290,10 +322,38 @@ private fun ResultOtherImagesSection(images: List<String>) {
                             .background(Color.LightGray),
                     )
                 },
+                error = {
+                    ResultPlaceholder(
+                        text = "",
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                },
             )
         }
-        repeat(4 - images.size) {
+        repeat(4 - displayImages.size) {
             Spacer(modifier = Modifier.weight(0.23f))
+        }
+    }
+}
+
+@Composable
+private fun ResultPlaceholder(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFE9E5F4)),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (text.isNotBlank()) {
+            Text(
+                text = text,
+                color = Color.Gray,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
