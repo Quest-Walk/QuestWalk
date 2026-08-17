@@ -3,7 +3,9 @@ package com.hapataka.questwalk.core.remote.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hapataka.questwalk.core.dataapi.datasource.DustRemoteDataSource
+import com.hapataka.questwalk.core.dataapi.datasource.ImageStorageDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.LocationDataSource
+import com.hapataka.questwalk.core.dataapi.datasource.TextRecognitionDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.WeatherRemoteDataSource
 import com.hapataka.questwalk.core.remote.api.AchieveItemDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
@@ -16,6 +18,8 @@ import com.hapataka.questwalk.core.remote.datasource.FirebaseAchieveItemDataSour
 import com.hapataka.questwalk.core.remote.datasource.FirebaseAuthDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseHistoryDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseQuestDataSource
+import com.hapataka.questwalk.core.remote.datasource.FirebaseStorageDataSource
+import com.hapataka.questwalk.core.remote.datasource.MlKitTextRecognitionDataSource
 import com.hapataka.questwalk.core.remote.datasource.FirebaseUserDataSource
 import com.hapataka.questwalk.core.remote.datasource.FusedLocationDataSource
 import com.hapataka.questwalk.core.remote.datasource.HttpDustDataSource
@@ -91,5 +95,21 @@ object RemoteDataSourceModule {
         fusedLocationDataSource: FusedLocationDataSource,
     ): LocationDataSource {
         return fusedLocationDataSource
+    }
+
+    @Provides
+    @Singleton
+    fun providesTextRecognitionDataSource(
+        mlKitTextRecognitionDataSource: MlKitTextRecognitionDataSource,
+    ): TextRecognitionDataSource {
+        return mlKitTextRecognitionDataSource
+    }
+
+    @Provides
+    @Singleton
+    fun providesImageStorageDataSource(
+        firebaseStorageDataSource: FirebaseStorageDataSource,
+    ): ImageStorageDataSource {
+        return firebaseStorageDataSource
     }
 }

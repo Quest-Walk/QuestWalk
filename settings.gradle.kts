@@ -33,6 +33,8 @@ include(":feature:weather")
 include(":feature:home")
 include(":feature:myinfo")
 include(":feature:splash")
+include(":feature:camera")
+include(":feature:result")
 
 include(
     ":core:designsystem",

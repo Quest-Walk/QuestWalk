@@ -1,22 +1,21 @@
 package com.hapataka.questwalk.feature.home
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hapataka.questwalk.core.service.PlaySessionService
+import com.hapataka.questwalk.core.domain.usecase.FinalizeQuestUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetCurrentQuestUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetPlaySessionUseCase
 import com.hapataka.questwalk.core.domain.usecase.IncrementStepUseCase
 import com.hapataka.questwalk.core.domain.usecase.ResetPlaySessionUseCase
-import com.hapataka.questwalk.core.domain.usecase.SelectQuestUseCase
 import com.hapataka.questwalk.core.domain.usecase.SelectRandomQuestUseCase
 import com.hapataka.questwalk.core.domain.usecase.StartPlaySessionUseCase
 import com.hapataka.questwalk.core.domain.usecase.StopPlaySessionUseCase
-import com.hapataka.questwalk.core.model.PlayState
+import com.hapataka.questwalk.core.service.PlaySessionServiceController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -29,22 +28,66 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getCurrentQuestUseCase: GetCurrentQuestUseCase,
     private val selectRandomQuestUseCase: SelectRandomQuestUseCase,
-    private val selectQuestUseCase: SelectQuestUseCase,
     private val getPlaySessionUseCase: GetPlaySessionUseCase,
     private val startPlaySessionUseCase: StartPlaySessionUseCase,
     private val stopPlaySessionUseCase: StopPlaySessionUseCase,
     private val incrementStepUseCase: IncrementStepUseCase,
     private val resetPlaySessionUseCase: ResetPlaySessionUseCase,
-    @ApplicationContext private val context: Context,
+    private val finalizeQuestUseCase: FinalizeQuestUseCase,
+    private val serviceController: PlaySessionServiceController,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _event = MutableSharedFlow<HomeEvent>()
+    val event = _event.asSharedFlow()
+
     init {
         initializeQuestIfNeeded()
         observeState()
         updateCurrentTime()
+    }
+
+    fun onIntent(intent: HomeIntent) {
+        _uiState.update { state -> reduce(state, intent) }
+        handleSideEffect(intent)
+    }
+
+    private fun reduce(state: HomeUiState, intent: HomeIntent): HomeUiState {
+        return when (intent) {
+            HomeIntent.StartClicked,
+            HomeIntent.CompleteClicked,
+            HomeIntent.CameraClicked,
+            HomeIntent.QuestChangeClicked,
+            HomeIntent.WeatherClicked,
+            HomeIntent.MyInfoClicked,
+            HomeIntent.RecordClicked,
+            HomeIntent.StepDetected,
+            -> state
+
+            HomeIntent.StopClicked -> state.copy(showStopConfirmDialog = true)
+            HomeIntent.StopConfirmed -> state.copy(showStopConfirmDialog = false)
+            HomeIntent.StopDismissed -> state.copy(showStopConfirmDialog = false)
+        }
+    }
+
+    private fun handleSideEffect(intent: HomeIntent) {
+        when (intent) {
+            HomeIntent.StartClicked -> startSession()
+            HomeIntent.StopClicked,
+            HomeIntent.StopDismissed,
+            -> Unit
+
+            HomeIntent.StopConfirmed -> stopSession()
+            HomeIntent.CompleteClicked -> completeQuest()
+            HomeIntent.CameraClicked -> emitEvent(HomeEvent.NavigateToCamera)
+            HomeIntent.QuestChangeClicked -> emitEvent(HomeEvent.NavigateToQuest)
+            HomeIntent.WeatherClicked -> emitEvent(HomeEvent.NavigateToWeather)
+            HomeIntent.MyInfoClicked -> emitEvent(HomeEvent.NavigateToMyInfo)
+            HomeIntent.RecordClicked -> emitEvent(HomeEvent.NavigateToRecord)
+            HomeIntent.StepDetected -> incrementStepUseCase()
+        }
     }
 
     private fun initializeQuestIfNeeded() {
@@ -64,10 +107,11 @@ class HomeViewModel @Inject constructor(
                 _uiState.value.copy(
                     currentKeyword = quest?.keyword ?: "",
                     keywordLevel = quest?.level ?: 0,
-                    playState = session.playState.toIntState(),
+                    playState = session.playState,
                     duration = formatDuration(session.duration),
                     step = session.steps.toString(),
                     distance = formatDistance(session.distance),
+                    rawDistance = session.distance,
                 )
             }.collect { newState ->
                 _uiState.value = newState
@@ -84,38 +128,45 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun startSession() {
+    private fun startSession() {
         runCatching { startPlaySessionUseCase() }
-        PlaySessionService.start(context)
+            .onSuccess {
+                serviceController.start()
+            }
+            .onFailure { error ->
+                emitEvent(HomeEvent.ShowError(error.message ?: "세션 시작에 실패했습니다"))
+            }
     }
 
-    fun stopSession() {
+    private fun stopSession() {
         stopPlaySessionUseCase()
-        PlaySessionService.stop(context)
+        serviceController.stop()
     }
 
-    fun resetSession() {
+    private fun completeQuest() {
+        if (_uiState.value.isCompleting) return
+
         viewModelScope.launch {
-            resetPlaySessionUseCase()
-            selectRandomQuestUseCase()
+            _uiState.update { it.copy(isCompleting = true) }
+            try {
+                stopPlaySessionUseCase()
+                serviceController.stop()
+                val resultId = finalizeQuestUseCase()
+                resetPlaySessionUseCase()
+                selectRandomQuestUseCase()
+                _event.emit(HomeEvent.NavigateToResult(resultId))
+            } catch (error: Exception) {
+                _event.emit(HomeEvent.ShowError(error.message ?: "퀘스트 완료에 실패했습니다"))
+            } finally {
+                _uiState.update { it.copy(isCompleting = false) }
+            }
         }
-        PlaySessionService.stop(context)
     }
 
-    fun incrementStep() {
-        incrementStepUseCase()
-    }
-
-    fun selectKeyword(keyword: String) {
+    private fun emitEvent(event: HomeEvent) {
         viewModelScope.launch {
-            selectQuestUseCase(keyword)
+            _event.emit(event)
         }
-    }
-
-    private fun PlayState.toIntState(): Int = when (this) {
-        PlayState.STOPPED -> QUEST_STOP
-        PlayState.PLAYING -> QUEST_START
-        PlayState.SUCCESS -> QUEST_SUCCESS
     }
 
     private fun formatDuration(seconds: Long): String {
@@ -136,4 +187,28 @@ class HomeViewModel @Inject constructor(
             String.format("%.0fm", meters)
         }
     }
+}
+
+sealed interface HomeIntent {
+    data object StartClicked : HomeIntent
+    data object StopClicked : HomeIntent
+    data object StopConfirmed : HomeIntent
+    data object StopDismissed : HomeIntent
+    data object CompleteClicked : HomeIntent
+    data object CameraClicked : HomeIntent
+    data object QuestChangeClicked : HomeIntent
+    data object WeatherClicked : HomeIntent
+    data object MyInfoClicked : HomeIntent
+    data object RecordClicked : HomeIntent
+    data object StepDetected : HomeIntent
+}
+
+sealed interface HomeEvent {
+    data object NavigateToCamera : HomeEvent
+    data class NavigateToResult(val resultId: String) : HomeEvent
+    data object NavigateToQuest : HomeEvent
+    data object NavigateToWeather : HomeEvent
+    data object NavigateToMyInfo : HomeEvent
+    data object NavigateToRecord : HomeEvent
+    data class ShowError(val message: String) : HomeEvent
 }

@@ -12,4 +12,22 @@ interface QuestRepository {
 
     fun setCurrentQuest(quest: Quest)
     fun clearCurrentQuest()
+
+    suspend fun verifyPhotoKeyword(filePath: String, keyword: String): Result<KeywordMatchResult>
+    suspend fun uploadQuestImage(filePath: String, userId: String, keyword: String): Result<ImageUploadResult>
+    fun startBackgroundUpload(filePath: String, userId: String, keyword: String)
+    suspend fun awaitUploadResult(): Result<ImageUploadResult>
+    suspend fun deletePhotoFile(filePath: String)
 }
+
+data class KeywordMatchResult(
+    val isSuccess: Boolean,
+    val recognizedText: String,
+    val matchedText: String,
+    val similarity: Double,
+)
+
+data class ImageUploadResult(
+    val remoteUrl: String,
+    val localPath: String,
+)

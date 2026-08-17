@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -45,7 +48,6 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.updateBounds
@@ -56,23 +58,22 @@ import com.hapataka.questwalk.core.designsystem.theme.SystemCyan
 import com.hapataka.questwalk.core.designsystem.theme.SystemGray
 import com.hapataka.questwalk.core.designsystem.theme.SystemLemon
 import com.hapataka.questwalk.core.designsystem.theme.Typography
+import com.hapataka.questwalk.core.model.PlayState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
 import com.hapataka.questwalk.feature.home.component.PermissionDialog
+import com.hapataka.questwalk.feature.home.component.StopPlayDialog
 import com.hapataka.questwalk.feature.home.R as HomeR
-
-const val QUEST_STOP = 0
-const val QUEST_START = 1
-const val QUEST_SUCCESS = 2
 
 @Composable
 internal fun HomeRoute(
     padding: PaddingValues = LocalPaddingValues.current,
     viewModel: HomeViewModel = hiltViewModel(),
     onCameraClick: () -> Unit = {},
+    onCompleteClick: (resultId: String) -> Unit = {},
     onQuestChangeClick: () -> Unit = {},
     onWeatherClick: () -> Unit = {},
     onMyInfoClick: () -> Unit = {},
@@ -81,6 +82,22 @@ internal fun HomeRoute(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is HomeEvent.NavigateToResult -> onCompleteClick(event.resultId)
+                HomeEvent.NavigateToCamera -> onCameraClick()
+                HomeEvent.NavigateToQuest -> onQuestChangeClick()
+                HomeEvent.NavigateToWeather -> onWeatherClick()
+                HomeEvent.NavigateToMyInfo -> onMyInfoClick()
+                HomeEvent.NavigateToRecord -> onRecordClick()
+                is HomeEvent.ShowError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -156,17 +173,20 @@ internal fun HomeRoute(
         )
     }
 
+    if (uiState.showStopConfirmDialog) {
+        StopPlayDialog(
+            distance = uiState.rawDistance,
+            duration = uiState.duration,
+            step = uiState.step,
+            onConfirm = { viewModel.onIntent(HomeIntent.StopConfirmed) },
+            onDismiss = { viewModel.onIntent(HomeIntent.StopDismissed) },
+        )
+    }
+
     HomeScreen(
         uiState = uiState,
         padding = padding,
-        onStartClick = viewModel::startSession,
-        onStopClick = viewModel::stopSession,
-        onCameraClick = onCameraClick,
-        onCompleteClick = viewModel::resetSession,
-        onQuestChangeClick = onQuestChangeClick,
-        onWeatherClick = onWeatherClick,
-        onMyInfoClick = onMyInfoClick,
-        onRecordClick = onRecordClick,
+        onIntent = viewModel::onIntent,
     )
 }
 
@@ -174,81 +194,104 @@ internal fun HomeRoute(
 private fun HomeScreen(
     uiState: HomeUiState,
     padding: PaddingValues,
-    onStartClick: () -> Unit,
-    onStopClick: () -> Unit,
-    onCameraClick: () -> Unit,
-    onCompleteClick: () -> Unit,
-    onQuestChangeClick: () -> Unit,
-    onWeatherClick: () -> Unit,
-    onMyInfoClick: () -> Unit,
-    onRecordClick: () -> Unit,
+    onIntent: (HomeIntent) -> Unit,
 ) {
     var animState by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.playState) {
-        animState = uiState.playState != QUEST_STOP
+        animState = uiState.playState != PlayState.STOPPED
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = SystemGray)
-            .padding(padding)
     ) {
-        // Background and Character Section
+        // Background (엣지투엣지)
         Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .fillMaxHeight(0.7f)
-                .fillMaxWidth(),
         ) {
             BackgroundLayers(
                 isAnimate = animState,
                 currentTime = uiState.currentTime
             )
+        }
 
-            Character(
-                character = Character.BEAR,
-                isAnimate = animState,
+        // Content (padding 적용)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Character and Controls Section
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxHeight(0.42f)
-                    .padding(bottom = 72.dp)
-            )
+                    .fillMaxHeight(0.7f)
+                    .fillMaxWidth(),
+            ) {
+                Character(
+                    character = Character.BEAR,
+                    isAnimate = animState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxHeight(0.42f)
+                        .padding(bottom = 72.dp)
+                )
 
-            // Side Buttons
-            SideButtons(
-                statusBarHeight = uiState.statusBarHeight,
-                onWeatherClick = onWeatherClick,
-                onMyInfoClick = onMyInfoClick,
-                onRecordClick = onRecordClick,
-            )
+                // Side Buttons
+                SideButtons(
+                    onWeatherClick = { onIntent(HomeIntent.WeatherClicked) },
+                    onMyInfoClick = { onIntent(HomeIntent.MyInfoClicked) },
+                    onRecordClick = { onIntent(HomeIntent.RecordClicked) },
+                )
 
-            // Quest Info (Keyword, Level, Change Button)
-            QuestInfoOverlay(
-                keyword = uiState.currentKeyword,
-                level = uiState.keywordLevel,
+                // Quest Info (Keyword, Level, Change Button)
+                QuestInfoOverlay(
+                    keyword = uiState.currentKeyword,
+                    level = uiState.keywordLevel,
+                    playState = uiState.playState,
+                    onQuestChangeClick = { onIntent(HomeIntent.QuestChangeClicked) },
+                )
+            }
+
+            // Info Bar
+            InfoBar(
                 playState = uiState.playState,
-                statusBarHeight = uiState.statusBarHeight,
-                onQuestChangeClick = onQuestChangeClick,
+                duration = uiState.duration,
+                step = uiState.step,
+                distance = uiState.distance,
+            )
+
+            // Control Buttons
+            ControlButtons(
+                playState = uiState.playState,
+                hasQuest = uiState.currentKeyword.isNotEmpty(),
+                isCompleting = uiState.isCompleting,
+                onStartClick = { onIntent(HomeIntent.StartClicked) },
+                onStopClick = { onIntent(HomeIntent.StopClicked) },
+                onCameraClick = { onIntent(HomeIntent.CameraClicked) },
+                onCompleteClick = { onIntent(HomeIntent.CompleteClicked) },
             )
         }
 
-        // Info Bar
-        InfoBar(
-            playState = uiState.playState,
-            duration = uiState.duration,
-            step = uiState.step,
-            distance = uiState.distance,
-        )
-
-        // Control Buttons
-        ControlButtons(
-            playState = uiState.playState,
-            onStartClick = onStartClick,
-            onStopClick = onStopClick,
-            onCameraClick = onCameraClick,
-            onCompleteClick = onCompleteClick,
-        )
+        // Loading overlay
+        if (uiState.isCompleting) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = {},
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
+        }
     }
 }
 
@@ -301,7 +344,6 @@ private fun BackgroundLayers(
 
 @Composable
 private fun SideButtons(
-    statusBarHeight: Dp,
     onWeatherClick: () -> Unit,
     onMyInfoClick: () -> Unit,
     onRecordClick: () -> Unit,
@@ -310,7 +352,7 @@ private fun SideButtons(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(top = 16.dp + statusBarHeight, end = 12.dp)
+                .padding(top = 16.dp, end = 12.dp)
                 .width(64.dp)
                 .align(Alignment.TopEnd),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -350,16 +392,17 @@ private fun SideButtons(
 private fun QuestInfoOverlay(
     keyword: String,
     level: Int,
-    playState: Int,
-    statusBarHeight: Dp,
+    playState: PlayState,
     onQuestChangeClick: () -> Unit,
 ) {
+    val displayKeyword = keyword.ifEmpty { "..." }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.TopCenter)
-                .padding(top = 100.dp + statusBarHeight),
+                .padding(top = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top)
         ) {
@@ -381,7 +424,7 @@ private fun QuestInfoOverlay(
             // Keyword with stroke
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    text = keyword,
+                    text = displayKeyword,
                     style = Typography.displayMedium.copy(
                         drawStyle = Stroke(
                             width = 16f,
@@ -392,14 +435,14 @@ private fun QuestInfoOverlay(
                     color = Black,
                 )
                 Text(
-                    text = keyword,
+                    text = displayKeyword,
                     style = Typography.displayMedium,
                     color = Color.White,
                 )
             }
 
             // Quest change button (only when stopped)
-            if (playState == QUEST_STOP) {
+            if (playState == PlayState.STOPPED) {
                 PixelChipButton(
                     text = "퀘스트 변경",
                     onClick = onQuestChangeClick
@@ -411,7 +454,7 @@ private fun QuestInfoOverlay(
 
 @Composable
 private fun InfoBar(
-    playState: Int,
+    playState: PlayState,
     duration: String,
     step: String,
     distance: String,
@@ -444,7 +487,7 @@ private fun InfoBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            if (playState == QUEST_STOP) {
+            if (playState == PlayState.STOPPED) {
                 Text(
                     text = "시작하려면, START버튼을 눌러주세요",
                     style = Typography.bodyMedium,
@@ -473,7 +516,9 @@ private fun InfoBar(
 
 @Composable
 private fun ColumnScope.ControlButtons(
-    playState: Int,
+    playState: PlayState,
+    hasQuest: Boolean,
+    isCompleting: Boolean,
     onStartClick: () -> Unit,
     onStopClick: () -> Unit,
     onCameraClick: () -> Unit,
@@ -487,14 +532,15 @@ private fun ColumnScope.ControlButtons(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (playState) {
-            QUEST_STOP -> {
+            PlayState.STOPPED -> {
                 StartButton(
                     modifier = Modifier.fillMaxWidth(0.35f),
+                    enabled = hasQuest,
                     onClick = onStartClick
                 )
             }
 
-            QUEST_START -> {
+            PlayState.PLAYING -> {
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally),
@@ -519,14 +565,18 @@ private fun ColumnScope.ControlButtons(
                 }
             }
 
-            QUEST_SUCCESS -> {
+            PlayState.SUCCESS -> {
                 ImageButton(
                     releasedPainterResource = painterResource(HomeR.drawable.btn_stop_success),
                     contentDescription = "완료하기 버튼",
                     modifier = Modifier
                         .fillMaxHeight(0.65f)
                         .aspectRatio(2f),
-                    onClick = onCompleteClick,
+                    onClick = {
+                        if (!isCompleting) {
+                            onCompleteClick()
+                        }
+                    },
                 )
             }
         }
@@ -536,20 +586,23 @@ private fun ColumnScope.ControlButtons(
 @Composable
 private fun StartButton(
     onClick: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val buttonBackground = painterResource(
-        if (isPressed) HomeR.drawable.btn_start_press else HomeR.drawable.btn_start_defualt
+        if (isPressed && enabled) HomeR.drawable.btn_start_press else HomeR.drawable.btn_start_defualt
     )
 
     Box(
-        modifier = modifier.clickable(
-            onClick = onClick,
-            indication = null,
-            interactionSource = interactionSource
-        ),
+        modifier = modifier
+            .alpha(if (enabled) 1f else 0.5f)
+            .clickable(
+                onClick = { if (enabled) onClick() },
+                indication = null,
+                interactionSource = interactionSource
+            ),
     ) {
         Image(
             painter = buttonBackground,
@@ -562,11 +615,12 @@ private fun StartButton(
 data class HomeUiState(
     val currentKeyword: String = "",
     val keywordLevel: Int = 0,
-    val playState: Int = QUEST_STOP,
+    val playState: PlayState = PlayState.STOPPED,
     val currentTime: Int = 12,
     val duration: String = "",
     val step: String = "0",
     val distance: String = "0m",
-    val statusBarHeight: Dp = 0.dp,
-    val navigationBarHeight: Dp = 0.dp,
+    val rawDistance: Float = 0f,
+    val isCompleting: Boolean = false,
+    val showStopConfirmDialog: Boolean = false,
 )

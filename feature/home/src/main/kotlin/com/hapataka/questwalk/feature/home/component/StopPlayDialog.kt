@@ -26,11 +26,13 @@ private val Purple = Color(0xFF6B4EFF)
 @Composable
 fun StopPlayDialog(
     distance: Float,
+    duration: String,
+    step: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val message = if (distance > -1f) {
-        "모험을 종료하고 지금까지의 기록을 저장할까요?"
+    val message = if (distance > 0f) {
+        "모험을 종료할까요?\n현재 기록: $duration · $step 걸음"
     } else {
         "지금 포기하면 이동한 거리가 너무 짧아서\n기록이 남지 않습니다.\n그래도 포기하시겠습니까?"
     }

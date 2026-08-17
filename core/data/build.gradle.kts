@@ -15,5 +15,9 @@ dependencies {
 
     implementation(libs.firebase.auth)
     implementation(libs.kotlinx.serialization.json)
+
+    // Java String Similarity
+    implementation(libs.java.string.similarity)
+
     testImplementation(libs.junit)
 }

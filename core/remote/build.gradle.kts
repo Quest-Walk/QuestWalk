@@ -14,7 +14,11 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     implementation(libs.kotlinx.serialization.json)
+
+    // ML Kit
+    implementation(libs.mlkit.text.recognition.korean)
 
     // Retrofit
     implementation(libs.retrofit)

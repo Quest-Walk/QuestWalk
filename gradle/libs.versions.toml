@@ -54,6 +54,14 @@ googleGms = "4.4.2"
 # https://firebase.google.com/docs/android/learn-more?authuser=0&hl=ko&_gl=1#bom
 firebaseBoM = "33.7.0"
 
+## ML Kit
+# https://developers.google.com/ml-kit/vision/text-recognition/android
+mlkitTextRecognitionKorean = "16.0.1"
+
+## Java String Similarity
+# https://github.com/tdebatty/java-string-similarity
+javaStringSimilarity = "2.0.0"
+
 ## Room
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.6.1"
@@ -75,6 +83,11 @@ googleIdentity = "1.1.1"
 # https://developers.google.com/android/guides/releases
 playServicesLocation = "21.3.0"
 
+## Google Maps Compose
+# https://github.com/googlemaps/android-maps-compose
+mapsCompose = "6.4.1"
+playServicesMaps = "19.0.0"
+
 ## Retrofit
 # https://github.com/square/retrofit
 retrofit = "2.11.0"
@@ -86,6 +99,14 @@ proj4j = "1.3.0"
 ## OpenCV
 # https://github.com/opencv/opencv/releases
 opencv = "4.11.0"
+
+## CameraX
+# https://developer.android.com/jetpack/androidx/releases/camera
+camerax = "1.3.4"
+
+## ExifInterface
+# https://developer.android.com/jetpack/androidx/releases/exifinterface
+exifinterface = "1.3.7"
 
 
 
@@ -166,9 +187,18 @@ coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBoM" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
+firebase-storage = { module = "com.google.firebase:firebase-storage-ktx" }
+
+# ML Kit
+mlkit-text-recognition-korean = { group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "mlkitTextRecognitionKorean" }
+
+# Java String Similarity
+java-string-similarity = { group = "info.debatty", name = "java-string-similarity", version.ref = "javaStringSimilarity" }
 
 google-android-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdentity" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
@@ -177,6 +207,15 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 proj4j = { group = "org.locationtech.proj4j", name = "proj4j", version.ref = "proj4j" }
+
+# CameraX
+camerax-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
+camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
+
+# ExifInterface
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

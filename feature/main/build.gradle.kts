@@ -16,4 +16,6 @@ dependencies {
     implementation(projects.feature.record)
     implementation(projects.feature.weather)
     implementation(projects.feature.myinfo)
+    implementation(projects.feature.camera)
+    implementation(projects.feature.result)
 }

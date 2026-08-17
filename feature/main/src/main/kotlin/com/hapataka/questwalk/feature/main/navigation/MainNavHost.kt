@@ -1,14 +1,18 @@
 package com.hapataka.questwalk.feature.main.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
+import com.hapataka.questwalk.feature.camera.navigation.cameraScreen
 import com.hapataka.questwalk.feature.home.navigation.homeScreen
 import com.hapataka.questwalk.feature.myinfo.navigation.myInfoScreen
 import com.hapataka.questwalk.feature.onboarding.navigation.onboardingNavGraph
 import com.hapataka.questwalk.feature.quest.navigation.questDetailScreen
 import com.hapataka.questwalk.feature.quest.navigation.questScreen
 import com.hapataka.questwalk.feature.record.navigation.recordScreen
+import com.hapataka.questwalk.feature.result.navigation.resultScreen
 import com.hapataka.questwalk.feature.splash.navigation.splashScreen
 import com.hapataka.questwalk.feature.weather.navigation.weatherScreen
 
@@ -17,6 +21,8 @@ internal fun MainNavHost(
     navigator: MainNavigator,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navigator.navController,
         startDestination = navigator.startDestination,
@@ -38,6 +44,7 @@ internal fun MainNavHost(
         // Home
         homeScreen(
             onCameraClick = { navigator.navigateToCamera() },
+            onCompleteClick = { resultId -> navigator.navigateToResult(resultId) },
             onQuestChangeClick = { navigator.navigateToQuest() },
             onWeatherClick = { navigator.navigateToWeather() },
             onMyInfoClick = { navigator.navigateToMyInfo() },
@@ -48,8 +55,7 @@ internal fun MainNavHost(
         questScreen(
             onBackClick = { navigator.popBackStack() },
             onQuestDetailClick = { keyword -> navigator.navigateToQuestDetail(keyword) },
-            onQuestSelected = { keyword ->
-                // TODO: PlaySessionRepository.setKeyword
+            onQuestSelected = {
                 navigator.popBackStack()
             },
         )
@@ -77,6 +83,21 @@ internal fun MainNavHost(
             onLogoutSuccess = { navigator.navigateToOnboarding() },
         )
 
-        // TODO: Camera, Result screens
+        // Camera
+        cameraScreen(
+            onBackClick = { navigator.popBackStack() },
+            onQuestSuccess = {
+                navigator.popBackStack()
+                Toast.makeText(context, "퀘스트 성공!", Toast.LENGTH_SHORT).show()
+            },
+            onQuestFailed = { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            },
+        )
+
+        // Result
+        resultScreen(
+            onBackClick = { navigator.navigateToHome(clearBackStack = true) },
+        )
     }
 }
