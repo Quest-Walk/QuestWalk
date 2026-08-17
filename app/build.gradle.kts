@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.activity.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
     testImplementation(libs.junit4)
