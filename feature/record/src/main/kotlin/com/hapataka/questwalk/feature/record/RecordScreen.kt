@@ -1,12 +1,12 @@
 package com.hapataka.questwalk.feature.record
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.typography
@@ -83,6 +81,8 @@ private fun RecordScreen(
             is UiState.Success -> RecordContent(
                 histories = uiState.data.histories,
                 achieveItems = uiState.data.achieveItems,
+                selectedTab = uiState.data.selectedTab,
+                onTabClick = { onIntent(RecordIntent.SelectTab(it)) },
                 onHistoryClick = { onIntent(RecordIntent.ClickHistory(it)) },
             )
             is UiState.Failure -> ErrorContent(error = uiState.error)
@@ -127,31 +127,69 @@ private fun ErrorContent(error: Throwable) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RecordContent(
-    histories: List<History>,
+    histories: List<History.QuestResult>,
     achieveItems: List<AchieveItemUiModel>,
+    selectedTab: RecordTab,
+    onTabClick: (RecordTab) -> Unit,
     onHistoryClick: (String) -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = { 2 })
-
-    HorizontalPager(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
-        state = pagerState
-    ) { page ->
-        when (page) {
-            0 -> HistoryScreen(histories, onHistoryClick)
-            1 -> AchievementScreen(achieveItems)
+    ) {
+        RecordTabSelector(
+            selectedTab = selectedTab,
+            onTabClick = onTabClick,
+        )
+
+        when (selectedTab) {
+            RecordTab.HISTORY -> HistoryScreen(histories, onHistoryClick)
+            RecordTab.ACHIEVEMENT -> AchievementScreen(achieveItems)
+        }
+    }
+}
+
+@Composable
+private fun RecordTabSelector(
+    selectedTab: RecordTab,
+    onTabClick: (RecordTab) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        RecordTab.entries.forEach { tab ->
+            val selected = tab == selectedTab
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (selected) Color(0xFF6B4EFF) else Color(0xFFEDEAF6))
+                    .clickable { onTabClick(tab) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = when (tab) {
+                        RecordTab.HISTORY -> "히스토리"
+                        RecordTab.ACHIEVEMENT -> "업적"
+                    },
+                    color = if (selected) Color.White else Color.DarkGray,
+                    style = typography.bodyMedium,
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun HistoryScreen(
-    histories: List<History>,
+    histories: List<History.QuestResult>,
     onHistoryClick: (String) -> Unit,
 ) {
     Column(
@@ -175,7 +213,7 @@ private fun Header(title: String) {
 
 @Composable
 private fun HistoryGridList(
-    histories: List<History>,
+    histories: List<History.QuestResult>,
     onHistoryClick: (String) -> Unit,
 ) {
     LazyVerticalGrid(
@@ -195,7 +233,7 @@ private fun HistoryGridList(
 
 @Composable
 private fun HistoryItem(
-    item: History,
+    item: History.QuestResult,
     onClick: () -> Unit,
 ) {
     SubcomposeAsyncImage(
@@ -204,10 +242,7 @@ private fun HistoryItem(
             .width(92.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
-        model = when (item) {
-            is History.QuestResult -> item.imageUrl
-            is History.Achievement -> null
-        },
+        model = item.imageUrl,
         contentDescription = null,
         contentScale = ContentScale.FillHeight,
         loading = {

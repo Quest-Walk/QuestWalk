@@ -101,7 +101,7 @@ class RecordViewModel @Inject constructor(
             _uiState.update {
                 UiState.Success(
                     RecordUiState(
-                        histories = histories,
+                        histories = histories.filterIsInstance<History.QuestResult>(),
                         achieveItems = achieveItems.map { item ->
                             item.toUiModel(isAchieved = item.achieveId in achievedIds)
                         }
@@ -123,7 +123,7 @@ class RecordViewModel @Inject constructor(
 }
 
 data class RecordUiState(
-    val histories: List<History> = emptyList(),
+    val histories: List<History.QuestResult> = emptyList(),
     val achieveItems: List<AchieveItemUiModel> = emptyList(),
     val selectedTab: RecordTab = RecordTab.HISTORY,
 )
