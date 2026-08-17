@@ -10,7 +10,9 @@ import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,15 +28,46 @@ class RecordViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<RecordUiState>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _event = MutableSharedFlow<RecordEvent>()
+    val event = _event.asSharedFlow()
+
     init {
         loadRecords()
     }
 
-    fun onAction(action: RecordAction) {
-        when (action) {
-            is RecordAction.Refresh -> loadRecords()
-            is RecordAction.SelectTab -> selectTab(action.tab)
-            is RecordAction.ClickHistory -> { /* Navigation handled in Route */ }
+    fun onIntent(intent: RecordIntent) {
+        _uiState.update { state -> reduce(state, intent) }
+        handleSideEffect(intent)
+    }
+
+    private fun reduce(
+        state: UiState<RecordUiState>,
+        intent: RecordIntent,
+    ): UiState<RecordUiState> {
+        return when (intent) {
+            RecordIntent.Refresh,
+            is RecordIntent.ClickHistory,
+            -> state
+
+            is RecordIntent.SelectTab -> {
+                if (state is UiState.Success) {
+                    UiState.Success(state.data.copy(selectedTab = intent.tab))
+                } else {
+                    state
+                }
+            }
+        }
+    }
+
+    private fun handleSideEffect(intent: RecordIntent) {
+        when (intent) {
+            RecordIntent.Refresh -> loadRecords()
+            is RecordIntent.SelectTab -> Unit
+            is RecordIntent.ClickHistory -> {
+                viewModelScope.launch {
+                    _event.emit(RecordEvent.NavigateToResult(intent.historyId))
+                }
+            }
         }
     }
 
@@ -78,13 +111,6 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    private fun selectTab(tab: RecordTab) {
-        val currentState = (_uiState.value as? UiState.Success)?.data ?: return
-        _uiState.update {
-            UiState.Success(currentState.copy(selectedTab = tab))
-        }
-    }
-
     private fun AchieveItem.toUiModel(isAchieved: Boolean): AchieveItemUiModel {
         return AchieveItemUiModel(
             achieveId = achieveId,
@@ -114,8 +140,12 @@ enum class RecordTab {
     HISTORY, ACHIEVEMENT
 }
 
-sealed interface RecordAction {
-    data object Refresh : RecordAction
-    data class SelectTab(val tab: RecordTab) : RecordAction
-    data class ClickHistory(val historyId: String) : RecordAction
+sealed interface RecordIntent {
+    data object Refresh : RecordIntent
+    data class SelectTab(val tab: RecordTab) : RecordIntent
+    data class ClickHistory(val historyId: String) : RecordIntent
+}
+
+sealed interface RecordEvent {
+    data class NavigateToResult(val historyId: String) : RecordEvent
 }

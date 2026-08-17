@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.domain.usecase.GetAllQuestsUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetSuccessKeywordsUseCase
+import com.hapataka.questwalk.core.domain.usecase.SelectQuestUseCase
 import com.hapataka.questwalk.core.model.Quest
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,10 +22,14 @@ import kotlin.math.roundToInt
 class QuestViewModel @Inject constructor(
     private val getAllQuestsUseCase: GetAllQuestsUseCase,
     private val getSuccessKeywordsUseCase: GetSuccessKeywordsUseCase,
+    private val selectQuestUseCase: SelectQuestUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<QuestUiState>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    private val _event = MutableSharedFlow<QuestEvent>()
+    val event = _event.asSharedFlow()
 
     private var allQuests: List<Quest> = emptyList()
     private var successKeywords: Set<String> = emptySet()
@@ -32,12 +39,16 @@ class QuestViewModel @Inject constructor(
         loadQuests()
     }
 
-    fun onAction(action: QuestAction) {
-        when (action) {
-            is QuestAction.Refresh -> loadQuests()
-            is QuestAction.FilterLevel -> filterByLevel(action.level)
-            is QuestAction.SelectQuest -> { /* Navigation handled in Route */ }
-            is QuestAction.ShowQuestDetail -> { /* Navigation handled in Route */ }
+    fun onIntent(intent: QuestIntent) {
+        when (intent) {
+            is QuestIntent.Refresh -> loadQuests()
+            is QuestIntent.FilterLevel -> filterByLevel(intent.level)
+            is QuestIntent.SelectQuest -> selectQuest(intent.keyword)
+            is QuestIntent.ShowQuestDetail -> {
+                viewModelScope.launch {
+                    _event.emit(QuestEvent.ShowQuestDetail(intent.keyword))
+                }
+            }
         }
     }
 
@@ -67,6 +78,30 @@ class QuestViewModel @Inject constructor(
         updateUiState(selectedLevel = level)
     }
 
+    private fun selectQuest(keyword: String) {
+        if (keyword in successKeywords) return
+
+        viewModelScope.launch {
+            updateSuccessState { state ->
+                state.copy(selectingKeyword = keyword)
+            }
+
+            selectQuestUseCase(keyword)
+                .onSuccess {
+                    updateSuccessState { state ->
+                        state.copy(selectingKeyword = null)
+                    }
+                    _event.emit(QuestEvent.QuestSelected)
+                }
+                .onFailure { error ->
+                    updateSuccessState { state ->
+                        state.copy(selectingKeyword = null)
+                    }
+                    _event.emit(QuestEvent.Error(error.message ?: "퀘스트 선택에 실패했습니다"))
+                }
+        }
+    }
+
     private fun updateUiState(selectedLevel: Int) {
         val filteredQuests = if (selectedLevel == 0) {
             allQuests
@@ -87,8 +122,19 @@ class QuestViewModel @Inject constructor(
                     quests = questItems,
                     selectedLevel = selectedLevel,
                     successKeywords = successKeywords,
+                    selectingKeyword = null,
                 )
             )
+        }
+    }
+
+    private fun updateSuccessState(reducer: (QuestUiState) -> QuestUiState) {
+        _uiState.update { state ->
+            if (state is UiState.Success) {
+                UiState.Success(reducer(state.data))
+            } else {
+                state
+            }
         }
     }
 
@@ -113,6 +159,7 @@ data class QuestUiState(
     val quests: List<QuestItemUiModel> = emptyList(),
     val selectedLevel: Int = 0,
     val successKeywords: Set<String> = emptySet(),
+    val selectingKeyword: String? = null,
 )
 
 data class QuestItemUiModel(
@@ -123,9 +170,15 @@ data class QuestItemUiModel(
     val isSuccess: Boolean,
 )
 
-sealed interface QuestAction {
-    data object Refresh : QuestAction
-    data class FilterLevel(val level: Int) : QuestAction
-    data class SelectQuest(val keyword: String) : QuestAction
-    data class ShowQuestDetail(val keyword: String) : QuestAction
+sealed interface QuestIntent {
+    data object Refresh : QuestIntent
+    data class FilterLevel(val level: Int) : QuestIntent
+    data class SelectQuest(val keyword: String) : QuestIntent
+    data class ShowQuestDetail(val keyword: String) : QuestIntent
+}
+
+sealed interface QuestEvent {
+    data object QuestSelected : QuestEvent
+    data class ShowQuestDetail(val keyword: String) : QuestEvent
+    data class Error(val message: String) : QuestEvent
 }

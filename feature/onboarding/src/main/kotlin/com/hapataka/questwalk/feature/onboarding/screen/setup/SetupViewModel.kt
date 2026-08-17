@@ -7,13 +7,13 @@ import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.core.domain.usecase.PostUserInfoUserCase
 import com.hapataka.questwalk.core.model.CharacterType
-import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.model.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,8 +28,18 @@ class SetupViewModel @Inject constructor(
     private val _userState = MutableStateFlow<UserState>(UserState.Idle)
     val loginState = _userState.asStateFlow()
 
+    private val _event = MutableSharedFlow<SetupEvent>()
+    val event = _event.asSharedFlow()
+
     init {
         checkExistingUser()
+    }
+
+    fun onIntent(intent: SetupIntent) {
+        when (intent) {
+            is SetupIntent.DoneClicked -> postUserInfo(intent.userName, intent.characterType)
+            SetupIntent.LogoutClicked -> logout(navigateToLogin = true)
+        }
     }
 
     private fun checkExistingUser() {
@@ -39,7 +49,7 @@ class SetupViewModel @Inject constructor(
                 Log.d("SetupViewModel", "checkExistingUser: user=$user")
                 if (user != null && user.userName.isNotBlank()) {
                     Log.d("SetupViewModel", "User exists, navigating to home")
-                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
+                    _event.emit(SetupEvent.NavigateToHome)
                 } else {
                     Log.d("SetupViewModel", "No existing user, show setup screen")
                 }
@@ -49,7 +59,7 @@ class SetupViewModel @Inject constructor(
         }
     }
 
-    fun postUserInfo(userName: String, characterType: CharacterType) {
+    private fun postUserInfo(userName: String, characterType: CharacterType) {
         viewModelScope.launch {
             Log.d("SetupViewModel", "postUserInfo called: userName='$userName'")
             _userState.update { UserState.Loading }
@@ -57,17 +67,22 @@ class SetupViewModel @Inject constructor(
             postUserInfoUserCase(userName, characterType)
                 .onSuccess {
                     Log.d("SetupViewModel", "postUserInfo success, navigating to home")
-                    _userState.update { UserState.LoggedIn(UserInfo.EXIST) }
+                    _userState.update { UserState.Idle }
+                    _event.emit(SetupEvent.NavigateToHome)
                 }
                 .onFailure { e ->
                     Log.e("SetupViewModel", "postUserInfo failed: ${e.message}")
+                    _userState.update { UserState.LoginFail(e.message.orEmpty()) }
                 }
         }
     }
 
-    fun logout() {
+    private fun logout(navigateToLogin: Boolean) {
         viewModelScope.launch {
             logoutUseCase()
+            if (navigateToLogin) {
+                _event.emit(SetupEvent.NavigateToLogin)
+            }
         }
     }
 
@@ -75,4 +90,18 @@ class SetupViewModel @Inject constructor(
         super.onCleared()
         Log.d("logoutTest", "SetupViewModel Cleared")
     }
+}
+
+sealed interface SetupIntent {
+    data class DoneClicked(
+        val userName: String,
+        val characterType: CharacterType,
+    ) : SetupIntent
+
+    data object LogoutClicked : SetupIntent
+}
+
+sealed interface SetupEvent {
+    data object NavigateToHome : SetupEvent
+    data object NavigateToLogin : SetupEvent
 }

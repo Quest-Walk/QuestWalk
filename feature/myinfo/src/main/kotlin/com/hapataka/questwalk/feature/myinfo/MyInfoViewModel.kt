@@ -7,11 +7,14 @@ import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,11 +27,41 @@ class MyInfoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<MyInfoUiState>>(UiState.Loading)
     val uiState: StateFlow<UiState<MyInfoUiState>> = _uiState.asStateFlow()
 
-    private val _logoutEvent = MutableStateFlow(false)
-    val logoutEvent: StateFlow<Boolean> = _logoutEvent.asStateFlow()
+    private val _event = MutableSharedFlow<MyInfoEvent>()
+    val event = _event.asSharedFlow()
 
     init {
         loadUserInfo()
+    }
+
+    fun onIntent(intent: MyInfoIntent) {
+        _uiState.update { state -> reduce(state, intent) }
+        handleSideEffect(intent)
+    }
+
+    private fun reduce(
+        state: UiState<MyInfoUiState>,
+        intent: MyInfoIntent,
+    ): UiState<MyInfoUiState> {
+        return when (intent) {
+            MyInfoIntent.LogoutClicked,
+            MyInfoIntent.WithdrawClicked,
+            -> state
+
+            MyInfoIntent.Refresh -> UiState.Loading
+        }
+    }
+
+    private fun handleSideEffect(intent: MyInfoIntent) {
+        when (intent) {
+            MyInfoIntent.Refresh -> loadUserInfo()
+            MyInfoIntent.LogoutClicked -> logout()
+            MyInfoIntent.WithdrawClicked -> {
+                viewModelScope.launch {
+                    _event.emit(MyInfoEvent.ShowMessage("탈퇴 기능은 아직 준비 중입니다"))
+                }
+            }
+        }
     }
 
     private fun loadUserInfo() {
@@ -47,11 +80,11 @@ class MyInfoViewModel @Inject constructor(
         }
     }
 
-    fun logout() {
+    private fun logout() {
         viewModelScope.launch {
             try {
                 logoutUseCase()
-                _logoutEvent.value = true
+                _event.emit(MyInfoEvent.LogoutSuccess)
             } catch (e: Exception) {
                 _uiState.value = UiState.Failure(e)
             }
@@ -91,3 +124,14 @@ data class MyInfoUiState(
     val questCount: Int = 0,
     val achievementCount: Int = 0,
 )
+
+sealed interface MyInfoIntent {
+    data object Refresh : MyInfoIntent
+    data object LogoutClicked : MyInfoIntent
+    data object WithdrawClicked : MyInfoIntent
+}
+
+sealed interface MyInfoEvent {
+    data object LogoutSuccess : MyInfoEvent
+    data class ShowMessage(val message: String) : MyInfoEvent
+}

@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
+import kotlinx.coroutines.flow.collectLatest
 
 private val Purple = Color(0xFF6B4EFF)
 private val LightGray = Color(0xFFF5F5F5)
@@ -53,11 +55,21 @@ fun QuestRoute(
     viewModel: QuestViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onQuestDetailClick: (String) -> Unit = {},
-    onQuestSelected: (String) -> Unit = {},
+    onQuestSelected: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var selectedKeyword by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collectLatest { event ->
+            when (event) {
+                QuestEvent.QuestSelected -> onQuestSelected()
+                is QuestEvent.ShowQuestDetail -> onQuestDetailClick(event.keyword)
+                is QuestEvent.Error -> Unit
+            }
+        }
+    }
 
     selectedKeyword?.let { keyword ->
         val isAlreadySuccess = (uiState as? UiState.Success)?.data?.successKeywords?.contains(keyword) == true
@@ -67,7 +79,7 @@ fun QuestRoute(
             isAlreadySuccess = isAlreadySuccess,
             onConfirm = {
                 if (!isAlreadySuccess) {
-                    onQuestSelected(keyword)
+                    viewModel.onIntent(QuestIntent.SelectQuest(keyword))
                 }
                 selectedKeyword = null
             },
@@ -79,9 +91,9 @@ fun QuestRoute(
         uiState = uiState,
         padding = padding,
         onBackClick = onBackClick,
-        onFilterLevel = { viewModel.onAction(QuestAction.FilterLevel(it)) },
+        onFilterLevel = { viewModel.onIntent(QuestIntent.FilterLevel(it)) },
         onQuestClick = { selectedKeyword = it },
-        onQuestDetailClick = onQuestDetailClick,
+        onQuestDetailClick = { viewModel.onIntent(QuestIntent.ShowQuestDetail(it)) },
     )
 }
 

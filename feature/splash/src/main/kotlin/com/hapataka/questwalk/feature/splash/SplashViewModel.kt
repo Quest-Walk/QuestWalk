@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.domain.usecase.CheckUserLoggedInUseCase
 import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,8 +22,17 @@ class SplashViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _event = MutableSharedFlow<SplashEvent>()
+    val event = _event.asSharedFlow()
+
     init {
-        checkLoggedIn()
+        onIntent(SplashIntent.AppStarted)
+    }
+
+    fun onIntent(intent: SplashIntent) {
+        when (intent) {
+            SplashIntent.AppStarted -> checkLoggedIn()
+        }
     }
 
     private fun checkLoggedIn() {
@@ -33,23 +44,28 @@ class SplashViewModel @Inject constructor(
                 hasUserInfo = fetchUserInfoUseCase().isSuccess
             }
 
-            // 애니메이션이 보이도록 최소 2초 대기
-            kotlinx.coroutines.delay(2000L)
-
-            _uiState.update {
-                SplashUiState.NavigateToMain(
+            delay(2000L)
+            _event.emit(
+                SplashEvent.NavigateToMain(
                     isLoggedIn = isLoggedIn,
                     hasUserInfo = hasUserInfo,
                 )
-            }
+            )
         }
     }
 }
 
 sealed interface SplashUiState {
     data object Loading : SplashUiState
+}
+
+sealed interface SplashIntent {
+    data object AppStarted : SplashIntent
+}
+
+sealed interface SplashEvent {
     data class NavigateToMain(
         val isLoggedIn: Boolean,
         val hasUserInfo: Boolean,
-    ) : SplashUiState
+    ) : SplashEvent
 }

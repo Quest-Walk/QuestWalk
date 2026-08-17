@@ -39,6 +39,7 @@ import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.feature.onboarding.model.UserState
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun SetupRoute(
@@ -59,22 +60,22 @@ internal fun SetupRoute(
     val loginState by setupViewModel.loginState.collectAsState()
 
     BackHandler {
-        navigateToLogin()
-        setupViewModel.logout()
+        setupViewModel.onIntent(SetupIntent.LogoutClicked)
     }
 
-    LaunchedEffect(loginState) {
-        if (loginState is UserState.LoggedIn) {
-            navigateToHome()
+    LaunchedEffect(setupViewModel) {
+        setupViewModel.event.collectLatest { event ->
+            when (event) {
+                SetupEvent.NavigateToHome -> navigateToHome()
+                SetupEvent.NavigateToLogin -> navigateToLogin()
+            }
         }
     }
 
     SetupScreen(
         ko = keyboardOptions,
         ka = keyboardActions,
-        navigateToLogin = navigateToLogin,
-        logout = setupViewModel::logout,
-        postUserInfo = setupViewModel::postUserInfo,
+        onIntent = setupViewModel::onIntent,
     )
 }
 
@@ -82,9 +83,7 @@ internal fun SetupRoute(
 internal fun SetupScreen(
     ko: KeyboardOptions = KeyboardOptions.Default,
     ka: KeyboardActions = KeyboardActions.Default,
-    navigateToLogin: () -> Unit = {},
-    logout: () -> Unit = {},
-    postUserInfo: (String, CharacterType) -> Unit = { _, _ -> },
+    onIntent: (SetupIntent) -> Unit = {},
 ) {
     var nickname by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -121,7 +120,7 @@ internal fun SetupScreen(
 
 
         PixelButton(
-            onClick = { postUserInfo(nickname, CharacterType.BEAR) },
+            onClick = { onIntent(SetupIntent.DoneClicked(nickname, CharacterType.BEAR)) },
             text = "완료",
             enabled = nickname.isNotBlank(),
             modifier = Modifier.fillMaxWidth(0.8f),
@@ -129,8 +128,7 @@ internal fun SetupScreen(
 
         TextButton(
             onClick = {
-                navigateToLogin()
-                logout()
+                onIntent(SetupIntent.LogoutClicked)
                 Log.d("logoutTest", "눌렸다")
             },
         ) {

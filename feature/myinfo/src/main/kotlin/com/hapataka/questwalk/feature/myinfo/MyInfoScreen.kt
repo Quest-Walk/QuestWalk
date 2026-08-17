@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.feature.myinfo
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
 import com.hapataka.questwalk.core.ui.component.Character
+import kotlinx.coroutines.flow.collectLatest
 
 private val DangerRed = Color(0xFFFF0064)
 
@@ -51,12 +53,15 @@ fun MyInfoRoute(
     onBackClick: () -> Unit = {},
     onLogoutSuccess: () -> Unit = {},
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val logoutEvent by viewModel.logoutEvent.collectAsStateWithLifecycle()
 
-    LaunchedEffect(logoutEvent) {
-        if (logoutEvent) {
-            onLogoutSuccess()
+    LaunchedEffect(viewModel) {
+        viewModel.event.collectLatest { event ->
+            when (event) {
+                MyInfoEvent.LogoutSuccess -> onLogoutSuccess()
+                is MyInfoEvent.ShowMessage -> Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -64,8 +69,7 @@ fun MyInfoRoute(
         uiState = uiState,
         padding = padding,
         onBackClick = onBackClick,
-        onLogoutClick = viewModel::logout,
-        onWithdrawClick = { /* TODO */ },
+        onIntent = viewModel::onIntent,
     )
 }
 
@@ -74,8 +78,7 @@ private fun MyInfoScreen(
     uiState: UiState<MyInfoUiState>,
     padding: PaddingValues,
     onBackClick: () -> Unit,
-    onLogoutClick: () -> Unit,
-    onWithdrawClick: () -> Unit,
+    onIntent: (MyInfoIntent) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -94,8 +97,8 @@ private fun MyInfoScreen(
             is UiState.Loading -> LoadingContent()
             is UiState.Success -> MyInfoContent(
                 state = uiState.data,
-                onLogoutClick = onLogoutClick,
-                onWithdrawClick = onWithdrawClick,
+                onLogoutClick = { onIntent(MyInfoIntent.LogoutClicked) },
+                onWithdrawClick = { onIntent(MyInfoIntent.WithdrawClicked) },
             )
             is UiState.Failure -> ErrorContent()
             is UiState.Idle -> Unit

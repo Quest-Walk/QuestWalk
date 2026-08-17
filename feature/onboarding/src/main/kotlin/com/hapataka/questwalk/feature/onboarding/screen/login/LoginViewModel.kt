@@ -9,8 +9,10 @@ import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.model.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -28,13 +30,23 @@ class LoginViewModel @Inject constructor(
     private val _userState: MutableStateFlow<UserState> = MutableStateFlow(UserState.Idle)
     val userState = _userState.asStateFlow()
 
+    private val _event = MutableSharedFlow<LoginEvent>()
+    val event = _event.asSharedFlow()
+
     val lastEmail = getLastEmailUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    fun loginWithEmail(email: String, password: String) {
+    fun onIntent(intent: LoginIntent) {
+        when (intent) {
+            is LoginIntent.EmailLoginClicked -> loginWithEmail(intent.email, intent.password)
+            is LoginIntent.GoogleLoginSucceeded -> loginWithIdToken(intent.idToken)
+            LoginIntent.JoinClicked -> emitEvent(LoginEvent.NavigateToJoin)
+        }
+    }
+
+    private fun loginWithEmail(email: String, password: String) {
         viewModelScope.launch {
             _userState.update { UserState.Loading }
-            // 로딩 UI가 너무 빠르게 사라지지 않도록 최소 로딩 시간 보장
             delay(MIN_LOADING_DURATION_MS)
 
             loginUseCase.withEmail(email, password)
@@ -45,10 +57,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun loginWithIdToken(idToken: String) {
+    private fun loginWithIdToken(idToken: String) {
         viewModelScope.launch {
             _userState.update { UserState.Loading }
-            // 로딩 UI가 너무 빠르게 사라지지 않도록 최소 로딩 시간 보장
             delay(MIN_LOADING_DURATION_MS)
 
             loginUseCase.withGoogle(idToken)
@@ -62,8 +73,32 @@ class LoginViewModel @Inject constructor(
     private fun checkUserInfo() {
         viewModelScope.launch {
             fetchUserInfoUseCase()
-                .onSuccess { _userState.update { UserState.LoggedIn(UserInfo.EXIST) } }
-                .onFailure { _userState.update { UserState.LoggedIn(UserInfo.NONE) } }
+                .onSuccess {
+                    _userState.update { UserState.Idle }
+                    _event.emit(LoginEvent.NavigateToHome)
+                }
+                .onFailure {
+                    _userState.update { UserState.Idle }
+                    _event.emit(LoginEvent.NavigateToSetup)
+                }
         }
     }
+
+    private fun emitEvent(event: LoginEvent) {
+        viewModelScope.launch {
+            _event.emit(event)
+        }
+    }
+}
+
+sealed interface LoginIntent {
+    data class EmailLoginClicked(val email: String, val password: String) : LoginIntent
+    data class GoogleLoginSucceeded(val idToken: String) : LoginIntent
+    data object JoinClicked : LoginIntent
+}
+
+sealed interface LoginEvent {
+    data object NavigateToHome : LoginEvent
+    data object NavigateToSetup : LoginEvent
+    data object NavigateToJoin : LoginEvent
 }

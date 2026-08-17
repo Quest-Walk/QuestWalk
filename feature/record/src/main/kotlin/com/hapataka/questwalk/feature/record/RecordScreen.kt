@@ -24,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import coil3.compose.SubcomposeAsyncImage
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RecordRoute(
@@ -47,11 +49,19 @@ fun RecordRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(viewModel) {
+        viewModel.event.collectLatest { event ->
+            when (event) {
+                is RecordEvent.NavigateToResult -> onHistoryClick(event.historyId)
+            }
+        }
+    }
+
     RecordScreen(
         uiState = uiState,
         padding = padding,
         onBackClick = onBackClick,
-        onHistoryClick = onHistoryClick,
+        onIntent = viewModel::onIntent,
     )
 }
 
@@ -60,7 +70,7 @@ private fun RecordScreen(
     uiState: UiState<RecordUiState>,
     padding: PaddingValues,
     onBackClick: () -> Unit = {},
-    onHistoryClick: (String) -> Unit = {},
+    onIntent: (RecordIntent) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -73,7 +83,7 @@ private fun RecordScreen(
             is UiState.Success -> RecordContent(
                 histories = uiState.data.histories,
                 achieveItems = uiState.data.achieveItems,
-                onHistoryClick = onHistoryClick,
+                onHistoryClick = { onIntent(RecordIntent.ClickHistory(it)) },
             )
             is UiState.Failure -> ErrorContent(error = uiState.error)
             is UiState.Idle -> Unit

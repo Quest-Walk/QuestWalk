@@ -27,9 +27,23 @@ class WeatherViewModel @Inject constructor(
         loadWeatherData()
     }
 
-    fun onAction(action: WeatherAction) {
-        when (action) {
-            is WeatherAction.Refresh -> loadWeatherData()
+    fun onIntent(intent: WeatherIntent) {
+        _uiState.update { state -> reduce(state, intent) }
+        handleSideEffect(intent)
+    }
+
+    private fun reduce(
+        state: UiState<WeatherUiState>,
+        intent: WeatherIntent,
+    ): UiState<WeatherUiState> {
+        return when (intent) {
+            WeatherIntent.Refresh -> state
+        }
+    }
+
+    private fun handleSideEffect(intent: WeatherIntent) {
+        when (intent) {
+            WeatherIntent.Refresh -> loadWeatherData()
         }
     }
 
@@ -168,6 +182,6 @@ data class WeatherItemUiModel(
     val precipType: String = "",
 )
 
-sealed interface WeatherAction {
-    data object Refresh : WeatherAction
+sealed interface WeatherIntent {
+    data object Refresh : WeatherIntent
 }

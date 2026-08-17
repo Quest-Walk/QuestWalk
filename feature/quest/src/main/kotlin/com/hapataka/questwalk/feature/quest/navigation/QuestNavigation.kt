@@ -21,7 +21,7 @@ fun NavController.navigateToQuestDetail(keyword: String, navOptions: NavOptions?
 fun NavGraphBuilder.questScreen(
     onBackClick: () -> Unit,
     onQuestDetailClick: (String) -> Unit,
-    onQuestSelected: (String) -> Unit,
+    onQuestSelected: () -> Unit,
 ) {
     composable<MainRoute.Quest> {
         QuestRoute(
