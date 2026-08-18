@@ -118,8 +118,7 @@ private fun ErrorContent(error: Throwable) {
 private fun ResultContent(data: ResultUiState) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize(),
     ) {
         ResultMapSection(
             route = data.route,
@@ -128,7 +127,8 @@ private fun ResultContent(data: ResultUiState) {
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 40.dp),
         ) {
             Spacer(modifier = Modifier.height(30.dp))
