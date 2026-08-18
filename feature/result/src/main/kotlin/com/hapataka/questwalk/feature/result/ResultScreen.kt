@@ -478,8 +478,8 @@ private fun LatLng.distanceTo(other: LatLng): Float {
 
 private fun LatLng.interpolateTo(other: LatLng, ratio: Double): LatLng {
     return LatLng(
-        latitude = latitude + ((other.latitude - latitude) * ratio),
-        longitude = longitude + ((other.longitude - longitude) * ratio),
+        latitude + ((other.latitude - latitude) * ratio),
+        longitude + ((other.longitude - longitude) * ratio),
     )
 }
 
