@@ -77,6 +77,6 @@ class FusedLocationDataSource @Inject constructor(
     }
 
     companion object {
-        private const val MIN_UPDATE_DISTANCE_METERS = 8f
+        private const val MIN_UPDATE_DISTANCE_METERS = 5f
     }
 }

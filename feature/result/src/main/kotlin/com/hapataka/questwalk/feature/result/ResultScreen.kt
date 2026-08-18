@@ -635,13 +635,13 @@ private fun convertKcal(steps: Long): String {
     return "${kcal}Kcal"
 }
 
-private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
-private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
+private const val MIN_ROUTE_POINT_DISTANCE_METERS = 4f
+private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 4f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
 private const val DISPLAY_ROUTE_POINT_COUNT = 300
 private const val ROUTE_ANIMATION_START_DELAY_MILLIS = 800L
 private const val ROUTE_ANIMATION_FRAME_MILLIS = 32L
-private const val ROUTE_ANIMATION_MAX_FRAMES = 120
+private const val ROUTE_ANIMATION_MAX_FRAMES = 78
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private const val MAP_ROUTE_BOUNDS_PADDING = 132

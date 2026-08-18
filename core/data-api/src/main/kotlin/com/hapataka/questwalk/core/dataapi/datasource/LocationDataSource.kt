@@ -10,5 +10,5 @@ interface LocationDataSource {
      * 실시간 위치 업데이트 Flow
      * @param intervalMs 위치 업데이트 간격 (밀리초)
      */
-    fun getLocationUpdates(intervalMs: Long = 3000L): Flow<LocationDto>
+    fun getLocationUpdates(intervalMs: Long = 2000L): Flow<LocationDto>
 }

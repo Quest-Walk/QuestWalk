@@ -12,12 +12,13 @@ QuestWalk records routes as a user-facing quest result, not as a precision sport
 
 ## Current Thresholds
 
-- Location request: high accuracy, 3 second default interval, 8 m minimum update distance hint.
+- Location request: high accuracy, 2 second default interval, 5 m minimum update distance hint.
 - Recording filter: reject accuracy worse than 25 m.
-- Recording filter: reject movement below 10 m.
+- Recording filter: reject movement below 5 m.
 - Recording filter: reject jumps above a 6 m/s walking/running allowance plus GPS accuracy tolerance.
-- Display filter: remove route points closer than 8 m.
-- Display filter: simplify the polyline with a 12 m Ramer-Douglas-Peucker tolerance.
+- Recording filter: smooth accepted GPS points with a local Kalman filter.
+- Display filter: remove route points closer than 4 m.
+- Display filter: simplify the polyline with a 4 m Ramer-Douglas-Peucker tolerance.
 
 ## Deferred
 
