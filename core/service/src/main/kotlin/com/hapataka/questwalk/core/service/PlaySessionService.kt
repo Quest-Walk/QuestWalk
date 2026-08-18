@@ -125,7 +125,7 @@ class PlaySessionService : Service() {
     private fun observeSessionState() {
         serviceScope.launch {
             getPlaySessionUseCase().collectLatest { session ->
-                if (session.playState != PlayState.PLAYING) {
+                if (session.playState == PlayState.STOPPED) {
                     stopSelf()
                     return@collectLatest
                 }
