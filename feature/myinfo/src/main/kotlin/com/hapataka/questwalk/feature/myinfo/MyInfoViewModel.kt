@@ -6,6 +6,7 @@ import com.hapataka.questwalk.core.domain.usecase.DeleteAccountUseCase
 import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
+import com.hapataka.questwalk.core.domain.usecase.ReconcileUserAggregateUseCase
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ class MyInfoViewModel @Inject constructor(
     private val fetchUserInfoUseCase: FetchUserInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val reconcileUserAggregateUseCase: ReconcileUserAggregateUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<MyInfoUiState>>(UiState.Loading)
@@ -79,6 +81,9 @@ class MyInfoViewModel @Inject constructor(
     private fun loadUserInfo() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
+            // 누락된 기록을 먼저 반영해야 이어지는 조회가 최신값을 가져온다
+            reconcileUserAggregateUseCase()
+
             fetchUserInfoUseCase()
                 .onFailure { error ->
                     _event.emit(MyInfoEvent.ShowMessage(error.message ?: "정보 동기화에 실패했습니다"))

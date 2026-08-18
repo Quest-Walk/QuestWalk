@@ -14,7 +14,7 @@ class FinalizeQuestUseCase @Inject constructor(
     private val questRepository: QuestRepository,
     private val playSessionRepository: PlaySessionRepository,
     private val historyRepository: HistoryRepository,
-    private val updateUserInfoUseCase: UpdateUserInfoUseCase,
+    private val reconcileUserAggregateUseCase: ReconcileUserAggregateUseCase,
     @Named("DefaultAuthRepository")
     private val authRepository: AuthRepository,
 ) {
@@ -44,12 +44,8 @@ class FinalizeQuestUseCase @Inject constructor(
 
         val registerAt = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         questRepository.updateQuestSuccess(keyword, userId, uploadResult.remoteUrl, registerAt)
-        updateUserInfoUseCase(
-            time = session.duration,
-            distance = session.distance,
-            step = session.steps,
-            keyword = keyword,
-        ).getOrThrow()
+        // 히스토리가 저장된 뒤라 실패해도 다음 집계 때 복구된다. 퀘스트 완료를 막지 않는다
+        reconcileUserAggregateUseCase()
 
         questRepository.deletePhotoFile(uploadResult.localPath)
 

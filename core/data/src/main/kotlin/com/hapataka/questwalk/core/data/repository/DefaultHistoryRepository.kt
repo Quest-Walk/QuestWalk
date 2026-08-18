@@ -8,6 +8,9 @@ import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.remote.util.decryptECB
 import com.hapataka.questwalk.core.remote.util.encryptECB
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class DefaultHistoryRepository @Inject constructor(
@@ -54,6 +57,7 @@ class DefaultHistoryRepository @Inject constructor(
             route = route.decryptToLocationList(),
             successLocation = successLocation?.decryptToLocation(),
             imageUrl = imageUrl,
+            registerAtUtc = registerAtUtc,
         )
 
     private fun HistoryDto.AchievementDto.toModel(): History.Achievement =
@@ -83,6 +87,7 @@ class DefaultHistoryRepository @Inject constructor(
             route = route.encryptECB(encryptionKey),
             successLocation = successLocation?.encryptECB(encryptionKey),
             imageUrl = imageUrl,
+            registerAtUtc = registerAt.toUtcStamp(),
         )
 
     private fun History.Achievement.toDto(): HistoryDto.AchievementDto =
@@ -92,6 +97,11 @@ class DefaultHistoryRepository @Inject constructor(
             registerAt = registerAt.toString(),
             achievementId = achievementId,
         )
+
+    private fun LocalDateTime.toUtcStamp(): String =
+        atZone(ZoneId.systemDefault())
+            .withZoneSameInstant(ZoneOffset.UTC)
+            .format(UTC_STAMP_FORMATTER)
 
     // 암호화된 문자열 -> Location 변환
     private fun String.decryptToLocationList(): List<Location> {
@@ -137,6 +147,12 @@ class DefaultHistoryRepository @Inject constructor(
         return runCatching {
             Location(this.toFloat(), longitude.toFloat())
         }.getOrNull()
+    }
+
+    companion object {
+        // 고정 폭이라 사전순 비교가 곧 시간순 비교가 된다
+        private val UTC_STAMP_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     }
 
     private fun parseLocation(json: String): Location? {

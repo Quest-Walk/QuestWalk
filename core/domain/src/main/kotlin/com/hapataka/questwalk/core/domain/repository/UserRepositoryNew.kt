@@ -16,11 +16,17 @@ interface UserRepositoryNew {
         characterType: CharacterType,
     ): Result<Unit>
 
-    suspend fun updateUserInfo(
-        time: Long,
-        distance: Float,
-        step: Long,
-        keyword: String,
-        achievementId: Int? = null
-    )
+    /** 마지막으로 누적 집계에 반영된 기록의 UTC 시각. 아직 집계한 적이 없으면 빈 문자열. */
+    suspend fun getLastAggregatedAt(userId: String): Result<String>
+
+    /** 히스토리에서 다시 계산한 누적값을 절대값으로 반영한다. */
+    suspend fun applyAggregate(
+        userId: String,
+        totalTime: Long,
+        totalDistance: Float,
+        totalStep: Long,
+        successKeywords: List<String>,
+        achievementIds: List<Int>,
+        lastAggregatedAt: String,
+    ): Result<Unit>
 }

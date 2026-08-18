@@ -9,6 +9,7 @@ sealed class HistoryDto(
         override val resultId: String = "",
         override val userId: String = "",
         override val registerAt: String = "",
+        val registerAtUtc: String = "",
         val questKeyword: String = "",
         val duration: Long = 0L,
         val distance: Float = 0f,

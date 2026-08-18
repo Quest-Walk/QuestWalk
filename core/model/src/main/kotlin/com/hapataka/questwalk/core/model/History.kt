@@ -19,6 +19,7 @@ sealed class History(
         val route: List<Location>,
         val successLocation: Location?,
         val imageUrl: String? = null,
+        val registerAtUtc: String = "",
     ) : History(id, userId, registerAt)
 
     data class Achievement(

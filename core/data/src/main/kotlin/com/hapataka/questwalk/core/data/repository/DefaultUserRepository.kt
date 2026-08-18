@@ -28,34 +28,6 @@ class DefaultUserRepository @Inject constructor(
         localUserDataSource.insertUser(User(userId = userId))
     }
 
-    override suspend fun updateUserInfo(
-        time: Long,
-        distance: Float,
-        step: Long,
-        keyword: String,
-        achievementId: Int?,
-    ) = withContext(Dispatchers.IO) {
-        val user = localUserDataSource.getCurrentUser().first() ?: return@withContext
-        val new = if (achievementId != null) {
-            user.copy(
-                totalTime = user.totalTime + time,
-                totalDistance = user.totalDistance + distance,
-                totalStep = user.totalStep + step,
-                successKeywords = user.successKeywords + keyword,
-                achievementIds = user.achievementIds + achievementId
-            )
-        } else {
-            user.copy(
-                totalTime = user.totalTime + time,
-                totalDistance = user.totalDistance + distance,
-                totalStep = user.totalStep + step,
-                successKeywords = user.successKeywords + keyword
-            )
-        }
-        localUserDataSource.updateUser(new)
-        firebaseUserDataSource.updateUserInfo(new)
-    }
-
     override fun getUserInfo(): Flow<User?> {
         return localUserDataSource.getCurrentUser()
     }
@@ -84,5 +56,46 @@ class DefaultUserRepository @Inject constructor(
             userName = userName,
             characterType = characterType
         )
+    }
+
+    override suspend fun getLastAggregatedAt(userId: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching { firebaseUserDataSource.getLastAggregatedAt(userId) }
+        }
+
+    override suspend fun applyAggregate(
+        userId: String,
+        totalTime: Long,
+        totalDistance: Float,
+        totalStep: Long,
+        successKeywords: List<String>,
+        achievementIds: List<Int>,
+        lastAggregatedAt: String,
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        kotlin.runCatching {
+            firebaseUserDataSource.setUserAggregate(
+                userId = userId,
+                totalTime = totalTime,
+                totalDistance = totalDistance,
+                totalStep = totalStep,
+                successKeywords = successKeywords,
+                achievementIds = achievementIds,
+                lastAggregatedAt = lastAggregatedAt,
+            )
+
+            // 원격 반영이 끝난 뒤에만 로컬 캐시를 맞춘다
+            val cached = localUserDataSource.getCurrentUser().first()
+            if (cached != null) {
+                localUserDataSource.updateUser(
+                    cached.copy(
+                        totalTime = totalTime,
+                        totalDistance = totalDistance,
+                        totalStep = totalStep,
+                        successKeywords = (cached.successKeywords + successKeywords).distinct(),
+                        achievementIds = (cached.achievementIds + achievementIds).distinct(),
+                    )
+                )
+            }
+        }
     }
 }

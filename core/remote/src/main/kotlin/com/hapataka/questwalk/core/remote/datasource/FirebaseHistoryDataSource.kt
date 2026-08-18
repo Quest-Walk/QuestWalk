@@ -88,6 +88,7 @@ class FirebaseHistoryDataSource @Inject constructor(
             resultId = documentId,
             userId = userId,
             registerAt = registerAt,
+            registerAtUtc = registerAtUtc,
             questKeyword = questKeyword,
             duration = duration,
             distance = distance,
@@ -111,6 +112,7 @@ class FirebaseHistoryDataSource @Inject constructor(
         QuestResultResponse(
             userId = userId,
             registerAt = registerAt,
+            registerAtUtc = registerAtUtc,
             questKeyword = questKeyword,
             duration = duration,
             distance = distance,

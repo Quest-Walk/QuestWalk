@@ -12,16 +12,9 @@ data class UserDefaultInfoDto(
     var totalTime: Long = 0,
     var totalDistance: Float = 0f,
     var totalStep: Long = 0,
+    var lastAggregatedAt: String = "",
 )
 
-fun User.getDefaultInfo() = hashMapOf(
-    "userId" to this.userId,
-    "userName" to this.userName,
-    "characterId" to this.characterType.id,
-    "totalTime" to this.totalTime,
-    "totalDistance" to this.totalDistance,
-    "totalStep" to this.totalStep,
-)
 
 fun UserDefaultInfoDto.toModel(
     successKeywords: List<String> = emptyList(),
