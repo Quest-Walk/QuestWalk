@@ -547,8 +547,8 @@ private fun convertKcal(steps: Long): String {
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
-private const val ROUTE_ANIMATION_FRAME_MILLIS = 28L
-private const val ROUTE_ANIMATION_MAX_FRAMES = 160
+private const val ROUTE_ANIMATION_FRAME_MILLIS = 32L
+private const val ROUTE_ANIMATION_MAX_FRAMES = 240
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private val ROUTE_OUTLINE_COLOR = Color.White
