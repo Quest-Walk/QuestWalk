@@ -3,7 +3,6 @@
 .idea
 .kotlin
 .DS_Store
-.github
 build/
 /captures
 .externalNativeBuild
@@ -14,6 +13,7 @@ private_key.pepk
 quest_walk_keypath.jks
 upload_certificate.pem
 app/google-services.json
+keystore.properties
 
 # Claude Code
 .claude/

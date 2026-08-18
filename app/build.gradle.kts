@@ -1,6 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.kotlin.konan.properties.Properties
-import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     kotlin("kapt")
@@ -13,8 +12,15 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val properties = Properties()
-properties.load(FileInputStream("local.properties"))
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { stream -> load(stream) }
+    }
+}
+
+fun signingValue(key: String, envKey: String): String? =
+    keystoreProperties.getProperty(key) ?: System.getenv(envKey)
 
 android {
     namespace = "com.hapataka.questwalk"
@@ -31,8 +37,23 @@ android {
         )
     }
 
+    signingConfigs {
+        create("release") {
+            val storePath = signingValue("storeFile", "KEYSTORE_FILE")
+            if (storePath != null && file(storePath).exists()) {
+                storeFile = file(storePath)
+                storePassword = signingValue("storePassword", "KEYSTORE_PASSWORD")
+                keyAlias = signingValue("keyAlias", "KEY_ALIAS")
+                keyPassword = signingValue("keyPassword", "KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.getByName("release").storeFile?.let {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
