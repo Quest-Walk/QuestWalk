@@ -97,7 +97,7 @@ internal fun MainNavHost(
 
         // Result
         resultScreen(
-            onBackClick = { navigator.navigateToHome(clearBackStack = true) },
+            onBackClick = { navigator.popBackStack() },
         )
     }
 }
