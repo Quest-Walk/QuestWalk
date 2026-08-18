@@ -238,6 +238,7 @@ private fun ResultMapSection(
         route
             .toDisplayRoute()
             .map { LatLng(it.latitude.toDouble(), it.longitude.toDouble()) }
+            .resampleRouteLatLngs(DISPLAY_ROUTE_POINT_COUNT)
     }
     val successLatLng = remember(successLocation) {
         successLocation?.let {
@@ -421,6 +422,60 @@ private fun Location.distanceTo(other: Location): Float {
     return results[0]
 }
 
+private fun List<LatLng>.resampleRouteLatLngs(targetPointCount: Int): List<LatLng> {
+    if (size < 2 || targetPointCount < 2) return this
+
+    val segmentDistances = zipWithNext { start, end -> start.distanceTo(end).toDouble() }
+    val totalDistance = segmentDistances.sum()
+    if (totalDistance <= 0.0) return this
+
+    val resampled = mutableListOf(first())
+    var segmentIndex = 0
+    var distanceBeforeSegment = 0.0
+
+    for (pointIndex in 1 until targetPointCount - 1) {
+        val targetDistance = totalDistance * pointIndex / (targetPointCount - 1)
+
+        while (
+            segmentIndex < segmentDistances.lastIndex &&
+            distanceBeforeSegment + segmentDistances[segmentIndex] < targetDistance
+        ) {
+            distanceBeforeSegment += segmentDistances[segmentIndex]
+            segmentIndex += 1
+        }
+
+        val segmentDistance = segmentDistances[segmentIndex]
+        val ratio = if (segmentDistance == 0.0) {
+            0.0
+        } else {
+            (targetDistance - distanceBeforeSegment) / segmentDistance
+        }
+        resampled += this[segmentIndex].interpolateTo(this[segmentIndex + 1], ratio)
+    }
+
+    resampled += last()
+    return resampled
+}
+
+private fun LatLng.distanceTo(other: LatLng): Float {
+    val results = FloatArray(1)
+    android.location.Location.distanceBetween(
+        latitude,
+        longitude,
+        other.latitude,
+        other.longitude,
+        results,
+    )
+    return results[0]
+}
+
+private fun LatLng.interpolateTo(other: LatLng, ratio: Double): LatLng {
+    return LatLng(
+        latitude = latitude + ((other.latitude - latitude) * ratio),
+        longitude = longitude + ((other.longitude - longitude) * ratio),
+    )
+}
+
 private fun List<Location>.simplifyRoute(toleranceMeters: Float): List<Location> {
     if (size < 3) return this
 
@@ -576,6 +631,7 @@ private fun convertKcal(steps: Long): String {
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
+private const val DISPLAY_ROUTE_POINT_COUNT = 300
 private const val ROUTE_ANIMATION_START_DELAY_MILLIS = 800L
 private const val ROUTE_ANIMATION_FRAME_MILLIS = 40L
 private const val ROUTE_ANIMATION_MAX_FRAMES = 300
