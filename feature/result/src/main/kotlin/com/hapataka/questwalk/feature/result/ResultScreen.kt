@@ -233,12 +233,34 @@ private fun ResultMapSection(
     successLocation: Location?,
     onMapGestureActiveChange: (Boolean) -> Unit,
 ) {
-    val routeLatLngs = route
-        .toDisplayRoute()
-        .map { LatLng(it.latitude.toDouble(), it.longitude.toDouble()) }
-    val successLatLng = successLocation?.let {
-        LatLng(it.latitude.toDouble(), it.longitude.toDouble())
+    val routeLatLngs = remember(route) {
+        route
+            .toDisplayRoute()
+            .map { LatLng(it.latitude.toDouble(), it.longitude.toDouble()) }
     }
+    val successLatLng = remember(successLocation) {
+        successLocation?.let {
+            LatLng(it.latitude.toDouble(), it.longitude.toDouble())
+        }
+    }
+    var animatedRoutePointCount by remember(routeLatLngs) {
+        mutableStateOf(if (routeLatLngs.size >= 2) 1 else routeLatLngs.size)
+    }
+
+    LaunchedEffect(routeLatLngs) {
+        if (routeLatLngs.size < 2) return@LaunchedEffect
+
+        animatedRoutePointCount = 1
+        val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
+        while (animatedRoutePointCount < routeLatLngs.size) {
+            delay(ROUTE_ANIMATION_FRAME_MILLIS)
+            animatedRoutePointCount = minOf(
+                routeLatLngs.size,
+                animatedRoutePointCount + pointsPerFrame,
+            )
+        }
+    }
+    val animatedRouteLatLngs = routeLatLngs.take(animatedRoutePointCount)
 
     if (routeLatLngs.isEmpty() && successLatLng == null) {
         ResultPlaceholder(
@@ -284,11 +306,18 @@ private fun ResultMapSection(
             },
         cameraPositionState = cameraPositionState,
     ) {
-        if (routeLatLngs.size >= 2) {
+        if (animatedRouteLatLngs.size >= 2) {
             Polyline(
-                points = routeLatLngs,
+                points = animatedRouteLatLngs,
+                color = ROUTE_OUTLINE_COLOR,
+                width = 24f,
+                zIndex = ROUTE_OUTLINE_Z_INDEX,
+            )
+            Polyline(
+                points = animatedRouteLatLngs,
                 color = MainPurple,
-                width = 15f,
+                width = 16f,
+                zIndex = ROUTE_LINE_Z_INDEX,
             )
         }
 
@@ -513,3 +542,8 @@ private fun convertKcal(steps: Long): String {
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
+private const val ROUTE_ANIMATION_FRAME_MILLIS = 16L
+private const val ROUTE_ANIMATION_MAX_FRAMES = 90
+private const val ROUTE_OUTLINE_Z_INDEX = 10f
+private const val ROUTE_LINE_Z_INDEX = 11f
+private val ROUTE_OUTLINE_COLOR = Color.White
