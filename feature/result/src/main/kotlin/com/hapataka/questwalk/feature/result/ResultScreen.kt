@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
@@ -291,6 +292,11 @@ private fun ResultMapSection(
             CameraPosition.fromLatLngZoom(LatLng(37.5665, 126.9780), 15f)
         }
     }
+    val mapUiSettings = remember {
+        MapUiSettings(
+            zoomControlsEnabled = false,
+        )
+    }
 
     LaunchedEffect(isMapLoaded, routeBounds) {
         if (!isMapLoaded) return@LaunchedEffect
@@ -327,6 +333,7 @@ private fun ResultMapSection(
                 false
             },
         cameraPositionState = cameraPositionState,
+        uiSettings = mapUiSettings,
         onMapLoaded = {
             isMapLoaded = true
         },
@@ -637,6 +644,6 @@ private const val ROUTE_ANIMATION_FRAME_MILLIS = 40L
 private const val ROUTE_ANIMATION_MAX_FRAMES = 300
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
-private const val MAP_ROUTE_BOUNDS_PADDING = 96
+private const val MAP_ROUTE_BOUNDS_PADDING = 132
 private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 650
 private val ROUTE_OUTLINE_COLOR = Color.White
