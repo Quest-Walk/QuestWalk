@@ -246,9 +246,11 @@ private fun ResultMapSection(
     var animatedRoutePointCount by remember(routeLatLngs) {
         mutableStateOf(if (routeLatLngs.size >= 2) 1 else routeLatLngs.size)
     }
+    var isMapLoaded by remember(routeLatLngs) { mutableStateOf(false) }
 
-    LaunchedEffect(routeLatLngs) {
+    LaunchedEffect(routeLatLngs, isMapLoaded) {
         if (routeLatLngs.size < 2) return@LaunchedEffect
+        if (!isMapLoaded) return@LaunchedEffect
 
         animatedRoutePointCount = 1
         val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
@@ -305,6 +307,9 @@ private fun ResultMapSection(
                 false
             },
         cameraPositionState = cameraPositionState,
+        onMapLoaded = {
+            isMapLoaded = true
+        },
     ) {
         if (animatedRouteLatLngs.size >= 2) {
             Polyline(
@@ -542,8 +547,8 @@ private fun convertKcal(steps: Long): String {
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
-private const val ROUTE_ANIMATION_FRAME_MILLIS = 16L
-private const val ROUTE_ANIMATION_MAX_FRAMES = 90
+private const val ROUTE_ANIMATION_FRAME_MILLIS = 28L
+private const val ROUTE_ANIMATION_MAX_FRAMES = 160
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private val ROUTE_OUTLINE_COLOR = Color.White
