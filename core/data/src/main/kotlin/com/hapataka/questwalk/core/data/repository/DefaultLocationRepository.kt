@@ -54,7 +54,7 @@ class DefaultLocationRepository @Inject constructor(
             return null
         }
 
-        if (distance > MAX_DISTANCE_BETWEEN_UPDATES) {
+        if (distance > current.maxAllowedDistanceFrom(prev)) {
             return null
         }
 
@@ -83,9 +83,17 @@ class DefaultLocationRepository @Inject constructor(
         )
     }
 
+    private fun LocationDto.maxAllowedDistanceFrom(prev: LocationDto): Float {
+        val elapsedSeconds = ((timestamp - prev.timestamp) / 1000f)
+            .coerceAtLeast(1f)
+        val accuracyTolerance = accuracy + prev.accuracy
+        return (elapsedSeconds * MAX_REASONABLE_SPEED_MPS) + accuracyTolerance
+    }
+
     companion object {
-        private const val MIN_DISTANCE = 3f
-        private const val MAX_ACCURACY = 50f
-        private const val MAX_DISTANCE_BETWEEN_UPDATES = 100f
+        // UX policy: keep plausible walking traces without sending location data to map-matching APIs.
+        private const val MIN_DISTANCE = 10f
+        private const val MAX_ACCURACY = 25f
+        private const val MAX_REASONABLE_SPEED_MPS = 6f
     }
 }

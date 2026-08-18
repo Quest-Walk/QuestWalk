@@ -48,7 +48,10 @@ class FusedLocationDataSource @Inject constructor(
 
     @SuppressLint("MissingPermission")
     override fun getLocationUpdates(intervalMs: Long): Flow<LocationDto> = callbackFlow {
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMs).build()
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMs)
+            .setMinUpdateIntervalMillis(intervalMs)
+            .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
+            .build()
 
         val callback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
@@ -71,5 +74,9 @@ class FusedLocationDataSource @Inject constructor(
         awaitClose {
             client.removeLocationUpdates(callback)
         }
+    }
+
+    companion object {
+        private const val MIN_UPDATE_DISTANCE_METERS = 8f
     }
 }

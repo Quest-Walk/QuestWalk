@@ -206,7 +206,9 @@ private fun ResultMapSection(
     route: List<Location>,
     successLocation: Location?,
 ) {
-    val routeLatLngs = route.map { LatLng(it.latitude.toDouble(), it.longitude.toDouble()) }
+    val routeLatLngs = route
+        .toDisplayRoute()
+        .map { LatLng(it.latitude.toDouble(), it.longitude.toDouble()) }
     val successLatLng = successLocation?.let {
         LatLng(it.latitude.toDouble(), it.longitude.toDouble())
     }
@@ -298,6 +300,94 @@ private fun ResultQuestImageSection(imageUrl: String) {
     )
 }
 
+private fun List<Location>.toDisplayRoute(): List<Location> {
+    if (size < 3) return this
+
+    val distanceFiltered = fold(emptyList<Location>()) { accepted, current ->
+        val prev = accepted.lastOrNull()
+        if (prev == null || prev.distanceTo(current) >= MIN_ROUTE_POINT_DISTANCE_METERS) {
+            accepted + current
+        } else {
+            accepted
+        }
+    }
+
+    return distanceFiltered.simplifyRoute(ROUTE_SIMPLIFY_TOLERANCE_METERS)
+}
+
+private fun Location.distanceTo(other: Location): Float {
+    val results = FloatArray(1)
+    android.location.Location.distanceBetween(
+        latitude.toDouble(),
+        longitude.toDouble(),
+        other.latitude.toDouble(),
+        other.longitude.toDouble(),
+        results,
+    )
+    return results[0]
+}
+
+private fun List<Location>.simplifyRoute(toleranceMeters: Float): List<Location> {
+    if (size < 3) return this
+
+    var maxDistance = 0f
+    var index = 0
+    val start = first()
+    val end = last()
+
+    for (i in 1 until lastIndex) {
+        val distance = this[i].perpendicularDistanceTo(start, end)
+        if (distance > maxDistance) {
+            maxDistance = distance
+            index = i
+        }
+    }
+
+    return if (maxDistance > toleranceMeters) {
+        val firstSegment = subList(0, index + 1).simplifyRoute(toleranceMeters)
+        val secondSegment = subList(index, size).simplifyRoute(toleranceMeters)
+        firstSegment.dropLast(1) + secondSegment
+    } else {
+        listOf(start, end)
+    }
+}
+
+private fun Location.perpendicularDistanceTo(start: Location, end: Location): Float {
+    val originLatitude = start.latitude.toDouble()
+    val startPoint = start.toMeterPoint(originLatitude)
+    val endPoint = end.toMeterPoint(originLatitude)
+    val currentPoint = toMeterPoint(originLatitude)
+    val dx = endPoint.x - startPoint.x
+    val dy = endPoint.y - startPoint.y
+
+    if (dx == 0.0 && dy == 0.0) {
+        return distanceTo(start)
+    }
+
+    val numerator = kotlin.math.abs(
+        (dy * currentPoint.x) -
+            (dx * currentPoint.y) +
+            (endPoint.x * startPoint.y) -
+            (endPoint.y * startPoint.x)
+    )
+    val denominator = kotlin.math.sqrt((dy * dy) + (dx * dx))
+    return (numerator / denominator).toFloat()
+}
+
+private fun Location.toMeterPoint(originLatitude: Double): MeterPoint {
+    val metersPerDegreeLatitude = 111_320.0
+    val metersPerDegreeLongitude = 111_320.0 * kotlin.math.cos(Math.toRadians(originLatitude))
+    return MeterPoint(
+        x = longitude.toDouble() * metersPerDegreeLongitude,
+        y = latitude.toDouble() * metersPerDegreeLatitude,
+    )
+}
+
+private data class MeterPoint(
+    val x: Double,
+    val y: Double,
+)
+
 @Composable
 private fun ResultOtherImagesSection(images: List<String>) {
     val displayImages = images.filter { it.isNotBlank() }.take(4)
@@ -378,3 +468,6 @@ private fun convertKcal(steps: Long): String {
     val kcal = (steps * 0.06f).roundToInt()
     return "${kcal}Kcal"
 }
+
+private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
+private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
