@@ -254,6 +254,7 @@ private fun ResultMapSection(
         if (routeLatLngs.size < 2) return@LaunchedEffect
         if (!isCameraFitComplete) return@LaunchedEffect
 
+        delay(ROUTE_ANIMATION_START_DELAY_MILLIS)
         animatedRoutePointCount = 1
         val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
         while (animatedRoutePointCount < routeLatLngs.size) {
@@ -575,10 +576,11 @@ private fun convertKcal(steps: Long): String {
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
-private const val ROUTE_ANIMATION_FRAME_MILLIS = 32L
-private const val ROUTE_ANIMATION_MAX_FRAMES = 240
+private const val ROUTE_ANIMATION_START_DELAY_MILLIS = 800L
+private const val ROUTE_ANIMATION_FRAME_MILLIS = 40L
+private const val ROUTE_ANIMATION_MAX_FRAMES = 300
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
-private const val MAP_ROUTE_BOUNDS_PADDING = 64
-private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 500
+private const val MAP_ROUTE_BOUNDS_PADDING = 96
+private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 650
 private val ROUTE_OUTLINE_COLOR = Color.White
