@@ -24,18 +24,28 @@
 
 ## 흐름
 
+집계는 화면을 막지 않는다. 화면은 로컬만 바라보고, 원격 동기화는 뒤에서 돌린 뒤 로컬에 반영한다.
+
 ```text
+앱 시작 (Splash)
+ -> FetchUserInfoUseCase (로그인/설정 여부 판단에 필요하므로 대기)
+ -> ApplicationScope로 ReconcileUserAggregateUseCase 발사 후 진행
+
 퀘스트 완료
  -> PostHistory (실패하면 중단)
  -> ReconcileUserAggregateUseCase (실패해도 무시)
 
 MyInfo 진입
- -> ReconcileUserAggregateUseCase
- -> FetchUserInfoUseCase
- -> GetUserInfoUseCase
+ -> GetUserInfoUseCase 로 로컬만 구독
 ```
 
-집계를 먼저 돌려야 이어지는 조회가 최신값을 가져온다. `fetchUserInfo`는 로컬 캐시를 원격 값으로 덮어쓰기 때문에 순서가 바뀌면 옛 값이 보인다.
+집계가 로컬 캐시까지 갱신하므로 구독 중인 화면이 새 값을 자동으로 받는다. 사용자가 직접 새로고침할 때만 원격까지 다녀온다.
+
+`fetchUserInfo`는 로컬 캐시를 원격 값으로 덮어쓴다. 집계보다 먼저 돌려야 최신값이 남는다.
+
+## 조회 비용
+
+집계는 경로를 쓰지 않으므로 `getUserActivitySummary`로 요약만 만든다. 전체 히스토리를 도메인 모델로 바꾸면 기록마다 경로 암호문을 복호화하고 파싱하게 되는데, 그 비용을 피하기 위한 별도 경로다.
 
 ## 건너뛰기 조건
 

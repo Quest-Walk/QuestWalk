@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.core.data.repository
 
-import com.hapataka.questwalk.core.data.di.ApplicationScope
+import com.hapataka.questwalk.core.domain.di.ApplicationScope
 import com.hapataka.questwalk.core.dataapi.datasource.ImageStorageDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.QuestRemoteDataSource
 import com.hapataka.questwalk.core.dataapi.datasource.TextRecognitionDataSource

@@ -1,6 +1,6 @@
 package com.hapataka.questwalk.core.data.repository
 
-import com.hapataka.questwalk.core.data.di.ApplicationScope
+import com.hapataka.questwalk.core.domain.di.ApplicationScope
 import com.hapataka.questwalk.core.domain.repository.LocationRepository
 import com.hapataka.questwalk.core.domain.repository.PlaySessionRepository
 import com.hapataka.questwalk.core.model.Location

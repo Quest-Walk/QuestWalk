@@ -38,6 +38,7 @@ class MyInfoViewModel @Inject constructor(
     val event = _event.asSharedFlow()
 
     private var loadJob: Job? = null
+    private var syncJob: Job? = null
 
     init {
         loadUserInfo()
@@ -65,40 +66,47 @@ class MyInfoViewModel @Inject constructor(
                 }
             }
 
-            MyInfoIntent.Refresh -> UiState.Loading
+            MyInfoIntent.Refresh -> state
         }
     }
 
     private fun handleSideEffect(intent: MyInfoIntent) {
         when (intent) {
-            MyInfoIntent.Refresh -> loadUserInfo()
+            MyInfoIntent.Refresh -> refreshUserInfo()
             MyInfoIntent.LogoutClicked -> logout()
             MyInfoIntent.WithdrawClicked -> Unit
             MyInfoIntent.WithdrawConfirmed -> deleteAccount()
         }
     }
 
+    /**
+     * 로컬 캐시만 구독한다. 원격 동기화는 앱 시작과 퀘스트 완료 시점에 이미 돌고,
+     * 그 결과가 로컬에 반영되면 이 구독이 새 값을 받는다.
+     */
     private fun loadUserInfo() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            // 누락된 기록을 먼저 반영해야 이어지는 조회가 최신값을 가져온다
-            reconcileUserAggregateUseCase()
-
-            fetchUserInfoUseCase()
-                .onFailure { error ->
-                    _event.emit(MyInfoEvent.ShowMessage(error.message ?: "정보 동기화에 실패했습니다"))
-                }
-
             getUserInfoUseCase()
-                .catch { e ->
-                    _uiState.value = UiState.Failure(e)
-                }
+                .catch { e -> _uiState.value = UiState.Failure(e) }
                 .collectLatest { user ->
                     if (user != null) {
                         _uiState.value = UiState.Success(user.toUiState())
                     } else {
                         _uiState.value = UiState.Failure(Exception("User not found"))
                     }
+                }
+        }
+    }
+
+    /** 사용자가 직접 요청했을 때만 원격까지 다녀온다. */
+    private fun refreshUserInfo() {
+        syncJob?.cancel()
+        syncJob = viewModelScope.launch {
+            reconcileUserAggregateUseCase()
+
+            fetchUserInfoUseCase()
+                .onFailure { error ->
+                    _event.emit(MyInfoEvent.ShowMessage(error.message ?: "정보 동기화에 실패했습니다"))
                 }
         }
     }

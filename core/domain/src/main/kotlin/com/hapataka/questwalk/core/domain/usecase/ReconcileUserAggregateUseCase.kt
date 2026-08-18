@@ -3,7 +3,6 @@ package com.hapataka.questwalk.core.domain.usecase
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
 import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.domain.repository.UserRepositoryNew
-import com.hapataka.questwalk.core.model.History
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -28,14 +27,9 @@ class ReconcileUserAggregateUseCase @Inject constructor(
     suspend operator fun invoke(): Result<Boolean> = kotlin.runCatching {
         val userId = authRepository.getUserId()
         val lastAggregatedAt = userRepository.getLastAggregatedAt(userId).getOrThrow()
-        val histories = historyRepository.getUserHistories(userId).getOrThrow()
+        val summary = historyRepository.getUserActivitySummary(userId).getOrThrow()
 
-        val questResults = histories
-            .filterIsInstance<History.QuestResult>()
-            .filter { it.isSuccess }
-        val achievements = histories.filterIsInstance<History.Achievement>()
-
-        val latestStamp = questResults
+        val latestStamp = summary.successQuests
             .map { it.registerAtUtc }
             .filter { it.isNotEmpty() }
             .maxOrNull()
@@ -48,11 +42,11 @@ class ReconcileUserAggregateUseCase @Inject constructor(
 
         userRepository.applyAggregate(
             userId = userId,
-            totalTime = questResults.sumOf { it.duration },
-            totalDistance = questResults.map { it.distance }.sum(),
-            totalStep = questResults.sumOf { it.step },
-            successKeywords = questResults.map { it.questKeyword }.distinct(),
-            achievementIds = achievements.map { it.achievementId }.distinct(),
+            totalTime = summary.successQuests.sumOf { it.duration },
+            totalDistance = summary.successQuests.map { it.distance }.sum(),
+            totalStep = summary.successQuests.sumOf { it.step },
+            successKeywords = summary.successQuests.map { it.questKeyword }.distinct(),
+            achievementIds = summary.achievementIds.distinct(),
             // UTC 시각을 못 구하는 과거 기록만 있는 경우엔 현재 시각을 기준선으로 삼는다
             lastAggregatedAt = latestStamp.ifEmpty { nowUtcStamp() },
         ).getOrThrow()

@@ -5,6 +5,7 @@ import com.hapataka.questwalk.core.dataapi.model.HistoryDto
 import com.hapataka.questwalk.core.domain.repository.HistoryRepository
 import com.hapataka.questwalk.core.model.History
 import com.hapataka.questwalk.core.model.Location
+import com.hapataka.questwalk.core.model.UserActivitySummary
 import com.hapataka.questwalk.core.remote.util.decryptECB
 import com.hapataka.questwalk.core.remote.util.encryptECB
 import java.time.LocalDateTime
@@ -18,6 +19,29 @@ class DefaultHistoryRepository @Inject constructor(
 ) : HistoryRepository {
 
     private val encryptionKey = "Q2CR35WC121QCB4T"
+
+    override suspend fun getUserActivitySummary(userId: String): Result<UserActivitySummary> {
+        // 경로 복호화를 건너뛴다. 집계에 쓰지 않는 값이라 통째로 푸는 비용이 크다
+        return historyRemoteDataSource.getUserHistories(userId).map { dtos ->
+            UserActivitySummary(
+                successQuests = dtos
+                    .filterIsInstance<HistoryDto.QuestResultDto>()
+                    .filter { it.isSuccess }
+                    .map { dto ->
+                        UserActivitySummary.SuccessQuest(
+                            questKeyword = dto.questKeyword,
+                            duration = dto.duration,
+                            distance = dto.distance,
+                            step = dto.step,
+                            registerAtUtc = dto.registerAtUtc,
+                        )
+                    },
+                achievementIds = dtos
+                    .filterIsInstance<HistoryDto.AchievementDto>()
+                    .map { it.achievementId },
+            )
+        }
+    }
 
     override suspend fun getUserHistories(userId: String): Result<List<History>> {
         return historyRemoteDataSource.getUserHistories(userId).map { dtos ->
