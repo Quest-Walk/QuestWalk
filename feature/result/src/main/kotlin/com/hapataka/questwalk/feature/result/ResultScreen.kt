@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.SubcomposeAsyncImage
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -247,10 +248,11 @@ private fun ResultMapSection(
         mutableStateOf(if (routeLatLngs.size >= 2) 1 else routeLatLngs.size)
     }
     var isMapLoaded by remember(routeLatLngs) { mutableStateOf(false) }
+    var isCameraFitComplete by remember(routeLatLngs) { mutableStateOf(false) }
 
-    LaunchedEffect(routeLatLngs, isMapLoaded) {
+    LaunchedEffect(routeLatLngs, isCameraFitComplete) {
         if (routeLatLngs.size < 2) return@LaunchedEffect
-        if (!isMapLoaded) return@LaunchedEffect
+        if (!isCameraFitComplete) return@LaunchedEffect
 
         animatedRoutePointCount = 1
         val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
@@ -274,18 +276,34 @@ private fun ResultMapSection(
         return
     }
 
+    val routeBounds = remember(routeLatLngs, successLatLng) {
+        buildRouteBounds(routeLatLngs, successLatLng)
+    }
+
     val cameraPositionState = rememberCameraPositionState {
         position = if (routeLatLngs.isNotEmpty()) {
-            val bounds = LatLngBounds.builder().apply {
-                routeLatLngs.forEach { include(it) }
-                successLatLng?.let { include(it) }
-            }.build()
-            CameraPosition.fromLatLngZoom(bounds.center, 15f)
+            CameraPosition.fromLatLngZoom(routeBounds.center, 15f)
         } else if (successLatLng != null) {
             CameraPosition.fromLatLngZoom(successLatLng, 16f)
         } else {
             CameraPosition.fromLatLngZoom(LatLng(37.5665, 126.9780), 15f)
         }
+    }
+
+    LaunchedEffect(isMapLoaded, routeBounds) {
+        if (!isMapLoaded) return@LaunchedEffect
+
+        isCameraFitComplete = false
+        if (routeLatLngs.size >= 2) {
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngBounds(
+                    routeBounds,
+                    MAP_ROUTE_BOUNDS_PADDING,
+                ),
+                durationMs = MAP_ROUTE_CAMERA_ANIMATION_MILLIS,
+            )
+        }
+        isCameraFitComplete = true
     }
 
     GoogleMap(
@@ -463,6 +481,16 @@ private data class MeterPoint(
     val y: Double,
 )
 
+private fun buildRouteBounds(
+    routeLatLngs: List<LatLng>,
+    successLatLng: LatLng?,
+): LatLngBounds {
+    return LatLngBounds.builder().apply {
+        routeLatLngs.forEach { include(it) }
+        successLatLng?.let { include(it) }
+    }.build()
+}
+
 @Composable
 private fun ResultOtherImagesSection(images: List<String>) {
     val displayImages = images.filter { it.isNotBlank() }.take(4)
@@ -551,4 +579,6 @@ private const val ROUTE_ANIMATION_FRAME_MILLIS = 32L
 private const val ROUTE_ANIMATION_MAX_FRAMES = 240
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
+private const val MAP_ROUTE_BOUNDS_PADDING = 64
+private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 500
 private val ROUTE_OUTLINE_COLOR = Color.White
