@@ -115,12 +115,28 @@ class DefaultHistoryRepository @Inject constructor(
     }
 
     private fun parseLocationList(json: String): List<Location> {
-        // JSON 형태: [[lat1,lng1],[lat2,lng2],...]
-        val regex = """\[([^,\[\]]+),([^,\[\]]+)\]""".toRegex()
-        return regex.findAll(json).map { match ->
+        // JSON 형태: [{"first":lat,"second":lng},...] 또는 [[lat,lng],...]
+        val pairRegex = """"first"\s*:\s*([^,}]+).*?"second"\s*:\s*([^,}]+)""".toRegex()
+        val pairLocations = pairRegex.findAll(json).mapNotNull { match ->
             val (lat, lng) = match.destructured
-            Location(lat.toFloat(), lng.toFloat())
+            lat.toLocationOrNull(lng)
         }.toList()
+
+        if (pairLocations.isNotEmpty()) {
+            return pairLocations
+        }
+
+        val arrayRegex = """\[([^,\[\]]+),([^,\[\]]+)\]""".toRegex()
+        return arrayRegex.findAll(json).mapNotNull { match ->
+            val (lat, lng) = match.destructured
+            lat.toLocationOrNull(lng)
+        }.toList()
+    }
+
+    private fun String.toLocationOrNull(longitude: String): Location? {
+        return runCatching {
+            Location(this.toFloat(), longitude.toFloat())
+        }.getOrNull()
     }
 
     private fun parseLocation(json: String): Location? {
