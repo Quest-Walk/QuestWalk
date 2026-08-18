@@ -3,11 +3,13 @@ package com.hapataka.questwalk.feature.myinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hapataka.questwalk.core.domain.usecase.DeleteAccountUseCase
+import com.hapataka.questwalk.core.domain.usecase.FetchUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.GetUserInfoUseCase
 import com.hapataka.questwalk.core.domain.usecase.LogoutUseCase
 import com.hapataka.questwalk.core.model.User
 import com.hapataka.questwalk.core.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyInfoViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
 ) : ViewModel() {
@@ -31,6 +34,8 @@ class MyInfoViewModel @Inject constructor(
 
     private val _event = MutableSharedFlow<MyInfoEvent>()
     val event = _event.asSharedFlow()
+
+    private var loadJob: Job? = null
 
     init {
         loadUserInfo()
@@ -72,7 +77,13 @@ class MyInfoViewModel @Inject constructor(
     }
 
     private fun loadUserInfo() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            fetchUserInfoUseCase()
+                .onFailure { error ->
+                    _event.emit(MyInfoEvent.ShowMessage(error.message ?: "정보 동기화에 실패했습니다"))
+                }
+
             getUserInfoUseCase()
                 .catch { e ->
                     _uiState.value = UiState.Failure(e)
@@ -119,9 +130,9 @@ class MyInfoViewModel @Inject constructor(
     }
 
     private fun User.toUiState(): MyInfoUiState {
-        val hours = (totalTime / 1000 / 3600).toInt()
-        val minutes = ((totalTime / 1000 % 3600) / 60).toInt()
-        val seconds = (totalTime / 1000 % 60).toInt()
+        val hours = (totalTime / 3600).toInt()
+        val minutes = ((totalTime % 3600) / 60).toInt()
+        val seconds = (totalTime % 60).toInt()
         val kcal = totalStep * 0.04 // 걸음당 약 0.04kcal
 
         return MyInfoUiState(
