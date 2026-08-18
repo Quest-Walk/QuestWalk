@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.feature.result
 
+import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,11 +22,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,6 +55,7 @@ import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun ResultRoute(
@@ -116,19 +124,36 @@ private fun ErrorContent(error: Throwable) {
 
 @Composable
 private fun ResultContent(data: ResultUiState) {
+    val scrollState = rememberScrollState()
+    var isMapGestureActive by remember { mutableStateOf(false) }
+    var mapGestureResetKey by remember { mutableStateOf(0) }
+
+    LaunchedEffect(mapGestureResetKey) {
+        if (isMapGestureActive) {
+            delay(MAP_GESTURE_SCROLL_LOCK_MILLIS)
+            isMapGestureActive = false
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(scrollState, enabled = !isMapGestureActive),
     ) {
         ResultMapSection(
             route = data.route,
             successLocation = data.successLocation,
+            onMapGestureActiveChange = { active ->
+                isMapGestureActive = active
+                if (active) {
+                    mapGestureResetKey += 1
+                }
+            },
         )
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
                 .padding(horizontal = 40.dp),
         ) {
             Spacer(modifier = Modifier.height(30.dp))
@@ -202,9 +227,11 @@ private fun ResultContent(data: ResultUiState) {
 }
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 private fun ResultMapSection(
     route: List<Location>,
     successLocation: Location?,
+    onMapGestureActiveChange: (Boolean) -> Unit,
 ) {
     val routeLatLngs = route
         .toDisplayRoute()
@@ -240,7 +267,21 @@ private fun ResultMapSection(
     GoogleMap(
         modifier = Modifier
             .fillMaxWidth()
-            .height(356.dp),
+            .height(356.dp)
+            .pointerInteropFilter { event ->
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_POINTER_DOWN,
+                    MotionEvent.ACTION_MOVE,
+                    -> onMapGestureActiveChange(true)
+
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL,
+                    MotionEvent.ACTION_POINTER_UP,
+                    -> onMapGestureActiveChange(false)
+                }
+                false
+            },
         cameraPositionState = cameraPositionState,
     ) {
         if (routeLatLngs.size >= 2) {
@@ -471,3 +512,4 @@ private fun convertKcal(steps: Long): String {
 
 private const val MIN_ROUTE_POINT_DISTANCE_METERS = 8f
 private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 12f
+private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
