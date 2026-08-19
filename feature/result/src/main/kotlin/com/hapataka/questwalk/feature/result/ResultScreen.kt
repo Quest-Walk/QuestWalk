@@ -374,7 +374,7 @@ private fun ResultMapSection(
             cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLngBounds(
                     routeBounds,
-                    MAP_ROUTE_BOUNDS_PADDING,
+                    MAP_ROUTE_START_BOUNDS_PADDING,
                 ),
                 durationMs = MAP_ROUTE_CAMERA_ANIMATION_MILLIS,
             )
@@ -448,9 +448,12 @@ private fun ResultMapSection(
             dropSuccessMarker()
         }
 
-        // 다 그린 뒤 살짝 당겨서 마무리한다
+        // 상대 줌으로 당기면 경로가 화면을 벗어난다. 경로 범위에 다시 맞춰 마무리한다
         cameraPositionState.animate(
-            update = CameraUpdateFactory.zoomBy(FINISH_ZOOM_DELTA),
+            update = CameraUpdateFactory.newLatLngBounds(
+                routeBounds,
+                MAP_ROUTE_BOUNDS_PADDING,
+            ),
             durationMs = FINISH_ZOOM_DURATION_MILLIS,
         )
     }
@@ -852,6 +855,8 @@ private const val ROUTE_ANIMATION_MIN_SEGMENT_MILLIS = 320
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private const val MAP_ROUTE_BOUNDS_PADDING = 132
+// 시작은 더 멀리서 잡아야 마지막에 당길 여유가 생긴다. 여백이 클수록 멀어진다
+private const val MAP_ROUTE_START_BOUNDS_PADDING = 260
 private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 650
 private const val SUCCESS_MARKER_Z_INDEX = 12f
 private const val MARKER_DROP_DURATION_MILLIS = 520
@@ -871,7 +876,6 @@ private const val HEAD_PULSE_MAX_ALPHA = 0.45f
 private const val SUCCESS_RIPPLE_DURATION_MILLIS = 760
 private const val SUCCESS_RIPPLE_RADIUS_SCALE = 4.5f
 private const val SUCCESS_RIPPLE_Z_INDEX = 11.8f
-private const val FINISH_ZOOM_DELTA = 0.4f
 private const val FINISH_ZOOM_DURATION_MILLIS = 700
 // 흰색에서 시작하므로 외곽선을 어둡게 둬야 앞부분이 배경에 묻히지 않는다
 private val ROUTE_OUTLINE_COLOR = Color(0x8A262626)
