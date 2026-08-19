@@ -89,6 +89,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation(libs.play.services.maps)
 
     implementation(libs.core.ktx)
     implementation(libs.activity.ktx)

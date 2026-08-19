@@ -8,6 +8,8 @@ import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.model.UserActivitySummary
 import com.hapataka.questwalk.core.remote.util.decryptECB
 import com.hapataka.questwalk.core.remote.util.encryptECB
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -43,14 +45,19 @@ class DefaultHistoryRepository @Inject constructor(
         }
     }
 
+    // 경로 복호화와 파싱은 무겁다. 호출부 디스패처(주로 메인)에서 돌지 않도록 옮긴다
     override suspend fun getUserHistories(userId: String): Result<List<History>> {
-        return historyRemoteDataSource.getUserHistories(userId).map { dtos ->
-            dtos.map { it.toModel() }
+        val dtos = historyRemoteDataSource.getUserHistories(userId)
+        return withContext(Dispatchers.Default) {
+            dtos.map { list -> list.map { it.toModel() } }
         }
     }
 
     override suspend fun getQuestResult(resultId: String): Result<History.QuestResult> {
-        return historyRemoteDataSource.getQuestResult(resultId).map { it.toModel() }
+        val dto = historyRemoteDataSource.getQuestResult(resultId)
+        return withContext(Dispatchers.Default) {
+            dto.map { it.toModel() }
+        }
     }
 
     override suspend fun postHistory(userId: String, history: History): Result<String> {

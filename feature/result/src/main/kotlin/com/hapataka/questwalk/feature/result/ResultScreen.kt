@@ -3,7 +3,7 @@ package com.hapataka.questwalk.feature.result
 import android.view.MotionEvent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutBack
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -419,7 +419,7 @@ private fun ResultMapSection(
                     durationMillis = (ROUTE_ANIMATION_DURATION_MILLIS * distance)
                         .toInt()
                         .coerceAtLeast(ROUTE_ANIMATION_MIN_SEGMENT_MILLIS),
-                    easing = FastOutSlowInEasing,
+                    easing = ROUTE_DRAW_EASING,
                 ),
             )
         }
@@ -610,12 +610,12 @@ private fun ResultQuestImageSection(imageUrl: String) {
 private fun List<Location>.toDisplayRoute(): List<Location> {
     if (size < 3) return this
 
-    val distanceFiltered = fold(emptyList<Location>()) { accepted, current ->
-        val prev = accepted.lastOrNull()
+    // fold + 리스트 복사는 점 개수의 제곱만큼 일한다. 긴 경로에서 첫 진입이 끊기는 원인이었다
+    val distanceFiltered = ArrayList<Location>(size)
+    for (current in this) {
+        val prev = distanceFiltered.lastOrNull()
         if (prev == null || prev.distanceTo(current) >= MIN_ROUTE_POINT_DISTANCE_METERS) {
-            accepted + current
-        } else {
-            accepted
+            distanceFiltered.add(current)
         }
     }
 
@@ -846,6 +846,8 @@ private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
 private const val DISPLAY_ROUTE_POINT_COUNT = 300
 private const val ROUTE_ANIMATION_START_DELAY_MILLIS = 800L
 private const val ROUTE_ANIMATION_DURATION_MILLIS = 2500
+// 천천히 출발해 점점 빨라진다. 끝에서만 살짝 눕혀 급정지를 막는다
+private val ROUTE_DRAW_EASING = CubicBezierEasing(0.5f, 0f, 0.85f, 1f)
 private const val ROUTE_ANIMATION_MIN_SEGMENT_MILLIS = 320
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
