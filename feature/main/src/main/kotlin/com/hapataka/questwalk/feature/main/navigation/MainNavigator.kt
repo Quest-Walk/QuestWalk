@@ -2,6 +2,7 @@ package com.hapataka.questwalk.feature.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -66,7 +67,18 @@ class MainNavigator(
     }
 
     fun popBackStack() {
+        // 화면 전환이 끝나기 전에 한 번 더 눌리면 두 번 pop 된다.
+        // 홈까지 지워지면 그릴 목적지가 없어 흰 화면이 남는다
+        if (!isCurrentEntryResumed()) return
+        if (navController.previousBackStackEntry == null) return
+
         navController.popBackStack()
+    }
+
+    /** 전환 중에는 현재 목적지가 RESUMED가 아니므로 중복 입력을 걸러낼 수 있다. */
+    private fun isCurrentEntryResumed(): Boolean {
+        val entry = navController.currentBackStackEntry ?: return false
+        return entry.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     }
 
     fun navigateToOnboarding(isLoggedIn: Boolean = false) {
