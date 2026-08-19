@@ -59,7 +59,6 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.hapataka.questwalk.core.designsystem.component.QuestWalkTopAppBar
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
-import com.hapataka.questwalk.core.designsystem.theme.SystemCyan
 import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
@@ -272,13 +271,37 @@ private fun ResultMapSection(
     }
     var isMapLoaded by remember(routeLatLngs) { mutableStateOf(false) }
     var isCameraFitComplete by remember(routeLatLngs) { mutableStateOf(false) }
+    var isSuccessMarkerVisible by remember(routeLatLngs, successLatLng) { mutableStateOf(false) }
+    val markerDropProgress = remember(routeLatLngs, successLatLng) { Animatable(0f) }
 
-    LaunchedEffect(routeLatLngs, isCameraFitComplete) {
-        if (routeLatLngs.size < 2) return@LaunchedEffect
-        if (!isCameraFitComplete) return@LaunchedEffect
+    LaunchedEffect(routeLatLngs, successLatLng, isCameraFitComplete) {
+        val hasRoute = routeLatLngs.size >= 2
+        if (!hasRoute && successLatLng == null) return@LaunchedEffect
+        if (hasRoute && !isCameraFitComplete) return@LaunchedEffect
+
+        // 핀이 꽂히는 동안에는 경로를 멈춰야 두 동작이 섞이지 않는다
+        suspend fun dropSuccessMarker() {
+            isSuccessMarkerVisible = true
+            markerDropProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = MARKER_DROP_DURATION_MILLIS,
+                    easing = EaseOutBack,
+                ),
+            )
+            delay(MARKER_DROP_HOLD_MILLIS)
+        }
 
         delay(ROUTE_ANIMATION_START_DELAY_MILLIS)
+
+        if (!hasRoute) {
+            dropSuccessMarker()
+            return@LaunchedEffect
+        }
+
         animatedRoutePointCount = 1
+        var hasDroppedMarker = successLatLng == null || successPointIndex < 0
+
         val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
         while (animatedRoutePointCount < routeLatLngs.size) {
             delay(ROUTE_ANIMATION_FRAME_MILLIS)
@@ -286,6 +309,15 @@ private fun ResultMapSection(
                 routeLatLngs.size,
                 animatedRoutePointCount + pointsPerFrame,
             )
+
+            if (!hasDroppedMarker && animatedRoutePointCount > successPointIndex) {
+                hasDroppedMarker = true
+                dropSuccessMarker()
+            }
+        }
+
+        if (!hasDroppedMarker) {
+            dropSuccessMarker()
         }
     }
     val animatedRouteLatLngs = routeLatLngs.take(animatedRoutePointCount)
@@ -330,22 +362,6 @@ private fun ResultMapSection(
         val latSpan = routeBounds.northeast.latitude - routeBounds.southwest.latitude
         (latSpan * MARKER_DROP_HEIGHT_RATIO).coerceAtLeast(MARKER_DROP_MIN_LAT_OFFSET)
     }
-    val isSuccessMarkerVisible = successLatLng != null &&
-        (routeLatLngs.size < 2 || (successPointIndex >= 0 && animatedRoutePointCount > successPointIndex))
-    val markerDropProgress = remember(routeLatLngs, successLatLng) { Animatable(0f) }
-
-    LaunchedEffect(isSuccessMarkerVisible) {
-        if (isSuccessMarkerVisible) {
-            markerDropProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = MARKER_DROP_DURATION_MILLIS,
-                    easing = EaseOutBack,
-                ),
-            )
-        }
-    }
-
     val cameraPositionState = rememberCameraPositionState {
         position = if (routeLatLngs.isNotEmpty()) {
             CameraPosition.fromLatLngZoom(routeBounds.center, 15f)
@@ -729,8 +745,10 @@ private const val MAP_ROUTE_BOUNDS_PADDING = 132
 private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 650
 private const val SUCCESS_MARKER_Z_INDEX = 12f
 private const val MARKER_DROP_DURATION_MILLIS = 520
+private const val MARKER_DROP_HOLD_MILLIS = 260L
 private const val MARKER_DROP_HEIGHT_RATIO = 0.45
 private const val MARKER_DROP_MIN_LAT_OFFSET = 0.0012
-private val ROUTE_OUTLINE_COLOR = Color.White
-private val ROUTE_GRADIENT_START_COLOR = SystemCyan
+// 흰색에서 시작하므로 외곽선을 어둡게 둬야 앞부분이 배경에 묻히지 않는다
+private val ROUTE_OUTLINE_COLOR = Color(0x8A262626)
+private val ROUTE_GRADIENT_START_COLOR = Color.White
 private val ROUTE_GRADIENT_END_COLOR = MainPurple
