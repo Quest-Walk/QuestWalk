@@ -3,6 +3,12 @@ package com.hapataka.questwalk.feature.result
 import android.view.MotionEvent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutBack
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +57,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.StrokeStyle
 import com.google.android.gms.maps.model.StyleSpan
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -65,6 +72,7 @@ import com.hapataka.questwalk.core.ui.UiState
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun ResultRoute(
@@ -266,61 +274,25 @@ private fun ResultMapSection(
             } ?: -1
         }
     }
-    var animatedRoutePointCount by remember(routeLatLngs) {
-        mutableStateOf(if (routeLatLngs.size >= 2) 1 else routeLatLngs.size)
-    }
+
+    // 등속으로 점을 하나씩 더하면 기계적이라 진행률을 이징으로 굴린다
+    val routeProgress = remember(routeLatLngs) { Animatable(0f) }
+    val markerDropProgress = remember(routeLatLngs, successLatLng) { Animatable(0f) }
+    val successRipple = remember(routeLatLngs, successLatLng) { Animatable(0f) }
+    var isSuccessMarkerVisible by remember(routeLatLngs, successLatLng) { mutableStateOf(false) }
     var isMapLoaded by remember(routeLatLngs) { mutableStateOf(false) }
     var isCameraFitComplete by remember(routeLatLngs) { mutableStateOf(false) }
-    var isSuccessMarkerVisible by remember(routeLatLngs, successLatLng) { mutableStateOf(false) }
-    val markerDropProgress = remember(routeLatLngs, successLatLng) { Animatable(0f) }
 
-    LaunchedEffect(routeLatLngs, successLatLng, isCameraFitComplete) {
-        val hasRoute = routeLatLngs.size >= 2
-        if (!hasRoute && successLatLng == null) return@LaunchedEffect
-        if (hasRoute && !isCameraFitComplete) return@LaunchedEffect
-
-        // 핀이 꽂히는 동안에는 경로를 멈춰야 두 동작이 섞이지 않는다
-        suspend fun dropSuccessMarker() {
-            isSuccessMarkerVisible = true
-            markerDropProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = MARKER_DROP_DURATION_MILLIS,
-                    easing = EaseOutBack,
-                ),
-            )
-            delay(MARKER_DROP_HOLD_MILLIS)
-        }
-
-        delay(ROUTE_ANIMATION_START_DELAY_MILLIS)
-
-        if (!hasRoute) {
-            dropSuccessMarker()
-            return@LaunchedEffect
-        }
-
-        animatedRoutePointCount = 1
-        var hasDroppedMarker = successLatLng == null || successPointIndex < 0
-
-        val pointsPerFrame = maxOf(1, routeLatLngs.size / ROUTE_ANIMATION_MAX_FRAMES)
-        while (animatedRoutePointCount < routeLatLngs.size) {
-            delay(ROUTE_ANIMATION_FRAME_MILLIS)
-            animatedRoutePointCount = minOf(
-                routeLatLngs.size,
-                animatedRoutePointCount + pointsPerFrame,
-            )
-
-            if (!hasDroppedMarker && animatedRoutePointCount > successPointIndex) {
-                hasDroppedMarker = true
-                dropSuccessMarker()
-            }
-        }
-
-        if (!hasDroppedMarker) {
-            dropSuccessMarker()
-        }
+    val animatedRoutePointCount = if (routeLatLngs.size < 2) {
+        routeLatLngs.size
+    } else {
+        (1 + routeProgress.value * (routeLatLngs.size - 1))
+            .roundToInt()
+            .coerceIn(1, routeLatLngs.size)
     }
     val animatedRouteLatLngs = routeLatLngs.take(animatedRoutePointCount)
+    val isRouteDrawing =
+        routeLatLngs.size >= 2 && routeProgress.value > 0f && routeProgress.value < 1f
 
     // 겹치는 구간에서도 진행 방향이 보이도록 시작에서 끝으로 색을 옮긴다.
     // 머리 색을 전체 대비 진행률로 잡아야 그라데이션이 경로 전체에 고정된다
@@ -362,6 +334,23 @@ private fun ResultMapSection(
         val latSpan = routeBounds.northeast.latitude - routeBounds.southwest.latitude
         (latSpan * MARKER_DROP_HEIGHT_RATIO).coerceAtLeast(MARKER_DROP_MIN_LAT_OFFSET)
     }
+    // 원 반지름은 미터 단위라 경로 크기에 맞춰야 어떤 경로에서도 비슷하게 보인다
+    val baseMarkRadius = remember(routeBounds) {
+        val latSpanMeters =
+            (routeBounds.northeast.latitude - routeBounds.southwest.latitude) * METERS_PER_LAT_DEGREE
+        (latSpanMeters * MAP_MARK_RADIUS_RATIO).coerceIn(MAP_MARK_MIN_RADIUS, MAP_MARK_MAX_RADIUS)
+    }
+
+    val headPulse by rememberInfiniteTransition(label = "headPulse").animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(HEAD_PULSE_DURATION_MILLIS, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "headPulseValue",
+    )
+
     val cameraPositionState = rememberCameraPositionState {
         position = if (routeLatLngs.isNotEmpty()) {
             CameraPosition.fromLatLngZoom(routeBounds.center, 15f)
@@ -391,6 +380,79 @@ private fun ResultMapSection(
             )
         }
         isCameraFitComplete = true
+    }
+
+    LaunchedEffect(routeLatLngs, successLatLng, isCameraFitComplete) {
+        val hasRoute = routeLatLngs.size >= 2
+        if (!hasRoute && successLatLng == null) return@LaunchedEffect
+        if (hasRoute && !isCameraFitComplete) return@LaunchedEffect
+
+        // 핀이 꽂히는 동안에는 경로를 멈춰야 두 동작이 섞이지 않는다
+        suspend fun dropSuccessMarker() {
+            isSuccessMarkerVisible = true
+            markerDropProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = MARKER_DROP_DURATION_MILLIS,
+                    easing = EaseOutBack,
+                ),
+            )
+            // 파동은 착지와 함께 퍼지되 다음 동작을 붙잡지 않는다
+            launch {
+                successRipple.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(
+                        durationMillis = SUCCESS_RIPPLE_DURATION_MILLIS,
+                        easing = LinearOutSlowInEasing,
+                    ),
+                )
+            }
+            delay(MARKER_DROP_HOLD_MILLIS)
+        }
+
+        suspend fun drawRouteTo(target: Float) {
+            val distance = target - routeProgress.value
+            if (distance <= 0f) return
+            routeProgress.animateTo(
+                targetValue = target,
+                animationSpec = tween(
+                    durationMillis = (ROUTE_ANIMATION_DURATION_MILLIS * distance)
+                        .toInt()
+                        .coerceAtLeast(ROUTE_ANIMATION_MIN_SEGMENT_MILLIS),
+                    easing = FastOutSlowInEasing,
+                ),
+            )
+        }
+
+        delay(ROUTE_ANIMATION_START_DELAY_MILLIS)
+
+        if (!hasRoute) {
+            dropSuccessMarker()
+            return@LaunchedEffect
+        }
+
+        routeProgress.snapTo(0f)
+        var hasDroppedMarker = successLatLng == null || successPointIndex <= 0
+
+        if (!hasDroppedMarker) {
+            val successFraction =
+                (successPointIndex.toFloat() / (routeLatLngs.size - 1)).coerceIn(0f, 1f)
+            drawRouteTo(successFraction)
+            hasDroppedMarker = true
+            dropSuccessMarker()
+        }
+
+        drawRouteTo(1f)
+
+        if (!hasDroppedMarker) {
+            dropSuccessMarker()
+        }
+
+        // 다 그린 뒤 살짝 당겨서 마무리한다
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.zoomBy(FINISH_ZOOM_DELTA),
+            durationMs = FINISH_ZOOM_DURATION_MILLIS,
+        )
     }
 
     GoogleMap(
@@ -440,6 +502,52 @@ private fun ResultMapSection(
                     zIndex = ROUTE_LINE_Z_INDEX,
                 )
             }
+        }
+
+        // 출발점. 경로가 겹쳐도 기준이 되도록 그리는 내내 남겨둔다
+        routeLatLngs.firstOrNull()?.let { startLatLng ->
+            Circle(
+                center = startLatLng,
+                radius = baseMarkRadius * START_MARK_RADIUS_SCALE,
+                fillColor = Color.White,
+                strokeColor = ROUTE_OUTLINE_COLOR,
+                strokeWidth = 6f,
+                zIndex = START_MARK_Z_INDEX,
+            )
+        }
+
+        // 그려지는 끝을 따라가는 선두 점
+        if (isRouteDrawing) {
+            animatedRouteLatLngs.lastOrNull()?.let { headLatLng ->
+                Circle(
+                    center = headLatLng,
+                    radius = baseMarkRadius * (1f + headPulse * HEAD_PULSE_RADIUS_SCALE),
+                    fillColor = MainPurple.copy(alpha = (1f - headPulse) * HEAD_PULSE_MAX_ALPHA),
+                    strokeColor = Color.Transparent,
+                    strokeWidth = 0f,
+                    zIndex = HEAD_MARK_Z_INDEX,
+                )
+                Circle(
+                    center = headLatLng,
+                    radius = baseMarkRadius,
+                    fillColor = MainPurple,
+                    strokeColor = Color.White,
+                    strokeWidth = 6f,
+                    zIndex = HEAD_MARK_Z_INDEX + 1f,
+                )
+            }
+        }
+
+        // 핀이 꽂히는 순간 한 번 퍼지는 파동
+        if (successLatLng != null && successRipple.value > 0f && successRipple.value < 1f) {
+            Circle(
+                center = successLatLng,
+                radius = baseMarkRadius * (1f + successRipple.value * SUCCESS_RIPPLE_RADIUS_SCALE),
+                fillColor = Color.Transparent,
+                strokeColor = MainPurple.copy(alpha = 1f - successRipple.value),
+                strokeWidth = 8f,
+                zIndex = SUCCESS_RIPPLE_Z_INDEX,
+            )
         }
 
         if (successLatLng != null && isSuccessMarkerVisible) {
@@ -737,8 +845,8 @@ private const val ROUTE_SIMPLIFY_TOLERANCE_METERS = 4f
 private const val MAP_GESTURE_SCROLL_LOCK_MILLIS = 900L
 private const val DISPLAY_ROUTE_POINT_COUNT = 300
 private const val ROUTE_ANIMATION_START_DELAY_MILLIS = 800L
-private const val ROUTE_ANIMATION_FRAME_MILLIS = 32L
-private const val ROUTE_ANIMATION_MAX_FRAMES = 78
+private const val ROUTE_ANIMATION_DURATION_MILLIS = 2500
+private const val ROUTE_ANIMATION_MIN_SEGMENT_MILLIS = 320
 private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private const val MAP_ROUTE_BOUNDS_PADDING = 132
@@ -748,6 +856,21 @@ private const val MARKER_DROP_DURATION_MILLIS = 520
 private const val MARKER_DROP_HOLD_MILLIS = 260L
 private const val MARKER_DROP_HEIGHT_RATIO = 0.45
 private const val MARKER_DROP_MIN_LAT_OFFSET = 0.0012
+private const val METERS_PER_LAT_DEGREE = 111_000.0
+private const val MAP_MARK_RADIUS_RATIO = 0.018
+private const val MAP_MARK_MIN_RADIUS = 4.0
+private const val MAP_MARK_MAX_RADIUS = 26.0
+private const val START_MARK_RADIUS_SCALE = 0.85
+private const val START_MARK_Z_INDEX = 11.5f
+private const val HEAD_MARK_Z_INDEX = 13f
+private const val HEAD_PULSE_DURATION_MILLIS = 1100
+private const val HEAD_PULSE_RADIUS_SCALE = 2.4f
+private const val HEAD_PULSE_MAX_ALPHA = 0.45f
+private const val SUCCESS_RIPPLE_DURATION_MILLIS = 760
+private const val SUCCESS_RIPPLE_RADIUS_SCALE = 4.5f
+private const val SUCCESS_RIPPLE_Z_INDEX = 11.8f
+private const val FINISH_ZOOM_DELTA = 0.4f
+private const val FINISH_ZOOM_DURATION_MILLIS = 700
 // 흰색에서 시작하므로 외곽선을 어둡게 둬야 앞부분이 배경에 묻히지 않는다
 private val ROUTE_OUTLINE_COLOR = Color(0x8A262626)
 private val ROUTE_GRADIENT_START_COLOR = Color.White
