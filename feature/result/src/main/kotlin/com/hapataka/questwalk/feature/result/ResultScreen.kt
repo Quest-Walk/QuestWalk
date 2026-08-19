@@ -1,6 +1,9 @@
 package com.hapataka.questwalk.feature.result
 
 import android.view.MotionEvent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseOutBack
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +35,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +49,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.StrokeStyle
+import com.google.android.gms.maps.model.StyleSpan
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -52,6 +59,7 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.hapataka.questwalk.core.designsystem.component.QuestWalkTopAppBar
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
+import com.hapataka.questwalk.core.designsystem.theme.SystemCyan
 import com.hapataka.questwalk.core.model.Location
 import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.UiState
@@ -246,6 +254,19 @@ private fun ResultMapSection(
             LatLng(it.latitude.toDouble(), it.longitude.toDouble())
         }
     }
+    // 애니메이션이 이 지점을 지날 때 성공 마커를 떨어뜨린다
+    val successPointIndex = remember(routeLatLngs, successLatLng) {
+        if (successLatLng == null) {
+            -1
+        } else {
+            routeLatLngs.indices.minByOrNull { index ->
+                val point = routeLatLngs[index]
+                val latDiff = point.latitude - successLatLng.latitude
+                val lngDiff = point.longitude - successLatLng.longitude
+                latDiff * latDiff + lngDiff * lngDiff
+            } ?: -1
+        }
+    }
     var animatedRoutePointCount by remember(routeLatLngs) {
         mutableStateOf(if (routeLatLngs.size >= 2) 1 else routeLatLngs.size)
     }
@@ -269,6 +290,27 @@ private fun ResultMapSection(
     }
     val animatedRouteLatLngs = routeLatLngs.take(animatedRoutePointCount)
 
+    // 겹치는 구간에서도 진행 방향이 보이도록 시작에서 끝으로 색을 옮긴다.
+    // 머리 색을 전체 대비 진행률로 잡아야 그라데이션이 경로 전체에 고정된다
+    val routeGradientSpans = remember(animatedRoutePointCount, routeLatLngs.size) {
+        val drawnSegments = animatedRoutePointCount - 1
+        if (drawnSegments < 1) {
+            emptyList()
+        } else {
+            val totalSegments = (routeLatLngs.size - 1).coerceAtLeast(1)
+            val progress = drawnSegments.toFloat() / totalSegments
+            val headColor = lerp(ROUTE_GRADIENT_START_COLOR, ROUTE_GRADIENT_END_COLOR, progress)
+            listOf(
+                StyleSpan(
+                    StrokeStyle
+                        .gradientBuilder(ROUTE_GRADIENT_START_COLOR.toArgb(), headColor.toArgb())
+                        .build(),
+                    drawnSegments.toDouble(),
+                )
+            )
+        }
+    }
+
     if (routeLatLngs.isEmpty() && successLatLng == null) {
         ResultPlaceholder(
             text = "이동 경로가 없습니다.",
@@ -281,6 +323,27 @@ private fun ResultMapSection(
 
     val routeBounds = remember(routeLatLngs, successLatLng) {
         buildRouteBounds(routeLatLngs, successLatLng)
+    }
+
+    // 화면에 보이는 범위에 비례한 높이에서 떨어뜨려야 줌 배율과 무관하게 같은 연출이 나온다
+    val markerDropOffset = remember(routeBounds) {
+        val latSpan = routeBounds.northeast.latitude - routeBounds.southwest.latitude
+        (latSpan * MARKER_DROP_HEIGHT_RATIO).coerceAtLeast(MARKER_DROP_MIN_LAT_OFFSET)
+    }
+    val isSuccessMarkerVisible = successLatLng != null &&
+        (routeLatLngs.size < 2 || (successPointIndex >= 0 && animatedRoutePointCount > successPointIndex))
+    val markerDropProgress = remember(routeLatLngs, successLatLng) { Animatable(0f) }
+
+    LaunchedEffect(isSuccessMarkerVisible) {
+        if (isSuccessMarkerVisible) {
+            markerDropProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = MARKER_DROP_DURATION_MILLIS,
+                    easing = EaseOutBack,
+                ),
+            )
+        }
     }
 
     val cameraPositionState = rememberCameraPositionState {
@@ -345,17 +408,35 @@ private fun ResultMapSection(
                 width = 24f,
                 zIndex = ROUTE_OUTLINE_Z_INDEX,
             )
-            Polyline(
-                points = animatedRouteLatLngs,
-                color = MainPurple,
-                width = 16f,
-                zIndex = ROUTE_LINE_Z_INDEX,
-            )
+            // spans 오버로드에는 color 인자가 없다. 그라데이션을 못 만들 때만 단색으로 그린다
+            if (routeGradientSpans.isEmpty()) {
+                Polyline(
+                    points = animatedRouteLatLngs,
+                    color = MainPurple,
+                    width = 16f,
+                    zIndex = ROUTE_LINE_Z_INDEX,
+                )
+            } else {
+                Polyline(
+                    points = animatedRouteLatLngs,
+                    spans = routeGradientSpans,
+                    width = 16f,
+                    zIndex = ROUTE_LINE_Z_INDEX,
+                )
+            }
         }
 
-        successLatLng?.let { latLng ->
+        if (successLatLng != null && isSuccessMarkerVisible) {
+            val dropProgress = markerDropProgress.value
             Marker(
-                state = MarkerState(position = latLng),
+                state = MarkerState(
+                    position = LatLng(
+                        successLatLng.latitude + markerDropOffset * (1f - dropProgress),
+                        successLatLng.longitude,
+                    )
+                ),
+                alpha = dropProgress.coerceIn(0f, 1f),
+                zIndex = SUCCESS_MARKER_Z_INDEX,
                 title = "QUEST",
             )
         }
@@ -646,4 +727,10 @@ private const val ROUTE_OUTLINE_Z_INDEX = 10f
 private const val ROUTE_LINE_Z_INDEX = 11f
 private const val MAP_ROUTE_BOUNDS_PADDING = 132
 private const val MAP_ROUTE_CAMERA_ANIMATION_MILLIS = 650
+private const val SUCCESS_MARKER_Z_INDEX = 12f
+private const val MARKER_DROP_DURATION_MILLIS = 520
+private const val MARKER_DROP_HEIGHT_RATIO = 0.45
+private const val MARKER_DROP_MIN_LAT_OFFSET = 0.0012
 private val ROUTE_OUTLINE_COLOR = Color.White
+private val ROUTE_GRADIENT_START_COLOR = SystemCyan
+private val ROUTE_GRADIENT_END_COLOR = MainPurple
