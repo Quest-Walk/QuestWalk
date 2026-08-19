@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.hapataka.questwalk.core.navigation.OnboardingStep
+import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.feature.onboarding.screen.join.JoinRoute
 import com.hapataka.questwalk.feature.onboarding.screen.login.LoginRoute
 import com.hapataka.questwalk.feature.onboarding.screen.setup.SetupRoute
@@ -20,7 +21,7 @@ import com.hapataka.questwalk.feature.onboarding.screen.setup.SetupRoute
 internal fun OnboardingNavHost(
     startDestination: OnboardingStep = OnboardingStep.Login,
     navigateToHome: () -> Unit,
-    padding: PaddingValues,
+    padding: PaddingValues = LocalPaddingValues.current,
     navController: NavHostController = rememberNavController(),
 ) {
     Box(
@@ -75,7 +76,17 @@ internal fun OnboardingNavHost(
 
             composable<OnboardingStep.Join> {
                 JoinRoute(
-                    popBackStack = navController::popBackStack
+                    popBackStack = navController::popBackStack,
+                    navigateToSetup = {
+                        navController.navigate(
+                            route = OnboardingStep.Setup,
+                            navOptions = navOptions {
+                                popUpTo(OnboardingStep.Login) {
+                                    inclusive = false
+                                }
+                            }
+                        )
+                    },
                 )
             }
         }

@@ -8,10 +8,16 @@ plugins {
 setNamespace("core.data")
 
 dependencies {
+    implementation(projects.core.dataApi)
     implementation(projects.core.domain)
     implementation(projects.core.remote)
+    implementation(projects.core.local)
 
     implementation(libs.firebase.auth)
     implementation(libs.kotlinx.serialization.json)
+
+    // Java String Similarity
+    implementation(libs.java.string.similarity)
+
     testImplementation(libs.junit)
 }

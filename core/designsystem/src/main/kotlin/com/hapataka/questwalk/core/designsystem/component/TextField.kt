@@ -95,7 +95,7 @@ fun PixelTextField(
             maxHeight = (it.lineCount * 48).dp
         },
         visualTransformation = if (keyboardOptions.keyboardType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None,
-        textStyle = Typography.bodyLarge.copy(color = MainPurple),
+        textStyle = Typography.bodyMedium.copy(color = MainPurple),
         decorationBox = { innerTextField ->
             val bg = ContextCompat.getDrawable(
                 LocalContext.current,
@@ -137,7 +137,7 @@ fun PixelTextField(
                             Text(
                                 text = h,
                                 color = if (errorState) Color.Red else Surface1,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }

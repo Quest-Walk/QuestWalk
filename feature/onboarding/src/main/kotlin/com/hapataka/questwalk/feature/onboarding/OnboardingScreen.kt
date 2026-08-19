@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hapataka.questwalk.core.designsystem.theme.MainPurple
 import com.hapataka.questwalk.core.navigation.OnboardingStep
+import com.hapataka.questwalk.core.ui.LocalPaddingValues
 import com.hapataka.questwalk.core.ui.R
 import com.hapataka.questwalk.core.ui.component.HorizontalScrollingBackground
 import com.hapataka.questwalk.feature.onboarding.navigation.OnboardingNavHost
@@ -21,7 +22,7 @@ import com.hapataka.questwalk.feature.onboarding.navigation.OnboardingNavHost
 internal fun OnboardingScreen(
     isLoggedIn: Boolean = true,
     navigateToHome: () -> Unit = {},
-    padding: PaddingValues = PaddingValues(),
+    padding: PaddingValues = LocalPaddingValues.current,
 ) {
     Box(
         modifier = Modifier

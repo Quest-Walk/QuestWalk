@@ -3,8 +3,7 @@
 .idea
 .kotlin
 .DS_Store
-.github
-/build
+build/
 /captures
 .externalNativeBuild
 .cxx
@@ -12,4 +11,16 @@ local.properties
 adminapp
 private_key.pepk
 quest_walk_keypath.jks
+upload_certificate.pem
 app/google-services.json
+keystore.properties
+
+# Claude Code
+.claude/
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.bak

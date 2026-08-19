@@ -1,12 +1,15 @@
 package com.hapataka.questwalk.core.data.repository
 
 import com.hapataka.questwalk.core.domain.repository.AuthRepository
+import com.hapataka.questwalk.core.local.api.PreferencesDataSource
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Named
 
 class DefaultAuthRepository @Inject constructor(
     @Named("FirebaseAuth") private val firebaseAuthDataSource: AuthDataSource,
+    private val preferencesDataSource: PreferencesDataSource,
 ) : AuthRepository {
     override suspend fun loginWithEmail(email: String, password: String): Result<String> {
         return firebaseAuthDataSource.loginWithEmail(email, password)
@@ -27,5 +30,25 @@ class DefaultAuthRepository @Inject constructor(
     override fun getUserId(): String {
         return firebaseAuthDataSource.getUserId()
         // TODO: 캐시 레포 구성 후 이관해야함
+    }
+
+    override suspend fun reauthenticate(password: String): Result<Unit> {
+        return firebaseAuthDataSource.reauthenticate(password)
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return firebaseAuthDataSource.deleteAccount()
+    }
+
+    override fun getUserEmail(): String? {
+        return firebaseAuthDataSource.getUserEmail()
+    }
+
+    override suspend fun setLastEmail(email: String) {
+        preferencesDataSource.setLastEmail(email)
+    }
+
+    override fun getLastEmail(): Flow<String?> {
+        return preferencesDataSource.getLastEmail()
     }
 }

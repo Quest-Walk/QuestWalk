@@ -1,5 +1,6 @@
 package com.hapataka.questwalk.core.remote.datasource
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.hapataka.questwalk.core.remote.api.AuthDataSource
@@ -28,7 +29,6 @@ class FirebaseAuthDataSource @Inject constructor(
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .await()
                 .user!!.uid
-                .also { firebaseAuth.signOut() }
         }
     }
 
@@ -38,5 +38,25 @@ class FirebaseAuthDataSource @Inject constructor(
 
     override fun getUserId(): String {
         return firebaseAuth.uid ?: throw NoSuchElementException("no user id")
+    }
+
+    override suspend fun reauthenticate(password: String): Result<Unit> {
+        return runCatching {
+            val user = firebaseAuth.currentUser ?: throw Exception("User is null")
+            val email = user.email ?: throw Exception("Email is null")
+            val credential = EmailAuthProvider.getCredential(email, password)
+            user.reauthenticate(credential).await()
+        }
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return runCatching {
+            firebaseAuth.currentUser?.delete()?.await()
+                ?: throw Exception("User is null")
+        }
+    }
+
+    override fun getUserEmail(): String? {
+        return firebaseAuth.currentUser?.email
     }
 }

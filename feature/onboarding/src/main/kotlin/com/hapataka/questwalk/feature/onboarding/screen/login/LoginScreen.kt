@@ -50,9 +50,9 @@ import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.designsystem.theme.White60
 import com.hapataka.questwalk.feature.onboarding.R
 import com.hapataka.questwalk.feature.onboarding.component.PasswordVisibilityButton
-import com.hapataka.questwalk.feature.onboarding.model.UserInfo
 import com.hapataka.questwalk.feature.onboarding.model.UserState
 import com.hapataka.questwalk.feature.onboarding.util.getCredential
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,32 +63,32 @@ internal fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val userState by viewModel.userState.collectAsState()
+    val lastEmail by viewModel.lastEmail.collectAsState()
 
-    LaunchedEffect(userState) {
-        if (userState is UserState.LoggedIn) {
-            when ((userState as UserState.LoggedIn).userInfo) {
-                UserInfo.EXIST -> navigateToHome()
-                UserInfo.NONE -> navigateToSetup()
+    LaunchedEffect(viewModel) {
+        viewModel.event.collectLatest { event ->
+            when (event) {
+                LoginEvent.NavigateToHome -> navigateToHome()
+                LoginEvent.NavigateToSetup -> navigateToSetup()
+                LoginEvent.NavigateToJoin -> navigateToJoin()
             }
         }
     }
 
     LoginScreen(
         userState = userState,
-        loginWithEmail = viewModel::loginWithEmail,
-        loginWithIdToken = viewModel::loginWithIdToken,
-        navigateToJoin = navigateToJoin,
+        initialEmail = lastEmail.orEmpty(),
+        onIntent = viewModel::onIntent,
     )
 }
 
 @Composable
 internal fun LoginScreen(
     userState: UserState = UserState.Idle,
-    loginWithEmail: (String, String) -> Unit = { _, _ -> },
-    loginWithIdToken: (String) -> Unit = { _ -> },
-    navigateToJoin: () -> Unit = {},
+    initialEmail: String = "",
+    onIntent: (LoginIntent) -> Unit = {},
 ) {
-    var id by rememberSaveable { mutableStateOf("") }
+    var id by rememberSaveable(initialEmail) { mutableStateOf(initialEmail) }
     var password by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val (focusId, focusPassword) = remember { FocusRequester.createRefs() }
@@ -113,7 +113,7 @@ internal fun LoginScreen(
                 .padding(top = 40.dp)
         )
 
-        if (userState is UserState.Loading || (userState is UserState.LoggedIn && userState.userInfo == UserInfo.EXIST)) {
+        if (userState is UserState.Loading) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(52.dp)
@@ -172,14 +172,14 @@ internal fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 PixelButton(
-                    onClick = { loginWithEmail(id, password) },
+                    onClick = { onIntent(LoginIntent.EmailLoginClicked(id, password)) },
                     text = "로그인",
                     modifier = Modifier.fillMaxWidth(),
                     enabled = id.isNotBlank() && password.isNotBlank()
                 )
 
                 TextButton(
-                    onClick = navigateToJoin,
+                    onClick = { onIntent(LoginIntent.JoinClicked) },
                 ) {
                     Text(
                         style = Typography.labelLarge, text = "회원가입", color = Color.White
@@ -222,7 +222,7 @@ internal fun LoginScreen(
                                         val idToken =
                                             GoogleIdTokenCredential.createFrom(it.data).idToken
 
-                                        loginWithIdToken(idToken)
+                                        onIntent(LoginIntent.GoogleLoginSucceeded(idToken))
                                     }
 
                                     else -> {}

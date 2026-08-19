@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hapataka.questwalk.core.designsystem.component.PixelButton
 import com.hapataka.questwalk.core.designsystem.component.PixelTextField
-import com.hapataka.questwalk.core.designsystem.theme.HighLightYellow
 import com.hapataka.questwalk.core.designsystem.theme.Typography
 import com.hapataka.questwalk.core.model.CharacterType
 import com.hapataka.questwalk.core.ui.component.Character
 import com.hapataka.questwalk.feature.onboarding.model.UserState
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun SetupRoute(
@@ -60,22 +60,22 @@ internal fun SetupRoute(
     val loginState by setupViewModel.loginState.collectAsState()
 
     BackHandler {
-        navigateToLogin()
-        setupViewModel.logout()
+        setupViewModel.onIntent(SetupIntent.LogoutClicked)
     }
 
-    LaunchedEffect(loginState) {
-        if (loginState is UserState.LoggedIn) {
-            navigateToHome()
+    LaunchedEffect(setupViewModel) {
+        setupViewModel.event.collectLatest { event ->
+            when (event) {
+                SetupEvent.NavigateToHome -> navigateToHome()
+                SetupEvent.NavigateToLogin -> navigateToLogin()
+            }
         }
     }
 
     SetupScreen(
         ko = keyboardOptions,
         ka = keyboardActions,
-        navigateToLogin = navigateToLogin,
-        logout = setupViewModel::logout,
-        postUserInfo = setupViewModel::postUserInfo,
+        onIntent = setupViewModel::onIntent,
     )
 }
 
@@ -83,12 +83,9 @@ internal fun SetupRoute(
 internal fun SetupScreen(
     ko: KeyboardOptions = KeyboardOptions.Default,
     ka: KeyboardActions = KeyboardActions.Default,
-    navigateToLogin: () -> Unit = {},
-    logout: () -> Unit = {},
-    postUserInfo: (String, CharacterType) -> Unit = { _, _ -> },
+    onIntent: (SetupIntent) -> Unit = {},
 ) {
     var nickname by rememberSaveable { mutableStateOf("") }
-    var characterType by rememberSaveable { mutableStateOf(CharacterType.BEAR) }
     val focusRequester = remember { FocusRequester() }
 
     Column(
@@ -98,23 +95,13 @@ internal fun SetupScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text(
-            text = "캐릭터를 선택해 주세요",
-            style = Typography.bodyLarge,
-            color = HighLightYellow,
-            modifier = Modifier
-                .padding(top = 40.dp)
-        )
-
         Character(
-            character = when (characterType) {
-                CharacterType.BEAR -> Character.BEAR
-                else -> Character.BEAR
-            },
+            character = Character.BEAR,
             isAnimate = true,
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .aspectRatio(1f)
+                .padding(top = 40.dp)
         )
 
         PixelTextField(
@@ -133,7 +120,7 @@ internal fun SetupScreen(
 
 
         PixelButton(
-            onClick = { postUserInfo(nickname, characterType) },
+            onClick = { onIntent(SetupIntent.DoneClicked(nickname, CharacterType.BEAR)) },
             text = "완료",
             enabled = nickname.isNotBlank(),
             modifier = Modifier.fillMaxWidth(0.8f),
@@ -141,8 +128,7 @@ internal fun SetupScreen(
 
         TextButton(
             onClick = {
-                navigateToLogin()
-                logout()
+                onIntent(SetupIntent.LogoutClicked)
                 Log.d("logoutTest", "눌렸다")
             },
         ) {

@@ -32,6 +32,10 @@ private val NeoDunggeunmoTextStyle = TextStyle.Default.copy(
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = GalmuriTextStyle.copy(
+        fontSize = 20.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = GalmuriTextStyle.copy(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
@@ -39,6 +43,9 @@ val Typography = Typography(
     titleLarge = NeoDunggeunmoTextStyle.copy(
         fontSize = 22.sp,
         lineHeight = 28.sp,
+    ),
+    titleSmall = NeoDunggeunmoTextStyle.copy(
+        fontSize = 14.sp,
     ),
     labelLarge = GalmuriTextStyle.copy(
         fontSize = 14.sp,

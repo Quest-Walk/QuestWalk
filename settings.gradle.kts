@@ -27,12 +27,21 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 
 include(":feature:onboarding")
+include(":feature:record")
+include(":feature:quest")
+include(":feature:weather")
+include(":feature:home")
+include(":feature:myinfo")
+include(":feature:splash")
+include(":feature:camera")
+include(":feature:result")
 
 include(
     ":core:designsystem",
     ":core:navigation",
     ":core:domain",
     ":core:data",
+    ":core:data-api",
     ":core:remote",
     ":core:model",
     ":core:common",
@@ -40,3 +49,5 @@ include(
 
 include(":feature:main")
 include(":core:ui")
+include(":core:local")
+include(":core:service")

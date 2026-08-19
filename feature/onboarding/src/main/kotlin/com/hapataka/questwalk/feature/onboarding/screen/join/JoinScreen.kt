@@ -41,21 +41,27 @@ import com.hapataka.questwalk.feature.onboarding.component.PasswordVisibilityBut
 import com.hapataka.questwalk.feature.onboarding.model.JoinState
 import com.hapataka.questwalk.feature.onboarding.util.isEmailPattern
 import com.hapataka.questwalk.feature.onboarding.util.isPasswordPattern
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun JoinRoute(
     popBackStack: () -> Unit,
+    navigateToSetup: () -> Unit,
     viewModel: JoinViewModel = hiltViewModel(),
 ) {
     val joinState by viewModel.joinState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(joinState) {
-        if (joinState is JoinState.Success) popBackStack()
+    LaunchedEffect(viewModel) {
+        viewModel.event.collectLatest { event ->
+            when (event) {
+                JoinEvent.NavigateToSetup -> navigateToSetup()
+            }
+        }
     }
 
     JoinScreen(
         joinState = joinState,
-        joinWithEmail = viewModel::joinWithEmail,
+        onIntent = viewModel::onIntent,
         popBackStack = popBackStack,
     )
 }
@@ -63,7 +69,7 @@ internal fun JoinRoute(
 @Composable
 internal fun JoinScreen(
     joinState: JoinState = JoinState.Idle,
-    joinWithEmail: (String, String) -> Unit = { _, _ -> },
+    onIntent: (JoinIntent) -> Unit = {},
     popBackStack: () -> Unit = {},
 ) {
     Column(
@@ -77,10 +83,6 @@ internal fun JoinScreen(
         )
 
         when (joinState) {
-            is JoinState.Success -> {
-                popBackStack()
-            }
-
             is JoinState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -93,7 +95,8 @@ internal fun JoinScreen(
 
             else -> {
                 JoinContent(
-                    joinWithEmail = joinWithEmail
+                    onIntent = onIntent,
+                    errorMessage = (joinState as? JoinState.Failure)?.message,
                 )
             }
         }
@@ -102,7 +105,8 @@ internal fun JoinScreen(
 
 @Composable
 fun JoinContent(
-    joinWithEmail: (String, String) -> Unit = { _, _ -> },
+    onIntent: (JoinIntent) -> Unit = {},
+    errorMessage: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -226,7 +230,7 @@ fun JoinContent(
                 focusManager.clearFocus()
 
                 if (emailError.not() && passwordError.not() && confirmPasswordError.not()) {
-                    joinWithEmail(email, password)
+                    onIntent(JoinIntent.JoinClicked(email, password))
                 }
             },
             modifier = Modifier.fillMaxWidth(0.8f)
@@ -239,6 +243,7 @@ fun JoinContent(
             emailError = emailError,
             passwordError = passwordError,
             confirmPasswordError = confirmPasswordError,
+            serverErrorMessage = errorMessage,
         )
     }
 }
@@ -251,6 +256,7 @@ private fun ErrorMessage(
     emailError: Boolean,
     passwordError: Boolean,
     confirmPasswordError: Boolean,
+    serverErrorMessage: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -322,6 +328,17 @@ private fun ErrorMessage(
                         .wrapContentHeight()
                 )
             }
+        }
+
+        if (serverErrorMessage != null) {
+            Text(
+                text = "- $serverErrorMessage",
+                style = Typography.labelLarge,
+                color = HighLightYellow,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .wrapContentHeight()
+            )
         }
     }
 }

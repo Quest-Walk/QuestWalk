@@ -9,7 +9,6 @@ import javax.inject.Named
 class PostHistoryUseCase @Inject constructor(
     @Named("DefaultAuthRepository")
     private val authRepository: AuthRepository,
-    @Named("DefaultHistoryRepository")
     private val historyRepository: HistoryRepository,
 ) {
     suspend operator fun invoke(history: History): Result<String> {

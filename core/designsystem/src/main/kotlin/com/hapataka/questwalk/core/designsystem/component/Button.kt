@@ -57,6 +57,33 @@ fun PixelButton(
 }
 
 @Composable
+fun PixelPurpleButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: String = ""
+) {
+    val context = LocalContext.current
+    val bg = ContextCompat.getDrawable(context, R.drawable.bg_button_default)
+
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .drawBehind {
+                bg?.updateBounds(0, 0, size.width.toInt(), size.height.toInt())
+                bg?.draw(drawContext.canvas.nativeCanvas)
+            },
+        colors = ButtonDefaults.buttonColors(Color.Transparent),
+        enabled = enabled,
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+        )
+    }
+}
+
+@Composable
 fun ImageButton(
     releasedPainterResource: Painter,
     contentDescription: String?,
